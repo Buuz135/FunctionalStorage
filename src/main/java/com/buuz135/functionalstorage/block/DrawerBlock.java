@@ -5,20 +5,26 @@ import com.buuz135.functionalstorage.block.tile.DrawerTile;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.MultimapBuilder;
 import com.hrznstudio.titanium.block.RotatableBlock;
+import com.hrznstudio.titanium.datagenerator.loot.block.BasicBlockLootTables;
 import com.hrznstudio.titanium.module.DeferredRegistryHelper;
 import com.hrznstudio.titanium.util.RayTraceUtils;
 import com.hrznstudio.titanium.util.TileUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.NonNullList;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.loot.LootTable;
+import net.minecraft.world.level.storage.loot.functions.CopyNbtFunction;
+import net.minecraft.world.level.storage.loot.providers.nbt.ContextNbtProvider;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
@@ -147,7 +153,6 @@ public class DrawerBlock extends RotatableBlock<DrawerTile> {
                 List<VoxelShape> shapes = new ArrayList<>();
                 shapes.addAll(CACHED_SHAPES.get(type).get(state.getValue(RotatableBlock.FACING_HORIZONTAL)));
                 for (int i = 0; i < shapes.size(); i++) {
-                    System.out.println(shapes.get(i));
                     if (Shapes.joinIsNotEmpty(shapes.get(i), hit, BooleanOp.AND)) {
                         return i;
                     }
@@ -156,4 +161,17 @@ public class DrawerBlock extends RotatableBlock<DrawerTile> {
         }
         return -1;
     }
+
+    @Override
+    public LootTable.Builder getLootTable(@Nonnull BasicBlockLootTables blockLootTables) {
+        CopyNbtFunction.Builder nbtBuilder = CopyNbtFunction.copyData(ContextNbtProvider.BLOCK_ENTITY);
+        nbtBuilder.copy("handler",  "BlockEntityTag.handler");
+        return blockLootTables.droppingSelfWithNbt(this, nbtBuilder);
+    }
+
+    @Override
+    public NonNullList<ItemStack> getDynamicDrops(BlockState state, Level worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
+        return NonNullList.create();
+    }
+
 }

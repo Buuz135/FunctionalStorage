@@ -124,7 +124,6 @@ public abstract class BigInventoryHandler implements IItemHandler, INBTSerializa
     public void deserializeNBT(CompoundTag nbt) {
         this.voidItems = nbt.getBoolean(VOID);
         for (String allKey : nbt.getCompound(BIG_ITEMS).getAllKeys()) {
-            System.out.println(nbt.getCompound(BIG_ITEMS).getCompound(allKey).getCompound(STACK));
             this.storedStacks.get(Integer.parseInt(allKey)).setStack(ItemStack.of(nbt.getCompound(BIG_ITEMS).getCompound(allKey).getCompound(STACK)));
             this.storedStacks.get(Integer.parseInt(allKey)).setAmount(nbt.getCompound(BIG_ITEMS).getCompound(allKey).getInt(AMOUNT));
         }
