@@ -1,0 +1,8 @@
+{
+  "parent": "functionalstorage:block/base_x_4",
+  "textures": {
+	"particle": "functionalstorage:blocks/jungle_front_4",
+	"front": "functionalstorage:blocks/jungle_front_4",
+	"side": "functionalstorage:blocks/jungle_side"
+  }
+}

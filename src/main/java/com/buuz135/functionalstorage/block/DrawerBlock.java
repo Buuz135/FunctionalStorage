@@ -57,9 +57,9 @@ public class DrawerBlock extends RotatableBlock<DrawerTile> {
             for (VoxelShape voxelShape : CACHED_SHAPES.get(FunctionalStorage.DrawerType.X_1).get(direction)) {
                 AABB bounding = voxelShape.toAabbs().get(0);
                 CACHED_SHAPES.computeIfAbsent(FunctionalStorage.DrawerType.X_2, type1 -> MultimapBuilder.hashKeys().arrayListValues().build()).
-                        put(direction, Shapes.box(bounding.minX, bounding.minY, bounding.minZ ,bounding.maxX, 8/16D, bounding.maxZ));
+                        put(direction, Shapes.box(bounding.minX, bounding.minY, bounding.minZ ,bounding.maxX, 7/16D, bounding.maxZ));
                 CACHED_SHAPES.computeIfAbsent(FunctionalStorage.DrawerType.X_2, type1 -> MultimapBuilder.hashKeys().arrayListValues().build()).
-                        put(direction, Shapes.box(bounding.minX, 8/16D, bounding.minZ ,bounding.maxX, bounding.maxY, bounding.maxZ));
+                        put(direction, Shapes.box(bounding.minX, 9/16D, bounding.minZ ,bounding.maxX, bounding.maxY, bounding.maxZ));
             }
         }
         for (Direction direction : CACHED_SHAPES.get(FunctionalStorage.DrawerType.X_2).keySet()) {
@@ -67,14 +67,14 @@ public class DrawerBlock extends RotatableBlock<DrawerTile> {
                 AABB bounding = voxelShape.toAabbs().get(0);
                 if (direction == Direction.NORTH || direction == Direction.SOUTH) {
                     CACHED_SHAPES.computeIfAbsent(FunctionalStorage.DrawerType.X_4, type1 -> MultimapBuilder.hashKeys().arrayListValues().build()).
-                            put(direction, Shapes.box(bounding.minX, bounding.minY, bounding.minZ , 8/16D, bounding.maxY, bounding.maxZ));
+                            put(direction, Shapes.box(bounding.minX, bounding.minY, bounding.minZ , 7/16D, bounding.maxY, bounding.maxZ));
                     CACHED_SHAPES.computeIfAbsent(FunctionalStorage.DrawerType.X_4, type1 -> MultimapBuilder.hashKeys().arrayListValues().build()).
-                            put(direction, Shapes.box(8/16D, bounding.minY, bounding.minZ ,bounding.maxX, bounding.maxY, bounding.maxZ));
+                            put(direction, Shapes.box(9/16D, bounding.minY, bounding.minZ ,bounding.maxX, bounding.maxY, bounding.maxZ));
                 } else {
                     CACHED_SHAPES.computeIfAbsent(FunctionalStorage.DrawerType.X_4, type1 -> MultimapBuilder.hashKeys().arrayListValues().build()).
-                            put(direction, Shapes.box(bounding.minX, bounding.minY, 8/16D,bounding.maxX, bounding.maxY, bounding.maxZ));
+                            put(direction, Shapes.box(bounding.minX, bounding.minY, 7/16D,bounding.maxX, bounding.maxY, bounding.maxZ));
                     CACHED_SHAPES.computeIfAbsent(FunctionalStorage.DrawerType.X_4, type1 -> MultimapBuilder.hashKeys().arrayListValues().build()).
-                            put(direction, Shapes.box(bounding.minX, bounding.minY, bounding.minZ , bounding.maxX, bounding.maxY, 8/16D));
+                            put(direction, Shapes.box(bounding.minX, bounding.minY, bounding.minZ , bounding.maxX, bounding.maxY, 9/16D));
                 }
             }
         }

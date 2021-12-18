@@ -55,6 +55,7 @@ public class FunctionalStorage extends ModuleController {
     protected void initModules() {
         addWood(Blocks.OAK_WOOD);
         addWood(Blocks.SPRUCE_WOOD);
+        addWood(Blocks.DARK_OAK_WOOD);
         addWood(Blocks.BIRCH_WOOD);
         addWood(Blocks.JUNGLE_WOOD);
         addWood(Blocks.ACACIA_WOOD);
