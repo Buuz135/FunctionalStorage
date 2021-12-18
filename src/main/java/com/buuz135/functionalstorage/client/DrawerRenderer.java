@@ -1,6 +1,8 @@
 package com.buuz135.functionalstorage.client;
 
+import com.buuz135.functionalstorage.FunctionalStorage;
 import com.buuz135.functionalstorage.block.tile.DrawerTile;
+import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Matrix3f;
 import com.mojang.math.Quaternion;
@@ -50,67 +52,100 @@ public class DrawerRenderer implements BlockEntityRenderer<DrawerTile> {
         if (facing == Direction.WEST) {
             matrixStack.mulPose(Vector3f.YP.rotationDegrees(90));
         }
-        //matrixStack.last().normal().add(FAKE_NORMALS);
         combinedLightIn = LevelRenderer.getLightColor(tile.getLevel(), tile.getBlockPos().relative(facing));
-        render1Slot(matrixStack, bufferIn, combinedLightIn, combinedOverlayIn, tile);
+        if (tile.getDrawerType() == FunctionalStorage.DrawerType.X_1) render1Slot(matrixStack, bufferIn, combinedLightIn, combinedOverlayIn, tile);
+        if (tile.getDrawerType() == FunctionalStorage.DrawerType.X_2) render2Slot(matrixStack, bufferIn, combinedLightIn, combinedOverlayIn, tile);
+        if (tile.getDrawerType() == FunctionalStorage.DrawerType.X_4) render4Slot(matrixStack, bufferIn, combinedLightIn, combinedOverlayIn, tile);
+        matrixStack.popPose();
     }
 
     private void render1Slot(PoseStack matrixStack, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn, DrawerTile tile){
-        //System.out.println(tile.getHandler().getStackInSlot(0));
         if (!tile.getHandler().getStackInSlot(0).isEmpty()){
             matrixStack.translate(0.5, 0.5, 0.0005f);
             ItemStack stack = tile.getHandler().getStackInSlot(0);
-            renderStack(matrixStack,  bufferIn, combinedLightIn, combinedOverlayIn, stack, stack.getCount());
-            matrixStack.popPose();
-            renderText(matrixStack, bufferIn, combinedOverlayIn, new TextComponent(ChatFormatting.WHITE + "" + stack.getCount()), tile.getFacingDirection(), 0.007f);
-        }else {
-            matrixStack.popPose();
+            renderStack(matrixStack,  bufferIn, combinedLightIn, combinedOverlayIn, stack, stack.getCount(), 0.015f);
         }
-
     }
 
-    private void renderStack(PoseStack matrixStack, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn, ItemStack stack, int amount){
+    private void render2Slot(PoseStack matrixStack, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn, DrawerTile tile){
+        if (!tile.getHandler().getStackInSlot(0).isEmpty()){
+            matrixStack.pushPose();
+            matrixStack.translate(0.5, 0.30f, 0.0005f);
+            matrixStack.scale(0.5f, 0.5f, 1);
+            ItemStack stack = tile.getHandler().getStackInSlot(0);
+            renderStack(matrixStack,  bufferIn, combinedLightIn, combinedOverlayIn, stack, stack.getCount(), 0.02f);
+            matrixStack.popPose();
+        }
+        if (!tile.getHandler().getStackInSlot(1).isEmpty()){
+            matrixStack.pushPose();
+            matrixStack.translate(0.5, 0.75f, 0.0005f);
+            matrixStack.scale(0.5f, 0.5f, 1);
+            ItemStack stack = tile.getHandler().getStackInSlot(1);
+            renderStack(matrixStack,  bufferIn, combinedLightIn, combinedOverlayIn, stack, stack.getCount(), 0.02f);
+            matrixStack.popPose();
+        }
+    }
+    private void render4Slot(PoseStack matrixStack, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn, DrawerTile tile){
+        if (!tile.getHandler().getStackInSlot(0).isEmpty()){ //BOTTOM RIGHT
+            matrixStack.pushPose();
+            matrixStack.translate(0.725, 0.30f, 0.0005f);
+            matrixStack.scale(0.5f, 0.5f, 1);
+            ItemStack stack = tile.getHandler().getStackInSlot(0);
+            renderStack(matrixStack,  bufferIn, combinedLightIn, combinedOverlayIn, stack, stack.getCount(), 0.02f);
+            matrixStack.popPose();
+        }
+        if (!tile.getHandler().getStackInSlot(1).isEmpty()){ //BOTTOM LEFT
+            matrixStack.pushPose();
+            matrixStack.translate(0.275, 0.30f, 0.0005f);
+            matrixStack.scale(0.5f, 0.5f, 1);
+            ItemStack stack = tile.getHandler().getStackInSlot(1);
+            renderStack(matrixStack,  bufferIn, combinedLightIn, combinedOverlayIn, stack, stack.getCount(), 0.02f);
+            matrixStack.popPose();
+        }
+        if (!tile.getHandler().getStackInSlot(2).isEmpty()){ //TOP RIGHT
+            matrixStack.pushPose();
+            matrixStack.translate(0.725, 0.75f, 0.0005f);
+            matrixStack.scale(0.5f, 0.5f, 1);
+            ItemStack stack = tile.getHandler().getStackInSlot(2);
+            renderStack(matrixStack,  bufferIn, combinedLightIn, combinedOverlayIn, stack, stack.getCount(), 0.02f);
+            matrixStack.popPose();
+        }
+        if (!tile.getHandler().getStackInSlot(3).isEmpty()){ //TOP LEFT
+            matrixStack.pushPose();
+            matrixStack.translate(0.275, 0.75f, 0.0005f);
+            matrixStack.scale(0.5f, 0.5f, 1);
+            ItemStack stack = tile.getHandler().getStackInSlot(3);
+            renderStack(matrixStack,  bufferIn, combinedLightIn, combinedOverlayIn, stack, stack.getCount(), 0.02f);
+            matrixStack.popPose();
+        }
+    }
+
+
+    private void renderStack(PoseStack matrixStack, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn, ItemStack stack, int amount, float scale){
         if (stack.getItem() instanceof BlockItem){
             matrixStack.scale(0.5f, 0.5f, 0.0001f);
         } else {
             matrixStack.scale(0.4f, 0.4f, 0.0001f);
         }
-
         Minecraft.getInstance().getItemRenderer().renderStatic(stack, ItemTransforms.TransformType.GUI, combinedLightIn, combinedOverlayIn, matrixStack, bufferIn, 0);
-
+        if (!(stack.getItem() instanceof BlockItem)){
+            matrixStack.scale(1/0.4f, 1/0.4f, 1/0.0001f);
+            matrixStack.scale(0.5f, 0.5f, 0.0001f);
+        }
+        renderText(matrixStack, bufferIn, combinedOverlayIn, new TextComponent(ChatFormatting.WHITE + "" + stack.getCount()), Direction.NORTH, scale);
     }
 
 
     /* Thanks Mekanism */
     private void renderText(PoseStack matrix, MultiBufferSource renderer, int overlayLight, Component text, Direction side, float maxScale) {
-        matrix.pushPose();
-        matrix.translate(0, -0.3725, 0);
-        switch (side) {
-            case SOUTH:
-                matrix.translate(0, 1, 0.0001);
-                matrix.mulPose(Vector3f.XP.rotationDegrees(90));
-                break;
-            case NORTH:
-                matrix.translate(1, 1, 0.9999);
-                matrix.mulPose(Vector3f.YP.rotationDegrees(180));
-                matrix.mulPose(Vector3f.XP.rotationDegrees(90));
-                break;
-            case EAST:
-                matrix.translate(0.0001, 1, 1);
-                matrix.mulPose(Vector3f.YP.rotationDegrees(90));
-                matrix.mulPose(Vector3f.XP.rotationDegrees(90));
-                break;
-            case WEST:
-                matrix.translate(0.9999, 1, 0);
-                matrix.mulPose(Vector3f.YP.rotationDegrees(-90));
-                matrix.mulPose(Vector3f.XP.rotationDegrees(90));
-                break;
-        }
+
+        matrix.translate(0, -0.8, 0);
+
 
         float displayWidth = 1;
         float displayHeight = 1;
-        matrix.translate(displayWidth / 2, 1, displayHeight / 2);
-        matrix.mulPose(Vector3f.XP.rotationDegrees(-90));
+        //matrix.translate(displayWidth / 2, 0, displayHeight / 2);
+        //matrix.mulPose(Vector3f.XP.rotationDegrees(-90));
 
         Font font = Minecraft.getInstance().font;
 
@@ -130,6 +165,6 @@ public class DrawerRenderer implements BlockEntityRenderer<DrawerTile> {
         int offsetY = (realHeight - requiredHeight) / 2;
         font.drawInBatch(text, offsetX - realWidth / 2, 3 + offsetY - realHeight / 2, overlayLight,
                 false, matrix.last().pose(), renderer, false, 0, 0xF000F0);
-        matrix.popPose();
+
     }
 }
