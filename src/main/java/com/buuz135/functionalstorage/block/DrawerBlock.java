@@ -205,4 +205,12 @@ public class DrawerBlock extends RotatableBlock<DrawerTile> {
                     .save(consumer);
         }
     }
+
+    public FunctionalStorage.DrawerType getType() {
+        return type;
+    }
+
+    public IWoodType getWoodType() {
+        return woodType;
+    }
 }

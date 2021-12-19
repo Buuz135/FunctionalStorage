@@ -5,6 +5,7 @@ import com.buuz135.functionalstorage.block.DrawerBlock;
 import com.buuz135.functionalstorage.client.CompactingDrawerRenderer;
 import com.buuz135.functionalstorage.client.DrawerRenderer;
 import com.buuz135.functionalstorage.data.FunctionalStorageBlockstateProvider;
+import com.buuz135.functionalstorage.data.FunctionalStorageLangProvider;
 import com.buuz135.functionalstorage.data.FunctionalStorageTagsProvider;
 import com.buuz135.functionalstorage.util.DrawerWoodType;
 import com.buuz135.functionalstorage.util.IWoodType;
@@ -126,5 +127,6 @@ public class FunctionalStorage extends ModuleController {
             }
         });
         event.getGenerator().addProvider(new FunctionalStorageTagsProvider(event.getGenerator(),new BlockTagsProvider(event.getGenerator()),  MOD_ID, event.getExistingFileHelper()));
+        event.getGenerator().addProvider(new FunctionalStorageLangProvider(event.getGenerator(), MOD_ID, "en_us"));
     }
 }
