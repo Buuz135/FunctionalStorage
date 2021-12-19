@@ -2,16 +2,19 @@ package com.buuz135.functionalstorage.block;
 
 import com.buuz135.functionalstorage.FunctionalStorage;
 import com.buuz135.functionalstorage.block.tile.DrawerTile;
+import com.buuz135.functionalstorage.util.IWoodType;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.MultimapBuilder;
 import com.hrznstudio.titanium.block.RotatableBlock;
 import com.hrznstudio.titanium.datagenerator.loot.block.BasicBlockLootTables;
 import com.hrznstudio.titanium.module.DeferredRegistryHelper;
+import com.hrznstudio.titanium.recipe.generator.TitaniumShapedRecipeBuilder;
 import com.hrznstudio.titanium.util.RayTraceUtils;
 import com.hrznstudio.titanium.util.TileUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
+import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -32,12 +35,14 @@ import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraftforge.common.Tags;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 public class DrawerBlock extends RotatableBlock<DrawerTile> {
@@ -81,9 +86,11 @@ public class DrawerBlock extends RotatableBlock<DrawerTile> {
     }
 
     private final FunctionalStorage.DrawerType type;
+    private final IWoodType woodType;
 
-    public DrawerBlock(String name, FunctionalStorage.DrawerType type) {
-        super(name, Properties.copy(Blocks.OAK_PLANKS), DrawerTile.class);
+    public DrawerBlock(IWoodType woodType, FunctionalStorage.DrawerType type) {
+        super(woodType.getName() + "_" + type.getSlots(), Properties.copy(woodType.getPlanks()), DrawerTile.class);
+        this.woodType = woodType;
         this.type = type;
         setItemGroup(FunctionalStorage.TAB);
         registerDefaultState(defaultBlockState().setValue(RotatableBlock.FACING_HORIZONTAL, Direction.NORTH));
@@ -174,4 +181,28 @@ public class DrawerBlock extends RotatableBlock<DrawerTile> {
         return NonNullList.create();
     }
 
+    @Override
+    public void registerRecipe(Consumer<FinishedRecipe> consumer) {
+        if (type == FunctionalStorage.DrawerType.X_1){
+            TitaniumShapedRecipeBuilder.shapedRecipe(this)
+                    .pattern("PPP").pattern("PCP").pattern("PPP")
+                    .define('P', woodType.getPlanks())
+                    .define('C', Tags.Items.CHESTS_WOODEN)
+                    .save(consumer);
+        }
+        if (type == FunctionalStorage.DrawerType.X_2){
+            TitaniumShapedRecipeBuilder.shapedRecipe(this)
+                    .pattern("PCP").pattern("PPP").pattern("PCP")
+                    .define('P', woodType.getPlanks())
+                    .define('C', Tags.Items.CHESTS_WOODEN)
+                    .save(consumer);
+        }
+        if (type == FunctionalStorage.DrawerType.X_4){
+            TitaniumShapedRecipeBuilder.shapedRecipe(this)
+                    .pattern("CPC").pattern("PPP").pattern("CPC")
+                    .define('P', woodType.getPlanks())
+                    .define('C', Tags.Items.CHESTS_WOODEN)
+                    .save(consumer);
+        }
+    }
 }

@@ -5,12 +5,17 @@ import com.buuz135.functionalstorage.block.DrawerBlock;
 import com.buuz135.functionalstorage.client.CompactingDrawerRenderer;
 import com.buuz135.functionalstorage.client.DrawerRenderer;
 import com.buuz135.functionalstorage.data.FunctionalStorageBlockstateProvider;
+import com.buuz135.functionalstorage.util.DrawerWoodType;
+import com.buuz135.functionalstorage.util.IWoodType;
+import com.hrznstudio.titanium.block.BasicBlock;
 import com.hrznstudio.titanium.block.BasicTileBlock;
 import com.hrznstudio.titanium.datagenerator.loot.TitaniumLootTableProvider;
 import com.hrznstudio.titanium.datagenerator.model.BlockItemModelGeneratorProvider;
 import com.hrznstudio.titanium.event.handler.EventManager;
 import com.hrznstudio.titanium.module.ModuleController;
+import com.hrznstudio.titanium.recipe.generator.TitaniumRecipeProvider;
 import com.hrznstudio.titanium.tab.AdvancedTitaniumTab;
+import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
@@ -28,6 +33,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 // The value here should match an entry in the META-INF/mods.toml file
@@ -39,7 +45,7 @@ public class FunctionalStorage extends ModuleController {
     // Directly reference a log4j logger.
     private static final Logger LOGGER = LogManager.getLogger();
 
-    public static List<String> WOOD_TYPES = new ArrayList<>();
+    public static List<IWoodType> WOOD_TYPES = new ArrayList<>();
     public static HashMap<DrawerType, List<RegistryObject<Block>>> DRAWER_TYPES = new HashMap<>();
     public static RegistryObject<Block> COMPACTING_DRAWER;
 
@@ -49,26 +55,14 @@ public class FunctionalStorage extends ModuleController {
         DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> this::onClient);
     }
 
-    public void addWood(Block block){
-        WOOD_TYPES.add(block.getRegistryName().getPath());
-    }
-
 
     @Override
     protected void initModules() {
-        addWood(Blocks.OAK_WOOD);
-        addWood(Blocks.SPRUCE_WOOD);
-        addWood(Blocks.DARK_OAK_WOOD);
-        addWood(Blocks.BIRCH_WOOD);
-        addWood(Blocks.JUNGLE_WOOD);
-        addWood(Blocks.ACACIA_WOOD);
-        addWood(Blocks.CRIMSON_HYPHAE);
-        addWood(Blocks.WARPED_HYPHAE);
-
+        WOOD_TYPES.addAll(List.of(DrawerWoodType.values()));
         for (DrawerType value : DrawerType.values()) {
-            for (String woodType : WOOD_TYPES) {
-                String name = woodType + "_" + value.name().toLowerCase(Locale.ROOT);
-                DRAWER_TYPES.computeIfAbsent(value, drawerType -> new ArrayList<>()).add(getRegistries().register(Block.class, name, () -> new DrawerBlock(name, value)));
+            for (IWoodType woodType : WOOD_TYPES) {
+                String name = woodType.getName() + "_" + value.getSlots();
+                DRAWER_TYPES.computeIfAbsent(value, drawerType -> new ArrayList<>()).add(getRegistries().register(Block.class, name, () -> new DrawerBlock(woodType, value)));
             }
             DRAWER_TYPES.get(value).forEach(blockRegistryObject -> TAB.addIconStacks(() -> new ItemStack(blockRegistryObject.get())));
         }
@@ -123,5 +117,11 @@ public class FunctionalStorage extends ModuleController {
         event.getGenerator().addProvider(new BlockItemModelGeneratorProvider(event.getGenerator(), MOD_ID, blocksToProcess));
         event.getGenerator().addProvider(new FunctionalStorageBlockstateProvider(event.getGenerator(), event.getExistingFileHelper(), blocksToProcess));
         event.getGenerator().addProvider(new TitaniumLootTableProvider(event.getGenerator(), blocksToProcess));
+        event.getGenerator().addProvider(new TitaniumRecipeProvider(event.getGenerator()) {
+            @Override
+            public void register(Consumer<FinishedRecipe> consumer) {
+                blocksToProcess.get().stream().map(block -> (BasicBlock) block).forEach(basicBlock -> basicBlock.registerRecipe(consumer));
+            }
+        });
     }
 }

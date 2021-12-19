@@ -72,12 +72,19 @@ repositories {
         name 'jared maven'
         url "https://maven.blamejared.com/"
     }
+    maven {
+        // location of the maven that hosts JEI files
+        name = "Progwml6 maven"
+        url = "https://dvs1.progwml6.com/files/maven/"
+    }
 }
 
 dependencies {
 
     minecraft 'net.minecraftforge:forge:1.18.1-39.0.5'
     implementation fg.deobf (project.dependencies.create('com.hrznstudio:titanium:1.18-3.4.0-21'))
+    compileOnly fg.deobf("mezz.jei:jei-1.18.1:9.1.0.46:api")
+    runtimeOnly fg.deobf("mezz.jei:jei-1.18.1:9.1.0.46")
 
 }
 

@@ -1,0 +1,37 @@
+{
+  "type": "forge:conditional",
+  "recipes": [
+    {
+      "conditions": [
+        {
+          "values": [
+            {
+              "item": "functionalstorage:birch_4",
+              "type": "forge:item_exists"
+            }
+          ],
+          "type": "forge:and"
+        }
+      ],
+      "recipe": {
+        "type": "minecraft:crafting_shaped",
+        "pattern": [
+          "CPC",
+          "PPP",
+          "CPC"
+        ],
+        "key": {
+          "P": {
+            "item": "minecraft:birch_planks"
+          },
+          "C": {
+            "tag": "forge:chests/wooden"
+          }
+        },
+        "result": {
+          "item": "functionalstorage:birch_4"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "type": "forge:conditional",
+  "recipes": [
+    {
+      "conditions": [
+        {
+          "values": [
+            {
+              "item": "functionalstorage:oak_2",
+              "type": "forge:item_exists"
+            }
+          ],
+          "type": "forge:and"
+        }
+      ],
+      "recipe": {
+        "type": "minecraft:crafting_shaped",
+        "pattern": [
+          "PCP",
+          "PPP",
+          "PCP"
+        ],
+        "key": {
+          "P": {
+            "item": "minecraft:oak_planks"
+          },
+          "C": {
+            "tag": "forge:chests/wooden"
+          }
+        },
+        "result": {
+          "item": "functionalstorage:oak_2"
+        }
+      }
+    }
+  ]
+}

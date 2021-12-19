@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "subfacing=north": {
+      "model": "functionalstorage:block/warped_2"
+    },
+    "subfacing=south": {
+      "model": "functionalstorage:block/warped_2",
+      "y": 180
+    },
+    "subfacing=west": {
+      "model": "functionalstorage:block/warped_2",
+      "y": 270
+    },
+    "subfacing=east": {
+      "model": "functionalstorage:block/warped_2",
+      "y": 90
+    }
+  }
+}

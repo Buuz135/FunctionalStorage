@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "subfacing=north": {
+      "model": "functionalstorage:block/crimson_4"
+    },
+    "subfacing=south": {
+      "model": "functionalstorage:block/crimson_4",
+      "y": 180
+    },
+    "subfacing=west": {
+      "model": "functionalstorage:block/crimson_4",
+      "y": 270
+    },
+    "subfacing=east": {
+      "model": "functionalstorage:block/crimson_4",
+      "y": 90
+    }
+  }
+}
