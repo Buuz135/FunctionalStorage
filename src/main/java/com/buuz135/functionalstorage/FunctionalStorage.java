@@ -1,6 +1,8 @@
 package com.buuz135.functionalstorage;
 
+import com.buuz135.functionalstorage.block.CompactingDrawerBlock;
 import com.buuz135.functionalstorage.block.DrawerBlock;
+import com.buuz135.functionalstorage.client.CompactingDrawerRenderer;
 import com.buuz135.functionalstorage.client.DrawerRenderer;
 import com.buuz135.functionalstorage.data.FunctionalStorageBlockstateProvider;
 import com.hrznstudio.titanium.block.BasicTileBlock;
@@ -19,7 +21,6 @@ import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.common.util.NonNullLazy;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.forge.event.lifecycle.GatherDataEvent;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
@@ -40,6 +41,8 @@ public class FunctionalStorage extends ModuleController {
 
     public static List<String> WOOD_TYPES = new ArrayList<>();
     public static HashMap<DrawerType, List<RegistryObject<Block>>> DRAWER_TYPES = new HashMap<>();
+    public static RegistryObject<Block> COMPACTING_DRAWER;
+
     public static AdvancedTitaniumTab TAB = new AdvancedTitaniumTab("functionalstorage", true);
 
     public FunctionalStorage() {
@@ -69,7 +72,7 @@ public class FunctionalStorage extends ModuleController {
             }
             DRAWER_TYPES.get(value).forEach(blockRegistryObject -> TAB.addIconStacks(() -> new ItemStack(blockRegistryObject.get())));
         }
-
+        COMPACTING_DRAWER = getRegistries().register(Block.class, "compacting_drawer", () -> new CompactingDrawerBlock("compacting_drawer"));
     }
 
     public enum DrawerType{
@@ -101,6 +104,8 @@ public class FunctionalStorage extends ModuleController {
                   registerRenderers.registerBlockEntityRenderer(((BasicTileBlock)blockRegistryObject.get()).getTileEntityType(), p_173571_ -> new DrawerRenderer());
                 });
             }
+            registerRenderers.registerBlockEntityRenderer(((BasicTileBlock)COMPACTING_DRAWER.get()).getTileEntityType(), p_173571_ -> new CompactingDrawerRenderer());
+
         }).subscribe();
     }
 

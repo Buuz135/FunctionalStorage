@@ -2,15 +2,15 @@ package com.buuz135.functionalstorage.block.tile;
 
 import com.buuz135.functionalstorage.FunctionalStorage;
 import com.buuz135.functionalstorage.inventory.BigInventoryHandler;
+import com.buuz135.functionalstorage.inventory.CompactingInventoryHandler;
+import com.buuz135.functionalstorage.util.CompactingUtil;
 import com.hrznstudio.titanium.annotation.Save;
 import com.hrznstudio.titanium.block.BasicTileBlock;
 import com.hrznstudio.titanium.block.tile.ActiveTile;
-import com.hrznstudio.titanium.block.tile.BasicTile;
-import com.hrznstudio.titanium.nbthandler.NBTManager;
 import com.hrznstudio.titanium.util.RayTraceUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.datafix.fixes.ItemStackTheFlatteningFix;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -23,6 +23,7 @@ import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
+import net.minecraftforge.items.ItemStackHandler;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
@@ -30,25 +31,24 @@ import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.UUID;
 
-public class DrawerTile extends ActiveTile<DrawerTile> {
+public class CompactingDrawerTile extends ActiveTile<CompactingDrawerTile> {
 
     private static HashMap<UUID, Long> INTERACTION_LOGGER = new HashMap<>();
 
     @Save
-    public BigInventoryHandler handler;
+    public CompactingInventoryHandler handler;
     private final LazyOptional<IItemHandler> lazyStorage;
-    private FunctionalStorage.DrawerType type;
 
-    public DrawerTile(BasicTileBlock<DrawerTile> base, BlockPos pos, BlockState state, FunctionalStorage.DrawerType type) {
+    public CompactingDrawerTile(BasicTileBlock<CompactingDrawerTile> base, BlockPos pos, BlockState state) {
         super(base, pos, state);
-        this.type = type;
-        this.handler = new BigInventoryHandler(type) {
+        this.handler = new CompactingInventoryHandler() {
             @Override
             public void onChange() {
-                DrawerTile.this.markForUpdate();
+                CompactingDrawerTile.this.markForUpdate();
             }
         };
         lazyStorage = LazyOptional.of(() -> this.handler);
+        //TODO Check for the recipe on load
     }
 
     public InteractionResult onSlotActivated(Player playerIn, InteractionHand hand, Direction facing, double hitX, double hitY, double hitZ, int slot) {
@@ -58,6 +58,19 @@ public class DrawerTile extends ActiveTile<DrawerTile> {
         if (slot == -1){
             openGui(playerIn);
         } else if (isServer()){
+            if (!handler.isSetup()){
+                ItemStack stack = playerIn.getItemInHand(hand).copy();
+                stack.setCount(1);
+                CompactingUtil compactingUtil = new CompactingUtil(this.level);
+                compactingUtil.setup(stack);
+                handler.setup(compactingUtil);
+                for (int i = 0; i < handler.getResultList().size(); i++) {
+                    if (ItemStack.isSame(handler.getResultList().get(i).getResult(), stack)){
+                        slot = i;
+                        break;
+                    }
+                }
+            }
             ItemStack stack = playerIn.getItemInHand(hand);
             if (!stack.isEmpty() && handler.isItemValid(slot, stack)) {
                 playerIn.setItemInHand(hand, handler.insertItem(slot, stack, false));
@@ -75,7 +88,7 @@ public class DrawerTile extends ActiveTile<DrawerTile> {
     }
 
     public void onClicked(Player playerIn, int slot) {
-        if (isServer() && slot != -1){
+        if (isServer()){
             HitResult rayTraceResult = RayTraceUtils.rayTraceSimple(this.level, playerIn, 16, 0);
             if (rayTraceResult.getType() == HitResult.Type.BLOCK) {
                 BlockHitResult blockResult = (BlockHitResult) rayTraceResult;
@@ -98,15 +111,12 @@ public class DrawerTile extends ActiveTile<DrawerTile> {
 
     @NotNull
     @Override
-    public DrawerTile getSelf() {
+    public CompactingDrawerTile getSelf() {
         return this;
     }
 
-    public BigInventoryHandler getHandler() {
+    public CompactingInventoryHandler getHandler() {
         return handler;
     }
 
-    public FunctionalStorage.DrawerType getDrawerType() {
-        return type;
-    }
 }
