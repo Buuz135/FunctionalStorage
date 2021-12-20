@@ -2,11 +2,13 @@ package com.buuz135.functionalstorage;
 
 import com.buuz135.functionalstorage.block.CompactingDrawerBlock;
 import com.buuz135.functionalstorage.block.DrawerBlock;
+import com.buuz135.functionalstorage.block.DrawerControllerBlock;
 import com.buuz135.functionalstorage.client.CompactingDrawerRenderer;
 import com.buuz135.functionalstorage.client.DrawerRenderer;
 import com.buuz135.functionalstorage.data.FunctionalStorageBlockstateProvider;
 import com.buuz135.functionalstorage.data.FunctionalStorageLangProvider;
 import com.buuz135.functionalstorage.data.FunctionalStorageTagsProvider;
+import com.buuz135.functionalstorage.item.LinkingToolItem;
 import com.buuz135.functionalstorage.util.DrawerWoodType;
 import com.buuz135.functionalstorage.util.IWoodType;
 import com.hrznstudio.titanium.block.BasicBlock;
@@ -20,6 +22,7 @@ import com.hrznstudio.titanium.tab.AdvancedTitaniumTab;
 import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.data.tags.BlockTagsProvider;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -49,8 +52,12 @@ public class FunctionalStorage extends ModuleController {
     private static final Logger LOGGER = LogManager.getLogger();
 
     public static List<IWoodType> WOOD_TYPES = new ArrayList<>();
+
     public static HashMap<DrawerType, List<RegistryObject<Block>>> DRAWER_TYPES = new HashMap<>();
     public static RegistryObject<Block> COMPACTING_DRAWER;
+    public static RegistryObject<Block> DRAWER_CONTROLLER;
+
+    public static RegistryObject<Item> LINKING_TOOL;
 
     public static AdvancedTitaniumTab TAB = new AdvancedTitaniumTab("functionalstorage", true);
 
@@ -70,6 +77,8 @@ public class FunctionalStorage extends ModuleController {
             DRAWER_TYPES.get(value).forEach(blockRegistryObject -> TAB.addIconStacks(() -> new ItemStack(blockRegistryObject.get())));
         }
         COMPACTING_DRAWER = getRegistries().register(Block.class, "compacting_drawer", () -> new CompactingDrawerBlock("compacting_drawer"));
+        DRAWER_CONTROLLER = getRegistries().register(Block.class, "storage_controller", DrawerControllerBlock::new);
+        LINKING_TOOL = getRegistries().register(Item.class, "linking_tool", LinkingToolItem::new);
     }
 
     public enum DrawerType{

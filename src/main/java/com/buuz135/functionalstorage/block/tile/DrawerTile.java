@@ -30,9 +30,7 @@ import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.UUID;
 
-public class DrawerTile extends ActiveTile<DrawerTile> {
-
-    private static HashMap<UUID, Long> INTERACTION_LOGGER = new HashMap<>();
+public class DrawerTile extends ControllableDrawerTile<DrawerTile> {
 
     @Save
     public BigInventoryHandler handler;
@@ -51,42 +49,6 @@ public class DrawerTile extends ActiveTile<DrawerTile> {
         lazyStorage = LazyOptional.of(() -> this.handler);
     }
 
-    public InteractionResult onSlotActivated(Player playerIn, InteractionHand hand, Direction facing, double hitX, double hitY, double hitZ, int slot) {
-        if (super.onActivated(playerIn, hand, facing, hitX, hitY, hitZ) == InteractionResult.SUCCESS) {
-            return InteractionResult.SUCCESS;
-        }
-        if (slot == -1){
-            openGui(playerIn);
-        } else if (isServer()){
-            ItemStack stack = playerIn.getItemInHand(hand);
-            if (!stack.isEmpty() && handler.isItemValid(slot, stack)) {
-                playerIn.setItemInHand(hand, handler.insertItem(slot, stack, false));
-            } else if (System.currentTimeMillis() - INTERACTION_LOGGER.getOrDefault(playerIn.getUUID(), System.currentTimeMillis()) < 300) {
-                for (ItemStack itemStack : playerIn.getInventory().items) {
-                    if (!itemStack.isEmpty() && handler.insertItem(slot, itemStack, true).isEmpty()) {
-                        handler.insertItem(slot, itemStack.copy(), false);
-                        itemStack.setCount(0);
-                    }
-                }
-            }
-            INTERACTION_LOGGER.put(playerIn.getUUID(), System.currentTimeMillis());
-        }
-        return InteractionResult.SUCCESS;
-    }
-
-    public void onClicked(Player playerIn, int slot) {
-        if (isServer() && slot != -1){
-            HitResult rayTraceResult = RayTraceUtils.rayTraceSimple(this.level, playerIn, 16, 0);
-            if (rayTraceResult.getType() == HitResult.Type.BLOCK) {
-                BlockHitResult blockResult = (BlockHitResult) rayTraceResult;
-                Direction facing = blockResult.getDirection();
-                if (facing.equals(this.getFacingDirection())){
-                    ItemHandlerHelper.giveItemToPlayer(playerIn, handler.extractItem(slot, playerIn.isShiftKeyDown() ? 64 : 1, false));
-                }
-            }
-        }
-    }
-
     @Nonnull
     @Override
     public <U> LazyOptional<U> getCapability(@Nonnull Capability<U> cap, @Nullable Direction side) {
@@ -102,11 +64,17 @@ public class DrawerTile extends ActiveTile<DrawerTile> {
         return this;
     }
 
-    public BigInventoryHandler getHandler() {
+    public FunctionalStorage.DrawerType getDrawerType() {
+        return type;
+    }
+
+    @Override
+    public IItemHandler getStorage() {
         return handler;
     }
 
-    public FunctionalStorage.DrawerType getDrawerType() {
-        return type;
+    @Override
+    public LazyOptional<IItemHandler> getOptional() {
+        return lazyStorage;
     }
 }

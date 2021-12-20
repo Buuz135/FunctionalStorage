@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "functionalstorage:block/storage_controller"
+    }
+  }
+}

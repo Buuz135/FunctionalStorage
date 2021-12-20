@@ -31,9 +31,7 @@ import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.UUID;
 
-public class CompactingDrawerTile extends ActiveTile<CompactingDrawerTile> {
-
-    private static HashMap<UUID, Long> INTERACTION_LOGGER = new HashMap<>();
+public class CompactingDrawerTile extends ControllableDrawerTile<CompactingDrawerTile> {
 
     @Save
     public CompactingInventoryHandler handler;
@@ -52,52 +50,31 @@ public class CompactingDrawerTile extends ActiveTile<CompactingDrawerTile> {
     }
 
     public InteractionResult onSlotActivated(Player playerIn, InteractionHand hand, Direction facing, double hitX, double hitY, double hitZ, int slot) {
-        if (super.onActivated(playerIn, hand, facing, hitX, hitY, hitZ) == InteractionResult.SUCCESS) {
-            return InteractionResult.SUCCESS;
-        }
-        if (slot == -1){
-            openGui(playerIn);
-        } else if (isServer()){
-            if (!handler.isSetup()){
-                ItemStack stack = playerIn.getItemInHand(hand).copy();
-                stack.setCount(1);
-                CompactingUtil compactingUtil = new CompactingUtil(this.level);
-                compactingUtil.setup(stack);
-                handler.setup(compactingUtil);
-                for (int i = 0; i < handler.getResultList().size(); i++) {
-                    if (ItemStack.isSame(handler.getResultList().get(i).getResult(), stack)){
-                        slot = i;
-                        break;
-                    }
+        if (!handler.isSetup()){
+            ItemStack stack = playerIn.getItemInHand(hand).copy();
+            stack.setCount(1);
+            CompactingUtil compactingUtil = new CompactingUtil(this.level);
+            compactingUtil.setup(stack);
+            handler.setup(compactingUtil);
+            for (int i = 0; i < handler.getResultList().size(); i++) {
+                if (ItemStack.isSame(handler.getResultList().get(i).getResult(), stack)){
+                    slot = i;
+                    break;
                 }
             }
-            ItemStack stack = playerIn.getItemInHand(hand);
-            if (!stack.isEmpty() && handler.isItemValid(slot, stack)) {
-                playerIn.setItemInHand(hand, handler.insertItem(slot, stack, false));
-            } else if (System.currentTimeMillis() - INTERACTION_LOGGER.getOrDefault(playerIn.getUUID(), System.currentTimeMillis()) < 300) {
-                for (ItemStack itemStack : playerIn.getInventory().items) {
-                    if (!itemStack.isEmpty() && handler.insertItem(slot, itemStack, true).isEmpty()) {
-                        handler.insertItem(slot, itemStack.copy(), false);
-                        itemStack.setCount(0);
-                    }
-                }
-            }
-            INTERACTION_LOGGER.put(playerIn.getUUID(), System.currentTimeMillis());
         }
+        super.onSlotActivated(playerIn, hand, facing, hitX, hitY, hitZ, slot);
         return InteractionResult.SUCCESS;
     }
 
-    public void onClicked(Player playerIn, int slot) {
-        if (isServer()){
-            HitResult rayTraceResult = RayTraceUtils.rayTraceSimple(this.level, playerIn, 16, 0);
-            if (rayTraceResult.getType() == HitResult.Type.BLOCK) {
-                BlockHitResult blockResult = (BlockHitResult) rayTraceResult;
-                Direction facing = blockResult.getDirection();
-                if (facing.equals(this.getFacingDirection())){
-                    ItemHandlerHelper.giveItemToPlayer(playerIn, handler.extractItem(slot, playerIn.isShiftKeyDown() ? 64 : 1, false));
-                }
-            }
-        }
+    @Override
+    public IItemHandler getStorage() {
+        return handler;
+    }
+
+    @Override
+    public LazyOptional<IItemHandler> getOptional() {
+        return lazyStorage;
     }
 
     @Nonnull

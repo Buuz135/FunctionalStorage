@@ -24,5 +24,17 @@ public class FunctionalStorageLangProvider extends LanguageProvider {
             }
         }
         this.add(FunctionalStorage.COMPACTING_DRAWER.get(), "Compacting Drawer");
+        this.add("linkingtool.linkingmode", "Linking Mode: ");
+        this.add("linkingtool.linkingmode.single", "Single");
+        this.add("linkingtool.linkingmode.single.desc", "Links a drawer to a controller");
+        this.add("linkingtool.linkingmode.multiple", "Multiple");
+        this.add("linkingtool.linkingmode.multiple.desc", "Links multiple drawers between 2 points");
+        this.add("linkingtool.controller", "Controller: ");
+        this.add("linkingtool.linkingaction", "Linking Action: ");
+        this.add("linkingtool.use", "Sneak + Right Click in the air to change modes. Right Click in the air to change actions. Right click a controller to setup the tool then use it nearby drawers to link.");
+        this.add("linkingtool.linkingaction.add", "Add");
+        this.add("linkingtool.linkingaction.remove", "Remove");
+        this.add(FunctionalStorage.LINKING_TOOL.get(), "Linking Tool");
+        this.add(FunctionalStorage.DRAWER_CONTROLLER.get(), "Storage Controller");
     }
 }

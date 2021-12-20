@@ -23,6 +23,8 @@ import net.minecraft.world.item.ItemStack;
 
 public class DrawerRenderer implements BlockEntityRenderer<DrawerTile> {
 
+    //TODO Fix rotation so it shows the front
+
     private static final Matrix3f FAKE_NORMALS;
 
     static {
@@ -62,61 +64,61 @@ public class DrawerRenderer implements BlockEntityRenderer<DrawerTile> {
     }
 
     private void render1Slot(PoseStack matrixStack, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn, DrawerTile tile){
-        if (!tile.getHandler().getStackInSlot(0).isEmpty()){
+        if (!tile.getStorage().getStackInSlot(0).isEmpty()){
             matrixStack.translate(0.5, 0.5, 0.0005f);
-            ItemStack stack = tile.getHandler().getStackInSlot(0);
+            ItemStack stack = tile.getStorage().getStackInSlot(0);
             renderStack(matrixStack,  bufferIn, combinedLightIn, combinedOverlayIn, stack, stack.getCount(), 0.015f);
         }
     }
 
     private void render2Slot(PoseStack matrixStack, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn, DrawerTile tile){
-        if (!tile.getHandler().getStackInSlot(0).isEmpty()){
+        if (!tile.getStorage().getStackInSlot(0).isEmpty()){
             matrixStack.pushPose();
             matrixStack.translate(0.5, 0.27f, 0.0005f);
             matrixStack.scale(0.5f, 0.5f, 1);
-            ItemStack stack = tile.getHandler().getStackInSlot(0);
+            ItemStack stack = tile.getStorage().getStackInSlot(0);
             renderStack(matrixStack,  bufferIn, combinedLightIn, combinedOverlayIn, stack, stack.getCount(), 0.02f);
             matrixStack.popPose();
         }
-        if (!tile.getHandler().getStackInSlot(1).isEmpty()){
+        if (!tile.getStorage().getStackInSlot(1).isEmpty()){
             matrixStack.pushPose();
             matrixStack.translate(0.5, 0.77f, 0.0005f);
             matrixStack.scale(0.5f, 0.5f, 1);
-            ItemStack stack = tile.getHandler().getStackInSlot(1);
+            ItemStack stack = tile.getStorage().getStackInSlot(1);
             renderStack(matrixStack,  bufferIn, combinedLightIn, combinedOverlayIn, stack, stack.getCount(), 0.02f);
             matrixStack.popPose();
         }
     }
     private void render4Slot(PoseStack matrixStack, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn, DrawerTile tile){
-        if (!tile.getHandler().getStackInSlot(0).isEmpty()){ //BOTTOM RIGHT
+        if (!tile.getStorage().getStackInSlot(0).isEmpty()){ //BOTTOM RIGHT
             matrixStack.pushPose();
             matrixStack.translate(0.75, 0.27f, 0.0005f);
             matrixStack.scale(0.5f, 0.5f, 1);
-            ItemStack stack = tile.getHandler().getStackInSlot(0);
+            ItemStack stack = tile.getStorage().getStackInSlot(0);
             renderStack(matrixStack,  bufferIn, combinedLightIn, combinedOverlayIn, stack, stack.getCount(), 0.02f);
             matrixStack.popPose();
         }
-        if (!tile.getHandler().getStackInSlot(1).isEmpty()){ //BOTTOM LEFT
+        if (!tile.getStorage().getStackInSlot(1).isEmpty()){ //BOTTOM LEFT
             matrixStack.pushPose();
             matrixStack.translate(0.25, 0.27f, 0.0005f);
             matrixStack.scale(0.5f, 0.5f, 1);
-            ItemStack stack = tile.getHandler().getStackInSlot(1);
+            ItemStack stack = tile.getStorage().getStackInSlot(1);
             renderStack(matrixStack,  bufferIn, combinedLightIn, combinedOverlayIn, stack, stack.getCount(), 0.02f);
             matrixStack.popPose();
         }
-        if (!tile.getHandler().getStackInSlot(2).isEmpty()){ //TOP RIGHT
+        if (!tile.getStorage().getStackInSlot(2).isEmpty()){ //TOP RIGHT
             matrixStack.pushPose();
             matrixStack.translate(0.75, 0.77f, 0.0005f);
             matrixStack.scale(0.5f, 0.5f, 1);
-            ItemStack stack = tile.getHandler().getStackInSlot(2);
+            ItemStack stack = tile.getStorage().getStackInSlot(2);
             renderStack(matrixStack,  bufferIn, combinedLightIn, combinedOverlayIn, stack, stack.getCount(), 0.02f);
             matrixStack.popPose();
         }
-        if (!tile.getHandler().getStackInSlot(3).isEmpty()){ //TOP LEFT
+        if (!tile.getStorage().getStackInSlot(3).isEmpty()){ //TOP LEFT
             matrixStack.pushPose();
             matrixStack.translate(0.25, 0.77f, 0.0005f);
             matrixStack.scale(0.5f, 0.5f, 1);
-            ItemStack stack = tile.getHandler().getStackInSlot(3);
+            ItemStack stack = tile.getStorage().getStackInSlot(3);
             renderStack(matrixStack,  bufferIn, combinedLightIn, combinedOverlayIn, stack, stack.getCount(), 0.02f);
             matrixStack.popPose();
         }
@@ -128,6 +130,7 @@ public class DrawerRenderer implements BlockEntityRenderer<DrawerTile> {
         if (model.isGui3d()){
             matrixStack.translate(0,0, -0.23f);
             matrixStack.scale(0.5f, 0.5f, 0.5f);
+            matrixStack.mulPose(Vector3f.YP.rotationDegrees(180));
         } else {
             matrixStack.scale(0.4f, 0.4f, 0.4f);
         }
@@ -137,6 +140,7 @@ public class DrawerRenderer implements BlockEntityRenderer<DrawerTile> {
             matrixStack.scale(1/0.4f, 1/0.4f, 1/0.0001f);
             matrixStack.scale(0.5f, 0.5f, 0.0001f);
         }else {
+            matrixStack.mulPose(Vector3f.YP.rotationDegrees(-180));
             matrixStack.translate(0,0, 0.23f*2);
         }
         renderText(matrixStack, bufferIn, combinedOverlayIn, new TextComponent(ChatFormatting.WHITE + "" + amount), Direction.NORTH, scale);

@@ -1,7 +1,9 @@
 package com.buuz135.functionalstorage.block;
 
 import com.buuz135.functionalstorage.FunctionalStorage;
+import com.buuz135.functionalstorage.block.tile.DrawerControllerTile;
 import com.buuz135.functionalstorage.block.tile.DrawerTile;
+import com.buuz135.functionalstorage.item.LinkingToolItem;
 import com.buuz135.functionalstorage.util.IWoodType;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.MultimapBuilder;
@@ -39,6 +41,7 @@ import net.minecraftforge.common.Tags;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -67,6 +70,7 @@ public class DrawerBlock extends RotatableBlock<DrawerTile> {
                         put(direction, Shapes.box(bounding.minX, 9/16D, bounding.minZ ,bounding.maxX, bounding.maxY, bounding.maxZ));
             }
         }
+        //TODO Fix 4x4 they are backwards
         for (Direction direction : CACHED_SHAPES.get(FunctionalStorage.DrawerType.X_2).keySet()) {
             for (VoxelShape voxelShape : CACHED_SHAPES.get(FunctionalStorage.DrawerType.X_2).get(direction)) {
                 AABB bounding = voxelShape.toAabbs().get(0);
@@ -212,5 +216,18 @@ public class DrawerBlock extends RotatableBlock<DrawerTile> {
 
     public IWoodType getWoodType() {
         return woodType;
+    }
+
+    @Override
+    public void onRemove(BlockState state, Level worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
+        TileUtil.getTileEntity(worldIn, pos, DrawerTile.class).ifPresent(tile -> {
+            if (tile.getControllerPos() != null){
+                System.out.println(TileUtil.getTileEntity(worldIn, tile.getControllerPos()).get());
+                TileUtil.getTileEntity(worldIn, tile.getControllerPos(), DrawerControllerTile.class).ifPresent(drawerControllerTile -> {
+                    drawerControllerTile.addConnectedDrawers(LinkingToolItem.ActionMode.REMOVE, pos);
+                });
+            }
+        });
+        super.onRemove(state, worldIn, pos, newState, isMoving);
     }
 }

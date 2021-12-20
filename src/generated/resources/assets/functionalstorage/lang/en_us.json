@@ -21,8 +21,20 @@
   "block.functionalstorage.spruce_1": "Spruce Drawer (1x1)",
   "block.functionalstorage.spruce_2": "Spruce Drawer (2x2)",
   "block.functionalstorage.spruce_4": "Spruce Drawer (4x4)",
+  "block.functionalstorage.storage_controller": "Storage Controller",
   "block.functionalstorage.warped_1": "Warped Drawer (1x1)",
   "block.functionalstorage.warped_2": "Warped Drawer (2x2)",
   "block.functionalstorage.warped_4": "Warped Drawer (4x4)",
-  "itemGroup.functionalstorage": "Functional Storage"
+  "item.functionalstorage.linking_tool": "Linking Tool",
+  "itemGroup.functionalstorage": "Functional Storage",
+  "linkingtool.controller": "Controller: ",
+  "linkingtool.linkingaction": "Linking Action: ",
+  "linkingtool.linkingaction.add": "Add",
+  "linkingtool.linkingaction.remove": "Remove",
+  "linkingtool.linkingmode": "Linking Mode: ",
+  "linkingtool.linkingmode.multiple": "Multiple",
+  "linkingtool.linkingmode.multiple.desc": "Links multiple drawers between 2 points",
+  "linkingtool.linkingmode.single": "Single",
+  "linkingtool.linkingmode.single.desc": "Links a drawer to a controller",
+  "linkingtool.use": "Sneak + Right Click in the air to change modes. Right Click in the air to change actions. Right click a controller to setup the tool then use it nearby drawers to link."
 }

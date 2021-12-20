@@ -77,6 +77,9 @@ repositories {
         name = "Progwml6 maven"
         url = "https://dvs1.progwml6.com/files/maven/"
     }
+    maven {
+        url = "https://www.cursemaven.com"
+    }
 }
 
 dependencies {
@@ -85,7 +88,7 @@ dependencies {
     implementation fg.deobf (project.dependencies.create('com.hrznstudio:titanium:1.18-3.4.0-21'))
     compileOnly fg.deobf("mezz.jei:jei-1.18.1:9.1.0.46:api")
     runtimeOnly fg.deobf("mezz.jei:jei-1.18.1:9.1.0.46")
-
+    runtimeOnly fg.deobf("curse.maven:refined-storage-243076:3569563")
 }
 
 // Example for how to get properties into the manifest for reading at runtime.
