@@ -50,23 +50,23 @@ public class CompactingDrawerBlock extends RotatableBlock<CompactingDrawerTile> 
     public static Multimap<Direction, VoxelShape> CACHED_SHAPES = MultimapBuilder.hashKeys().arrayListValues().build();
 
     static {
-        CACHED_SHAPES.put(Direction.NORTH, Shapes.box(1/16D, 1/16D, 0, 8/16D, 8/16D, 1/16D));
-        CACHED_SHAPES.put(Direction.NORTH, Shapes.box(8/16D, 1/16D, 0, 15/16D, 8/16D, 1/16D));
-        CACHED_SHAPES.put(Direction.NORTH, Shapes.box(1/16D, 8/16D, 0, 15/16D, 15/16D, 1/16D));
-        CACHED_SHAPES.put(Direction.SOUTH, Shapes.box(8/16D, 1/16D, 15/16D, 15/16D, 8/16D, 1));
-        CACHED_SHAPES.put(Direction.SOUTH, Shapes.box(1/16D, 1/16D, 15/16D, 8/16D, 8/16D, 1));
-        CACHED_SHAPES.put(Direction.SOUTH, Shapes.box(1/16D, 8/16D, 15/16D, 15/16D, 15/16D, 1));
-        CACHED_SHAPES.put(Direction.EAST, Shapes.box(15/16D, 1/16D, 1/16D, 1, 8/16D, 7/16D));
-        CACHED_SHAPES.put(Direction.EAST, Shapes.box(15/16D, 1/16D, 8/16D, 1, 8/16D, 15/16D));
-        CACHED_SHAPES.put(Direction.EAST, Shapes.box(15/16D, 8/16D, 1/16D, 1, 15/16D, 15/16D));
-        CACHED_SHAPES.put(Direction.WEST, Shapes.box(0, 1/16D, 8/16D, 1/16D, 8/16D, 15/16D));
-        CACHED_SHAPES.put(Direction.WEST, Shapes.box(0, 1/16D, 1/16D, 1/16D, 8/16D, 7/16D));
-        CACHED_SHAPES.put(Direction.WEST, Shapes.box(0, 8/16D, 1/16D, 1/16D, 15/16D, 15/16D));
+        CACHED_SHAPES.put(Direction.NORTH, Shapes.box(1/16D, 1/16D, 0, 7/16D, 7/16D, 1/16D));
+        CACHED_SHAPES.put(Direction.NORTH, Shapes.box(9/16D, 1/16D, 0, 15/16D, 7/16D, 1/16D));
+        CACHED_SHAPES.put(Direction.NORTH, Shapes.box(1/16D, 9/16D, 0, 15/16D, 15/16D, 1/16D));
+        CACHED_SHAPES.put(Direction.SOUTH, Shapes.box(9/16D, 1/16D, 15/16D, 15/16D, 7/16D, 1));
+        CACHED_SHAPES.put(Direction.SOUTH, Shapes.box(1/16D, 1/16D, 15/16D, 7/16D, 7/16D, 1));
+        CACHED_SHAPES.put(Direction.SOUTH, Shapes.box(1/16D, 9/16D, 15/16D, 15/16D, 15/16D, 1));
+        CACHED_SHAPES.put(Direction.EAST, Shapes.box(15/16D, 1/16D, 1/16D, 1, 7/16D, 7/16D));
+        CACHED_SHAPES.put(Direction.EAST, Shapes.box(15/16D, 1/16D, 9/16D, 1, 7/16D, 15/16D));
+        CACHED_SHAPES.put(Direction.EAST, Shapes.box(15/16D, 9/16D, 1/16D, 1, 15/16D, 15/16D));
+        CACHED_SHAPES.put(Direction.WEST, Shapes.box(0, 1/16D, 9/16D, 1/16D, 7/16D, 15/16D));
+        CACHED_SHAPES.put(Direction.WEST, Shapes.box(0, 1/16D, 1/16D, 1/16D, 7/16D, 7/16D));
+        CACHED_SHAPES.put(Direction.WEST, Shapes.box(0, 9/16D, 1/16D, 1/16D, 15/16D, 15/16D));
     }
 
 
     public CompactingDrawerBlock(String name) {
-        super(name, Properties.copy(Blocks.OAK_PLANKS), CompactingDrawerTile.class);
+        super(name, Properties.copy(Blocks.STONE_BRICKS), CompactingDrawerTile.class);
         setItemGroup(FunctionalStorage.TAB);
         registerDefaultState(defaultBlockState().setValue(RotatableBlock.FACING_HORIZONTAL, Direction.NORTH));
     }
