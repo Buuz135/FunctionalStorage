@@ -9,6 +9,8 @@ import com.buuz135.functionalstorage.data.FunctionalStorageBlockstateProvider;
 import com.buuz135.functionalstorage.data.FunctionalStorageLangProvider;
 import com.buuz135.functionalstorage.data.FunctionalStorageTagsProvider;
 import com.buuz135.functionalstorage.item.LinkingToolItem;
+import com.buuz135.functionalstorage.item.StorageUpgradeItem;
+import com.buuz135.functionalstorage.item.UpgradeItem;
 import com.buuz135.functionalstorage.util.DrawerWoodType;
 import com.buuz135.functionalstorage.util.IWoodType;
 import com.hrznstudio.titanium.block.BasicBlock;
@@ -29,6 +31,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.EntityRenderersEvent;
+import net.minecraftforge.client.model.generators.ItemModelProvider;
 import net.minecraftforge.common.util.NonNullLazy;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
@@ -58,6 +61,11 @@ public class FunctionalStorage extends ModuleController {
     public static RegistryObject<Block> DRAWER_CONTROLLER;
 
     public static RegistryObject<Item> LINKING_TOOL;
+    public static HashMap<StorageUpgradeItem.StorageTier, RegistryObject<Item>> STORAGE_UPGRADES = new HashMap<>();
+    public static RegistryObject<Item> COLLECTOR_UPGRADE;
+    public static RegistryObject<Item> PULLING_UPGRADE;
+    public static RegistryObject<Item> PUSHING_UPGRADE;
+    public static RegistryObject<Item> VOID_UPGRADE;
 
     public static AdvancedTitaniumTab TAB = new AdvancedTitaniumTab("functionalstorage", true);
 
@@ -79,6 +87,13 @@ public class FunctionalStorage extends ModuleController {
         COMPACTING_DRAWER = getRegistries().register(Block.class, "compacting_drawer", () -> new CompactingDrawerBlock("compacting_drawer"));
         DRAWER_CONTROLLER = getRegistries().register(Block.class, "storage_controller", DrawerControllerBlock::new);
         LINKING_TOOL = getRegistries().register(Item.class, "linking_tool", LinkingToolItem::new);
+        for (StorageUpgradeItem.StorageTier value : StorageUpgradeItem.StorageTier.values()) {
+            STORAGE_UPGRADES.put(value, getRegistries().register(Item.class, value.name().toLowerCase(Locale.ROOT) + (value == StorageUpgradeItem.StorageTier.IRON ? "_downgrade" : "_upgrade"),() -> new StorageUpgradeItem(value)));
+        }
+        COLLECTOR_UPGRADE = getRegistries().register(Item.class, "collector_upgrade", () -> new UpgradeItem(new Item.Properties(), UpgradeItem.Type.UTILITY));
+        PULLING_UPGRADE = getRegistries().register(Item.class, "puller_upgrade", () -> new UpgradeItem(new Item.Properties(), UpgradeItem.Type.UTILITY));
+        PUSHING_UPGRADE = getRegistries().register(Item.class, "pusher_upgrade", () -> new UpgradeItem(new Item.Properties(), UpgradeItem.Type.UTILITY));
+        VOID_UPGRADE = getRegistries().register(Item.class, "void_upgrade", () -> new UpgradeItem(new Item.Properties(), UpgradeItem.Type.UTILITY));
     }
 
     public enum DrawerType{
@@ -137,5 +152,21 @@ public class FunctionalStorage extends ModuleController {
         });
         event.getGenerator().addProvider(new FunctionalStorageTagsProvider(event.getGenerator(),new BlockTagsProvider(event.getGenerator()),  MOD_ID, event.getExistingFileHelper()));
         event.getGenerator().addProvider(new FunctionalStorageLangProvider(event.getGenerator(), MOD_ID, "en_us"));
+        event.getGenerator().addProvider(new ItemModelProvider(event.getGenerator(), MOD_ID, event.getExistingFileHelper()) {
+            @Override
+            protected void registerModels() {
+                for (StorageUpgradeItem.StorageTier storageTier : STORAGE_UPGRADES.keySet()) {
+                    item(STORAGE_UPGRADES.get(storageTier).get());
+                }
+                item(COLLECTOR_UPGRADE.get());
+                item(PULLING_UPGRADE.get());
+                item(PUSHING_UPGRADE.get());
+                item(VOID_UPGRADE.get());
+            }
+
+            private void item(Item item){
+                singleTexture(item.getRegistryName().getPath(), new ResourceLocation("minecraft:item/generated"), "layer0" ,new ResourceLocation(MOD_ID,  "items/" + item.getRegistryName().getPath()));
+            }
+        });
     }
 }

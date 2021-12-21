@@ -50,7 +50,7 @@ public abstract class BigInventoryHandler implements IItemHandler, INBTSerializa
     public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
         if (isItemValid(slot, stack)) {
             BigStack bigStack = this.storedStacks.get(slot);
-            int inserted = Math.min(type.getSlotAmount() - bigStack.getAmount(), stack.getCount());
+            int inserted = Math.min(getSlotLimit(slot) - bigStack.getAmount(), stack.getCount());
             if (!simulate){
                 bigStack.setStack(stack);
                 bigStack.setAmount(Math.min(bigStack.getAmount() + inserted, type.getSlotAmount()));
@@ -92,7 +92,7 @@ public abstract class BigInventoryHandler implements IItemHandler, INBTSerializa
 
     @Override
     public int getSlotLimit(int slot) {
-        return type.getSlotAmount();
+        return Math.min(Integer.MAX_VALUE, type.getSlotAmount());
     }
 
     @Override

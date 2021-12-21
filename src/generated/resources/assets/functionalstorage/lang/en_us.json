@@ -25,7 +25,16 @@
   "block.functionalstorage.warped_1": "Warped Drawer (1x1)",
   "block.functionalstorage.warped_2": "Warped Drawer (2x2)",
   "block.functionalstorage.warped_4": "Warped Drawer (4x4)",
+  "item.functionalstorage.collector_upgrade": "Collector Upgrade",
+  "item.functionalstorage.copper_upgrade": "Copper Upgrade",
+  "item.functionalstorage.diamond_upgrade": "Diamond Upgrade",
+  "item.functionalstorage.gold_upgrade": "Gold Upgrade",
+  "item.functionalstorage.iron_downgrade": "Iron Downgrade",
   "item.functionalstorage.linking_tool": "Linking Tool",
+  "item.functionalstorage.netherite_upgrade": "Netherite Upgrade",
+  "item.functionalstorage.puller_upgrade": "Puller Upgrade",
+  "item.functionalstorage.pusher_upgrade": "Pusher Upgrade",
+  "item.functionalstorage.void_upgrade": "Void Upgrade",
   "itemGroup.functionalstorage": "Functional Storage",
   "linkingtool.controller": "Controller: ",
   "linkingtool.linkingaction": "Linking Action: ",
@@ -36,5 +45,6 @@
   "linkingtool.linkingmode.multiple.desc": "Links multiple drawers between 2 points",
   "linkingtool.linkingmode.single": "Single",
   "linkingtool.linkingmode.single.desc": "Links a drawer to a controller",
-  "linkingtool.use": "Sneak + Right Click in the air to change modes. Right Click in the air to change actions. Right click a controller to setup the tool then use it nearby drawers to link."
+  "linkingtool.use": "Sneak + Right Click in the air to change modes. Right Click in the air to change actions. Right click a controller to setup the tool then use it nearby drawers to link.",
+  "storageupgrade.desc": "Multiplies the block storage by "
 }
