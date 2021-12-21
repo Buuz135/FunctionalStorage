@@ -32,9 +32,9 @@ import java.util.Locale;
 
 public class LinkingToolItem extends BasicItem {
 
-    private final String NBT_MODE = "Mode";
-    private final String NBT_CONTROLLER = "Controller";
-    private final String NBT_ACTION = "Action";
+    public static final String NBT_MODE = "Mode";
+    public static final String NBT_CONTROLLER = "Controller";
+    public static final String NBT_ACTION = "Action";
 
     public LinkingToolItem() {
         super(new Properties().tab(FunctionalStorage.TAB).stacksTo(1));

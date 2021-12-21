@@ -18,6 +18,8 @@ import javax.annotation.Nullable;
 
 public class ArmoryCabinetTile extends ControllableDrawerTile<ArmoryCabinetTile>{
 
+    //TODO Not sync nbt
+
     @Save
     public ArmoryCabinetInventoryHandler handler;
     private final LazyOptional<IItemHandler> lazyStorage;

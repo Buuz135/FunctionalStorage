@@ -22,8 +22,10 @@ import com.hrznstudio.titanium.event.handler.EventManager;
 import com.hrznstudio.titanium.module.ModuleController;
 import com.hrznstudio.titanium.recipe.generator.TitaniumRecipeProvider;
 import com.hrznstudio.titanium.tab.AdvancedTitaniumTab;
+import net.minecraft.client.color.item.ItemColors;
 import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.data.tags.BlockTagsProvider;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -31,6 +33,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.client.model.generators.ItemModelProvider;
 import net.minecraftforge.common.util.NonNullLazy;
@@ -41,8 +44,11 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jline.utils.Colors;
 
+import java.awt.*;
 import java.util.*;
+import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -130,6 +136,23 @@ public class FunctionalStorage extends ModuleController {
             }
             registerRenderers.registerBlockEntityRenderer(((BasicTileBlock)COMPACTING_DRAWER.get()).getTileEntityType(), p_173571_ -> new CompactingDrawerRenderer());
 
+        }).subscribe();
+        EventManager.mod(ColorHandlerEvent.Item.class).process(item -> {
+            item.getItemColors().register((stack, tint) -> {
+                CompoundTag tag = stack.getOrCreateTag();
+                LinkingToolItem.LinkingMode linkingMode = LinkingToolItem.LinkingMode.valueOf(tag.getString(LinkingToolItem.NBT_MODE));
+                LinkingToolItem.ActionMode linkingAction = LinkingToolItem.ActionMode.valueOf(tag.getString(LinkingToolItem.NBT_ACTION));
+                if (tint == 3 && tag.contains(LinkingToolItem.NBT_CONTROLLER)){
+                    return Color.RED.getRGB();
+                }
+                if (tint == 1){
+                    return linkingMode.getColor().getValue();
+                }
+                if (tint == 2){
+                    return linkingAction.getColor().getValue();
+                }
+                return 0xffffff;
+            }, LINKING_TOOL.get());
         }).subscribe();
     }
 
