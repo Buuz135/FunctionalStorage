@@ -1,5 +1,6 @@
 package com.buuz135.functionalstorage.block;
 
+import com.buuz135.functionalstorage.FunctionalStorage;
 import com.buuz135.functionalstorage.block.tile.DrawerControllerTile;
 import com.hrznstudio.titanium.block.RotatableBlock;
 import net.minecraft.world.level.block.Blocks;
@@ -9,6 +10,7 @@ public class DrawerControllerBlock extends RotatableBlock<DrawerControllerTile> 
 
     public DrawerControllerBlock() {
         super("storage_controller", Properties.copy(Blocks.IRON_BLOCK), DrawerControllerTile.class);
+        setItemGroup(FunctionalStorage.TAB);
     }
 
     @Override

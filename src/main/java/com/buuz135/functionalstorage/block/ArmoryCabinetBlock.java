@@ -1,5 +1,6 @@
 package com.buuz135.functionalstorage.block;
 
+import com.buuz135.functionalstorage.FunctionalStorage;
 import com.buuz135.functionalstorage.block.tile.ArmoryCabinetTile;
 import com.hrznstudio.titanium.block.RotatableBlock;
 import net.minecraft.world.level.block.Blocks;
@@ -10,6 +11,7 @@ public class ArmoryCabinetBlock extends RotatableBlock<ArmoryCabinetTile> {
 
     public ArmoryCabinetBlock() {
         super("armory_cabinet", Properties.copy(Blocks.IRON_BLOCK), ArmoryCabinetTile.class);
+        setItemGroup(FunctionalStorage.TAB);
     }
 
     @Override
