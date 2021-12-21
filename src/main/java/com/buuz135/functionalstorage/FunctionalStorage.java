@@ -1,5 +1,6 @@
 package com.buuz135.functionalstorage;
 
+import com.buuz135.functionalstorage.block.ArmoryCabinetBlock;
 import com.buuz135.functionalstorage.block.CompactingDrawerBlock;
 import com.buuz135.functionalstorage.block.DrawerBlock;
 import com.buuz135.functionalstorage.block.DrawerControllerBlock;
@@ -59,6 +60,7 @@ public class FunctionalStorage extends ModuleController {
     public static HashMap<DrawerType, List<RegistryObject<Block>>> DRAWER_TYPES = new HashMap<>();
     public static RegistryObject<Block> COMPACTING_DRAWER;
     public static RegistryObject<Block> DRAWER_CONTROLLER;
+    public static RegistryObject<Block> ARMORY_CABINET;
 
     public static RegistryObject<Item> LINKING_TOOL;
     public static HashMap<StorageUpgradeItem.StorageTier, RegistryObject<Item>> STORAGE_UPGRADES = new HashMap<>();
@@ -94,6 +96,7 @@ public class FunctionalStorage extends ModuleController {
         PULLING_UPGRADE = getRegistries().register(Item.class, "puller_upgrade", () -> new UpgradeItem(new Item.Properties(), UpgradeItem.Type.UTILITY));
         PUSHING_UPGRADE = getRegistries().register(Item.class, "pusher_upgrade", () -> new UpgradeItem(new Item.Properties(), UpgradeItem.Type.UTILITY));
         VOID_UPGRADE = getRegistries().register(Item.class, "void_upgrade", () -> new UpgradeItem(new Item.Properties(), UpgradeItem.Type.UTILITY));
+        ARMORY_CABINET = getRegistries().register(Block.class, "armory_cabinet", ArmoryCabinetBlock::new);
     }
 
     public enum DrawerType{
