@@ -45,5 +45,6 @@ public class FunctionalStorageLangProvider extends LanguageProvider {
         this.add(FunctionalStorage.PULLING_UPGRADE.get(), WordUtils.capitalize(FunctionalStorage.PULLING_UPGRADE.get().getRegistryName().getPath().replace('_', ' ').toLowerCase()) );
         this.add(FunctionalStorage.PUSHING_UPGRADE.get(), WordUtils.capitalize(FunctionalStorage.PUSHING_UPGRADE.get().getRegistryName().getPath().replace('_', ' ').toLowerCase()) );
         this.add(FunctionalStorage.VOID_UPGRADE.get(), WordUtils.capitalize(FunctionalStorage.VOID_UPGRADE.get().getRegistryName().getPath().replace('_', ' ').toLowerCase()) );
+        this.add(FunctionalStorage.ARMORY_CABINET.get(), "Armory Cabinet");
     }
 }

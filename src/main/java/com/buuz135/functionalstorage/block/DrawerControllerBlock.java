@@ -5,6 +5,7 @@ import com.buuz135.functionalstorage.block.tile.DrawerControllerTile;
 import com.hrznstudio.titanium.block.RotatableBlock;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntityType;
+import org.jetbrains.annotations.NotNull;
 
 public class DrawerControllerBlock extends RotatableBlock<DrawerControllerTile> {
 
@@ -16,5 +17,11 @@ public class DrawerControllerBlock extends RotatableBlock<DrawerControllerTile> 
     @Override
     public BlockEntityType.BlockEntitySupplier<?> getTileEntityFactory() {
         return (p_155268_, p_155269_) -> new DrawerControllerTile(this, p_155268_, p_155269_);
+    }
+
+    @NotNull
+    @Override
+    public RotationType getRotationType() {
+        return RotationType.FOUR_WAY;
     }
 }
