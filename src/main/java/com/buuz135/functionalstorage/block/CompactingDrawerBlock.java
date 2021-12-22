@@ -96,7 +96,7 @@ public class CompactingDrawerBlock extends RotatableBlock<CompactingDrawerTile> 
 
     private static List<VoxelShape> getShapes(BlockState state, BlockGetter source, BlockPos pos){
         List<VoxelShape> boxes = new ArrayList<>();
-        CACHED_SHAPES.get(state.getValue(RotatableBlock.FACING_HORIZONTAL)).forEach(boxes::add); //TODO
+        CACHED_SHAPES.get(state.getValue(RotatableBlock.FACING_HORIZONTAL)).forEach(boxes::add);
         VoxelShape total = Shapes.block();
         boxes.add(total);
         return boxes;
@@ -134,7 +134,7 @@ public class CompactingDrawerBlock extends RotatableBlock<CompactingDrawerTile> 
             VoxelShape hit = RayTraceUtils.rayTraceVoxelShape((BlockHitResult) result, worldIn, player, 32, 0);
             if (hit != null) {
                 if (hit.equals(Shapes.block())) return -1;
-                List<VoxelShape> shapes = new ArrayList<>(CACHED_SHAPES.get(state.getValue(RotatableBlock.FACING_HORIZONTAL))); //TODO
+                List<VoxelShape> shapes = new ArrayList<>(CACHED_SHAPES.get(state.getValue(RotatableBlock.FACING_HORIZONTAL)));
                 for (int i = 0; i < shapes.size(); i++) {
                     if (Shapes.joinIsNotEmpty(shapes.get(i), hit, BooleanOp.AND)) {
                         return i;

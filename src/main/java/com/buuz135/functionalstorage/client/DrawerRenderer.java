@@ -25,8 +25,6 @@ import net.minecraft.world.item.ItemStack;
 
 public class DrawerRenderer implements BlockEntityRenderer<DrawerTile> {
 
-    //TODO Fix rotation so it shows the front
-
     private static final Matrix3f FAKE_NORMALS;
 
     static {

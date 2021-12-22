@@ -71,7 +71,7 @@ public abstract class BigInventoryHandler implements IItemHandler, INBTSerializa
                 ItemStack out = bigStack.getStack().copy();
                 int newAmount = bigStack.getAmount();
                 if (!simulate) {
-                    if (!isLocked()) bigStack.setStack(ItemStack.EMPTY); //TODO Dont change if locked
+                    if (!isLocked()) bigStack.setStack(ItemStack.EMPTY);
                     bigStack.setAmount(0);
                     onChange();
                 }

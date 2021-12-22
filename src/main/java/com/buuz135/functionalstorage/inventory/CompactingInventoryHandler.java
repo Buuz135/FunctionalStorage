@@ -92,7 +92,6 @@ public abstract class CompactingInventoryHandler implements IItemHandler, INBTSe
                 ItemStack out = bigStack.getResult().copy();
                 int newAmount = (int) Math.floor(this.amount / bigStack.getNeeded());
                 if (!simulate) {
-                     //TODO Dont change if locked
                     this.amount -= (newAmount * bigStack.getNeeded());
                     if (this.amount == 0) reset();
                     onChange();
