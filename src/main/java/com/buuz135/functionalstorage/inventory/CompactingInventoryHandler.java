@@ -18,7 +18,7 @@ public abstract class CompactingInventoryHandler implements IItemHandler, INBTSe
     public static String STACK = "Stack";
     public static String AMOUNT = "Amount";
 
-    private final int TOTAL_AMOUNT = 512 * 9 * 9;
+    public static final int TOTAL_AMOUNT = 512 * 9 * 9;
 
     private int amount;
     private List<CompactingUtil.Result> resultList;
@@ -114,6 +114,10 @@ public abstract class CompactingInventoryHandler implements IItemHandler, INBTSe
     @Override
     public int getSlotLimit(int slot) {
         return (int) Math.min(Integer.MAX_VALUE, Math.floor((TOTAL_AMOUNT * getMultiplier()) / this.resultList.get(slot).getNeeded()));
+    }
+
+    public int getSlotLimitBase(int slot){
+        return (int) Math.min(Integer.MAX_VALUE, Math.floor(TOTAL_AMOUNT / this.resultList.get(slot).getNeeded()));
     }
 
     @Override

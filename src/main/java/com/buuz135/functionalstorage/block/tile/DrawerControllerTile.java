@@ -71,6 +71,11 @@ public class DrawerControllerTile extends ControllableDrawerTile<DrawerControlle
         return lazyStorage;
     }
 
+    @Override
+    public int getBaseSize(int lost) {
+        return 1;
+    }
+
     @NotNull
     @Override
     public DrawerControllerTile getSelf() {

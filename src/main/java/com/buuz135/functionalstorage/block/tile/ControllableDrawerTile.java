@@ -47,10 +47,31 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
 
     public ControllableDrawerTile(BasicTileBlock<T> base, BlockPos pos, BlockState state) {
         super(base, pos, state);
-        this.addInventory((InventoryComponent<T>) (this.storageUpgrades = new InventoryComponent<ControllableDrawerTile<T>>("storage_upgrades", 10, 70, getStorageSlotAmount())
+        this.addInventory((InventoryComponent<T>) (this.storageUpgrades = new InventoryComponent<ControllableDrawerTile<T>>("storage_upgrades", 10, 70, getStorageSlotAmount()) {
+                    @NotNull
+                    @Override
+                    public ItemStack extractItem(int slot, int amount, boolean simulate) {
+                        ItemStack stack = this.getStackInSlot(slot);
+                        if (stack.getItem() instanceof StorageUpgradeItem){
+                            int mult = 1;
+                            for (int i = 0; i < storageUpgrades.getSlots(); i++) {
+                                if (storageUpgrades.getStackInSlot(i).getItem() instanceof StorageUpgradeItem){
+                                    if (i == slot) continue;
+                                    if (mult == 1) mult = ((StorageUpgradeItem) storageUpgrades.getStackInSlot(i).getItem()).getStorageMultiplier();
+                                    else mult *= ((StorageUpgradeItem) storageUpgrades.getStackInSlot(i).getItem()).getStorageMultiplier();
+                                }
+                            }
+                            for (int i = 0; i < getStorage().getSlots(); i++) {
+                                if (getBaseSize(i) * mult < getStorage().getStackInSlot(i).getCount()){
+                                    return ItemStack.EMPTY;
+                                }
+                            }
+                        }
+                        return super.extractItem(slot, amount, simulate);
+                    }
+                }
                         .setInputFilter((stack, integer) -> stack.getItem() instanceof UpgradeItem && ((UpgradeItem) stack.getItem()).getType() == UpgradeItem.Type.STORAGE)
-                .setSlotLimit(1)
-                )
+                .setSlotLimit(1))
         );
         this.addInventory((InventoryComponent<T>) (this.utilityUpgrades = new InventoryComponent<ControllableDrawerTile<T>>("utility_upgrades", 114, 70, 3)
                 .setInputFilter((stack, integer) -> stack.getItem() instanceof UpgradeItem && ((UpgradeItem) stack.getItem()).getType() == UpgradeItem.Type.UTILITY)
@@ -137,10 +158,11 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
         }
     }
 
-
     public abstract IItemHandler getStorage();
 
     public abstract LazyOptional<IItemHandler> getOptional();
+
+    public abstract int getBaseSize(int lost);
 
     @Override
     public void invalidateCaps() {

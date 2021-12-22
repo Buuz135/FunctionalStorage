@@ -92,4 +92,9 @@ public class DrawerTile extends ControllableDrawerTile<DrawerTile> {
     public LazyOptional<IItemHandler> getOptional() {
         return lazyStorage;
     }
+
+    @Override
+    public int getBaseSize(int lost) {
+        return type.getSlotAmount();
+    }
 }

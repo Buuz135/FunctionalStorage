@@ -92,6 +92,11 @@ public class CompactingDrawerTile extends ControllableDrawerTile<CompactingDrawe
         return lazyStorage;
     }
 
+    @Override
+    public int getBaseSize(int slot) {
+        return handler.getSlotLimitBase(slot);
+    }
+
     @Nonnull
     @Override
     public <U> LazyOptional<U> getCapability(@Nonnull Capability<U> cap, @Nullable Direction side) {

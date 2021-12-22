@@ -2,6 +2,7 @@ package com.buuz135.functionalstorage.client;
 
 import com.buuz135.functionalstorage.FunctionalStorage;
 import com.buuz135.functionalstorage.block.tile.DrawerTile;
+import com.buuz135.functionalstorage.util.NumberUtils;
 import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Matrix3f;
@@ -143,7 +144,7 @@ public class DrawerRenderer implements BlockEntityRenderer<DrawerTile> {
             matrixStack.mulPose(Vector3f.YP.rotationDegrees(-180));
             matrixStack.translate(0,0, 0.23f*2);
         }
-        renderText(matrixStack, bufferIn, combinedOverlayIn, new TextComponent(ChatFormatting.WHITE + "" + amount), Direction.NORTH, scale);
+        renderText(matrixStack, bufferIn, combinedOverlayIn, new TextComponent(ChatFormatting.WHITE + "" + NumberUtils.getFormatedBigNumber(amount)), Direction.NORTH, scale);
     }
 
 
