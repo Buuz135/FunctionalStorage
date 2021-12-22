@@ -4,6 +4,7 @@ import com.buuz135.functionalstorage.inventory.ArmoryCabinetInventoryHandler;
 import com.buuz135.functionalstorage.inventory.CompactingInventoryHandler;
 import com.hrznstudio.titanium.annotation.Save;
 import com.hrznstudio.titanium.block.BasicTileBlock;
+import com.hrznstudio.titanium.block.tile.ActiveTile;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.state.BlockState;
@@ -16,7 +17,7 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class ArmoryCabinetTile extends ControllableDrawerTile<ArmoryCabinetTile>{
+public class ArmoryCabinetTile extends ActiveTile<ArmoryCabinetTile> {
 
     //TODO Not sync nbt
 
@@ -44,12 +45,10 @@ public class ArmoryCabinetTile extends ControllableDrawerTile<ArmoryCabinetTile>
         return super.getCapability(cap, side);
     }
 
-    @Override
     public IItemHandler getStorage() {
         return handler;
     }
 
-    @Override
     public LazyOptional<IItemHandler> getOptional() {
         return lazyStorage;
     }
@@ -58,5 +57,11 @@ public class ArmoryCabinetTile extends ControllableDrawerTile<ArmoryCabinetTile>
     @Override
     public ArmoryCabinetTile getSelf() {
         return this;
+    }
+
+    @Override
+    public void invalidateCaps() {
+        super.invalidateCaps();
+        getOptional().invalidate();
     }
 }
