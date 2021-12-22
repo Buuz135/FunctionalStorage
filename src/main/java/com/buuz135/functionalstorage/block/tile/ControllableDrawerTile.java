@@ -1,13 +1,19 @@
 package com.buuz135.functionalstorage.block.tile;
 
 import com.buuz135.functionalstorage.item.LinkingToolItem;
+import com.buuz135.functionalstorage.item.StorageUpgradeItem;
+import com.buuz135.functionalstorage.item.UpgradeItem;
 import com.hrznstudio.titanium.annotation.Save;
 import com.hrznstudio.titanium.block.BasicTileBlock;
 import com.hrznstudio.titanium.block.tile.ActiveTile;
+import com.hrznstudio.titanium.client.screen.addon.TextScreenAddon;
+import com.hrznstudio.titanium.component.inventory.InventoryComponent;
 import com.hrznstudio.titanium.util.RayTraceUtils;
 import com.hrznstudio.titanium.util.TileUtil;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -29,9 +35,27 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
 
     @Save
     private BlockPos controllerPos;
+    @Save
+    private InventoryComponent<ControllableDrawerTile<T>> storageUpgrades;
+    @Save
+    private InventoryComponent<ControllableDrawerTile<T>> utilityUpgrades;
 
     public ControllableDrawerTile(BasicTileBlock<T> base, BlockPos pos, BlockState state) {
         super(base, pos, state);
+        this.addInventory((InventoryComponent<T>) (this.storageUpgrades = new InventoryComponent<ControllableDrawerTile<T>>("storage_upgrades", 10, 70, getStorageSlotAmount())
+                        .setInputFilter((stack, integer) -> stack.getItem() instanceof UpgradeItem && ((UpgradeItem) stack.getItem()).getType() == UpgradeItem.Type.STORAGE))
+        );
+        this.addInventory((InventoryComponent<T>) (this.utilityUpgrades = new InventoryComponent<ControllableDrawerTile<T>>("utility_upgrades", 114, 70, 3)
+                .setInputFilter((stack, integer) -> stack.getItem() instanceof UpgradeItem && ((UpgradeItem) stack.getItem()).getType() == UpgradeItem.Type.UTILITY))
+        );
+        addGuiAddonFactory(() -> new TextScreenAddon("Storage", 10, 59, false, ChatFormatting.DARK_GRAY.getColor()));
+        addGuiAddonFactory(() -> new TextScreenAddon("Utility", 114, 59, false, ChatFormatting.DARK_GRAY.getColor()));
+        addGuiAddonFactory(() -> new TextScreenAddon("key.categories.inventory", 8, 92, false, ChatFormatting.DARK_GRAY.getColor()){
+            @Override
+            public String getText() {
+                return  new TranslatableComponent("key.categories.inventory").getString();
+            }
+        });
     }
 
     public BlockPos getControllerPos() {
@@ -45,6 +69,17 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
             });
         }
         this.controllerPos = controllerPos;
+    }
+
+    public int getStorageMultiplier(){
+        int mult = 1;
+        for (int i = 0; i < storageUpgrades.getSlots(); i++) {
+            if (storageUpgrades.getStackInSlot(i).getItem() instanceof StorageUpgradeItem){
+                if (mult == 1) mult = ((StorageUpgradeItem) storageUpgrades.getStackInSlot(i).getItem()).getStorageMultiplier();
+                else mult *= ((StorageUpgradeItem) storageUpgrades.getStackInSlot(i).getItem()).getStorageMultiplier();
+            }
+        }
+        return mult;
     }
 
     public InteractionResult onSlotActivated(Player playerIn, InteractionHand hand, Direction facing, double hitX, double hitY, double hitZ, int slot) {
@@ -69,6 +104,8 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
         }
         return InteractionResult.SUCCESS;
     }
+
+    public abstract int getStorageSlotAmount();
 
     public void onClicked(Player playerIn, int slot) {
         if (isServer() && slot != -1){

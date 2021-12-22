@@ -44,6 +44,11 @@ public class CompactingDrawerTile extends ControllableDrawerTile<CompactingDrawe
             public void onChange() {
                 CompactingDrawerTile.this.markForUpdate();
             }
+
+            @Override
+            public int getMultiplier() {
+                return getStorageMultiplier();
+            }
         };
         lazyStorage = LazyOptional.of(() -> this.handler);
         //TODO Check for the recipe on load
@@ -65,6 +70,11 @@ public class CompactingDrawerTile extends ControllableDrawerTile<CompactingDrawe
         }
         super.onSlotActivated(playerIn, hand, facing, hitX, hitY, hitZ, slot);
         return InteractionResult.SUCCESS;
+    }
+
+    @Override
+    public int getStorageSlotAmount() {
+        return 3;
     }
 
     @Override

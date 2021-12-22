@@ -46,13 +46,16 @@ public class DrawerControllerTile extends ControllableDrawerTile<DrawerControlle
     }
 
     @Override
+    public int getStorageSlotAmount() {
+        return 1;
+    }
+
+    @Override
     public void serverTick(Level level, BlockPos pos, BlockState state, DrawerControllerTile blockEntity) {
         super.serverTick(level, pos, state, blockEntity);
         if (this.connectedDrawers.getConnectedDrawers().size() != this.connectedDrawers.getHandlers().size()){
             this.connectedDrawers.setLevel(getLevel());
             this.connectedDrawers.rebuild();
-            //this.lazyStorage.invalidate();
-            //this.lazyStorage = LazyOptional.of(() -> this.handler);
             markForUpdate();
             updateNeigh();
         }

@@ -12,6 +12,10 @@ public class UpgradeItem extends BasicItem {
         this.type = type;
     }
 
+    public Type getType() {
+        return type;
+    }
+
     public static enum Type{
         STORAGE,
         UTILITY

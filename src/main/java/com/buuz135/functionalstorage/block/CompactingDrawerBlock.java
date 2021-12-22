@@ -172,7 +172,6 @@ public class CompactingDrawerBlock extends RotatableBlock<CompactingDrawerTile> 
     public void onRemove(BlockState state, Level worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
         TileUtil.getTileEntity(worldIn, pos, DrawerTile.class).ifPresent(tile -> {
             if (tile.getControllerPos() != null){
-                System.out.println(TileUtil.getTileEntity(worldIn, tile.getControllerPos()).get());
                 TileUtil.getTileEntity(worldIn, tile.getControllerPos(), DrawerControllerTile.class).ifPresent(drawerControllerTile -> {
                     drawerControllerTile.addConnectedDrawers(LinkingToolItem.ActionMode.REMOVE, pos);
                 });

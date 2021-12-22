@@ -18,7 +18,7 @@ public abstract class CompactingInventoryHandler implements IItemHandler, INBTSe
     public static String STACK = "Stack";
     public static String AMOUNT = "Amount";
 
-    private final int TOTAL_AMOUNT = 8192 * 9 * 9;
+    private final int TOTAL_AMOUNT = 512 * 9 * 9;
 
     private int amount;
     private boolean voidItems;
@@ -51,10 +51,10 @@ public abstract class CompactingInventoryHandler implements IItemHandler, INBTSe
     public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
         if (isItemValid(slot, stack)) {
             CompactingUtil.Result result = this.resultList.get(slot);
-            int inserted = Math.min(TOTAL_AMOUNT - amount, stack.getCount() * result.getNeeded());
+            int inserted = Math.min(getSlotLimit(slot) * result.getNeeded() - amount, stack.getCount() * result.getNeeded());
             inserted = (int) (Math.floor(inserted / result.getNeeded()) * result.getNeeded());
             if (!simulate){
-                this.amount = Math.min(this.amount + inserted, TOTAL_AMOUNT);
+                this.amount = Math.min(this.amount + inserted, TOTAL_AMOUNT * getMultiplier());
                 onChange();
             }
             if (inserted == stack.getCount() * result.getNeeded() || voidItems) return ItemStack.EMPTY;
@@ -115,7 +115,7 @@ public abstract class CompactingInventoryHandler implements IItemHandler, INBTSe
 
     @Override
     public int getSlotLimit(int slot) {
-        return (int) Math.floor(TOTAL_AMOUNT / this.resultList.get(slot).getNeeded());
+        return (int) Math.min(Integer.MAX_VALUE, Math.floor((TOTAL_AMOUNT * getMultiplier()) / this.resultList.get(slot).getNeeded()));
     }
 
     @Override
@@ -155,6 +155,8 @@ public abstract class CompactingInventoryHandler implements IItemHandler, INBTSe
     }
 
     public abstract void onChange();
+
+    public abstract int getMultiplier();
 
     public List<CompactingUtil.Result> getResultList() {
         return resultList;

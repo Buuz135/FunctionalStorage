@@ -45,6 +45,11 @@ public class DrawerTile extends ControllableDrawerTile<DrawerTile> {
             public void onChange() {
                 DrawerTile.this.markForUpdate();
             }
+
+            @Override
+            public int getMultiplier() {
+                return getStorageMultiplier();
+            }
         };
         lazyStorage = LazyOptional.of(() -> this.handler);
     }
@@ -66,6 +71,11 @@ public class DrawerTile extends ControllableDrawerTile<DrawerTile> {
 
     public FunctionalStorage.DrawerType getDrawerType() {
         return type;
+    }
+
+    @Override
+    public int getStorageSlotAmount() {
+        return 4;
     }
 
     @Override
