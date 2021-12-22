@@ -77,8 +77,18 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
                 .setInputFilter((stack, integer) -> stack.getItem() instanceof UpgradeItem && ((UpgradeItem) stack.getItem()).getType() == UpgradeItem.Type.UTILITY)
                 .setSlotLimit(1))
         );
-        addGuiAddonFactory(() -> new TextScreenAddon("Storage", 10, 59, false, ChatFormatting.DARK_GRAY.getColor()));
-        addGuiAddonFactory(() -> new TextScreenAddon("Utility", 114, 59, false, ChatFormatting.DARK_GRAY.getColor()));
+        addGuiAddonFactory(() -> new TextScreenAddon("Storage", 10, 59, false, ChatFormatting.DARK_GRAY.getColor()){
+            @Override
+            public String getText() {
+                return  new TranslatableComponent("key.categories.storage").getString();
+            }
+        });
+        addGuiAddonFactory(() -> new TextScreenAddon("Utility", 114, 59, false, ChatFormatting.DARK_GRAY.getColor()){
+            @Override
+            public String getText() {
+                return  new TranslatableComponent("key.categories.utility").getString();
+            }
+        });
         addGuiAddonFactory(() -> new TextScreenAddon("key.categories.inventory", 8, 92, false, ChatFormatting.DARK_GRAY.getColor()){
             @Override
             public String getText() {

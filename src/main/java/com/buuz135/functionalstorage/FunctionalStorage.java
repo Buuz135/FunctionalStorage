@@ -22,7 +22,6 @@ import com.hrznstudio.titanium.event.handler.EventManager;
 import com.hrznstudio.titanium.module.ModuleController;
 import com.hrznstudio.titanium.recipe.generator.TitaniumRecipeProvider;
 import com.hrznstudio.titanium.tab.AdvancedTitaniumTab;
-import net.minecraft.client.color.item.ItemColors;
 import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.data.tags.BlockTagsProvider;
 import net.minecraft.nbt.CompoundTag;
@@ -30,7 +29,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.ColorHandlerEvent;
@@ -44,7 +42,6 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jline.utils.Colors;
 
 import java.awt.*;
 import java.util.*;
@@ -106,15 +103,18 @@ public class FunctionalStorage extends ModuleController {
     }
 
     public enum DrawerType{
-        X_1(1, 32 * 64), X_2(2, 16 * 64), X_4(4, 8 * 64);
+        X_1(1, 32 * 64, "1x1"),
+        X_2(2, 16 * 64, "1x2"),
+        X_4(4, 8 * 64, "2x2");
 
         private final int slots;
         private final int slotAmount;
+        private final String displayName;
 
-        private DrawerType(int slots, int slotAmount){
+        private DrawerType(int slots, int slotAmount, String displayName){
             this.slots = slots;
-
             this.slotAmount = slotAmount;
+            this.displayName = displayName;
         }
 
         public int getSlots() {
@@ -123,6 +123,10 @@ public class FunctionalStorage extends ModuleController {
 
         public int getSlotAmount() {
             return slotAmount;
+        }
+
+        public String getDisplayName() {
+            return displayName;
         }
     }
 

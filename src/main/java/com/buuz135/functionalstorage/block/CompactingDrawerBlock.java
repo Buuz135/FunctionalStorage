@@ -149,6 +149,8 @@ public class CompactingDrawerBlock extends RotatableBlock<CompactingDrawerTile> 
     public LootTable.Builder getLootTable(@Nonnull BasicBlockLootTables blockLootTables) {
         CopyNbtFunction.Builder nbtBuilder = CopyNbtFunction.copyData(ContextNbtProvider.BLOCK_ENTITY);
         nbtBuilder.copy("handler",  "BlockEntityTag.handler");
+        nbtBuilder.copy("storageUpgrades",  "BlockEntityTag.storageUpgrades");
+        nbtBuilder.copy("utilityUpgrades",  "BlockEntityTag.utilityUpgrades");
         return blockLootTables.droppingSelfWithNbt(this, nbtBuilder);
     }
 

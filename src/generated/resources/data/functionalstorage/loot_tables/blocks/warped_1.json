@@ -16,6 +16,16 @@
                   "source": "handler",
                   "target": "BlockEntityTag.handler",
                   "op": "replace"
+                },
+                {
+                  "source": "storageUpgrades",
+                  "target": "BlockEntityTag.storageUpgrades",
+                  "op": "replace"
+                },
+                {
+                  "source": "utilityUpgrades",
+                  "target": "BlockEntityTag.utilityUpgrades",
+                  "op": "replace"
                 }
               ]
             }

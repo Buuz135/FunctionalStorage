@@ -7,6 +7,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.SlotAccess;
 import net.minecraft.world.entity.player.Player;
@@ -83,9 +84,9 @@ public class UpgradeItem extends BasicItem {
         if (!stack.hasTag()) return;
         Item item = stack.getItem();
         if (item.equals(FunctionalStorage.PULLING_UPGRADE.get()) || item.equals(FunctionalStorage.PUSHING_UPGRADE.get()) || item.equals(FunctionalStorage.COLLECTOR_UPGRADE.get())){
-            tooltip.add(new TextComponent("Direction: ").withStyle(ChatFormatting.GRAY).append(WordUtils.capitalize(stack.getTag().getString("Direction").toLowerCase(Locale.ROOT))));
+            tooltip.add(new TranslatableComponent("item.utility.direction").withStyle(ChatFormatting.GRAY).append(WordUtils.capitalize(stack.getTag().getString("Direction").toLowerCase(Locale.ROOT))));
             tooltip.add(new TextComponent(""));
-            tooltip.add(new TextComponent("Right click in a GUI to change direction").withStyle(ChatFormatting.GRAY));
+            tooltip.add(new TranslatableComponent("item.utility.direction.desc").withStyle(ChatFormatting.GRAY));
         }
     }
 

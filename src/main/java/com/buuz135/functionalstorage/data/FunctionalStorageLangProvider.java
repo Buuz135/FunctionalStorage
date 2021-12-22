@@ -21,7 +21,7 @@ public class FunctionalStorageLangProvider extends LanguageProvider {
         for (FunctionalStorage.DrawerType drawerType : FunctionalStorage.DRAWER_TYPES.keySet()) {
             for (RegistryObject<Block> blockRegistryObject : FunctionalStorage.DRAWER_TYPES.get(drawerType)) {
                 DrawerBlock drawerBlock = (DrawerBlock) blockRegistryObject.get();
-                this.add(drawerBlock, WordUtils.capitalize(drawerBlock.getWoodType().getName().replace('_', ' ').toLowerCase()) + " Drawer (" +drawerBlock.getType().getSlots() + "x" + drawerBlock.getType().getSlots() + ")");
+                this.add(drawerBlock, WordUtils.capitalize(drawerBlock.getWoodType().getName().replace('_', ' ').toLowerCase()) + " Drawer (" +drawerBlock.getType().getDisplayName() +")");
             }
         }
         this.add(FunctionalStorage.COMPACTING_DRAWER.get(), "Compacting Drawer");
@@ -35,6 +35,8 @@ public class FunctionalStorageLangProvider extends LanguageProvider {
         this.add("linkingtool.use", "Sneak + Right Click in the air to change modes. Right Click in the air to change actions. Right click a controller to setup the tool then use it nearby drawers to link.");
         this.add("linkingtool.linkingaction.add", "Add");
         this.add("linkingtool.linkingaction.remove", "Remove");
+        this.add("key.categories.utility", "Utility");
+        this.add("key.categories.storage", "Storage");
         this.add(FunctionalStorage.LINKING_TOOL.get(), "Linking Tool");
         this.add(FunctionalStorage.DRAWER_CONTROLLER.get(), "Storage Controller");
         this.add("storageupgrade.desc", "Multiplies the block storage by ");
@@ -46,5 +48,7 @@ public class FunctionalStorageLangProvider extends LanguageProvider {
         this.add(FunctionalStorage.PUSHING_UPGRADE.get(), WordUtils.capitalize(FunctionalStorage.PUSHING_UPGRADE.get().getRegistryName().getPath().replace('_', ' ').toLowerCase()) );
         this.add(FunctionalStorage.VOID_UPGRADE.get(), WordUtils.capitalize(FunctionalStorage.VOID_UPGRADE.get().getRegistryName().getPath().replace('_', ' ').toLowerCase()) );
         this.add(FunctionalStorage.ARMORY_CABINET.get(), "Armory Cabinet");
+        this.add("item.utility.direction", "Direction: ");
+        this.add("item.utility.direction.desc", "Right click in a GUI to change direction");
     }
 }
