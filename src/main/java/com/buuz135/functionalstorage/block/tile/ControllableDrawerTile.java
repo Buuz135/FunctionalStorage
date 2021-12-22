@@ -34,19 +34,18 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
 
     private static HashMap<UUID, Long> INTERACTION_LOGGER = new HashMap<>();
 
-    //TODO Lock the slots for the upgrades
-    //TODO Add support for the iron upgrade
-
-
     @Save
     private BlockPos controllerPos;
     @Save
     private InventoryComponent<ControllableDrawerTile<T>> storageUpgrades;
     @Save
     private InventoryComponent<ControllableDrawerTile<T>> utilityUpgrades;
+    @Save
+    private boolean locked;
 
     public ControllableDrawerTile(BasicTileBlock<T> base, BlockPos pos, BlockState state) {
         super(base, pos, state);
+        this.locked = false;
         this.addInventory((InventoryComponent<T>) (this.storageUpgrades = new InventoryComponent<ControllableDrawerTile<T>>("storage_upgrades", 10, 70, getStorageSlotAmount()) {
                     @NotNull
                     @Override
@@ -70,7 +69,16 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
                         return super.extractItem(slot, amount, simulate);
                     }
                 }
-                        .setInputFilter((stack, integer) -> stack.getItem() instanceof UpgradeItem && ((UpgradeItem) stack.getItem()).getType() == UpgradeItem.Type.STORAGE)
+                        .setInputFilter((stack, integer) -> {
+                            if (stack.getItem().equals(FunctionalStorage.STORAGE_UPGRADES.get(StorageUpgradeItem.StorageTier.IRON).get())){
+                                for (int i = 0; i < getStorage().getSlots(); i++) {
+                                    if (getStorage().getStackInSlot(i).getCount() > 64){
+                                        return false;
+                                    }
+                                }
+                            }
+                            return stack.getItem() instanceof UpgradeItem && ((UpgradeItem) stack.getItem()).getType() == UpgradeItem.Type.STORAGE;
+                        })
                 .setSlotLimit(1))
         );
         this.addInventory((InventoryComponent<T>) (this.utilityUpgrades = new InventoryComponent<ControllableDrawerTile<T>>("utility_upgrades", 114, 70, 3)
@@ -173,6 +181,15 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
     public abstract LazyOptional<IItemHandler> getOptional();
 
     public abstract int getBaseSize(int lost);
+
+    public boolean hasDowngrade(){
+        for (int i = 0; i < this.storageUpgrades.getSlots(); i++) {
+            if (storageUpgrades.getStackInSlot(i).getItem().equals(FunctionalStorage.STORAGE_UPGRADES.get(StorageUpgradeItem.StorageTier.IRON).get())){
+                return true;
+            }
+        }
+        return false;
+    }
 
     @Override
     public void invalidateCaps() {

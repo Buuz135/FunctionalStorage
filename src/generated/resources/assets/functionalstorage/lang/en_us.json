@@ -38,6 +38,7 @@
   "item.functionalstorage.void_upgrade": "Void Upgrade",
   "item.utility.direction": "Direction: ",
   "item.utility.direction.desc": "Right click in a GUI to change direction",
+  "item.utility.downgrade": "Downgrades the slots to a max of 64 items",
   "itemGroup.functionalstorage": "Functional Storage",
   "key.categories.storage": "Storage",
   "key.categories.utility": "Utility",

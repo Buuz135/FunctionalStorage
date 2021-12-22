@@ -55,6 +55,13 @@ public class DrawerTile extends ControllableDrawerTile<DrawerTile> {
             public boolean isVoid() {
                 return DrawerTile.this.isVoid();
             }
+
+            @Override
+            public boolean hasDowngrade() {
+                return DrawerTile.this.hasDowngrade();
+            }
+
+
         };
         lazyStorage = LazyOptional.of(() -> this.handler);
     }

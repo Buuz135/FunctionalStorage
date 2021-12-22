@@ -32,7 +32,11 @@ public class StorageUpgradeItem extends UpgradeItem{
     @Override
     public void addTooltipDetails(@Nullable BasicItem.Key key, ItemStack stack, List<Component> tooltip, boolean advanced) {
         super.addTooltipDetails(key, stack, tooltip, advanced);
-        tooltip.add(new TranslatableComponent("storageupgrade.desc").withStyle(ChatFormatting.GRAY).append(this.storageTier.getStorageMultiplier() + ""));
+        if (storageTier == StorageTier.IRON){
+            tooltip.add(new TranslatableComponent("item.utility.downgrade").withStyle(ChatFormatting.GRAY));
+        } else {
+            tooltip.add(new TranslatableComponent("storageupgrade.desc").withStyle(ChatFormatting.GRAY).append(this.storageTier.getStorageMultiplier() + ""));
+        }
     }
 
     @Override

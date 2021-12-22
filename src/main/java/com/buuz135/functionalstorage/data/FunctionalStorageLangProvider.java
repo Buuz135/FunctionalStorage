@@ -48,6 +48,7 @@ public class FunctionalStorageLangProvider extends LanguageProvider {
         this.add(FunctionalStorage.PUSHING_UPGRADE.get(), WordUtils.capitalize(FunctionalStorage.PUSHING_UPGRADE.get().getRegistryName().getPath().replace('_', ' ').toLowerCase()) );
         this.add(FunctionalStorage.VOID_UPGRADE.get(), WordUtils.capitalize(FunctionalStorage.VOID_UPGRADE.get().getRegistryName().getPath().replace('_', ' ').toLowerCase()) );
         this.add(FunctionalStorage.ARMORY_CABINET.get(), "Armory Cabinet");
+        this.add("item.utility.downgrade", "Downgrades the slots to a max of 64 items");
         this.add("item.utility.direction", "Direction: ");
         this.add("item.utility.direction.desc", "Right click in a GUI to change direction");
     }
