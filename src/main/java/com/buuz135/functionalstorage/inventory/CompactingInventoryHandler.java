@@ -21,7 +21,6 @@ public abstract class CompactingInventoryHandler implements IItemHandler, INBTSe
     private final int TOTAL_AMOUNT = 512 * 9 * 9;
 
     private int amount;
-    private boolean voidItems;
     private List<CompactingUtil.Result> resultList;
 
     public CompactingInventoryHandler(){
@@ -29,7 +28,6 @@ public abstract class CompactingInventoryHandler implements IItemHandler, INBTSe
         for (int i = 0; i < 3; i++) {
             this.resultList.add(i, new CompactingUtil.Result(ItemStack.EMPTY, 1));
         }
-        this.voidItems = false;
     }
 
     @Override
@@ -57,7 +55,7 @@ public abstract class CompactingInventoryHandler implements IItemHandler, INBTSe
                 this.amount = Math.min(this.amount + inserted, TOTAL_AMOUNT * getMultiplier());
                 onChange();
             }
-            if (inserted == stack.getCount() * result.getNeeded() || voidItems) return ItemStack.EMPTY;
+            if (inserted == stack.getCount() * result.getNeeded() || isVoid()) return ItemStack.EMPTY;
             return ItemHandlerHelper.copyStackWithSize(stack, stack.getCount() - inserted / result.getNeeded());
 
         }
@@ -131,7 +129,6 @@ public abstract class CompactingInventoryHandler implements IItemHandler, INBTSe
     @Override
     public CompoundTag serializeNBT() {
         CompoundTag compoundTag = new CompoundTag();
-        compoundTag.putBoolean(VOID, voidItems);
         compoundTag.putInt(AMOUNT, this.amount);
         CompoundTag items = new CompoundTag();
         for (int i = 0; i < this.resultList.size(); i++) {
@@ -146,7 +143,6 @@ public abstract class CompactingInventoryHandler implements IItemHandler, INBTSe
 
     @Override
     public void deserializeNBT(CompoundTag nbt) {
-        this.voidItems = nbt.getBoolean(VOID);
         this.amount = nbt.getInt(AMOUNT);
         for (String allKey : nbt.getCompound(BIG_ITEMS).getAllKeys()) {
             this.resultList.get(Integer.parseInt(allKey)).setResult(ItemStack.of(nbt.getCompound(BIG_ITEMS).getCompound(allKey).getCompound(STACK)));
@@ -157,6 +153,8 @@ public abstract class CompactingInventoryHandler implements IItemHandler, INBTSe
     public abstract void onChange();
 
     public abstract int getMultiplier();
+
+    public abstract boolean isVoid();
 
     public List<CompactingUtil.Result> getResultList() {
         return resultList;

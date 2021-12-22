@@ -20,7 +20,6 @@ public abstract class BigInventoryHandler implements IItemHandler, INBTSerializa
 
     private final FunctionalStorage.DrawerType type;
     private List<BigStack> storedStacks;
-    private boolean voidItems;
 
     public BigInventoryHandler(FunctionalStorage.DrawerType type){
         this.type = type;
@@ -28,7 +27,6 @@ public abstract class BigInventoryHandler implements IItemHandler, INBTSerializa
         for (int i = 0; i < type.getSlots(); i++) {
             this.storedStacks.add(i, new BigStack(ItemStack.EMPTY, 0));
         }
-        this.voidItems = false;
     }
 
     @Override
@@ -56,7 +54,7 @@ public abstract class BigInventoryHandler implements IItemHandler, INBTSerializa
                 bigStack.setAmount(Math.min(bigStack.getAmount() + inserted, getSlotLimit(slot)));
                 onChange();
             }
-            if (inserted == stack.getCount() || voidItems) return ItemStack.EMPTY;
+            if (inserted == stack.getCount() || isVoid()) return ItemStack.EMPTY;
             return ItemHandlerHelper.copyStackWithSize(stack, stack.getCount() - inserted);
         }
         return stack;
@@ -108,7 +106,6 @@ public abstract class BigInventoryHandler implements IItemHandler, INBTSerializa
     @Override
     public CompoundTag serializeNBT() {
         CompoundTag compoundTag = new CompoundTag();
-        compoundTag.putBoolean(VOID, voidItems);
         CompoundTag items = new CompoundTag();
         for (int i = 0; i < this.storedStacks.size(); i++) {
             CompoundTag bigStack = new CompoundTag();
@@ -122,7 +119,6 @@ public abstract class BigInventoryHandler implements IItemHandler, INBTSerializa
 
     @Override
     public void deserializeNBT(CompoundTag nbt) {
-        this.voidItems = nbt.getBoolean(VOID);
         for (String allKey : nbt.getCompound(BIG_ITEMS).getAllKeys()) {
             this.storedStacks.get(Integer.parseInt(allKey)).setStack(ItemStack.of(nbt.getCompound(BIG_ITEMS).getCompound(allKey).getCompound(STACK)));
             this.storedStacks.get(Integer.parseInt(allKey)).setAmount(nbt.getCompound(BIG_ITEMS).getCompound(allKey).getInt(AMOUNT));
@@ -132,6 +128,8 @@ public abstract class BigInventoryHandler implements IItemHandler, INBTSerializa
     public abstract void onChange();
 
     public abstract int getMultiplier();
+
+    public abstract boolean isVoid();
 
     public class BigStack{
 

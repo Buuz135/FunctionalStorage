@@ -49,13 +49,18 @@ public class CompactingDrawerTile extends ControllableDrawerTile<CompactingDrawe
             public int getMultiplier() {
                 return getStorageMultiplier();
             }
+
+            @Override
+            public boolean isVoid() {
+                return CompactingDrawerTile.this.isVoid();
+            }
         };
         lazyStorage = LazyOptional.of(() -> this.handler);
         //TODO Check for the recipe on load
     }
 
     public InteractionResult onSlotActivated(Player playerIn, InteractionHand hand, Direction facing, double hitX, double hitY, double hitZ, int slot) {
-        if (!handler.isSetup()){
+        if (!handler.isSetup() && slot != -1){
             ItemStack stack = playerIn.getItemInHand(hand).copy();
             stack.setCount(1);
             CompactingUtil compactingUtil = new CompactingUtil(this.level);

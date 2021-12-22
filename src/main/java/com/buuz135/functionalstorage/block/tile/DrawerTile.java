@@ -50,6 +50,11 @@ public class DrawerTile extends ControllableDrawerTile<DrawerTile> {
             public int getMultiplier() {
                 return getStorageMultiplier();
             }
+
+            @Override
+            public boolean isVoid() {
+                return DrawerTile.this.isVoid();
+            }
         };
         lazyStorage = LazyOptional.of(() -> this.handler);
     }

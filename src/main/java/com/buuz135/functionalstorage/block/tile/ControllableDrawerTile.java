@@ -1,5 +1,6 @@
 package com.buuz135.functionalstorage.block.tile;
 
+import com.buuz135.functionalstorage.FunctionalStorage;
 import com.buuz135.functionalstorage.item.LinkingToolItem;
 import com.buuz135.functionalstorage.item.StorageUpgradeItem;
 import com.buuz135.functionalstorage.item.UpgradeItem;
@@ -33,6 +34,10 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
 
     private static HashMap<UUID, Long> INTERACTION_LOGGER = new HashMap<>();
 
+    //TODO Lock the slots for the upgrades
+    //TODO Add support for the iron upgrade
+
+
     @Save
     private BlockPos controllerPos;
     @Save
@@ -43,10 +48,13 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
     public ControllableDrawerTile(BasicTileBlock<T> base, BlockPos pos, BlockState state) {
         super(base, pos, state);
         this.addInventory((InventoryComponent<T>) (this.storageUpgrades = new InventoryComponent<ControllableDrawerTile<T>>("storage_upgrades", 10, 70, getStorageSlotAmount())
-                        .setInputFilter((stack, integer) -> stack.getItem() instanceof UpgradeItem && ((UpgradeItem) stack.getItem()).getType() == UpgradeItem.Type.STORAGE))
+                        .setInputFilter((stack, integer) -> stack.getItem() instanceof UpgradeItem && ((UpgradeItem) stack.getItem()).getType() == UpgradeItem.Type.STORAGE)
+                .setSlotLimit(1)
+                )
         );
         this.addInventory((InventoryComponent<T>) (this.utilityUpgrades = new InventoryComponent<ControllableDrawerTile<T>>("utility_upgrades", 114, 70, 3)
-                .setInputFilter((stack, integer) -> stack.getItem() instanceof UpgradeItem && ((UpgradeItem) stack.getItem()).getType() == UpgradeItem.Type.UTILITY))
+                .setInputFilter((stack, integer) -> stack.getItem() instanceof UpgradeItem && ((UpgradeItem) stack.getItem()).getType() == UpgradeItem.Type.UTILITY)
+                .setSlotLimit(1))
         );
         addGuiAddonFactory(() -> new TextScreenAddon("Storage", 10, 59, false, ChatFormatting.DARK_GRAY.getColor()));
         addGuiAddonFactory(() -> new TextScreenAddon("Utility", 114, 59, false, ChatFormatting.DARK_GRAY.getColor()));
@@ -80,6 +88,15 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
             }
         }
         return mult;
+    }
+
+    public boolean isVoid(){
+        for (int i = 0; i < this.utilityUpgrades.getSlots(); i++) {
+            if (this.utilityUpgrades.getStackInSlot(i).getItem().equals(FunctionalStorage.VOID_UPGRADE.get())){
+                return true;
+            }
+        }
+        return false;
     }
 
     public InteractionResult onSlotActivated(Player playerIn, InteractionHand hand, Direction facing, double hitX, double hitY, double hitZ, int slot) {
