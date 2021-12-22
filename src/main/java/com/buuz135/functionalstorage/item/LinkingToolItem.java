@@ -74,6 +74,7 @@ public class LinkingToolItem extends BasicItem {
             controller.putInt("Z", pos.getZ());
             stack.getOrCreateTag().put(NBT_CONTROLLER, controller);
             context.getPlayer().playSound(SoundEvents.ITEM_FRAME_ADD_ITEM, 0.5f, 1);
+            context.getPlayer().displayClientMessage(new TextComponent("Controller configured to the tool").withStyle(ChatFormatting.GREEN), true);
             return InteractionResult.SUCCESS;
         } else if (blockEntity instanceof ControllableDrawerTile && stack.getOrCreateTag().contains(NBT_CONTROLLER)){
             CompoundTag controllerNBT = stack.getOrCreateTag().getCompound(NBT_CONTROLLER);
@@ -82,7 +83,7 @@ public class LinkingToolItem extends BasicItem {
                 if (linkingMode == LinkingMode.SINGLE){
                     ((ControllableDrawerTile<?>) blockEntity).setControllerPos(controller.getBlockPos());
                     ((DrawerControllerTile) controller).addConnectedDrawers(linkingAction, pos);
-                    context.getPlayer().displayClientMessage(new TextComponent("Added").setStyle(Style.EMPTY.withColor(linkingMode.color)), true);
+                    context.getPlayer().displayClientMessage(new TextComponent("Linked drawer to the controller").setStyle(Style.EMPTY.withColor(linkingMode.color)), true);
                 }//TODO add to the drawer
                 context.getPlayer().playSound(SoundEvents.ITEM_FRAME_ROTATE_ITEM, 0.5f, 1);
                 return InteractionResult.SUCCESS;
@@ -99,15 +100,19 @@ public class LinkingToolItem extends BasicItem {
                 LinkingMode linkingMode = LinkingMode.valueOf(stack.getOrCreateTag().getString(NBT_MODE));
                 if (linkingMode == LinkingMode.SINGLE){
                     stack.getOrCreateTag().putString(NBT_MODE, LinkingMode.MULTIPLE.name());
+                    player.displayClientMessage(new TextComponent("Swapped mode to " + LinkingMode.MULTIPLE.name().toLowerCase(Locale.ROOT)).setStyle(Style.EMPTY.withColor(LinkingMode.MULTIPLE.getColor())), true);
                 } else {
                     stack.getOrCreateTag().putString(NBT_MODE, LinkingMode.SINGLE.name());
+                    player.displayClientMessage(new TextComponent("Swapped mode to " + LinkingMode.SINGLE.name().toLowerCase(Locale.ROOT)).setStyle(Style.EMPTY.withColor(LinkingMode.SINGLE.getColor())), true);
                 }
             } else {
                 ActionMode linkingMode = ActionMode.valueOf(stack.getOrCreateTag().getString(NBT_ACTION));
                 if (linkingMode == ActionMode.ADD){
                     stack.getOrCreateTag().putString(NBT_ACTION, ActionMode.REMOVE.name());
+                    player.displayClientMessage(new TextComponent("Swapped action to " + ActionMode.REMOVE.name().toLowerCase(Locale.ROOT)).setStyle(Style.EMPTY.withColor(ActionMode.REMOVE.getColor())), true);
                 } else {
                     stack.getOrCreateTag().putString(NBT_ACTION, ActionMode.ADD.name());
+                    player.displayClientMessage(new TextComponent("Swapped action to " + ActionMode.ADD.name().toLowerCase(Locale.ROOT)).setStyle(Style.EMPTY.withColor(ActionMode.ADD.getColor())), true);
                 }
             }
             player.playSound(SoundEvents.ITEM_FRAME_REMOVE_ITEM, 0.5f, 1);
