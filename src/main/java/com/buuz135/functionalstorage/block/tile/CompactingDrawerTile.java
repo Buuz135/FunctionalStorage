@@ -54,6 +54,11 @@ public class CompactingDrawerTile extends ControllableDrawerTile<CompactingDrawe
             public boolean isVoid() {
                 return CompactingDrawerTile.this.isVoid();
             }
+
+            @Override
+            public boolean isLocked() {
+                return CompactingDrawerTile.this.isLocked();
+            }
         };
         lazyStorage = LazyOptional.of(() -> this.handler);
         //TODO Check for the recipe on load

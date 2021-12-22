@@ -73,6 +73,7 @@ public abstract class CompactingInventoryHandler implements IItemHandler, INBTSe
     }
 
     public void reset(){
+        if (isLocked()) return;
         this.resultList.forEach(result -> {
             result.setResult(ItemStack.EMPTY);
             result.setNeeded(1);
@@ -159,6 +160,8 @@ public abstract class CompactingInventoryHandler implements IItemHandler, INBTSe
     public abstract int getMultiplier();
 
     public abstract boolean isVoid();
+
+    public abstract boolean isLocked();
 
     public List<CompactingUtil.Result> getResultList() {
         return resultList;

@@ -2,6 +2,7 @@ package com.buuz135.functionalstorage.client;
 
 import com.buuz135.functionalstorage.FunctionalStorage;
 import com.buuz135.functionalstorage.block.tile.DrawerTile;
+import com.buuz135.functionalstorage.inventory.BigInventoryHandler;
 import com.buuz135.functionalstorage.util.NumberUtils;
 import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -65,62 +66,65 @@ public class DrawerRenderer implements BlockEntityRenderer<DrawerTile> {
     }
 
     private void render1Slot(PoseStack matrixStack, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn, DrawerTile tile){
-        if (!tile.getStorage().getStackInSlot(0).isEmpty()){
+        BigInventoryHandler inventoryHandler = (BigInventoryHandler) tile.getStorage();
+        if (!inventoryHandler.getStoredStacks().get(0).getStack().isEmpty()){
             matrixStack.translate(0.5, 0.5, 0.0005f);
-            ItemStack stack = tile.getStorage().getStackInSlot(0);
-            renderStack(matrixStack,  bufferIn, combinedLightIn, combinedOverlayIn, stack, stack.getCount(), 0.015f);
+            ItemStack stack = inventoryHandler.getStoredStacks().get(0).getStack();
+            renderStack(matrixStack,  bufferIn, combinedLightIn, combinedOverlayIn, stack, inventoryHandler.getStoredStacks().get(0).getAmount(), 0.015f);
         }
     }
 
     private void render2Slot(PoseStack matrixStack, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn, DrawerTile tile){
-        if (!tile.getStorage().getStackInSlot(0).isEmpty()){
+        BigInventoryHandler inventoryHandler = (BigInventoryHandler) tile.getStorage();
+        if (!inventoryHandler.getStoredStacks().get(1).getStack().isEmpty()){
             matrixStack.pushPose();
             matrixStack.translate(0.5, 0.27f, 0.0005f);
             matrixStack.scale(0.5f, 0.5f, 1);
-            ItemStack stack = tile.getStorage().getStackInSlot(0);
-            renderStack(matrixStack,  bufferIn, combinedLightIn, combinedOverlayIn, stack, stack.getCount(), 0.02f);
+            ItemStack stack = inventoryHandler.getStoredStacks().get(1).getStack();
+            renderStack(matrixStack,  bufferIn, combinedLightIn, combinedOverlayIn, stack, inventoryHandler.getStoredStacks().get(1).getAmount(), 0.02f);
             matrixStack.popPose();
         }
-        if (!tile.getStorage().getStackInSlot(1).isEmpty()){
+        if (!inventoryHandler.getStoredStacks().get(1).getStack().isEmpty()){
             matrixStack.pushPose();
             matrixStack.translate(0.5, 0.77f, 0.0005f);
             matrixStack.scale(0.5f, 0.5f, 1);
-            ItemStack stack = tile.getStorage().getStackInSlot(1);
-            renderStack(matrixStack,  bufferIn, combinedLightIn, combinedOverlayIn, stack, stack.getCount(), 0.02f);
+            ItemStack stack = inventoryHandler.getStoredStacks().get(1).getStack();
+            renderStack(matrixStack,  bufferIn, combinedLightIn, combinedOverlayIn, stack, inventoryHandler.getStoredStacks().get(1).getAmount(), 0.02f);
             matrixStack.popPose();
         }
     }
     private void render4Slot(PoseStack matrixStack, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn, DrawerTile tile){
-        if (!tile.getStorage().getStackInSlot(0).isEmpty()){ //BOTTOM RIGHT
+        BigInventoryHandler inventoryHandler = (BigInventoryHandler) tile.getStorage();
+        if (!inventoryHandler.getStoredStacks().get(0).getStack().isEmpty()){ //BOTTOM RIGHT
             matrixStack.pushPose();
             matrixStack.translate(0.75, 0.27f, 0.0005f);
             matrixStack.scale(0.5f, 0.5f, 1);
-            ItemStack stack = tile.getStorage().getStackInSlot(0);
-            renderStack(matrixStack,  bufferIn, combinedLightIn, combinedOverlayIn, stack, stack.getCount(), 0.02f);
+            ItemStack stack = inventoryHandler.getStoredStacks().get(0).getStack();
+            renderStack(matrixStack,  bufferIn, combinedLightIn, combinedOverlayIn, stack, inventoryHandler.getStoredStacks().get(0).getAmount(), 0.02f);
             matrixStack.popPose();
         }
-        if (!tile.getStorage().getStackInSlot(1).isEmpty()){ //BOTTOM LEFT
+        if (!inventoryHandler.getStoredStacks().get(1).getStack().isEmpty()){ //BOTTOM LEFT
             matrixStack.pushPose();
             matrixStack.translate(0.25, 0.27f, 0.0005f);
             matrixStack.scale(0.5f, 0.5f, 1);
-            ItemStack stack = tile.getStorage().getStackInSlot(1);
-            renderStack(matrixStack,  bufferIn, combinedLightIn, combinedOverlayIn, stack, stack.getCount(), 0.02f);
+            ItemStack stack = inventoryHandler.getStoredStacks().get(1).getStack();
+            renderStack(matrixStack,  bufferIn, combinedLightIn, combinedOverlayIn, stack, inventoryHandler.getStoredStacks().get(1).getAmount(), 0.02f);
             matrixStack.popPose();
         }
-        if (!tile.getStorage().getStackInSlot(2).isEmpty()){ //TOP RIGHT
+        if (!inventoryHandler.getStoredStacks().get(2).getStack().isEmpty()){ //TOP RIGHT
             matrixStack.pushPose();
             matrixStack.translate(0.75, 0.77f, 0.0005f);
             matrixStack.scale(0.5f, 0.5f, 1);
-            ItemStack stack = tile.getStorage().getStackInSlot(2);
-            renderStack(matrixStack,  bufferIn, combinedLightIn, combinedOverlayIn, stack, stack.getCount(), 0.02f);
+            ItemStack stack = inventoryHandler.getStoredStacks().get(2).getStack();
+            renderStack(matrixStack,  bufferIn, combinedLightIn, combinedOverlayIn, stack, inventoryHandler.getStoredStacks().get(2).getAmount(), 0.02f);
             matrixStack.popPose();
         }
-        if (!tile.getStorage().getStackInSlot(3).isEmpty()){ //TOP LEFT
+        if (!inventoryHandler.getStoredStacks().get(3).getStack().isEmpty()){ //TOP LEFT
             matrixStack.pushPose();
             matrixStack.translate(0.25, 0.77f, 0.0005f);
             matrixStack.scale(0.5f, 0.5f, 1);
-            ItemStack stack = tile.getStorage().getStackInSlot(3);
-            renderStack(matrixStack,  bufferIn, combinedLightIn, combinedOverlayIn, stack, stack.getCount(), 0.02f);
+            ItemStack stack = inventoryHandler.getStoredStacks().get(3).getStack();
+            renderStack(matrixStack,  bufferIn, combinedLightIn, combinedOverlayIn, stack, inventoryHandler.getStoredStacks().get(3).getAmount(), 0.02f);
             matrixStack.popPose();
         }
     }

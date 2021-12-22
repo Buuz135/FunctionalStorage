@@ -71,7 +71,7 @@ public abstract class BigInventoryHandler implements IItemHandler, INBTSerializa
                 ItemStack out = bigStack.getStack().copy();
                 int newAmount = bigStack.getAmount();
                 if (!simulate) {
-                    bigStack.setStack(ItemStack.EMPTY); //TODO Dont change if locked
+                    if (!isLocked()) bigStack.setStack(ItemStack.EMPTY); //TODO Dont change if locked
                     bigStack.setAmount(0);
                     onChange();
                 }
@@ -133,6 +133,12 @@ public abstract class BigInventoryHandler implements IItemHandler, INBTSerializa
     public abstract boolean isVoid();
 
     public abstract boolean hasDowngrade();
+
+    public abstract boolean isLocked();
+
+    public List<BigStack> getStoredStacks() {
+        return storedStacks;
+    }
 
     public class BigStack{
 

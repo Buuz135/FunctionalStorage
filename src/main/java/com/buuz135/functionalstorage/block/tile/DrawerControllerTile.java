@@ -76,6 +76,17 @@ public class DrawerControllerTile extends ControllableDrawerTile<DrawerControlle
         return 1;
     }
 
+    @Override
+    public void toggleLocking() {
+        super.toggleLocking();
+        for (Long connectedDrawer : this.connectedDrawers.getConnectedDrawers()) {
+            BlockEntity blockEntity = this.level.getBlockEntity(BlockPos.of(connectedDrawer));
+            if (blockEntity instanceof ControllableDrawerTile){
+                ((ControllableDrawerTile<?>) blockEntity).setLocked(this.isLocked());
+            }
+        }
+    }
+
     @NotNull
     @Override
     public DrawerControllerTile getSelf() {

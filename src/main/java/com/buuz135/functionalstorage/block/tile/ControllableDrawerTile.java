@@ -191,6 +191,20 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
         return false;
     }
 
+    public void toggleLocking(){
+        this.locked = !this.locked;
+        markComponentDirty();
+    }
+
+    public boolean isLocked() {
+        return locked;
+    }
+
+    public void setLocked(boolean locked) {
+        this.locked = locked;
+        markComponentDirty();
+    }
+
     @Override
     public void invalidateCaps() {
         super.invalidateCaps();
