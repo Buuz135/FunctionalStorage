@@ -54,6 +54,27 @@ public class CompactingDrawerRenderer implements BlockEntityRenderer<CompactingD
         }
         matrixStack.translate(0,0,-0.5/16D);
         combinedLightIn = LevelRenderer.getLightColor(tile.getLevel(), tile.getBlockPos().relative(facing));
+        matrixStack.pushPose();
+        matrixStack.translate(0.031,0.031f,0.469/16D);
+        float scale = 0.0625f;
+        for (int i = 0; i < tile.getStorageUpgrades().getSlots(); i++) {
+            ItemStack stack = tile.getStorageUpgrades().getStackInSlot(i);
+            if (!stack.isEmpty()){
+                matrixStack.pushPose();
+                matrixStack.scale(scale, scale, scale);
+                Minecraft.getInstance().getItemRenderer().renderStatic(stack, ItemTransforms.TransformType.NONE, combinedLightIn, combinedOverlayIn, matrixStack, bufferIn, 0);
+                matrixStack.popPose();
+                matrixStack.translate(scale,0,0);
+            }
+        }
+        matrixStack.popPose();
+        if (tile.isVoid()){
+            matrixStack.pushPose();
+            matrixStack.translate(0.969,0.031f,0.469/16D);
+            matrixStack.scale(scale, scale, scale);
+            Minecraft.getInstance().getItemRenderer().renderStatic(new ItemStack(FunctionalStorage.VOID_UPGRADE.get()), ItemTransforms.TransformType.NONE, combinedLightIn, combinedOverlayIn, matrixStack, bufferIn, 0);
+            matrixStack.popPose();
+        }
         ItemStack stack = tile.getHandler().getResultList().get(0).getResult();
         if (!stack.isEmpty()){
             matrixStack.pushPose();

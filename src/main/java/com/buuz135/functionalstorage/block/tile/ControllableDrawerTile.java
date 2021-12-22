@@ -205,6 +205,10 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
         markComponentDirty();
     }
 
+    public InventoryComponent<ControllableDrawerTile<T>> getStorageUpgrades() {
+        return storageUpgrades;
+    }
+
     @Override
     public void invalidateCaps() {
         super.invalidateCaps();
