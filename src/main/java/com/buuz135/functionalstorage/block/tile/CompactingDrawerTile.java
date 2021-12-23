@@ -15,6 +15,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
@@ -36,6 +37,7 @@ public class CompactingDrawerTile extends ControllableDrawerTile<CompactingDrawe
     @Save
     public CompactingInventoryHandler handler;
     private final LazyOptional<IItemHandler> lazyStorage;
+    private boolean hasCheckedRecipes;
 
     public CompactingDrawerTile(BasicTileBlock<CompactingDrawerTile> base, BlockPos pos, BlockState state) {
         super(base, pos, state);
@@ -61,7 +63,20 @@ public class CompactingDrawerTile extends ControllableDrawerTile<CompactingDrawe
             }
         };
         lazyStorage = LazyOptional.of(() -> this.handler);
-        //TODO Check for the recipe on load
+        this.hasCheckedRecipes = false;
+    }
+
+    @Override
+    public void serverTick(Level level, BlockPos pos, BlockState state, CompactingDrawerTile blockEntity) {
+        super.serverTick(level, pos, state, blockEntity);
+        if (!hasCheckedRecipes){
+            if (!handler.getParent().isEmpty()){
+                CompactingUtil compactingUtil = new CompactingUtil(this.level);
+                compactingUtil.setup(handler.getParent());
+                handler.setup(compactingUtil);
+            }
+            hasCheckedRecipes = true;
+        }
     }
 
     public InteractionResult onSlotActivated(Player playerIn, InteractionHand hand, Direction facing, double hitX, double hitY, double hitZ, int slot) {

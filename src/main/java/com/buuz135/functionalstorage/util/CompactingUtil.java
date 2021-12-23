@@ -76,7 +76,9 @@ public class CompactingUtil {
             container = createContainerAndFill(2, stack);
             outputs = findAllMatchingRecipes(container);
         }
-        if (outputs.size() > 0){
+        if (stack.is(StorageTags.IGNORE_CRAFTING_CHECK)){
+            realOutputs = outputs;
+        }else if (outputs.size() > 0){
             for (ItemStack output : outputs) {
                 container = createContainerAndFill(1, output);
                 List<ItemStack> reversed = findAllMatchingRecipes(container);
@@ -107,13 +109,18 @@ public class CompactingUtil {
             if (!ItemStack.isSame(stack, output)) continue;
             ItemStack match = tryMatch(stack, craftingRecipe.getIngredients());
             if (!match.isEmpty()){
+                int recipeSize = craftingRecipe.getIngredients().size();
+                if (stack.is(StorageTags.IGNORE_CRAFTING_CHECK)){
+                    candidates.add(match);
+                    candidatesRate.put(match, recipeSize);
+                }
                 CraftingContainer container = createContainerAndFill(1, output);
                 List<ItemStack> matchStacks = findAllMatchingRecipes(container);
                 for (ItemStack matchStack : matchStacks) {
-                    int recipeSize = craftingRecipe.getIngredients().size();
                     if (ItemStack.isSame(match, matchStack) && matchStack.getCount() == recipeSize){
                         candidates.add(match);
                         candidatesRate.put(match, recipeSize);
+                        break;
                     }
                 }
             }

@@ -9,5 +9,6 @@ import net.minecraftforge.common.Tags;
 public class StorageTags {
 
     public static Tags.IOptionalNamedTag<Item> DRAWER = ItemTags.createOptional(new ResourceLocation(FunctionalStorage.MOD_ID, "drawer"));
+    public static Tags.IOptionalNamedTag<Item> IGNORE_CRAFTING_CHECK = ItemTags.createOptional(new ResourceLocation(FunctionalStorage.MOD_ID, "ignore_crafting_check"));
 
 }

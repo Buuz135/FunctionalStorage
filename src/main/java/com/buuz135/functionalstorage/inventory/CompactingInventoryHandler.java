@@ -13,7 +13,7 @@ import java.util.List;
 
 public abstract class CompactingInventoryHandler implements IItemHandler, INBTSerializable<CompoundTag> {
 
-    public static String VOID = "Void";
+    public static String PARENT = "Parent";
     public static String BIG_ITEMS = "BigItems";
     public static String STACK = "Stack";
     public static String AMOUNT = "Amount";
@@ -21,6 +21,7 @@ public abstract class CompactingInventoryHandler implements IItemHandler, INBTSe
     public static final int TOTAL_AMOUNT = 512 * 9 * 9;
 
     private int amount;
+    private ItemStack parent;
     private List<CompactingUtil.Result> resultList;
 
     public CompactingInventoryHandler(){
@@ -28,6 +29,7 @@ public abstract class CompactingInventoryHandler implements IItemHandler, INBTSe
         for (int i = 0; i < 3; i++) {
             this.resultList.add(i, new CompactingUtil.Result(ItemStack.EMPTY, 1));
         }
+        this.parent = ItemStack.EMPTY;
     }
 
     @Override
@@ -69,6 +71,7 @@ public abstract class CompactingInventoryHandler implements IItemHandler, INBTSe
 
     public void setup(CompactingUtil compactingUtil){
         this.resultList = compactingUtil.getResults();
+        this.parent = compactingUtil.getResults().get(2).getResult();
         onChange();
     }
 
@@ -133,6 +136,7 @@ public abstract class CompactingInventoryHandler implements IItemHandler, INBTSe
     @Override
     public CompoundTag serializeNBT() {
         CompoundTag compoundTag = new CompoundTag();
+        compoundTag.put(PARENT, this.getParent().serializeNBT());
         compoundTag.putInt(AMOUNT, this.amount);
         CompoundTag items = new CompoundTag();
         for (int i = 0; i < this.resultList.size(); i++) {
@@ -147,6 +151,7 @@ public abstract class CompactingInventoryHandler implements IItemHandler, INBTSe
 
     @Override
     public void deserializeNBT(CompoundTag nbt) {
+        this.parent = ItemStack.of(nbt.getCompound(PARENT));
         this.amount = nbt.getInt(AMOUNT);
         for (String allKey : nbt.getCompound(BIG_ITEMS).getAllKeys()) {
             this.resultList.get(Integer.parseInt(allKey)).setResult(ItemStack.of(nbt.getCompound(BIG_ITEMS).getCompound(allKey).getCompound(STACK)));
@@ -164,5 +169,9 @@ public abstract class CompactingInventoryHandler implements IItemHandler, INBTSe
 
     public List<CompactingUtil.Result> getResultList() {
         return resultList;
+    }
+
+    public ItemStack getParent() {
+        return parent;
     }
 }

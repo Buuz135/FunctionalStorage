@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "minecraft:clay",
+    "minecraft:clay_ball",
+    "minecraft:glowstone",
+    "minecraft:glowstone_dust"
+  ]
+}
