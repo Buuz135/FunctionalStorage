@@ -1,6 +1,7 @@
 package com.buuz135.functionalstorage.block.tile;
 
 import com.buuz135.functionalstorage.FunctionalStorage;
+import com.buuz135.functionalstorage.block.DrawerBlock;
 import com.buuz135.functionalstorage.item.LinkingToolItem;
 import com.buuz135.functionalstorage.item.StorageUpgradeItem;
 import com.buuz135.functionalstorage.item.UpgradeItem;
@@ -40,12 +41,9 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
     private InventoryComponent<ControllableDrawerTile<T>> storageUpgrades;
     @Save
     private InventoryComponent<ControllableDrawerTile<T>> utilityUpgrades;
-    @Save
-    private boolean locked;
 
     public ControllableDrawerTile(BasicTileBlock<T> base, BlockPos pos, BlockState state) {
         super(base, pos, state);
-        this.locked = false;
         this.addInventory((InventoryComponent<T>) (this.storageUpgrades = new InventoryComponent<ControllableDrawerTile<T>>("storage_upgrades", 10, 70, getStorageSlotAmount()) {
                     @NotNull
                     @Override
@@ -192,17 +190,17 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
     }
 
     public void toggleLocking(){
-        this.locked = !this.locked;
-        markComponentDirty();
+        setLocked(!this.isLocked());
     }
 
     public boolean isLocked() {
-        return locked;
+        return this.getBlockState().hasProperty(DrawerBlock.LOCKED) && this.getBlockState().getValue(DrawerBlock.LOCKED);
     }
 
     public void setLocked(boolean locked) {
-        this.locked = locked;
-        markComponentDirty();
+        if (this.getBlockState().hasProperty(DrawerBlock.LOCKED) ){
+            this.level.setBlock(this.getBlockPos(), this.getBlockState().setValue(DrawerBlock.LOCKED, locked), 0);
+        }
     }
 
     public InventoryComponent<ControllableDrawerTile<T>> getStorageUpgrades() {

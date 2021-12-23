@@ -1,0 +1,6 @@
+{
+  "parent": "functionalstorage:block/birch_2",
+  "textures": {
+    "lock_icon": "functionalstorage:blocks/lock"
+  }
+}

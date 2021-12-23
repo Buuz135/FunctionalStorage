@@ -23,6 +23,9 @@ import com.hrznstudio.titanium.event.handler.EventManager;
 import com.hrznstudio.titanium.module.ModuleController;
 import com.hrznstudio.titanium.recipe.generator.TitaniumRecipeProvider;
 import com.hrznstudio.titanium.tab.AdvancedTitaniumTab;
+import net.minecraft.client.renderer.ItemBlockRenderTypes;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.core.Direction;
 import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.data.tags.BlockTagsProvider;
 import net.minecraft.nbt.CompoundTag;
@@ -34,10 +37,14 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.client.event.EntityRenderersEvent;
+import net.minecraftforge.client.event.TextureStitchEvent;
+import net.minecraftforge.client.model.generators.BlockModelProvider;
 import net.minecraftforge.client.model.generators.ItemModelProvider;
+import net.minecraftforge.client.model.generators.ModelProvider;
 import net.minecraftforge.common.util.NonNullLazy;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.forge.event.lifecycle.GatherDataEvent;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
@@ -161,6 +168,13 @@ public class FunctionalStorage extends ModuleController {
                 return 0xffffff;
             }, LINKING_TOOL.get());
         }).subscribe();
+        EventManager.mod(FMLClientSetupEvent.class).process(event -> {
+            for (DrawerType value : DrawerType.values()) {
+                for (RegistryObject<Block> blockRegistryObject : DRAWER_TYPES.get(value)) {
+                    ItemBlockRenderTypes.setRenderLayer(blockRegistryObject.get(), RenderType.cutout());
+                }
+            }
+        }).subscribe();
     }
 
     @Override
@@ -199,6 +213,17 @@ public class FunctionalStorage extends ModuleController {
 
             private void item(Item item){
                 singleTexture(item.getRegistryName().getPath(), new ResourceLocation("minecraft:item/generated"), "layer0" ,new ResourceLocation(MOD_ID,  "items/" + item.getRegistryName().getPath()));
+            }
+        });
+        event.getGenerator().addProvider(new BlockModelProvider(event.getGenerator(), MOD_ID, event.getExistingFileHelper()) {
+            @Override
+            protected void registerModels() {
+                for (DrawerType value : DrawerType.values()) {
+                    for (RegistryObject<Block> blockRegistryObject : DRAWER_TYPES.get(value)) {
+                        withExistingParent(blockRegistryObject.get().getRegistryName().getPath() + "_locked", modLoc(blockRegistryObject.get().getRegistryName().getPath()))
+                                .texture("lock_icon", modLoc("blocks/lock"));
+                    }
+                }
             }
         });
     }

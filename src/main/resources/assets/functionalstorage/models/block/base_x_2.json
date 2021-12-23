@@ -1,5 +1,8 @@
 {
 	"credit": "Made with Blockbench",
+	"textures": {
+		"lock_icon": "functionalstorage:blocks/unlock"
+	},
 	"elements": [
 		{
 			"from": [15, 1, 0],
@@ -83,6 +86,30 @@
 				"east": {"uv": [1, 0, 15, 1], "rotation": 90, "texture": "#side", "cullface": "east"},
 				"south": {"uv": [0, 1, 16, 15], "texture": "#side", "cullface": "south"},
 				"west": {"uv": [1, 15, 15, 16], "rotation": 90, "texture": "#side", "cullface": "west"}
+			}
+		},
+		{
+			"from": [
+				7.5,
+				15,
+				-0.01
+			],
+			"to": [
+				8.5,
+				16,
+				16
+			],
+			"faces": {
+				"north": {
+					"texture": "#lock_icon",
+					"uv": [
+						0.0,
+						0.0,
+						16.0,
+						16.0
+					],
+					"cullface": "north"
+				}
 			}
 		}
 	],
