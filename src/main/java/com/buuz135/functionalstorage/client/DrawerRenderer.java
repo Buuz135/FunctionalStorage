@@ -105,12 +105,12 @@ public class DrawerRenderer implements BlockEntityRenderer<DrawerTile> {
 
     private void render2Slot(PoseStack matrixStack, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn, DrawerTile tile){
         BigInventoryHandler inventoryHandler = (BigInventoryHandler) tile.getStorage();
-        if (!inventoryHandler.getStoredStacks().get(1).getStack().isEmpty()){
+        if (!inventoryHandler.getStoredStacks().get(0).getStack().isEmpty()){
             matrixStack.pushPose();
             matrixStack.translate(0.5, 0.27f, 0.0005f);
             matrixStack.scale(0.5f, 0.5f, 1);
-            ItemStack stack = inventoryHandler.getStoredStacks().get(1).getStack();
-            renderStack(matrixStack,  bufferIn, combinedLightIn, combinedOverlayIn, stack, inventoryHandler.getStoredStacks().get(1).getAmount(), 0.02f);
+            ItemStack stack = inventoryHandler.getStoredStacks().get(0).getStack();
+            renderStack(matrixStack,  bufferIn, combinedLightIn, combinedOverlayIn, stack, inventoryHandler.getStoredStacks().get(0).getAmount(), 0.02f);
             matrixStack.popPose();
         }
         if (!inventoryHandler.getStoredStacks().get(1).getStack().isEmpty()){
