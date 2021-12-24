@@ -60,7 +60,7 @@ public class CompactingDrawerRenderer implements BlockEntityRenderer<CompactingD
             matrixStack.pushPose();
             matrixStack.translate(0.75, 0.27f,0.0005f);
             matrixStack.scale(0.5f, 0.5f, 0.5f);
-            DrawerRenderer.renderStack(matrixStack,  bufferIn, combinedLightIn, combinedOverlayIn, stack, tile.getHandler().getStackInSlot(0).getCount(), 0.02f);
+            DrawerRenderer.renderStack(matrixStack,  bufferIn, combinedLightIn, combinedOverlayIn, stack, tile.getHandler().getStackInSlot(0).getCount(), 0.02f, tile.getDrawerOptions());
             matrixStack.popPose();
         }
         stack = tile.getHandler().getResultList().get(1).getResult();
@@ -68,7 +68,7 @@ public class CompactingDrawerRenderer implements BlockEntityRenderer<CompactingD
             matrixStack.pushPose();
             matrixStack.translate(0.25, 0.27f,  0.0005f);
             matrixStack.scale(0.5f, 0.5f, 0.5f);
-            DrawerRenderer.renderStack(matrixStack,  bufferIn, combinedLightIn, combinedOverlayIn, stack, tile.getHandler().getStackInSlot(1).getCount(), 0.02f);
+            DrawerRenderer.renderStack(matrixStack,  bufferIn, combinedLightIn, combinedOverlayIn, stack, tile.getHandler().getStackInSlot(1).getCount(), 0.02f, tile.getDrawerOptions());
             matrixStack.popPose();
         }
         stack = tile.getHandler().getResultList().get(2).getResult();
@@ -76,7 +76,7 @@ public class CompactingDrawerRenderer implements BlockEntityRenderer<CompactingD
             matrixStack.pushPose();
             matrixStack.translate(0.5, 0.77f, 0.0005f);
             matrixStack.scale(0.5f, 0.5f, 0.5f);
-            DrawerRenderer.renderStack(matrixStack,  bufferIn, combinedLightIn, combinedOverlayIn, stack, tile.getHandler().getStackInSlot(2).getCount(), 0.02f);
+            DrawerRenderer.renderStack(matrixStack,  bufferIn, combinedLightIn, combinedOverlayIn, stack, tile.getHandler().getStackInSlot(2).getCount(), 0.02f, tile.getDrawerOptions());
             matrixStack.popPose();
         }
         matrixStack.popPose();

@@ -24,6 +24,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
@@ -63,6 +64,8 @@ public class ConfigurationToolItem extends BasicItem {
         if (blockEntity instanceof ControllableDrawerTile){
             if (configuractionAction == ConfigurationAction.LOCKING){
                 ((ControllableDrawerTile<?>) blockEntity).toggleLocking();
+            }else{
+                ((ControllableDrawerTile<?>) blockEntity).toggleOption(configuractionAction);
             }
            return InteractionResult.SUCCESS;
         }
@@ -74,18 +77,14 @@ public class ConfigurationToolItem extends BasicItem {
         ItemStack stack = player.getItemInHand(hand);
         if (!stack.isEmpty() && stack.hasTag()){
             if (player.isShiftKeyDown()){
-                ConfigurationAction linkingMode = ConfigurationAction.valueOf(stack.getOrCreateTag().getString(NBT_MODE));
-                if (linkingMode == ConfigurationAction.LOCKING){
-                    stack.getOrCreateTag().putString(NBT_MODE, ConfigurationAction.NUMBERS.name());
-                    player.displayClientMessage(new TextComponent("Swapped mode to " + ConfigurationAction.NUMBERS.name().toLowerCase(Locale.ROOT)).setStyle(Style.EMPTY.withColor(ConfigurationAction.NUMBERS.getColor())), true);
-                } else {
-                    stack.getOrCreateTag().putString(NBT_MODE, ConfigurationAction.LOCKING.name());
-                    player.displayClientMessage(new TextComponent("Swapped mode to " + ConfigurationAction.LOCKING.name().toLowerCase(Locale.ROOT)).setStyle(Style.EMPTY.withColor(ConfigurationAction.LOCKING.getColor())), true);
-                }
+                ConfigurationAction action = ConfigurationAction.valueOf(stack.getOrCreateTag().getString(NBT_MODE));
+                ConfigurationAction newAction = ConfigurationAction.values()[(Arrays.asList(ConfigurationAction.values()).indexOf(action) + 1 ) % ConfigurationAction.values().length];
+                stack.getOrCreateTag().putString(NBT_MODE, newAction.name());
+                player.displayClientMessage(new TextComponent("Swapped mode to ").setStyle(Style.EMPTY.withColor(newAction.getColor()))
+                        .append(new TranslatableComponent("configurationtool.configmode." + newAction.name().toLowerCase(Locale.ROOT))), true);
+                player.playSound(SoundEvents.ITEM_FRAME_REMOVE_ITEM, 0.5f, 1);
+                return InteractionResultHolder.success(stack);
             }
-
-            player.playSound(SoundEvents.ITEM_FRAME_REMOVE_ITEM, 0.5f, 1);
-            return InteractionResultHolder.success(stack);
         }
         return super.use(p_41432_, player, hand);
     }
@@ -96,8 +95,8 @@ public class ConfigurationToolItem extends BasicItem {
         if (stack.hasTag()){
             ConfigurationAction linkingMode = ConfigurationAction.valueOf(stack.getOrCreateTag().getString(NBT_MODE));
             if (key == null){
-                tooltip.add(new TranslatableComponent("linkingtool.linkingmode").withStyle(ChatFormatting.YELLOW)
-                        .append(new TranslatableComponent("linkingtool.linkingmode." + linkingMode.name().toLowerCase(Locale.ROOT) ).withStyle(Style.EMPTY.withColor(linkingMode.getColor()))));
+                tooltip.add(new TranslatableComponent("configurationtool.configmode").withStyle(ChatFormatting.YELLOW)
+                        .append(new TranslatableComponent("configurationtool.configmode." + linkingMode.name().toLowerCase(Locale.ROOT) ).withStyle(Style.EMPTY.withColor(linkingMode.getColor()))));
 
             }
         }
@@ -110,7 +109,9 @@ public class ConfigurationToolItem extends BasicItem {
 
     public enum ConfigurationAction{
         LOCKING(TextColor.fromRgb(new Color(40, 131, 250).getRGB())),
-        NUMBERS(TextColor.fromRgb(new Color(250, 145, 40).getRGB()));
+        TOGGLE_NUMBERS(TextColor.fromRgb(new Color(250, 145, 40).getRGB())),
+        TOGGLE_RENDER(TextColor.fromRgb(new Color(100, 250, 40).getRGB())),
+        TOGGLE_UPGRADES(TextColor.fromRgb(new Color(166, 40, 250).getRGB()));
 
         private final TextColor color;
 

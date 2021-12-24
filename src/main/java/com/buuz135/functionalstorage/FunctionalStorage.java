@@ -168,6 +168,14 @@ public class FunctionalStorage extends ModuleController {
                 }
                 return 0xffffff;
             }, LINKING_TOOL.get());
+            item.getItemColors().register((stack, tint) -> {
+                CompoundTag tag = stack.getOrCreateTag();
+                ConfigurationToolItem.ConfigurationAction action = ConfigurationToolItem.ConfigurationAction.valueOf(tag.getString(ConfigurationToolItem.NBT_MODE));
+                if (tint == 1){
+                    return action.getColor().getValue();
+                }
+                return 0xffffff;
+            }, CONFIGURATION_TOOL.get());
         }).subscribe();
         EventManager.mod(FMLClientSetupEvent.class).process(event -> {
             for (DrawerType value : DrawerType.values()) {

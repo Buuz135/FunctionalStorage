@@ -3,6 +3,7 @@ package com.buuz135.functionalstorage.block.tile;
 import com.buuz135.functionalstorage.block.DrawerControllerBlock;
 import com.buuz135.functionalstorage.inventory.BigInventoryHandler;
 import com.buuz135.functionalstorage.inventory.ControllerInventoryHandler;
+import com.buuz135.functionalstorage.item.ConfigurationToolItem;
 import com.buuz135.functionalstorage.item.LinkingToolItem;
 import com.hrznstudio.titanium.annotation.Save;
 import com.hrznstudio.titanium.block.BasicTileBlock;
@@ -82,10 +83,23 @@ public class DrawerControllerTile extends ControllableDrawerTile<DrawerControlle
         super.toggleLocking();
         if (isServer()){
             for (Long connectedDrawer : new ArrayList<>(this.connectedDrawers.getConnectedDrawers())) {
-                System.out.println(BlockPos.of(connectedDrawer));
                 BlockEntity blockEntity = this.level.getBlockEntity(BlockPos.of(connectedDrawer));
                 if (blockEntity instanceof ControllableDrawerTile){
                     ((ControllableDrawerTile<?>) blockEntity).setLocked(this.isLocked());
+                }
+            }
+        }
+    }
+
+    @Override
+    public void toggleOption(ConfigurationToolItem.ConfigurationAction action) {
+        super.toggleOption(action);
+        if (isServer()){
+            for (Long connectedDrawer : new ArrayList<>(this.connectedDrawers.getConnectedDrawers())) {
+                BlockEntity blockEntity = this.level.getBlockEntity(BlockPos.of(connectedDrawer));
+                if (blockEntity instanceof ControllableDrawerTile){
+                    ((ControllableDrawerTile<?>) blockEntity).getDrawerOptions().setActive(action, this.getDrawerOptions().isActive(action));
+                    ((ControllableDrawerTile<?>) blockEntity).markForUpdate();
                 }
             }
         }

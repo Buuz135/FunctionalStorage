@@ -2,6 +2,7 @@ package com.buuz135.functionalstorage.block.tile;
 
 import com.buuz135.functionalstorage.FunctionalStorage;
 import com.buuz135.functionalstorage.block.DrawerBlock;
+import com.buuz135.functionalstorage.item.ConfigurationToolItem;
 import com.buuz135.functionalstorage.item.LinkingToolItem;
 import com.buuz135.functionalstorage.item.StorageUpgradeItem;
 import com.buuz135.functionalstorage.item.UpgradeItem;
@@ -16,6 +17,7 @@ import com.mojang.datafixers.types.Func;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -28,10 +30,12 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
+import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
+import org.checkerframework.checker.units.qual.C;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
@@ -47,9 +51,12 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
     private InventoryComponent<ControllableDrawerTile<T>> storageUpgrades;
     @Save
     private InventoryComponent<ControllableDrawerTile<T>> utilityUpgrades;
+    @Save
+    private DrawerOptions drawerOptions;
 
     public ControllableDrawerTile(BasicTileBlock<T> base, BlockPos pos, BlockState state) {
         super(base, pos, state);
+        this.drawerOptions = new DrawerOptions();
         this.addInventory((InventoryComponent<T>) (this.storageUpgrades = new InventoryComponent<ControllableDrawerTile<T>>("storage_upgrades", 10, 70, getStorageSlotAmount()) {
                     @NotNull
                     @Override
@@ -293,6 +300,15 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
         }
     }
 
+    public void toggleOption(ConfigurationToolItem.ConfigurationAction action){
+        this.drawerOptions.setActive(action, !this.drawerOptions.isActive(action));
+        markForUpdate();
+    }
+
+    public DrawerOptions getDrawerOptions() {
+        return drawerOptions;
+    }
+
     public InventoryComponent<ControllableDrawerTile<T>> getStorageUpgrades() {
         return storageUpgrades;
     }
@@ -301,5 +317,41 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
     public void invalidateCaps() {
         super.invalidateCaps();
         getOptional().invalidate();
+    }
+
+    public static class DrawerOptions implements INBTSerializable<CompoundTag> {
+
+        public HashMap<ConfigurationToolItem.ConfigurationAction, Boolean> options;
+
+        public DrawerOptions() {
+            this.options = new HashMap<>();
+            this.options.put(ConfigurationToolItem.ConfigurationAction.TOGGLE_NUMBERS, true);
+            this.options.put(ConfigurationToolItem.ConfigurationAction.TOGGLE_RENDER, true);
+            this.options.put(ConfigurationToolItem.ConfigurationAction.TOGGLE_UPGRADES, true);
+        }
+
+        public boolean isActive(ConfigurationToolItem.ConfigurationAction configurationAction){
+            return options.getOrDefault(configurationAction, true);
+        }
+
+        public void setActive(ConfigurationToolItem.ConfigurationAction configurationAction, boolean active){
+            this.options.put(configurationAction, active);
+        }
+
+        @Override
+        public CompoundTag serializeNBT() {
+            CompoundTag compoundTag =new CompoundTag();
+            for (ConfigurationToolItem.ConfigurationAction action : this.options.keySet()) {
+                compoundTag.putBoolean(action.name(), this.options.get(action));
+            }
+            return compoundTag;
+        }
+
+        @Override
+        public void deserializeNBT(CompoundTag nbt) {
+            for (String allKey : nbt.getAllKeys()) {
+                this.options.put(ConfigurationToolItem.ConfigurationAction.valueOf(allKey), nbt.getBoolean(allKey));
+            }
+        }
     }
 }

@@ -52,5 +52,10 @@ public class FunctionalStorageLangProvider extends LanguageProvider {
         this.add("item.utility.downgrade", "Downgrades the slots to a max of 64 items");
         this.add("item.utility.direction", "Direction: ");
         this.add("item.utility.direction.desc", "Right click in a GUI to change direction");
+        this.add("configurationtool.configmode", "Config Mode: ");
+        this.add("configurationtool.configmode.locking", "Locking");
+        this.add("configurationtool.configmode.toggle_numbers", "Hide/Show Amounts");
+        this.add("configurationtool.configmode.toggle_render", "Hide/Show Item Renders");
+        this.add("configurationtool.configmode.toggle_upgrades", "Hide/Show Upgrade Renders");
     }
 }
