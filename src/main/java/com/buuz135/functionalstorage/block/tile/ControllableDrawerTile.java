@@ -136,6 +136,27 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
                             });
                         });
                     }
+                    if (item.equals(FunctionalStorage.PUSHING_UPGRADE.get())){
+                        Direction direction = Direction.byName(stack.getOrCreateTag().getString("Direction"));
+                        TileUtil.getTileEntity(level, pos.relative(direction)).ifPresent(blockEntity1 -> {
+                            blockEntity1.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, direction.getOpposite()).ifPresent(otherHandler -> {
+                                for (int otherSlot = 0; otherSlot < getStorage().getSlots(); otherSlot++) {
+                                    ItemStack pulledStack = getStorage().extractItem(otherSlot, 2, true);
+                                    if (pulledStack.isEmpty()) continue;
+                                    boolean hasWorked = false;
+                                    for (int ourSlot = 0; ourSlot < otherHandler.getSlots(); ourSlot++) {
+                                        ItemStack simulated = otherHandler.insertItem(ourSlot, pulledStack, true);
+                                        if (simulated.getCount() != pulledStack.getCount()){
+                                            otherHandler.insertItem(ourSlot, getStorage().extractItem(otherSlot, pulledStack.getCount() - simulated.getCount(), false), false );
+                                            hasWorked = true;
+                                            break;
+                                        }
+                                    }
+                                    if (hasWorked) break;
+                                }
+                            });
+                        });
+                    }
                 }
             }
         }

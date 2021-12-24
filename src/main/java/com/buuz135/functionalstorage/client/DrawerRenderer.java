@@ -77,7 +77,7 @@ public class DrawerRenderer implements BlockEntityRenderer<DrawerTile> {
 
     public static void renderUpgrades(PoseStack matrixStack, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn, ControllableDrawerTile<?> tile){
         matrixStack.pushPose();
-        matrixStack.translate(0.031,0.031f,0.469/16D);
+        matrixStack.translate(0.031,0.031f,0.472/16D);
         float scale = 0.0625f;
         for (int i = 0; i < tile.getStorageUpgrades().getSlots(); i++) {
             ItemStack stack = tile.getStorageUpgrades().getStackInSlot(i);
