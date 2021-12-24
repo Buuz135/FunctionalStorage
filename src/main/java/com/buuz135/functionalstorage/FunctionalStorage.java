@@ -5,6 +5,7 @@ import com.buuz135.functionalstorage.block.CompactingDrawerBlock;
 import com.buuz135.functionalstorage.block.DrawerBlock;
 import com.buuz135.functionalstorage.block.DrawerControllerBlock;
 import com.buuz135.functionalstorage.client.CompactingDrawerRenderer;
+import com.buuz135.functionalstorage.client.ControllerRenderer;
 import com.buuz135.functionalstorage.client.DrawerRenderer;
 import com.buuz135.functionalstorage.data.FunctionalStorageBlockstateProvider;
 import com.buuz135.functionalstorage.data.FunctionalStorageLangProvider;
@@ -149,7 +150,7 @@ public class FunctionalStorage extends ModuleController {
                 });
             }
             registerRenderers.registerBlockEntityRenderer(((BasicTileBlock)COMPACTING_DRAWER.get()).getTileEntityType(), p_173571_ -> new CompactingDrawerRenderer());
-
+            registerRenderers.registerBlockEntityRenderer(((BasicTileBlock)DRAWER_CONTROLLER.get()).getTileEntityType(), p -> new ControllerRenderer());
         }).subscribe();
         EventManager.mod(ColorHandlerEvent.Item.class).process(item -> {
             item.getItemColors().register((stack, tint) -> {

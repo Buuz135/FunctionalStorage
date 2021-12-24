@@ -32,7 +32,7 @@ public class FunctionalStorageLangProvider extends LanguageProvider {
         this.add("linkingtool.linkingmode.multiple.desc", "Links multiple drawers between 2 points");
         this.add("linkingtool.controller", "Controller: ");
         this.add("linkingtool.linkingaction", "Linking Action: ");
-        this.add("linkingtool.use", "Sneak + Right Click in the air to change modes. Right Click in the air to change actions. Right click a controller to setup the tool then use it nearby drawers to link.");
+        this.add("linkingtool.use", "Sneak + Right Click in the air to change modes. \nRight Click in the air to change actions. \nRight click a controller to setup the tool then use it nearby drawers to link. \n\nWhile holding the tool it will show the connected drawers to the selected controller.");
         this.add("linkingtool.linkingaction.add", "Add");
         this.add("linkingtool.linkingaction.remove", "Remove");
         this.add("key.categories.utility", "Utility");
@@ -48,6 +48,7 @@ public class FunctionalStorageLangProvider extends LanguageProvider {
         this.add(FunctionalStorage.PUSHING_UPGRADE.get(), WordUtils.capitalize(FunctionalStorage.PUSHING_UPGRADE.get().getRegistryName().getPath().replace('_', ' ').toLowerCase()) );
         this.add(FunctionalStorage.VOID_UPGRADE.get(), WordUtils.capitalize(FunctionalStorage.VOID_UPGRADE.get().getRegistryName().getPath().replace('_', ' ').toLowerCase()) );
         this.add(FunctionalStorage.ARMORY_CABINET.get(), "Armory Cabinet");
+        this.add(FunctionalStorage.CONFIGURATION_TOOL.get(), "Configuration Tool");
         this.add("item.utility.downgrade", "Downgrades the slots to a max of 64 items");
         this.add("item.utility.direction", "Direction: ");
         this.add("item.utility.direction.desc", "Right click in a GUI to change direction");

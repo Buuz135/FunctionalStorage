@@ -27,6 +27,7 @@
   "block.functionalstorage.warped_2": "Warped Drawer (1x2)",
   "block.functionalstorage.warped_4": "Warped Drawer (2x2)",
   "item.functionalstorage.collector_upgrade": "Collector Upgrade",
+  "item.functionalstorage.configuration_tool": "Configuration Tool",
   "item.functionalstorage.copper_upgrade": "Copper Upgrade",
   "item.functionalstorage.diamond_upgrade": "Diamond Upgrade",
   "item.functionalstorage.gold_upgrade": "Gold Upgrade",
@@ -51,6 +52,6 @@
   "linkingtool.linkingmode.multiple.desc": "Links multiple drawers between 2 points",
   "linkingtool.linkingmode.single": "Single",
   "linkingtool.linkingmode.single.desc": "Links a drawer to a controller",
-  "linkingtool.use": "Sneak + Right Click in the air to change modes. Right Click in the air to change actions. Right click a controller to setup the tool then use it nearby drawers to link.",
+  "linkingtool.use": "Sneak + Right Click in the air to change modes. \nRight Click in the air to change actions. \nRight click a controller to setup the tool then use it nearby drawers to link. \n\nWhile holding the tool it will show the connected drawers to the selected controller.",
   "storageupgrade.desc": "Multiplies the block storage by "
 }

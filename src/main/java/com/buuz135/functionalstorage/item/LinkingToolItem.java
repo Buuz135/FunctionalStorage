@@ -24,9 +24,11 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -35,6 +37,7 @@ public class LinkingToolItem extends BasicItem {
     public static final String NBT_MODE = "Mode";
     public static final String NBT_CONTROLLER = "Controller";
     public static final String NBT_ACTION = "Action";
+    public static final String NBT_FIRST = "First";
 
     public LinkingToolItem() {
         super(new Properties().tab(FunctionalStorage.TAB).stacksTo(1));
@@ -84,7 +87,21 @@ public class LinkingToolItem extends BasicItem {
                     ((ControllableDrawerTile<?>) blockEntity).setControllerPos(controller.getBlockPos());
                     ((DrawerControllerTile) controller).addConnectedDrawers(linkingAction, pos);
                     context.getPlayer().displayClientMessage(new TextComponent("Linked drawer to the controller").setStyle(Style.EMPTY.withColor(linkingMode.color)), true);
-                }//TODO add to the drawer
+                }else{
+                    if (stack.getOrCreateTag().contains(NBT_FIRST)){
+                        CompoundTag firstpos = stack.getOrCreateTag().getCompound(NBT_FIRST);
+                        BlockPos firstPos = new BlockPos(firstpos.getInt("X"), firstpos.getInt("Y"), firstpos.getInt("Z"));
+                        AABB aabb = new AABB(Math.min(firstPos.getX(), pos.getX()),Math.min(firstPos.getY(), pos.getY()),Math.min(firstPos.getZ(), pos.getZ()), Math.max(firstPos.getX(), pos.getX()) + 1,Math.max(firstPos.getY(), pos.getY())+1,Math.max(firstPos.getZ(), pos.getZ())+1) ;
+                        ((DrawerControllerTile) controller).addConnectedDrawers(linkingAction, getBlockPosInAABB(aabb).toArray(BlockPos[]::new));
+                        stack.getOrCreateTag().remove(NBT_FIRST);
+                    } else {
+                        CompoundTag firstPos = new CompoundTag();
+                        firstPos.putInt("X", pos.getX());
+                        firstPos.putInt("Y", pos.getY());
+                        firstPos.putInt("Z", pos.getZ());
+                        stack.getOrCreateTag().put(NBT_FIRST, firstPos);
+                    }
+                }
                 context.getPlayer().playSound(SoundEvents.ITEM_FRAME_ROTATE_ITEM, 0.5f, 1);
                 return InteractionResult.SUCCESS;
             }
@@ -144,6 +161,18 @@ public class LinkingToolItem extends BasicItem {
 
             }
         }
+    }
+
+    public static List<BlockPos> getBlockPosInAABB(AABB axisAlignedBB) {
+        List<BlockPos> blocks = new ArrayList<>();
+        for (double y = axisAlignedBB.minY; y < axisAlignedBB.maxY; ++y) {
+            for (double x = axisAlignedBB.minX; x < axisAlignedBB.maxX; ++x) {
+                for (double z = axisAlignedBB.minZ; z < axisAlignedBB.maxZ; ++z) {
+                    blocks.add(new BlockPos(x, y, z));
+                }
+            }
+        }
+        return blocks;
     }
 
     @Override

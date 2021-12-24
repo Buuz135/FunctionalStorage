@@ -12,6 +12,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.common.util.LazyOptional;
@@ -96,6 +97,10 @@ public class DrawerControllerTile extends ControllableDrawerTile<DrawerControlle
         return this;
     }
 
+    public ConnectedDrawers getConnectedDrawers() {
+        return connectedDrawers;
+    }
+
     public void addConnectedDrawers(LinkingToolItem.ActionMode action, BlockPos... positions){
         for (BlockPos position : positions) {
            if (this.getBlockPos().closerThan(position, 8)){
@@ -174,5 +179,10 @@ public class DrawerControllerTile extends ControllableDrawerTile<DrawerControlle
         public List<IItemHandler> getHandlers() {
             return handlers;
         }
+    }
+
+    @Override
+    public AABB getRenderBoundingBox() {
+        return super.getRenderBoundingBox().inflate(50);
     }
 }

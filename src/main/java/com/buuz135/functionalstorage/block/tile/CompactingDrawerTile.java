@@ -80,8 +80,10 @@ public class CompactingDrawerTile extends ControllableDrawerTile<CompactingDrawe
     }
 
     public InteractionResult onSlotActivated(Player playerIn, InteractionHand hand, Direction facing, double hitX, double hitY, double hitZ, int slot) {
+        ItemStack stack = playerIn.getItemInHand(hand);
+        if (stack.getItem().equals(FunctionalStorage.CONFIGURATION_TOOL.get()) || stack.getItem().equals(FunctionalStorage.LINKING_TOOL.get())) return InteractionResult.PASS;
         if (!handler.isSetup() && slot != -1){
-            ItemStack stack = playerIn.getItemInHand(hand).copy();
+            stack = playerIn.getItemInHand(hand).copy();
             stack.setCount(1);
             CompactingUtil compactingUtil = new CompactingUtil(this.level);
             compactingUtil.setup(stack);
