@@ -12,6 +12,7 @@ import com.hrznstudio.titanium.client.screen.addon.TextScreenAddon;
 import com.hrznstudio.titanium.component.inventory.InventoryComponent;
 import com.hrznstudio.titanium.util.RayTraceUtils;
 import com.hrznstudio.titanium.util.TileUtil;
+import com.mojang.datafixers.types.Func;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -19,11 +20,14 @@ import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 import org.jetbrains.annotations.NotNull;
@@ -101,6 +105,40 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
                 return  new TranslatableComponent("key.categories.inventory").getString();
             }
         });
+    }
+
+    @Override
+    public void serverTick(Level level, BlockPos pos, BlockState state, T blockEntity) {
+        super.serverTick(level, pos, state, blockEntity);
+        if (level.getGameTime() % 4 == 0){
+            for (int i = 0; i < this.utilityUpgrades.getSlots(); i++) {
+                ItemStack stack = this.utilityUpgrades.getStackInSlot(i);
+                if (!stack.isEmpty()){
+                    Item item = stack.getItem();
+                    if (item.equals(FunctionalStorage.PULLING_UPGRADE.get())){
+                        Direction direction = Direction.byName(stack.getOrCreateTag().getString("Direction"));
+                        TileUtil.getTileEntity(level, pos.relative(direction)).ifPresent(blockEntity1 -> {
+                            blockEntity1.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, direction.getOpposite()).ifPresent(iItemHandler -> {
+                                for (int otherSlot = 0; otherSlot < iItemHandler.getSlots(); otherSlot++) {
+                                    ItemStack pulledStack = iItemHandler.extractItem(otherSlot, 2, true);
+                                    if (pulledStack.isEmpty()) continue;
+                                    boolean hasWorked = false;
+                                    for (int ourSlot = 0; ourSlot < this.getStorage().getSlots(); ourSlot++) {
+                                        ItemStack simulated = getStorage().insertItem(ourSlot, pulledStack, true);
+                                        if (simulated.getCount() != pulledStack.getCount()){
+                                            getStorage().insertItem(ourSlot, iItemHandler.extractItem(otherSlot, pulledStack.getCount() - simulated.getCount(), false), false );
+                                            hasWorked = true;
+                                            break;
+                                        }
+                                    }
+                                    if (hasWorked) break;
+                                }
+                            });
+                        });
+                    }
+                }
+            }
+        }
     }
 
     public BlockPos getControllerPos() {
