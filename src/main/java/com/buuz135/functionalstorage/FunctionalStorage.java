@@ -16,6 +16,7 @@ import com.buuz135.functionalstorage.item.StorageUpgradeItem;
 import com.buuz135.functionalstorage.item.UpgradeItem;
 import com.buuz135.functionalstorage.util.DrawerWoodType;
 import com.buuz135.functionalstorage.util.IWoodType;
+import com.buuz135.functionalstorage.util.StorageTags;
 import com.hrznstudio.titanium.block.BasicBlock;
 import com.hrznstudio.titanium.block.BasicTileBlock;
 import com.hrznstudio.titanium.datagenerator.loot.TitaniumLootTableProvider;
@@ -23,16 +24,20 @@ import com.hrznstudio.titanium.datagenerator.model.BlockItemModelGeneratorProvid
 import com.hrznstudio.titanium.event.handler.EventManager;
 import com.hrznstudio.titanium.module.ModuleController;
 import com.hrznstudio.titanium.recipe.generator.TitaniumRecipeProvider;
+import com.hrznstudio.titanium.recipe.generator.TitaniumShapedRecipeBuilder;
 import com.hrznstudio.titanium.tab.AdvancedTitaniumTab;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.Direction;
 import net.minecraft.data.recipes.FinishedRecipe;
+import net.minecraft.data.recipes.UpgradeRecipeBuilder;
 import net.minecraft.data.tags.BlockTagsProvider;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.block.Block;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -42,6 +47,7 @@ import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.client.model.generators.BlockModelProvider;
 import net.minecraftforge.client.model.generators.ItemModelProvider;
 import net.minecraftforge.client.model.generators.ModelProvider;
+import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.util.NonNullLazy;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
@@ -154,25 +160,29 @@ public class FunctionalStorage extends ModuleController {
         }).subscribe();
         EventManager.mod(ColorHandlerEvent.Item.class).process(item -> {
             item.getItemColors().register((stack, tint) -> {
-                CompoundTag tag = stack.getOrCreateTag();
-                LinkingToolItem.LinkingMode linkingMode = LinkingToolItem.LinkingMode.valueOf(tag.getString(LinkingToolItem.NBT_MODE));
-                LinkingToolItem.ActionMode linkingAction = LinkingToolItem.ActionMode.valueOf(tag.getString(LinkingToolItem.NBT_ACTION));
-                if (tint == 3 && tag.contains(LinkingToolItem.NBT_CONTROLLER)){
-                    return Color.RED.getRGB();
-                }
-                if (tint == 1){
-                    return linkingMode.getColor().getValue();
-                }
-                if (tint == 2){
-                    return linkingAction.getColor().getValue();
+                if(stack.hasTag()){
+                    CompoundTag tag = stack.getOrCreateTag();
+                    LinkingToolItem.LinkingMode linkingMode = LinkingToolItem.LinkingMode.valueOf(tag.getString(LinkingToolItem.NBT_MODE));
+                    LinkingToolItem.ActionMode linkingAction = LinkingToolItem.ActionMode.valueOf(tag.getString(LinkingToolItem.NBT_ACTION));
+                    if (tint == 3 && tag.contains(LinkingToolItem.NBT_CONTROLLER)){
+                        return Color.RED.getRGB();
+                    }
+                    if (tint == 1){
+                        return linkingMode.getColor().getValue();
+                    }
+                    if (tint == 2){
+                        return linkingAction.getColor().getValue();
+                    }
                 }
                 return 0xffffff;
             }, LINKING_TOOL.get());
             item.getItemColors().register((stack, tint) -> {
-                CompoundTag tag = stack.getOrCreateTag();
-                ConfigurationToolItem.ConfigurationAction action = ConfigurationToolItem.ConfigurationAction.valueOf(tag.getString(ConfigurationToolItem.NBT_MODE));
-                if (tint == 1){
-                    return action.getColor().getValue();
+                if (stack.hasTag()){
+                    CompoundTag tag = stack.getOrCreateTag();
+                    ConfigurationToolItem.ConfigurationAction action = ConfigurationToolItem.ConfigurationAction.valueOf(tag.getString(ConfigurationToolItem.NBT_MODE));
+                    if (tint == 1){
+                        return action.getColor().getValue();
+                    }
                 }
                 return 0xffffff;
             }, CONFIGURATION_TOOL.get());
@@ -205,6 +215,89 @@ public class FunctionalStorage extends ModuleController {
             @Override
             public void register(Consumer<FinishedRecipe> consumer) {
                 blocksToProcess.get().stream().map(block -> (BasicBlock) block).forEach(basicBlock -> basicBlock.registerRecipe(consumer));
+                TitaniumShapedRecipeBuilder.shapedRecipe(STORAGE_UPGRADES.get(StorageUpgradeItem.StorageTier.IRON).get())
+                        .pattern("III").pattern("IDI").pattern("III")
+                        .define('I', Tags.Items.INGOTS_IRON)
+                        .define('D', StorageTags.DRAWER)
+                        .save(consumer);
+                TitaniumShapedRecipeBuilder.shapedRecipe(VOID_UPGRADE.get())
+                        .pattern("III").pattern("IDI").pattern("III")
+                        .define('I', Tags.Items.OBSIDIAN)
+                        .define('D', StorageTags.DRAWER)
+                        .save(consumer);
+                TitaniumShapedRecipeBuilder.shapedRecipe(CONFIGURATION_TOOL.get())
+                        .pattern("PPG").pattern("PDG").pattern("PEP")
+                        .define('P', Items.PAPER)
+                        .define('G', Tags.Items.INGOTS_GOLD)
+                        .define('D', StorageTags.DRAWER)
+                        .define('E', Items.EMERALD)
+                        .save(consumer);
+                TitaniumShapedRecipeBuilder.shapedRecipe(LINKING_TOOL.get())
+                        .pattern("PPG").pattern("PDG").pattern("PEP")
+                        .define('P', Items.PAPER)
+                        .define('G', Tags.Items.INGOTS_GOLD)
+                        .define('D', StorageTags.DRAWER)
+                        .define('E', Items.DIAMOND)
+                        .save(consumer);
+                TitaniumShapedRecipeBuilder.shapedRecipe(STORAGE_UPGRADES.get(StorageUpgradeItem.StorageTier.COPPER).get())
+                        .pattern("IBI").pattern("CDC").pattern("IBI")
+                        .define('I', Items.COPPER_INGOT)
+                        .define('B', Items.COPPER_BLOCK)
+                        .define('C', Tags.Items.CHESTS_WOODEN)
+                        .define('D', StorageTags.DRAWER)
+                        .save(consumer);
+                TitaniumShapedRecipeBuilder.shapedRecipe(STORAGE_UPGRADES.get(StorageUpgradeItem.StorageTier.GOLD).get())
+                        .pattern("IBI").pattern("CDC").pattern("BIB")
+                        .define('I', Tags.Items.INGOTS_GOLD)
+                        .define('B', Tags.Items.STORAGE_BLOCKS_GOLD)
+                        .define('C', Tags.Items.CHESTS_WOODEN)
+                        .define('D', STORAGE_UPGRADES.get(StorageUpgradeItem.StorageTier.COPPER).get())
+                        .save(consumer);
+                TitaniumShapedRecipeBuilder.shapedRecipe(STORAGE_UPGRADES.get(StorageUpgradeItem.StorageTier.DIAMOND).get())
+                        .pattern("IBI").pattern("CDC").pattern("BBB")
+                        .define('I', Tags.Items.GEMS_DIAMOND)
+                        .define('B', Tags.Items.STORAGE_BLOCKS_DIAMOND)
+                        .define('C', Tags.Items.CHESTS_WOODEN)
+                        .define('D', STORAGE_UPGRADES.get(StorageUpgradeItem.StorageTier.GOLD).get())
+                        .save(consumer);
+                UpgradeRecipeBuilder.smithing(Ingredient.of(STORAGE_UPGRADES.get(StorageUpgradeItem.StorageTier.DIAMOND).get()), Ingredient.of(Items.NETHERITE_INGOT), STORAGE_UPGRADES.get(StorageUpgradeItem.StorageTier.NETHERITE).get())
+                        .unlocks("has_netherite_ingot", has(Items.NETHERITE_INGOT))
+                        .save(consumer, STORAGE_UPGRADES.get(StorageUpgradeItem.StorageTier.NETHERITE).get().getRegistryName());
+                TitaniumShapedRecipeBuilder.shapedRecipe(DRAWER_CONTROLLER.get())
+                        .pattern("IBI").pattern("CDC").pattern("IBI")
+                        .define('I', Tags.Items.STONE)
+                        .define('B', Tags.Items.STORAGE_BLOCKS_QUARTZ)
+                        .define('C', StorageTags.DRAWER)
+                        .define('D', Items.COMPARATOR)
+                        .save(consumer);
+                TitaniumShapedRecipeBuilder.shapedRecipe(ARMORY_CABINET.get())
+                        .pattern("ICI").pattern("CDC").pattern("IBI")
+                        .define('I', Tags.Items.STONE)
+                        .define('B', Tags.Items.INGOTS_NETHERITE)
+                        .define('C', StorageTags.DRAWER)
+                        .define('D', Items.COMPARATOR)
+                        .save(consumer);
+                TitaniumShapedRecipeBuilder.shapedRecipe(PULLING_UPGRADE.get())
+                        .pattern("ICI").pattern("IDI").pattern("IBI")
+                        .define('I', Tags.Items.STONE)
+                        .define('B', Tags.Items.DUSTS_REDSTONE)
+                        .define('C', Items.HOPPER)
+                        .define('D', StorageTags.DRAWER)
+                        .save(consumer);
+                TitaniumShapedRecipeBuilder.shapedRecipe(PUSHING_UPGRADE.get())
+                        .pattern("IBI").pattern("IDI").pattern("IRI")
+                        .define('I', Tags.Items.STONE)
+                        .define('B', Tags.Items.DUSTS_REDSTONE)
+                        .define('R', Items.HOPPER)
+                        .define('D', StorageTags.DRAWER)
+                        .save(consumer);
+                TitaniumShapedRecipeBuilder.shapedRecipe(COLLECTOR_UPGRADE.get())
+                        .pattern("IBI").pattern("RDR").pattern("IBI")
+                        .define('I', Tags.Items.STONE)
+                        .define('B', Items.HOPPER)
+                        .define('R', Tags.Items.DUSTS_REDSTONE)
+                        .define('D', StorageTags.DRAWER)
+                        .save(consumer);
             }
         });
         event.getGenerator().addProvider(new FunctionalStorageTagsProvider(event.getGenerator(),new BlockTagsProvider(event.getGenerator()),  MOD_ID, event.getExistingFileHelper()));

@@ -1,0 +1,43 @@
+{
+  "type": "forge:conditional",
+  "recipes": [
+    {
+      "conditions": [
+        {
+          "values": [
+            {
+              "item": "functionalstorage:gold_upgrade",
+              "type": "forge:item_exists"
+            }
+          ],
+          "type": "forge:and"
+        }
+      ],
+      "recipe": {
+        "type": "minecraft:crafting_shaped",
+        "pattern": [
+          "IBI",
+          "CDC",
+          "BIB"
+        ],
+        "key": {
+          "I": {
+            "tag": "forge:ingots/gold"
+          },
+          "B": {
+            "tag": "forge:storage_blocks/gold"
+          },
+          "C": {
+            "tag": "forge:chests/wooden"
+          },
+          "D": {
+            "item": "functionalstorage:copper_upgrade"
+          }
+        },
+        "result": {
+          "item": "functionalstorage:gold_upgrade"
+        }
+      }
+    }
+  ]
+}

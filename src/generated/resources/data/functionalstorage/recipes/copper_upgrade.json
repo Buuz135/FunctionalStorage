@@ -1,0 +1,43 @@
+{
+  "type": "forge:conditional",
+  "recipes": [
+    {
+      "conditions": [
+        {
+          "values": [
+            {
+              "item": "functionalstorage:copper_upgrade",
+              "type": "forge:item_exists"
+            }
+          ],
+          "type": "forge:and"
+        }
+      ],
+      "recipe": {
+        "type": "minecraft:crafting_shaped",
+        "pattern": [
+          "IBI",
+          "CDC",
+          "IBI"
+        ],
+        "key": {
+          "I": {
+            "item": "minecraft:copper_ingot"
+          },
+          "B": {
+            "item": "minecraft:copper_block"
+          },
+          "C": {
+            "tag": "forge:chests/wooden"
+          },
+          "D": {
+            "tag": "functionalstorage:drawer"
+          }
+        },
+        "result": {
+          "item": "functionalstorage:copper_upgrade"
+        }
+      }
+    }
+  ]
+}

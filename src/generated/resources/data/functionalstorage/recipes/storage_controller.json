@@ -1,0 +1,43 @@
+{
+  "type": "forge:conditional",
+  "recipes": [
+    {
+      "conditions": [
+        {
+          "values": [
+            {
+              "item": "functionalstorage:storage_controller",
+              "type": "forge:item_exists"
+            }
+          ],
+          "type": "forge:and"
+        }
+      ],
+      "recipe": {
+        "type": "minecraft:crafting_shaped",
+        "pattern": [
+          "IBI",
+          "CDC",
+          "IBI"
+        ],
+        "key": {
+          "I": {
+            "tag": "forge:stone"
+          },
+          "B": {
+            "tag": "forge:storage_blocks/quartz"
+          },
+          "C": {
+            "tag": "functionalstorage:drawer"
+          },
+          "D": {
+            "item": "minecraft:comparator"
+          }
+        },
+        "result": {
+          "item": "functionalstorage:storage_controller"
+        }
+      }
+    }
+  ]
+}

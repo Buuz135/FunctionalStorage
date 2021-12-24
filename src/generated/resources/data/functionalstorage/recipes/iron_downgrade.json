@@ -1,0 +1,37 @@
+{
+  "type": "forge:conditional",
+  "recipes": [
+    {
+      "conditions": [
+        {
+          "values": [
+            {
+              "item": "functionalstorage:iron_downgrade",
+              "type": "forge:item_exists"
+            }
+          ],
+          "type": "forge:and"
+        }
+      ],
+      "recipe": {
+        "type": "minecraft:crafting_shaped",
+        "pattern": [
+          "III",
+          "IDI",
+          "III"
+        ],
+        "key": {
+          "I": {
+            "tag": "forge:ingots/iron"
+          },
+          "D": {
+            "tag": "functionalstorage:drawer"
+          }
+        },
+        "result": {
+          "item": "functionalstorage:iron_downgrade"
+        }
+      }
+    }
+  ]
+}

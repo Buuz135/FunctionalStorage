@@ -1,0 +1,43 @@
+{
+  "type": "forge:conditional",
+  "recipes": [
+    {
+      "conditions": [
+        {
+          "values": [
+            {
+              "item": "functionalstorage:diamond_upgrade",
+              "type": "forge:item_exists"
+            }
+          ],
+          "type": "forge:and"
+        }
+      ],
+      "recipe": {
+        "type": "minecraft:crafting_shaped",
+        "pattern": [
+          "IBI",
+          "CDC",
+          "BBB"
+        ],
+        "key": {
+          "I": {
+            "tag": "forge:gems/diamond"
+          },
+          "B": {
+            "tag": "forge:storage_blocks/diamond"
+          },
+          "C": {
+            "tag": "forge:chests/wooden"
+          },
+          "D": {
+            "item": "functionalstorage:gold_upgrade"
+          }
+        },
+        "result": {
+          "item": "functionalstorage:diamond_upgrade"
+        }
+      }
+    }
+  ]
+}

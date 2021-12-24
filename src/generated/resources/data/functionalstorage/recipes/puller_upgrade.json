@@ -1,0 +1,43 @@
+{
+  "type": "forge:conditional",
+  "recipes": [
+    {
+      "conditions": [
+        {
+          "values": [
+            {
+              "item": "functionalstorage:puller_upgrade",
+              "type": "forge:item_exists"
+            }
+          ],
+          "type": "forge:and"
+        }
+      ],
+      "recipe": {
+        "type": "minecraft:crafting_shaped",
+        "pattern": [
+          "ICI",
+          "IDI",
+          "IBI"
+        ],
+        "key": {
+          "I": {
+            "tag": "forge:stone"
+          },
+          "B": {
+            "tag": "forge:dusts/redstone"
+          },
+          "C": {
+            "item": "minecraft:hopper"
+          },
+          "D": {
+            "tag": "functionalstorage:drawer"
+          }
+        },
+        "result": {
+          "item": "functionalstorage:puller_upgrade"
+        }
+      }
+    }
+  ]
+}
