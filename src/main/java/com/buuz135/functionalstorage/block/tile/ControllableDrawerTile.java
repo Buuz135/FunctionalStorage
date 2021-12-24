@@ -19,11 +19,13 @@ import net.minecraft.core.Direction;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraftforge.common.util.LazyOptional;
@@ -156,6 +158,25 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
                                 }
                             });
                         });
+                    }
+                    if (item.equals(FunctionalStorage.COLLECTOR_UPGRADE.get())){
+                        Direction direction = Direction.byName(stack.getOrCreateTag().getString("Direction"));
+                        AABB box = new AABB(pos.relative(direction));
+                        for (ItemEntity entitiesOfClass : level.getEntitiesOfClass(ItemEntity.class, box)) {
+                            ItemStack pulledStack = ItemHandlerHelper.copyStackWithSize(entitiesOfClass.getItem(), Math.min(entitiesOfClass.getItem().getCount(), 4));
+                            if (pulledStack.isEmpty()) continue;
+                            boolean hasWorked = false;
+                            for (int ourSlot = 0; ourSlot < this.getStorage().getSlots(); ourSlot++) {
+                                ItemStack simulated = getStorage().insertItem(ourSlot, pulledStack, true);
+                                if (simulated.getCount() != pulledStack.getCount()){
+                                    getStorage().insertItem(ourSlot, ItemHandlerHelper.copyStackWithSize(entitiesOfClass.getItem(), pulledStack.getCount() - simulated.getCount()), false);
+                                    entitiesOfClass.getItem().shrink(pulledStack.getCount() - simulated.getCount());
+                                    hasWorked = true;
+                                    break;
+                                }
+                            }
+                            if (hasWorked) break;
+                        }
                     }
                 }
             }
