@@ -23,11 +23,16 @@ import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.VoxelShape;
 
 public class DrawerRenderer implements BlockEntityRenderer<DrawerTile> {
 
@@ -108,7 +113,7 @@ public class DrawerRenderer implements BlockEntityRenderer<DrawerTile> {
         if (!inventoryHandler.getStoredStacks().get(0).getStack().isEmpty()){
             matrixStack.pushPose();
             matrixStack.translate(0.5, 0.27f, 0.0005f);
-            matrixStack.scale(0.5f, 0.5f, 1);
+            matrixStack.scale(0.5f, 0.5f, 0.5f);
             ItemStack stack = inventoryHandler.getStoredStacks().get(0).getStack();
             renderStack(matrixStack,  bufferIn, combinedLightIn, combinedOverlayIn, stack, inventoryHandler.getStoredStacks().get(0).getAmount(), 0.02f);
             matrixStack.popPose();
@@ -116,7 +121,7 @@ public class DrawerRenderer implements BlockEntityRenderer<DrawerTile> {
         if (!inventoryHandler.getStoredStacks().get(1).getStack().isEmpty()){
             matrixStack.pushPose();
             matrixStack.translate(0.5, 0.77f, 0.0005f);
-            matrixStack.scale(0.5f, 0.5f, 1);
+            matrixStack.scale(0.5f, 0.5f, 0.5f);
             ItemStack stack = inventoryHandler.getStoredStacks().get(1).getStack();
             renderStack(matrixStack,  bufferIn, combinedLightIn, combinedOverlayIn, stack, inventoryHandler.getStoredStacks().get(1).getAmount(), 0.02f);
             matrixStack.popPose();
@@ -127,7 +132,7 @@ public class DrawerRenderer implements BlockEntityRenderer<DrawerTile> {
         if (!inventoryHandler.getStoredStacks().get(0).getStack().isEmpty()){ //BOTTOM RIGHT
             matrixStack.pushPose();
             matrixStack.translate(0.75, 0.27f, 0.0005f);
-            matrixStack.scale(0.5f, 0.5f, 1);
+            matrixStack.scale(0.5f, 0.5f, 0.5f);
             ItemStack stack = inventoryHandler.getStoredStacks().get(0).getStack();
             renderStack(matrixStack,  bufferIn, combinedLightIn, combinedOverlayIn, stack, inventoryHandler.getStoredStacks().get(0).getAmount(), 0.02f);
             matrixStack.popPose();
@@ -135,7 +140,7 @@ public class DrawerRenderer implements BlockEntityRenderer<DrawerTile> {
         if (!inventoryHandler.getStoredStacks().get(1).getStack().isEmpty()){ //BOTTOM LEFT
             matrixStack.pushPose();
             matrixStack.translate(0.25, 0.27f, 0.0005f);
-            matrixStack.scale(0.5f, 0.5f, 1);
+            matrixStack.scale(0.5f, 0.5f, 0.5f);
             ItemStack stack = inventoryHandler.getStoredStacks().get(1).getStack();
             renderStack(matrixStack,  bufferIn, combinedLightIn, combinedOverlayIn, stack, inventoryHandler.getStoredStacks().get(1).getAmount(), 0.02f);
             matrixStack.popPose();
@@ -143,7 +148,7 @@ public class DrawerRenderer implements BlockEntityRenderer<DrawerTile> {
         if (!inventoryHandler.getStoredStacks().get(2).getStack().isEmpty()){ //TOP RIGHT
             matrixStack.pushPose();
             matrixStack.translate(0.75, 0.77f, 0.0005f);
-            matrixStack.scale(0.5f, 0.5f, 1);
+            matrixStack.scale(0.5f, 0.5f, 0.5f);
             ItemStack stack = inventoryHandler.getStoredStacks().get(2).getStack();
             renderStack(matrixStack,  bufferIn, combinedLightIn, combinedOverlayIn, stack, inventoryHandler.getStoredStacks().get(2).getAmount(), 0.02f);
             matrixStack.popPose();
@@ -151,7 +156,7 @@ public class DrawerRenderer implements BlockEntityRenderer<DrawerTile> {
         if (!inventoryHandler.getStoredStacks().get(3).getStack().isEmpty()){ //TOP LEFT
             matrixStack.pushPose();
             matrixStack.translate(0.25, 0.77f, 0.0005f);
-            matrixStack.scale(0.5f, 0.5f, 1);
+            matrixStack.scale(0.5f, 0.5f, 0.5f);
             ItemStack stack = inventoryHandler.getStoredStacks().get(3).getStack();
             renderStack(matrixStack,  bufferIn, combinedLightIn, combinedOverlayIn, stack, inventoryHandler.getStoredStacks().get(3).getAmount(), 0.02f);
             matrixStack.popPose();
@@ -161,22 +166,28 @@ public class DrawerRenderer implements BlockEntityRenderer<DrawerTile> {
 
     public static void renderStack(PoseStack matrixStack, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn, ItemStack stack, int amount, float scale){
         BakedModel model = Minecraft.getInstance().getItemRenderer().getModel(stack, Minecraft.getInstance().level, null, 0);
+        float offset = -0.15f;
         if (model.isGui3d()){
-            matrixStack.translate(0,0, -0.115);
-            matrixStack.scale(0.5f, 0.5f, 0.25f);
-            matrixStack.mulPose(Vector3f.YP.rotationDegrees(180));
+            matrixStack.translate(0,0, offset);
+            matrixStack.scale(0.75f, 0.75f, 0.75f);
+
         } else {
             matrixStack.scale(0.4f, 0.4f, 0.4f);
         }
-
-        Minecraft.getInstance().getItemRenderer().renderStatic(stack, ItemTransforms.TransformType.NONE, combinedLightIn, combinedOverlayIn, matrixStack, bufferIn, 0);
+        matrixStack.mulPose(Vector3f.YP.rotationDegrees(180));
+        Minecraft.getInstance().getItemRenderer().renderStatic(stack, ItemTransforms.TransformType.FIXED, combinedLightIn, combinedOverlayIn, matrixStack, bufferIn, 0);
+        matrixStack.mulPose(Vector3f.YP.rotationDegrees(-180));
         if (!model.isGui3d()){
             matrixStack.scale(1/0.4f, 1/0.4f, 1/0.0001f);
             matrixStack.scale(0.5f, 0.5f, 0.0001f);
+
         }else {
-            matrixStack.mulPose(Vector3f.YP.rotationDegrees(-180));
-            matrixStack.translate(0,0, 0.23f*2);
+            matrixStack.translate(0,0, 0.2);
+            float sl = 0.665f;
+            matrixStack.scale(sl, sl, sl);
         }
+
+
         renderText(matrixStack, bufferIn, combinedOverlayIn, new TextComponent(ChatFormatting.WHITE + "" + NumberUtils.getFormatedBigNumber(amount)), Direction.NORTH, scale);
     }
 
