@@ -137,13 +137,23 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
     }
 
     public InteractionResult onSlotActivated(Player playerIn, InteractionHand hand, Direction facing, double hitX, double hitY, double hitZ, int slot) {
+        ItemStack stack = playerIn.getItemInHand(hand);
+        if (stack.getItem().equals(FunctionalStorage.CONFIGURATION_TOOL.get()) || stack.getItem().equals(FunctionalStorage.LINKING_TOOL.get())) return InteractionResult.PASS;
+        if (!stack.isEmpty() && stack.getItem() instanceof UpgradeItem){
+            InventoryComponent component = ((UpgradeItem) stack.getItem()).getType() == UpgradeItem.Type.STORAGE ? storageUpgrades : utilityUpgrades;
+            for (int i = 0; i < component.getSlots(); i++) {
+                if (component.getStackInSlot(i).isEmpty()){
+                    playerIn.setItemInHand(hand, component.insertItem(i, stack, false));
+                    return InteractionResult.SUCCESS;
+                }
+            }
+        }
         if (super.onActivated(playerIn, hand, facing, hitX, hitY, hitZ) == InteractionResult.SUCCESS) {
             return InteractionResult.SUCCESS;
         }
         if (slot == -1){
             openGui(playerIn);
         } else if (isServer()){
-            ItemStack stack = playerIn.getItemInHand(hand);
             if (!stack.isEmpty() && getStorage().isItemValid(slot, stack)) {
                 playerIn.setItemInHand(hand, getStorage().insertItem(slot, stack, false));
             } else if (System.currentTimeMillis() - INTERACTION_LOGGER.getOrDefault(playerIn.getUUID(), System.currentTimeMillis()) < 300) {
