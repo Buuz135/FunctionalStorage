@@ -209,7 +209,7 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
 
     public void setLocked(boolean locked) {
         if (this.getBlockState().hasProperty(DrawerBlock.LOCKED) ){
-            this.level.setBlock(this.getBlockPos(), this.getBlockState().setValue(DrawerBlock.LOCKED, locked), 0);
+            this.level.setBlock(this.getBlockPos(), this.getBlockState().setValue(DrawerBlock.LOCKED, locked), 3);
         }
     }
 

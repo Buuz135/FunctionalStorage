@@ -1,18 +1,33 @@
 {
   "variants": {
-    "subfacing=north": {
+    "locked=false,subfacing=north": {
       "model": "functionalstorage:block/compacting_drawer"
     },
-    "subfacing=south": {
+    "locked=true,subfacing=north": {
+      "model": "functionalstorage:block/compacting_drawer_locked"
+    },
+    "locked=false,subfacing=south": {
       "model": "functionalstorage:block/compacting_drawer",
       "y": 180
     },
-    "subfacing=west": {
+    "locked=true,subfacing=south": {
+      "model": "functionalstorage:block/compacting_drawer_locked",
+      "y": 180
+    },
+    "locked=false,subfacing=west": {
       "model": "functionalstorage:block/compacting_drawer",
       "y": 270
     },
-    "subfacing=east": {
+    "locked=true,subfacing=west": {
+      "model": "functionalstorage:block/compacting_drawer_locked",
+      "y": 270
+    },
+    "locked=false,subfacing=east": {
       "model": "functionalstorage:block/compacting_drawer",
+      "y": 90
+    },
+    "locked=true,subfacing=east": {
+      "model": "functionalstorage:block/compacting_drawer_locked",
       "y": 90
     }
   }

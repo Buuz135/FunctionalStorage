@@ -243,13 +243,15 @@ public class DrawerBlock extends RotatableBlock<DrawerTile> {
 
     @Override
     public void onRemove(BlockState state, Level worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
-        TileUtil.getTileEntity(worldIn, pos, DrawerTile.class).ifPresent(tile -> {
-            if (tile.getControllerPos() != null){
-                TileUtil.getTileEntity(worldIn, tile.getControllerPos(), DrawerControllerTile.class).ifPresent(drawerControllerTile -> {
-                    drawerControllerTile.addConnectedDrawers(LinkingToolItem.ActionMode.REMOVE, pos);
-                });
-            }
-        });
+        if (!state.is(newState.getBlock())){
+            TileUtil.getTileEntity(worldIn, pos, DrawerTile.class).ifPresent(tile -> {
+                if (tile.getControllerPos() != null){
+                    TileUtil.getTileEntity(worldIn, tile.getControllerPos(), DrawerControllerTile.class).ifPresent(drawerControllerTile -> {
+                        drawerControllerTile.addConnectedDrawers(LinkingToolItem.ActionMode.REMOVE, pos);
+                    });
+                }
+            });
+        }
         super.onRemove(state, worldIn, pos, newState, isMoving);
     }
 }

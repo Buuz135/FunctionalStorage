@@ -174,6 +174,7 @@ public class FunctionalStorage extends ModuleController {
                     ItemBlockRenderTypes.setRenderLayer(blockRegistryObject.get(), RenderType.cutout());
                 }
             }
+            ItemBlockRenderTypes.setRenderLayer(COMPACTING_DRAWER.get(), RenderType.cutout());
         }).subscribe();
     }
 
@@ -224,6 +225,8 @@ public class FunctionalStorage extends ModuleController {
                                 .texture("lock_icon", modLoc("blocks/lock"));
                     }
                 }
+                withExistingParent(COMPACTING_DRAWER.get().getRegistryName().getPath() + "_locked", modLoc(COMPACTING_DRAWER.get().getRegistryName().getPath()))
+                        .texture("lock_icon", modLoc("blocks/lock"));
             }
         });
     }

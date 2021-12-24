@@ -25,9 +25,11 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.functions.CopyNbtFunction;
 import net.minecraft.world.level.storage.loot.providers.nbt.ContextNbtProvider;
@@ -70,7 +72,7 @@ public class CompactingDrawerBlock extends RotatableBlock<CompactingDrawerTile> 
     public CompactingDrawerBlock(String name) {
         super(name, Properties.copy(Blocks.STONE_BRICKS), CompactingDrawerTile.class);
         setItemGroup(FunctionalStorage.TAB);
-        registerDefaultState(defaultBlockState().setValue(RotatableBlock.FACING_HORIZONTAL, Direction.NORTH));
+        registerDefaultState(defaultBlockState().setValue(RotatableBlock.FACING_HORIZONTAL, Direction.NORTH).setValue(DrawerBlock.LOCKED, false));
     }
 
     @Override
@@ -100,6 +102,12 @@ public class CompactingDrawerBlock extends RotatableBlock<CompactingDrawerTile> 
         VoxelShape total = Shapes.block();
         boxes.add(total);
         return boxes;
+    }
+
+    @Override
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> p_206840_1_) {
+        super.createBlockStateDefinition(p_206840_1_);
+        p_206840_1_.add(DrawerBlock.LOCKED);
     }
 
     @Nonnull
@@ -172,13 +180,15 @@ public class CompactingDrawerBlock extends RotatableBlock<CompactingDrawerTile> 
 
     @Override
     public void onRemove(BlockState state, Level worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
-        TileUtil.getTileEntity(worldIn, pos, DrawerTile.class).ifPresent(tile -> {
-            if (tile.getControllerPos() != null){
-                TileUtil.getTileEntity(worldIn, tile.getControllerPos(), DrawerControllerTile.class).ifPresent(drawerControllerTile -> {
-                    drawerControllerTile.addConnectedDrawers(LinkingToolItem.ActionMode.REMOVE, pos);
-                });
-            }
-        });
+        if (!state.is(newState.getBlock())){
+            TileUtil.getTileEntity(worldIn, pos, CompactingDrawerTile.class).ifPresent(tile -> {
+                if (tile.getControllerPos() != null){
+                    TileUtil.getTileEntity(worldIn, tile.getControllerPos(), DrawerControllerTile.class).ifPresent(drawerControllerTile -> {
+                        drawerControllerTile.addConnectedDrawers(LinkingToolItem.ActionMode.REMOVE, pos);
+                    });
+                }
+            });
+        }
         super.onRemove(state, worldIn, pos, newState, isMoving);
     }
 }
