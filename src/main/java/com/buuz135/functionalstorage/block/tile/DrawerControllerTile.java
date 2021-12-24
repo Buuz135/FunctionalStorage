@@ -28,7 +28,7 @@ import java.util.List;
 
 public class DrawerControllerTile extends ControllableDrawerTile<DrawerControllerTile>{
 
-    //TODO Not sync nbt
+    //TODO Allow insertion of items
 
     @Save
     private ConnectedDrawers connectedDrawers;

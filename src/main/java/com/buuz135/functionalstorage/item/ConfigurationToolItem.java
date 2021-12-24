@@ -97,7 +97,8 @@ public class ConfigurationToolItem extends BasicItem {
             if (key == null){
                 tooltip.add(new TranslatableComponent("configurationtool.configmode").withStyle(ChatFormatting.YELLOW)
                         .append(new TranslatableComponent("configurationtool.configmode." + linkingMode.name().toLowerCase(Locale.ROOT) ).withStyle(Style.EMPTY.withColor(linkingMode.getColor()))));
-
+                tooltip.add(new TextComponent("").withStyle(ChatFormatting.GRAY));
+                tooltip.add(new TranslatableComponent("configurationtool.use").withStyle(ChatFormatting.GRAY));
             }
         }
     }
