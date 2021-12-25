@@ -58,5 +58,8 @@ public class FunctionalStorageLangProvider extends LanguageProvider {
         this.add("configurationtool.configmode.toggle_render", "Hide/Show Item Renders");
         this.add("configurationtool.configmode.toggle_upgrades", "Hide/Show Upgrade Renders");
         this.add("configurationtool.use", "Sneak + Right Click in the air to change modes. Right click a drawer to toggle the option.");
+        this.add("upgrade.type", "Type: ");
+        this.add("upgrade.type.storage", "Storage");
+        this.add("upgrade.type.utility", "Utility");
     }
 }

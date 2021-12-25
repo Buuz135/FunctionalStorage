@@ -21,8 +21,6 @@ import javax.annotation.Nullable;
 
 public class ArmoryCabinetTile extends ActiveTile<ArmoryCabinetTile> {
 
-    //TODO Not sync nbt
-
     @Save
     public ArmoryCabinetInventoryHandler handler;
     private final LazyOptional<IItemHandler> lazyStorage;

@@ -59,5 +59,8 @@
   "linkingtool.linkingmode.single": "Single",
   "linkingtool.linkingmode.single.desc": "Links a drawer to a controller",
   "linkingtool.use": "Sneak + Right Click in the air to change modes. \nRight Click in the air to change actions. \nRight click a controller to setup the tool then use it nearby drawers to link. \n\nWhile holding the tool it will show the connected drawers to the selected controller.",
-  "storageupgrade.desc": "Multiplies the block storage by "
+  "storageupgrade.desc": "Multiplies the block storage by ",
+  "upgrade.type": "Type: ",
+  "upgrade.type.storage": "Storage",
+  "upgrade.type.utility": "Utility"
 }

@@ -26,8 +26,6 @@ import java.util.Locale;
 
 public class UpgradeItem extends BasicItem {
 
-    //TODO Add tooltip to show its type
-
     private final Type type;
 
     public UpgradeItem(Properties properties, Type type) {
@@ -79,13 +77,15 @@ public class UpgradeItem extends BasicItem {
     @Override
     public void addTooltipDetails(@Nullable BasicItem.Key key, ItemStack stack, List<Component> tooltip, boolean advanced) {
         super.addTooltipDetails(key, stack, tooltip, advanced);
+        tooltip.add(new TranslatableComponent("upgrade.type").withStyle(ChatFormatting.YELLOW).append(new TranslatableComponent("upgrade.type." + getType().name().toLowerCase(Locale.ROOT)).withStyle(ChatFormatting.WHITE)));
         if (!stack.hasTag()) return;
         Item item = stack.getItem();
         if (item.equals(FunctionalStorage.PULLING_UPGRADE.get()) || item.equals(FunctionalStorage.PUSHING_UPGRADE.get()) || item.equals(FunctionalStorage.COLLECTOR_UPGRADE.get())){
-            tooltip.add(new TranslatableComponent("item.utility.direction").withStyle(ChatFormatting.GRAY).append(WordUtils.capitalize(stack.getTag().getString("Direction").toLowerCase(Locale.ROOT))));
+            tooltip.add(new TranslatableComponent("item.utility.direction").withStyle(ChatFormatting.YELLOW).append(new TranslatableComponent(WordUtils.capitalize(stack.getTag().getString("Direction").toLowerCase(Locale.ROOT))).withStyle(ChatFormatting.WHITE)));
             tooltip.add(new TextComponent(""));
             tooltip.add(new TranslatableComponent("item.utility.direction.desc").withStyle(ChatFormatting.GRAY));
         }
+
     }
 
     @Override
