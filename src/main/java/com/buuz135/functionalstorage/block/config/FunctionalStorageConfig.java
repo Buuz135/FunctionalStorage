@@ -10,4 +10,7 @@ public class FunctionalStorageConfig {
     @ConfigVal.InRangeInt(min = 1)
     public static int ARMORY_CABINET_SIZE = 4096;
 
+    @ConfigVal(comment = "Linking range radius")
+    public static int DRAWER_CONTROLLER_LINKING_RANGE = 12;
+
 }

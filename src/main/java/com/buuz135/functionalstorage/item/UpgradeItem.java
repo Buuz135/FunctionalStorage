@@ -26,6 +26,8 @@ import java.util.Locale;
 
 public class UpgradeItem extends BasicItem {
 
+    //TODO Add tooltip to show its type
+
     private final Type type;
 
     public UpgradeItem(Properties properties, Type type) {
@@ -58,10 +60,6 @@ public class UpgradeItem extends BasicItem {
         return type;
     }
 
-    @Override
-    public boolean overrideStackedOnOther(ItemStack p_150888_, Slot p_150889_, ClickAction p_150890_, Player p_150891_) {
-        return super.overrideStackedOnOther(p_150888_, p_150889_, p_150890_, p_150891_);
-    }
 
     @Override
     public boolean overrideOtherStackedOnMe(ItemStack first, ItemStack second, Slot p_150894_, ClickAction clickAction, Player p_150896_, SlotAccess p_150897_) {

@@ -1,6 +1,8 @@
 package com.buuz135.functionalstorage.block.tile;
 
+import com.buuz135.functionalstorage.FunctionalStorage;
 import com.buuz135.functionalstorage.block.DrawerControllerBlock;
+import com.buuz135.functionalstorage.block.config.FunctionalStorageConfig;
 import com.buuz135.functionalstorage.inventory.BigInventoryHandler;
 import com.buuz135.functionalstorage.inventory.ControllerInventoryHandler;
 import com.buuz135.functionalstorage.item.ConfigurationToolItem;
@@ -117,7 +119,7 @@ public class DrawerControllerTile extends ControllableDrawerTile<DrawerControlle
 
     public void addConnectedDrawers(LinkingToolItem.ActionMode action, BlockPos... positions){
         for (BlockPos position : positions) {
-           if (this.getBlockPos().closerThan(position, 8)){
+           if (this.getBlockPos().closerThan(position, FunctionalStorageConfig.DRAWER_CONTROLLER_LINKING_RANGE)){
                if (action == LinkingToolItem.ActionMode.ADD){
                    if (!connectedDrawers.getConnectedDrawers().contains(position.asLong())) this.connectedDrawers.getConnectedDrawers().add(position.asLong());
                }
