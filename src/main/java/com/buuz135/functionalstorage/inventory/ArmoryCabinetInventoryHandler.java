@@ -1,5 +1,7 @@
 package com.buuz135.functionalstorage.inventory;
 
+import com.buuz135.functionalstorage.FunctionalStorage;
+import com.buuz135.functionalstorage.block.config.FunctionalStorageConfig;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.util.INBTSerializable;
@@ -13,9 +15,6 @@ import java.util.List;
 
 public abstract class ArmoryCabinetInventoryHandler implements IItemHandler, INBTSerializable<CompoundTag> {
 
-    public static final int SLOTS = 8192;
-    //TODO NERF AND POSSIBLY CONFIG
-
     public List<ItemStack> stackList;
 
     public ArmoryCabinetInventoryHandler() {
@@ -24,7 +23,7 @@ public abstract class ArmoryCabinetInventoryHandler implements IItemHandler, INB
 
     @Override
     public int getSlots() {
-        return SLOTS;
+        return FunctionalStorageConfig.ARMORY_CABINET_SIZE;
     }
 
     @NotNull
@@ -91,7 +90,7 @@ public abstract class ArmoryCabinetInventoryHandler implements IItemHandler, INB
 
     private List<ItemStack> create(){
         List<ItemStack> stackList = new ArrayList<>();
-        for (int i = 0; i < SLOTS; i++) {
+        for (int i = 0; i < FunctionalStorageConfig.ARMORY_CABINET_SIZE; i++) {
             stackList.add(ItemStack.EMPTY);
         }
         return stackList;
@@ -101,7 +100,10 @@ public abstract class ArmoryCabinetInventoryHandler implements IItemHandler, INB
     public void deserializeNBT(CompoundTag nbt) {
         this.stackList = create();
         for (String allKey : nbt.getAllKeys()) {
-            this.stackList.set(Integer.parseInt(allKey), ItemStack.of(nbt.getCompound(allKey)));
+            int pos = Integer.parseInt(allKey);
+            if (pos < this.stackList.size()){
+                this.stackList.set(pos, ItemStack.of(nbt.getCompound(allKey)));
+            }
         }
     }
 }
