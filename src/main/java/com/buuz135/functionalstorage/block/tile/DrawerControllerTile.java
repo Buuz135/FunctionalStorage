@@ -7,11 +7,17 @@ import com.buuz135.functionalstorage.inventory.BigInventoryHandler;
 import com.buuz135.functionalstorage.inventory.ControllerInventoryHandler;
 import com.buuz135.functionalstorage.item.ConfigurationToolItem;
 import com.buuz135.functionalstorage.item.LinkingToolItem;
+import com.buuz135.functionalstorage.item.UpgradeItem;
 import com.hrznstudio.titanium.annotation.Save;
 import com.hrznstudio.titanium.block.BasicTileBlock;
+import com.hrznstudio.titanium.component.inventory.InventoryComponent;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -26,11 +32,13 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 
 public class DrawerControllerTile extends ControllableDrawerTile<DrawerControllerTile>{
 
-    //TODO Allow insertion of items
+    private static HashMap<UUID, Long> INTERACTION_LOGGER = new HashMap<>();
 
     @Save
     private ConnectedDrawers connectedDrawers;
@@ -63,6 +71,31 @@ public class DrawerControllerTile extends ControllableDrawerTile<DrawerControlle
             markForUpdate();
             updateNeigh();
         }
+    }
+
+    public InteractionResult onSlotActivated(Player playerIn, InteractionHand hand, Direction facing, double hitX, double hitY, double hitZ) {
+        ItemStack stack = playerIn.getItemInHand(hand);
+        if (stack.getItem().equals(FunctionalStorage.CONFIGURATION_TOOL.get()) || stack.getItem().equals(FunctionalStorage.LINKING_TOOL.get())) return InteractionResult.PASS;
+        if (isServer()){
+            for (int slot = 0; slot < getStorage().getSlots(); slot++) {
+                if (!stack.isEmpty() && getStorage().isItemValid(slot, stack)) {
+                    playerIn.setItemInHand(hand, getStorage().insertItem(slot, stack, false));
+                    return InteractionResult.SUCCESS;
+                } else if (System.currentTimeMillis() - INTERACTION_LOGGER.getOrDefault(playerIn.getUUID(), System.currentTimeMillis()) < 300) {
+                    boolean worked = false;
+                    for (ItemStack itemStack : playerIn.getInventory().items) {
+                        if (!itemStack.isEmpty() && getStorage().insertItem(slot, itemStack, true).isEmpty()) {
+                            getStorage().insertItem(slot, itemStack.copy(), false);
+                            itemStack.setCount(0);
+                            worked = true;
+                        }
+                    }
+                    if (worked) return InteractionResult.SUCCESS;
+                }
+            }
+            INTERACTION_LOGGER.put(playerIn.getUUID(), System.currentTimeMillis());
+        }
+        return InteractionResult.SUCCESS;
     }
 
     @Override
