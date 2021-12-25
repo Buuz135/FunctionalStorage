@@ -75,7 +75,6 @@ public class DrawerBlock extends RotatableBlock<DrawerTile> {
                         put(direction, Shapes.box(bounding.minX, 9/16D, bounding.minZ ,bounding.maxX, bounding.maxY, bounding.maxZ));
             }
         }
-        //TODO Fix 4x4 they are backwards
         for (Direction direction : CACHED_SHAPES.get(FunctionalStorage.DrawerType.X_2).keySet()) {
             for (VoxelShape voxelShape : CACHED_SHAPES.get(FunctionalStorage.DrawerType.X_2).get(direction)) {
                 AABB bounding = voxelShape.toAabbs().get(0);

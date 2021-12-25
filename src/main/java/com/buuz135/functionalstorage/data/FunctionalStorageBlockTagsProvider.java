@@ -5,8 +5,7 @@ import com.buuz135.functionalstorage.util.StorageTags;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.tags.BlockTagsProvider;
 import net.minecraft.data.tags.ItemTagsProvider;
-import net.minecraft.data.tags.TagsProvider;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
@@ -14,22 +13,20 @@ import net.minecraftforge.common.data.ExistingFileHelper;
 import net.minecraftforge.registries.RegistryObject;
 import org.jetbrains.annotations.Nullable;
 
-import java.nio.file.Path;
+public class FunctionalStorageBlockTagsProvider extends BlockTagsProvider {
 
-public class FunctionalStorageTagsProvider extends ItemTagsProvider {
-
-    public FunctionalStorageTagsProvider(DataGenerator p_126530_, BlockTagsProvider p_126531_, String modId, @Nullable ExistingFileHelper existingFileHelper) {
-        super(p_126530_, p_126531_, modId, existingFileHelper);
+    public FunctionalStorageBlockTagsProvider(DataGenerator p_126530_, String modId, @Nullable ExistingFileHelper existingFileHelper) {
+        super(p_126530_, modId, existingFileHelper);
     }
 
     @Override
     protected void addTags() {
-        TagsProvider.TagAppender<Item> tTagAppender = this.tag(StorageTags.DRAWER);
+        TagAppender<Block> tTagAppender = this.tag(BlockTags.MINEABLE_WITH_AXE);
         for (FunctionalStorage.DrawerType drawerType : FunctionalStorage.DRAWER_TYPES.keySet()) {
             for (RegistryObject<Block> blockRegistryObject : FunctionalStorage.DRAWER_TYPES.get(drawerType)) {
-                tTagAppender.add(blockRegistryObject.get().asItem());
+                tTagAppender.add(blockRegistryObject.get());
             }
         }
-        this.tag(StorageTags.IGNORE_CRAFTING_CHECK).add(Items.CLAY).add(Items.CLAY_BALL).add(Items.GLOWSTONE).add(Items.GLOWSTONE_DUST);
+        this.tag(BlockTags.MINEABLE_WITH_PICKAXE).add(FunctionalStorage.COMPACTING_DRAWER.get()).add(FunctionalStorage.DRAWER_CONTROLLER.get()).add(FunctionalStorage.ARMORY_CABINET.get());
     }
 }

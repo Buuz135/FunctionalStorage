@@ -1,0 +1,8 @@
+{
+  "replace": false,
+  "values": [
+    "functionalstorage:compacting_drawer",
+    "functionalstorage:storage_controller",
+    "functionalstorage:armory_cabinet"
+  ]
+}

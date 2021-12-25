@@ -20,6 +20,7 @@ import javax.annotation.Nullable;
 public class ArmoryCabinetTile extends ActiveTile<ArmoryCabinetTile> {
 
     //TODO Not sync nbt
+    //TODO Tool Efficiency
 
     @Save
     public ArmoryCabinetInventoryHandler handler;
