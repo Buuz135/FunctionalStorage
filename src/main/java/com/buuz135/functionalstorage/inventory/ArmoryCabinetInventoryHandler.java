@@ -38,7 +38,7 @@ public abstract class ArmoryCabinetInventoryHandler implements IItemHandler, INB
     @NotNull
     @Override
     public ItemStack insertItem(int slot, @NotNull ItemStack stack, boolean simulate) {
-        if (isItemValid(slot, stack)) {
+        if (isValid(slot, stack)) {
             if (!simulate){
                 this.stackList.set(slot, stack);
                 onChange();
@@ -68,6 +68,10 @@ public abstract class ArmoryCabinetInventoryHandler implements IItemHandler, INB
 
     @Override
     public boolean isItemValid(int slot, @NotNull ItemStack stack) {
+        return isCertifiedStack(stack);
+    }
+
+    private boolean isValid(int slot, @NotNull ItemStack stack) {
         return !stack.isEmpty() && this.stackList.get(slot).isEmpty() && isCertifiedStack(stack);
     }
 

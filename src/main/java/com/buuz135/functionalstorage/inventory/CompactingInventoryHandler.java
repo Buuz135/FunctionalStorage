@@ -49,7 +49,7 @@ public abstract class CompactingInventoryHandler implements IItemHandler, INBTSe
     @Nonnull
     @Override
     public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
-        if (isItemValid(slot, stack)) {
+        if (isValid(slot, stack)) {
             CompactingUtil.Result result = this.resultList.get(slot);
             int inserted = Math.min(getSlotLimit(slot) * result.getNeeded() - amount, stack.getCount() * result.getNeeded());
             inserted = (int) (Math.floor(inserted / result.getNeeded()) * result.getNeeded());
@@ -125,6 +125,10 @@ public abstract class CompactingInventoryHandler implements IItemHandler, INBTSe
 
     @Override
     public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
+        return isSetup() && slot < 3 && stack.isEmpty();
+    }
+
+    private boolean isValid(int slot, @Nonnull ItemStack stack){
         if (slot < 3){
             CompactingUtil.Result bigStack = this.resultList.get(slot);
             ItemStack fl = bigStack.getResult();
