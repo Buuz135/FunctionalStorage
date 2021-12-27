@@ -12,7 +12,7 @@ buildscript {
 apply plugin: 'net.minecraftforge.gradle'
 
 group = 'com.buuz135'
-version = '0.0.1-pre'
+version = '1.18.1-0.0.1'
 
 java {
     archivesBaseName = 'functionalstorage'
@@ -86,7 +86,7 @@ repositories {
 dependencies {
 
     minecraft 'net.minecraftforge:forge:1.18.1-39.0.5'
-    implementation fg.deobf (project.dependencies.create('com.hrznstudio:titanium:1.18-3.4.0-23'))
+    implementation fg.deobf (project.dependencies.create('com.hrznstudio:titanium:1.18-3.4.0-27'))
     compileOnly fg.deobf("mezz.jei:jei-1.18.1:9.1.0.46:api")
     runtimeOnly fg.deobf("mezz.jei:jei-1.18.1:9.1.0.46")
     runtimeOnly fg.deobf("curse.maven:refined-storage-243076:3569563")
