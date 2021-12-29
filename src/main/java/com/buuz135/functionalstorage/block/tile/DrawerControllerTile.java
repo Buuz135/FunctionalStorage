@@ -78,7 +78,7 @@ public class DrawerControllerTile extends ControllableDrawerTile<DrawerControlle
         if (stack.getItem().equals(FunctionalStorage.CONFIGURATION_TOOL.get()) || stack.getItem().equals(FunctionalStorage.LINKING_TOOL.get())) return InteractionResult.PASS;
         if (isServer()){
             for (int slot = 0; slot < getStorage().getSlots(); slot++) {
-                if (!stack.isEmpty() && getStorage().isItemValid(slot, stack)) {
+                if (!stack.isEmpty() && getStorage().insertItem(slot, stack, true).getCount() != stack.getCount()){
                     playerIn.setItemInHand(hand, getStorage().insertItem(slot, stack, false));
                     return InteractionResult.SUCCESS;
                 } else if (System.currentTimeMillis() - INTERACTION_LOGGER.getOrDefault(playerIn.getUUID(), System.currentTimeMillis()) < 300) {
