@@ -132,7 +132,7 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
                 if (!stack.isEmpty()){
                     Item item = stack.getItem();
                     if (item.equals(FunctionalStorage.PULLING_UPGRADE.get())){
-                        Direction direction = Direction.byName(stack.getOrCreateTag().getString("Direction"));
+                        Direction direction = UpgradeItem.getDirection(stack);
                         TileUtil.getTileEntity(level, pos.relative(direction)).ifPresent(blockEntity1 -> {
                             blockEntity1.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, direction.getOpposite()).ifPresent(iItemHandler -> {
                                 for (int otherSlot = 0; otherSlot < iItemHandler.getSlots(); otherSlot++) {
@@ -153,7 +153,7 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
                         });
                     }
                     if (item.equals(FunctionalStorage.PUSHING_UPGRADE.get())){
-                        Direction direction = Direction.byName(stack.getOrCreateTag().getString("Direction"));
+                        Direction direction = UpgradeItem.getDirection(stack);
                         TileUtil.getTileEntity(level, pos.relative(direction)).ifPresent(blockEntity1 -> {
                             blockEntity1.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, direction.getOpposite()).ifPresent(otherHandler -> {
                                 for (int otherSlot = 0; otherSlot < getStorage().getSlots(); otherSlot++) {
@@ -174,7 +174,7 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
                         });
                     }
                     if (item.equals(FunctionalStorage.COLLECTOR_UPGRADE.get())){
-                        Direction direction = Direction.byName(stack.getOrCreateTag().getString("Direction"));
+                        Direction direction = UpgradeItem.getDirection(stack);
                         AABB box = new AABB(pos.relative(direction));
                         for (ItemEntity entitiesOfClass : level.getEntitiesOfClass(ItemEntity.class, box)) {
                             ItemStack pulledStack = ItemHandlerHelper.copyStackWithSize(entitiesOfClass.getItem(), Math.min(entitiesOfClass.getItem().getCount(), 4));

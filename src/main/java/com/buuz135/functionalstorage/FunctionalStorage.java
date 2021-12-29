@@ -9,8 +9,8 @@ import com.buuz135.functionalstorage.client.ControllerRenderer;
 import com.buuz135.functionalstorage.client.DrawerRenderer;
 import com.buuz135.functionalstorage.data.FunctionalStorageBlockTagsProvider;
 import com.buuz135.functionalstorage.data.FunctionalStorageBlockstateProvider;
-import com.buuz135.functionalstorage.data.FunctionalStorageLangProvider;
 import com.buuz135.functionalstorage.data.FunctionalStorageItemTagsProvider;
+import com.buuz135.functionalstorage.data.FunctionalStorageLangProvider;
 import com.buuz135.functionalstorage.item.ConfigurationToolItem;
 import com.buuz135.functionalstorage.item.LinkingToolItem;
 import com.buuz135.functionalstorage.item.StorageUpgradeItem;
@@ -57,8 +57,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.awt.*;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -107,7 +107,7 @@ public class FunctionalStorage extends ModuleController {
         DRAWER_CONTROLLER = getRegistries().register(Block.class, "storage_controller", DrawerControllerBlock::new);
         LINKING_TOOL = getRegistries().register(Item.class, "linking_tool", LinkingToolItem::new);
         for (StorageUpgradeItem.StorageTier value : StorageUpgradeItem.StorageTier.values()) {
-            STORAGE_UPGRADES.put(value, getRegistries().register(Item.class, value.name().toLowerCase(Locale.ROOT) + (value == StorageUpgradeItem.StorageTier.IRON ? "_downgrade" : "_upgrade"),() -> new StorageUpgradeItem(value)));
+            STORAGE_UPGRADES.put(value, getRegistries().register(Item.class, value.name().toLowerCase(Locale.ROOT) + (value == StorageUpgradeItem.StorageTier.IRON ? "_downgrade" : "_upgrade"), () -> new StorageUpgradeItem(value)));
         }
         COLLECTOR_UPGRADE = getRegistries().register(Item.class, "collector_upgrade", () -> new UpgradeItem(new Item.Properties(), UpgradeItem.Type.UTILITY));
         PULLING_UPGRADE = getRegistries().register(Item.class, "puller_upgrade", () -> new UpgradeItem(new Item.Properties(), UpgradeItem.Type.UTILITY));
@@ -117,7 +117,7 @@ public class FunctionalStorage extends ModuleController {
         CONFIGURATION_TOOL = getRegistries().register(Item.class, "configuration_tool", ConfigurationToolItem::new);
     }
 
-    public enum DrawerType{
+    public enum DrawerType {
         X_1(1, 32 * 64, "1x1"),
         X_2(2, 16 * 64, "1x2"),
         X_4(4, 8 * 64, "2x2");
@@ -126,7 +126,7 @@ public class FunctionalStorage extends ModuleController {
         private final int slotAmount;
         private final String displayName;
 
-        private DrawerType(int slots, int slotAmount, String displayName){
+        private DrawerType(int slots, int slotAmount, String displayName) {
             this.slots = slots;
             this.slotAmount = slotAmount;
             this.displayName = displayName;
@@ -146,41 +146,36 @@ public class FunctionalStorage extends ModuleController {
     }
 
     @OnlyIn(Dist.CLIENT)
-    public void onClient(){
+    public void onClient() {
         EventManager.mod(EntityRenderersEvent.RegisterRenderers.class).process(registerRenderers -> {
             for (DrawerType value : DrawerType.values()) {
                 DRAWER_TYPES.get(value).forEach(blockRegistryObject -> {
-                  registerRenderers.registerBlockEntityRenderer(((BasicTileBlock)blockRegistryObject.get()).getTileEntityType(), p_173571_ -> new DrawerRenderer());
+                    registerRenderers.registerBlockEntityRenderer(((BasicTileBlock) blockRegistryObject.get()).getTileEntityType(), p_173571_ -> new DrawerRenderer());
                 });
             }
-            registerRenderers.registerBlockEntityRenderer(((BasicTileBlock)COMPACTING_DRAWER.get()).getTileEntityType(), p_173571_ -> new CompactingDrawerRenderer());
-            registerRenderers.registerBlockEntityRenderer(((BasicTileBlock)DRAWER_CONTROLLER.get()).getTileEntityType(), p -> new ControllerRenderer());
+            registerRenderers.registerBlockEntityRenderer(((BasicTileBlock) COMPACTING_DRAWER.get()).getTileEntityType(), p_173571_ -> new CompactingDrawerRenderer());
+            registerRenderers.registerBlockEntityRenderer(((BasicTileBlock) DRAWER_CONTROLLER.get()).getTileEntityType(), p -> new ControllerRenderer());
         }).subscribe();
         EventManager.mod(ColorHandlerEvent.Item.class).process(item -> {
             item.getItemColors().register((stack, tint) -> {
-                if(stack.hasTag()){
-                    CompoundTag tag = stack.getOrCreateTag();
-                    LinkingToolItem.LinkingMode linkingMode = LinkingToolItem.LinkingMode.valueOf(tag.getString(LinkingToolItem.NBT_MODE));
-                    LinkingToolItem.ActionMode linkingAction = LinkingToolItem.ActionMode.valueOf(tag.getString(LinkingToolItem.NBT_ACTION));
-                    if (tint == 3 && tag.contains(LinkingToolItem.NBT_CONTROLLER)){
-                        return Color.RED.getRGB();
-                    }
-                    if (tint == 1){
-                        return linkingMode.getColor().getValue();
-                    }
-                    if (tint == 2){
-                        return linkingAction.getColor().getValue();
-                    }
+                CompoundTag tag = stack.getOrCreateTag();
+                LinkingToolItem.LinkingMode linkingMode = LinkingToolItem.getLinkingMode(stack);
+                LinkingToolItem.ActionMode linkingAction = LinkingToolItem.getActionMode(stack);
+                if (tint == 3 && tag.contains(LinkingToolItem.NBT_CONTROLLER)) {
+                    return Color.RED.getRGB();
+                }
+                if (tint == 1) {
+                    return linkingMode.getColor().getValue();
+                }
+                if (tint == 2) {
+                    return linkingAction.getColor().getValue();
                 }
                 return 0xffffff;
             }, LINKING_TOOL.get());
             item.getItemColors().register((stack, tint) -> {
-                if (stack.hasTag()){
-                    CompoundTag tag = stack.getOrCreateTag();
-                    ConfigurationToolItem.ConfigurationAction action = ConfigurationToolItem.ConfigurationAction.valueOf(tag.getString(ConfigurationToolItem.NBT_MODE));
-                    if (tint == 1){
-                        return action.getColor().getValue();
-                    }
+                ConfigurationToolItem.ConfigurationAction action = ConfigurationToolItem.getAction(stack);
+                if (tint == 1) {
+                    return action.getColor().getValue();
                 }
                 return 0xffffff;
             }, CONFIGURATION_TOOL.get());
@@ -298,7 +293,7 @@ public class FunctionalStorage extends ModuleController {
                         .save(consumer);
             }
         });
-        event.getGenerator().addProvider(new FunctionalStorageItemTagsProvider(event.getGenerator(),new BlockTagsProvider(event.getGenerator()),  MOD_ID, event.getExistingFileHelper()));
+        event.getGenerator().addProvider(new FunctionalStorageItemTagsProvider(event.getGenerator(), new BlockTagsProvider(event.getGenerator()), MOD_ID, event.getExistingFileHelper()));
         event.getGenerator().addProvider(new FunctionalStorageLangProvider(event.getGenerator(), MOD_ID, "en_us"));
         event.getGenerator().addProvider(new FunctionalStorageBlockTagsProvider(event.getGenerator(), MOD_ID, event.getExistingFileHelper()));
         event.getGenerator().addProvider(new ItemModelProvider(event.getGenerator(), MOD_ID, event.getExistingFileHelper()) {
@@ -313,8 +308,8 @@ public class FunctionalStorage extends ModuleController {
                 item(VOID_UPGRADE.get());
             }
 
-            private void item(Item item){
-                singleTexture(item.getRegistryName().getPath(), new ResourceLocation("minecraft:item/generated"), "layer0" ,new ResourceLocation(MOD_ID,  "items/" + item.getRegistryName().getPath()));
+            private void item(Item item) {
+                singleTexture(item.getRegistryName().getPath(), new ResourceLocation("minecraft:item/generated"), "layer0", new ResourceLocation(MOD_ID, "items/" + item.getRegistryName().getPath()));
             }
         });
         event.getGenerator().addProvider(new BlockModelProvider(event.getGenerator(), MOD_ID, event.getExistingFileHelper()) {
