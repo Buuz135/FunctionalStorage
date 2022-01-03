@@ -109,4 +109,8 @@ public class DrawerTile extends ControllableDrawerTile<DrawerTile> {
     public int getBaseSize(int lost) {
         return type.getSlotAmount();
     }
+
+    public BigInventoryHandler getHandler() {
+        return handler;
+    }
 }

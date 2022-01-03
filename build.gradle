@@ -90,6 +90,7 @@ dependencies {
     compileOnly fg.deobf("mezz.jei:jei-1.18.1:9.1.0.46:api")
     runtimeOnly fg.deobf("mezz.jei:jei-1.18.1:9.1.0.46")
     runtimeOnly fg.deobf("curse.maven:refined-storage-243076:3569563")
+    implementation fg.deobf("curse.maven:the-one-probe-245211:3586969")
 }
 
 // Example for how to get properties into the manifest for reading at runtime.

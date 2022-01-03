@@ -83,6 +83,10 @@ public abstract class CompactingInventoryHandler implements IItemHandler, INBTSe
         });
     }
 
+    public int getAmount() {
+        return amount;
+    }
+
     @Nonnull
     @Override
     public ItemStack extractItem(int slot, int amount, boolean simulate) {

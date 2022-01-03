@@ -316,6 +316,11 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
         return drawerOptions;
     }
 
+
+    public InventoryComponent<ControllableDrawerTile<T>> getUtilityUpgrades() {
+        return utilityUpgrades;
+    }
+
     public InventoryComponent<ControllableDrawerTile<T>> getStorageUpgrades() {
         return storageUpgrades;
     }
