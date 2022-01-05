@@ -34,6 +34,7 @@ import net.minecraft.data.recipes.UpgradeRecipeBuilder;
 import net.minecraft.data.tags.BlockTagsProvider;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -302,6 +303,12 @@ public class FunctionalStorage extends ModuleController {
                         .define('B', Items.HOPPER)
                         .define('R', Tags.Items.DUSTS_REDSTONE)
                         .define('D', StorageTags.DRAWER)
+                        .save(consumer);
+                TitaniumShapedRecipeBuilder.shapedRecipe(ENDER_DRAWER.get())
+                        .pattern("PPP").pattern("LCL").pattern("PPP")
+                        .define('P', ItemTags.PLANKS)
+                        .define('C', Tags.Items.CHESTS_ENDER)
+                        .define('L', StorageTags.DRAWER)
                         .save(consumer);
             }
         });
