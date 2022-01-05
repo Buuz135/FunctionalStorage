@@ -25,6 +25,7 @@ public class FunctionalStorageLangProvider extends LanguageProvider {
             }
         }
         this.add(FunctionalStorage.COMPACTING_DRAWER.get(), "Compacting Drawer");
+        this.add(FunctionalStorage.ENDER_DRAWER.get(), "Ender Drawer" );
         this.add("linkingtool.linkingmode", "Linking Mode: ");
         this.add("linkingtool.linkingmode.single", "Single");
         this.add("linkingtool.linkingmode.single.desc", "Links a drawer to a controller");
@@ -32,7 +33,7 @@ public class FunctionalStorageLangProvider extends LanguageProvider {
         this.add("linkingtool.linkingmode.multiple.desc", "Links multiple drawers between 2 points");
         this.add("linkingtool.controller", "Controller: ");
         this.add("linkingtool.linkingaction", "Linking Action: ");
-        this.add("linkingtool.use", "Sneak + Right Click in the air to change modes. \nRight Click in the air to change actions. \nRight click a controller to setup the tool then use it nearby drawers to link. \n\nWhile holding the tool it will show the connected drawers to the selected controller.");
+        this.add("linkingtool.use", "Sneak + Right Click in the air to change modes or to clear frequency. \nLeft Click an Ender Drawer to store its Frequency. \nRight Click in the air to change actions. \nRight click a controller to setup the tool then use it nearby drawers to link. \n\nWhile holding the tool it will show the connected drawers to the selected controller.");
         this.add("linkingtool.linkingaction.add", "Add");
         this.add("linkingtool.linkingaction.remove", "Remove");
         this.add("key.categories.utility", "Utility");
@@ -61,5 +62,7 @@ public class FunctionalStorageLangProvider extends LanguageProvider {
         this.add("upgrade.type", "Type: ");
         this.add("upgrade.type.storage", "Storage");
         this.add("upgrade.type.utility", "Utility");
+        this.add("linkingtool.ender.frequency", "Frequency: ");
+        this.add("linkingtool.ender.clear", "Sneak + Right Click in the air to clear frequency.");
     }
 }

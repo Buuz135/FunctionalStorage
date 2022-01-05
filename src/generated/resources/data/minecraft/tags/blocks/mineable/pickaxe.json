@@ -3,6 +3,7 @@
   "values": [
     "functionalstorage:compacting_drawer",
     "functionalstorage:storage_controller",
-    "functionalstorage:armory_cabinet"
+    "functionalstorage:armory_cabinet",
+    "functionalstorage:ender_drawer"
   ]
 }

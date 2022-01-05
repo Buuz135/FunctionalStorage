@@ -57,41 +57,43 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
     public ControllableDrawerTile(BasicTileBlock<T> base, BlockPos pos, BlockState state) {
         super(base, pos, state);
         this.drawerOptions = new DrawerOptions();
-        this.addInventory((InventoryComponent<T>) (this.storageUpgrades = new InventoryComponent<ControllableDrawerTile<T>>("storage_upgrades", 10, 70, getStorageSlotAmount()) {
-                    @NotNull
-                    @Override
-                    public ItemStack extractItem(int slot, int amount, boolean simulate) {
-                        ItemStack stack = this.getStackInSlot(slot);
-                        if (stack.getItem() instanceof StorageUpgradeItem){
-                            int mult = 1;
-                            for (int i = 0; i < storageUpgrades.getSlots(); i++) {
-                                if (storageUpgrades.getStackInSlot(i).getItem() instanceof StorageUpgradeItem){
-                                    if (i == slot) continue;
-                                    if (mult == 1) mult = ((StorageUpgradeItem) storageUpgrades.getStackInSlot(i).getItem()).getStorageMultiplier();
-                                    else mult *= ((StorageUpgradeItem) storageUpgrades.getStackInSlot(i).getItem()).getStorageMultiplier();
-                                }
-                            }
-                            for (int i = 0; i < getStorage().getSlots(); i++) {
-                                if (getBaseSize(i) * mult < getStorage().getStackInSlot(i).getCount()){
-                                    return ItemStack.EMPTY;
-                                }
-                            }
+        this.storageUpgrades = new InventoryComponent<ControllableDrawerTile<T>>("storage_upgrades", 10, 70, getStorageSlotAmount()) {
+            @NotNull
+            @Override
+            public ItemStack extractItem(int slot, int amount, boolean simulate) {
+                ItemStack stack = this.getStackInSlot(slot);
+                if (stack.getItem() instanceof StorageUpgradeItem){
+                    int mult = 1;
+                    for (int i = 0; i < storageUpgrades.getSlots(); i++) {
+                        if (storageUpgrades.getStackInSlot(i).getItem() instanceof StorageUpgradeItem){
+                            if (i == slot) continue;
+                            if (mult == 1) mult = ((StorageUpgradeItem) storageUpgrades.getStackInSlot(i).getItem()).getStorageMultiplier();
+                            else mult *= ((StorageUpgradeItem) storageUpgrades.getStackInSlot(i).getItem()).getStorageMultiplier();
                         }
-                        return super.extractItem(slot, amount, simulate);
+                    }
+                    for (int i = 0; i < getStorage().getSlots(); i++) {
+                        if (getBaseSize(i) * mult < getStorage().getStackInSlot(i).getCount()){
+                            return ItemStack.EMPTY;
+                        }
                     }
                 }
-                        .setInputFilter((stack, integer) -> {
-                            if (stack.getItem().equals(FunctionalStorage.STORAGE_UPGRADES.get(StorageUpgradeItem.StorageTier.IRON).get())){
-                                for (int i = 0; i < getStorage().getSlots(); i++) {
-                                    if (getStorage().getStackInSlot(i).getCount() > 64){
-                                        return false;
-                                    }
-                                }
+                return super.extractItem(slot, amount, simulate);
+            }
+        }
+                .setInputFilter((stack, integer) -> {
+                    if (stack.getItem().equals(FunctionalStorage.STORAGE_UPGRADES.get(StorageUpgradeItem.StorageTier.IRON).get())){
+                        for (int i = 0; i < getStorage().getSlots(); i++) {
+                            if (getStorage().getStackInSlot(i).getCount() > 64){
+                                return false;
                             }
-                            return stack.getItem() instanceof UpgradeItem && ((UpgradeItem) stack.getItem()).getType() == UpgradeItem.Type.STORAGE;
-                        })
-                .setSlotLimit(1))
-        );
+                        }
+                    }
+                    return stack.getItem() instanceof UpgradeItem && ((UpgradeItem) stack.getItem()).getType() == UpgradeItem.Type.STORAGE;
+                })
+                .setSlotLimit(1);
+        if (getStorageSlotAmount() > 0){
+            this.addInventory((InventoryComponent<T>) this.storageUpgrades);
+        }
         this.addInventory((InventoryComponent<T>) (this.utilityUpgrades = new InventoryComponent<ControllableDrawerTile<T>>("utility_upgrades", 114, 70, 3)
                 .setInputFilter((stack, integer) -> stack.getItem() instanceof UpgradeItem && ((UpgradeItem) stack.getItem()).getType() == UpgradeItem.Type.UTILITY)
                 .setSlotLimit(1))
@@ -103,12 +105,14 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
     @OnlyIn(Dist.CLIENT)
     public void initClient() {
         super.initClient();
-        addGuiAddonFactory(() -> new TextScreenAddon("Storage", 10, 59, false, ChatFormatting.DARK_GRAY.getColor()){
-            @Override
-            public String getText() {
-                return  new TranslatableComponent("key.categories.storage").getString();
-            }
-        });
+        if (getStorageSlotAmount() > 0){
+            addGuiAddonFactory(() -> new TextScreenAddon("Storage", 10, 59, false, ChatFormatting.DARK_GRAY.getColor()){
+                @Override
+                public String getText() {
+                    return  new TranslatableComponent("key.categories.storage").getString();
+                }
+            });
+        }
         addGuiAddonFactory(() -> new TextScreenAddon("Utility", 114, 59, false, ChatFormatting.DARK_GRAY.getColor()){
             @Override
             public String getText() {

@@ -1,12 +1,10 @@
 package com.buuz135.functionalstorage;
 
-import com.buuz135.functionalstorage.block.ArmoryCabinetBlock;
-import com.buuz135.functionalstorage.block.CompactingDrawerBlock;
-import com.buuz135.functionalstorage.block.DrawerBlock;
-import com.buuz135.functionalstorage.block.DrawerControllerBlock;
+import com.buuz135.functionalstorage.block.*;
 import com.buuz135.functionalstorage.client.CompactingDrawerRenderer;
 import com.buuz135.functionalstorage.client.ControllerRenderer;
 import com.buuz135.functionalstorage.client.DrawerRenderer;
+import com.buuz135.functionalstorage.client.EnderDrawerRenderer;
 import com.buuz135.functionalstorage.data.FunctionalStorageBlockTagsProvider;
 import com.buuz135.functionalstorage.data.FunctionalStorageBlockstateProvider;
 import com.buuz135.functionalstorage.data.FunctionalStorageItemTagsProvider;
@@ -15,6 +13,7 @@ import com.buuz135.functionalstorage.item.ConfigurationToolItem;
 import com.buuz135.functionalstorage.item.LinkingToolItem;
 import com.buuz135.functionalstorage.item.StorageUpgradeItem;
 import com.buuz135.functionalstorage.item.UpgradeItem;
+import com.buuz135.functionalstorage.network.EnderDrawerSyncMessage;
 import com.buuz135.functionalstorage.util.DrawerWoodType;
 import com.buuz135.functionalstorage.util.IWoodType;
 import com.buuz135.functionalstorage.util.StorageTags;
@@ -24,6 +23,7 @@ import com.hrznstudio.titanium.datagenerator.loot.TitaniumLootTableProvider;
 import com.hrznstudio.titanium.datagenerator.model.BlockItemModelGeneratorProvider;
 import com.hrznstudio.titanium.event.handler.EventManager;
 import com.hrznstudio.titanium.module.ModuleController;
+import com.hrznstudio.titanium.network.NetworkHandler;
 import com.hrznstudio.titanium.recipe.generator.TitaniumRecipeProvider;
 import com.hrznstudio.titanium.recipe.generator.TitaniumShapedRecipeBuilder;
 import com.hrznstudio.titanium.tab.AdvancedTitaniumTab;
@@ -67,6 +67,11 @@ import java.util.stream.Collectors;
 public class FunctionalStorage extends ModuleController {
 
     public static String MOD_ID = "functionalstorage";
+    public static NetworkHandler NETWORK = new NetworkHandler(MOD_ID);
+
+    static {
+        NETWORK.registerMessage(EnderDrawerSyncMessage.class);
+    }
 
     // Directly reference a log4j logger.
     private static final Logger LOGGER = LogManager.getLogger();
@@ -77,6 +82,7 @@ public class FunctionalStorage extends ModuleController {
     public static RegistryObject<Block> COMPACTING_DRAWER;
     public static RegistryObject<Block> DRAWER_CONTROLLER;
     public static RegistryObject<Block> ARMORY_CABINET;
+    public static RegistryObject<Block> ENDER_DRAWER;
 
     public static RegistryObject<Item> LINKING_TOOL;
     public static HashMap<StorageUpgradeItem.StorageTier, RegistryObject<Item>> STORAGE_UPGRADES = new HashMap<>();
@@ -115,6 +121,7 @@ public class FunctionalStorage extends ModuleController {
         VOID_UPGRADE = getRegistries().register(Item.class, "void_upgrade", () -> new UpgradeItem(new Item.Properties(), UpgradeItem.Type.UTILITY));
         ARMORY_CABINET = getRegistries().register(Block.class, "armory_cabinet", ArmoryCabinetBlock::new);
         CONFIGURATION_TOOL = getRegistries().register(Item.class, "configuration_tool", ConfigurationToolItem::new);
+        ENDER_DRAWER = getRegistries().register(Block.class, "ender_drawer", EnderDrawerBlock::new);
     }
 
     public enum DrawerType {
@@ -155,12 +162,16 @@ public class FunctionalStorage extends ModuleController {
             }
             registerRenderers.registerBlockEntityRenderer(((BasicTileBlock) COMPACTING_DRAWER.get()).getTileEntityType(), p_173571_ -> new CompactingDrawerRenderer());
             registerRenderers.registerBlockEntityRenderer(((BasicTileBlock) DRAWER_CONTROLLER.get()).getTileEntityType(), p -> new ControllerRenderer());
+            registerRenderers.registerBlockEntityRenderer(((BasicTileBlock) ENDER_DRAWER.get()).getTileEntityType(), p_173571_ -> new EnderDrawerRenderer());
         }).subscribe();
         EventManager.mod(ColorHandlerEvent.Item.class).process(item -> {
             item.getItemColors().register((stack, tint) -> {
                 CompoundTag tag = stack.getOrCreateTag();
                 LinkingToolItem.LinkingMode linkingMode = LinkingToolItem.getLinkingMode(stack);
                 LinkingToolItem.ActionMode linkingAction = LinkingToolItem.getActionMode(stack);
+                if (tint != 0 && stack.getOrCreateTag().contains(LinkingToolItem.NBT_ENDER)){
+                    return new Color(44, 150, 88).getRGB();
+                }
                 if (tint == 3 && tag.contains(LinkingToolItem.NBT_CONTROLLER)) {
                     return Color.RED.getRGB();
                 }
@@ -187,6 +198,7 @@ public class FunctionalStorage extends ModuleController {
                 }
             }
             ItemBlockRenderTypes.setRenderLayer(COMPACTING_DRAWER.get(), RenderType.cutout());
+            ItemBlockRenderTypes.setRenderLayer(ENDER_DRAWER.get(), RenderType.cutout());
         }).subscribe();
     }
 
@@ -322,6 +334,8 @@ public class FunctionalStorage extends ModuleController {
                     }
                 }
                 withExistingParent(COMPACTING_DRAWER.get().getRegistryName().getPath() + "_locked", modLoc(COMPACTING_DRAWER.get().getRegistryName().getPath()))
+                        .texture("lock_icon", modLoc("blocks/lock"));
+                withExistingParent(ENDER_DRAWER.get().getRegistryName().getPath() + "_locked", modLoc(ENDER_DRAWER.get().getRegistryName().getPath()))
                         .texture("lock_icon", modLoc("blocks/lock"));
             }
         });

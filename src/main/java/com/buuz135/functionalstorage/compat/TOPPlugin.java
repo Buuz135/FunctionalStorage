@@ -1,14 +1,14 @@
 package com.buuz135.functionalstorage.compat;
 
 import com.buuz135.functionalstorage.FunctionalStorage;
-import com.buuz135.functionalstorage.block.tile.CompactingDrawerTile;
-import com.buuz135.functionalstorage.block.tile.ControllableDrawerTile;
-import com.buuz135.functionalstorage.block.tile.DrawerControllerTile;
-import com.buuz135.functionalstorage.block.tile.DrawerTile;
+import com.buuz135.functionalstorage.block.EnderDrawerBlock;
+import com.buuz135.functionalstorage.block.tile.*;
 import com.buuz135.functionalstorage.inventory.BigInventoryHandler;
 import com.buuz135.functionalstorage.inventory.CompactingInventoryHandler;
+import com.buuz135.functionalstorage.inventory.EnderInventoryHandler;
 import com.buuz135.functionalstorage.item.UpgradeItem;
 import com.buuz135.functionalstorage.util.NumberUtils;
+import com.buuz135.functionalstorage.world.EnderSavedData;
 import com.hrznstudio.titanium.annotation.plugin.FeaturePlugin;
 import com.hrznstudio.titanium.event.handler.EventManager;
 import com.hrznstudio.titanium.plugin.FeaturePluginInstance;
@@ -26,6 +26,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -90,6 +91,29 @@ public class TOPPlugin implements FeaturePluginInstance{
                         }
                     }
                     if (abstractElementPanel.getElements().size() > 0) vertical.element(abstractElementPanel);
+                    vertical.element(new ElementVertical(iProbeInfo.defaultLayoutStyle().topPadding(4)));
+                }
+                if (blockEntity instanceof EnderDrawerTile){
+                    ElementHorizontal abstractElementPanel = new ElementHorizontal(iProbeInfo.defaultLayoutStyle().spacing(8).leftPadding(7).rightPadding(7));
+                    abstractElementPanel.getStyle().borderColor(Color.CYAN.darker().getRGB());
+                    EnderInventoryHandler savedData = EnderSavedData.getInstance(level).getFrequency(((EnderDrawerTile) blockEntity).getFrequency());
+                    for (int i = 0; i < savedData.getStoredStacks().size(); i++) {
+                        BigInventoryHandler.BigStack storedStack = savedData.getStoredStacks().get(i);
+                        if (storedStack.getAmount() > 0 || (savedData.isLocked() && !storedStack.getStack().isEmpty())){
+                            abstractElementPanel.element(new CustomElementItemStack(storedStack.getStack(), NumberUtils.getFormatedBigNumber(storedStack.getAmount()) + "/" + NumberUtils.getFormatedBigNumber(savedData.getSlotLimit(i)), iProbeInfo.defaultItemStyle()));
+                        }
+                    }
+                    if (abstractElementPanel.getElements().size() > 0) vertical.element(abstractElementPanel);
+                    ElementVertical elementVertical = new ElementVertical(iProbeInfo.defaultLayoutStyle());
+                    elementVertical.getStyle().borderColor(Color.CYAN.darker().getRGB());
+                    elementVertical.text(new TranslatableComponent("linkingtool.ender.frequency"));
+                    vertical.element(new ElementVertical(iProbeInfo.defaultLayoutStyle().topPadding(4)));
+                    abstractElementPanel = new ElementHorizontal(iProbeInfo.defaultLayoutStyle().leftPadding(4).topPadding(2).rightPadding(4));
+                    for (ItemStack stack : EnderDrawerBlock.getFrequencyDisplay(((EnderDrawerTile) blockEntity).getFrequency())) {
+                        abstractElementPanel.element(new CustomElementItemStack(stack, "", iProbeInfo.defaultItemStyle()));
+                    }
+                    elementVertical.element(abstractElementPanel);
+                    vertical.element(elementVertical);
                     vertical.element(new ElementVertical(iProbeInfo.defaultLayoutStyle().topPadding(4)));
                 }
                 if (blockEntity instanceof CompactingDrawerTile){

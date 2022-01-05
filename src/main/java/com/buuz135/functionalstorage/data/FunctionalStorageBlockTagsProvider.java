@@ -27,6 +27,6 @@ public class FunctionalStorageBlockTagsProvider extends BlockTagsProvider {
                 tTagAppender.add(blockRegistryObject.get());
             }
         }
-        this.tag(BlockTags.MINEABLE_WITH_PICKAXE).add(FunctionalStorage.COMPACTING_DRAWER.get()).add(FunctionalStorage.DRAWER_CONTROLLER.get()).add(FunctionalStorage.ARMORY_CABINET.get());
+        this.tag(BlockTags.MINEABLE_WITH_PICKAXE).add(FunctionalStorage.COMPACTING_DRAWER.get()).add(FunctionalStorage.DRAWER_CONTROLLER.get()).add(FunctionalStorage.ARMORY_CABINET.get()).add(FunctionalStorage.ENDER_DRAWER.get());
     }
 }
