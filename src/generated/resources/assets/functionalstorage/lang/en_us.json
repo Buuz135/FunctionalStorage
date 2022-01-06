@@ -33,6 +33,7 @@
   "configurationtool.configmode.toggle_render": "Hide/Show Item Renders",
   "configurationtool.configmode.toggle_upgrades": "Hide/Show Upgrade Renders",
   "configurationtool.use": "Sneak + Right Click in the air to change modes. Right click a drawer to toggle the option.",
+  "drawer.block.contents": "Contents: ",
   "item.functionalstorage.collector_upgrade": "Collector Upgrade",
   "item.functionalstorage.configuration_tool": "Configuration Tool",
   "item.functionalstorage.copper_upgrade": "Copper Upgrade",

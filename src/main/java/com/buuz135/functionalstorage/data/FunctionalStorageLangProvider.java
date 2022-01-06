@@ -64,5 +64,6 @@ public class FunctionalStorageLangProvider extends LanguageProvider {
         this.add("upgrade.type.utility", "Utility");
         this.add("linkingtool.ender.frequency", "Frequency: ");
         this.add("linkingtool.ender.clear", "Sneak + Right Click in the air to clear frequency.");
+        this.add("drawer.block.contents", "Contents: ");
     }
 }

@@ -13,7 +13,6 @@ import java.util.List;
 
 public abstract class BigInventoryHandler implements IItemHandler, INBTSerializable<CompoundTag> {
 
-    public static String VOID = "Void";
     public static String BIG_ITEMS = "BigItems";
     public static String STACK = "Stack";
     public static String AMOUNT = "Amount";
@@ -144,7 +143,7 @@ public abstract class BigInventoryHandler implements IItemHandler, INBTSerializa
         return storedStacks;
     }
 
-    public class BigStack{
+    public static class BigStack {
 
         private ItemStack stack;
         private int amount;

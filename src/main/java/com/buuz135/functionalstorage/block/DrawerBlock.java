@@ -3,6 +3,7 @@ package com.buuz135.functionalstorage.block;
 import com.buuz135.functionalstorage.FunctionalStorage;
 import com.buuz135.functionalstorage.block.tile.DrawerControllerTile;
 import com.buuz135.functionalstorage.block.tile.DrawerTile;
+import com.buuz135.functionalstorage.inventory.item.DrawerCapabilityProvider;
 import com.buuz135.functionalstorage.item.LinkingToolItem;
 import com.buuz135.functionalstorage.util.IWoodType;
 import com.google.common.collect.Multimap;
@@ -13,19 +14,24 @@ import com.hrznstudio.titanium.module.DeferredRegistryHelper;
 import com.hrznstudio.titanium.recipe.generator.TitaniumShapedRecipeBuilder;
 import com.hrznstudio.titanium.util.RayTraceUtils;
 import com.hrznstudio.titanium.util.TileUtil;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
 import net.minecraft.data.recipes.FinishedRecipe;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
@@ -41,15 +47,16 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.common.Tags;
+import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 public class DrawerBlock extends RotatableBlock<DrawerTile> {
 
@@ -112,6 +119,17 @@ public class DrawerBlock extends RotatableBlock<DrawerTile> {
         this.type = type;
         setItemGroup(FunctionalStorage.TAB);
         registerDefaultState(defaultBlockState().setValue(RotatableBlock.FACING_HORIZONTAL, Direction.NORTH).setValue(LOCKED, false));
+    }
+
+    @Override
+    public Supplier<Item> getItemBlockFactory() {
+        return () -> new BlockItem(this, new Item.Properties().tab(this.getItemGroup())) {
+            @Nullable
+            @Override
+            public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundTag nbt) {
+                return new DrawerCapabilityProvider(stack, type);
+            }
+        };
     }
 
     @Override
@@ -244,7 +262,7 @@ public class DrawerBlock extends RotatableBlock<DrawerTile> {
     public void onRemove(BlockState state, Level worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
         if (!state.is(newState.getBlock())){
             TileUtil.getTileEntity(worldIn, pos, DrawerTile.class).ifPresent(tile -> {
-                if (tile.getControllerPos() != null){
+                if (tile.getControllerPos() != null) {
                     TileUtil.getTileEntity(worldIn, tile.getControllerPos(), DrawerControllerTile.class).ifPresent(drawerControllerTile -> {
                         drawerControllerTile.addConnectedDrawers(LinkingToolItem.ActionMode.REMOVE, pos);
                     });
@@ -253,4 +271,17 @@ public class DrawerBlock extends RotatableBlock<DrawerTile> {
         }
         super.onRemove(state, worldIn, pos, newState, isMoving);
     }
+
+    @Override
+    public void appendHoverText(ItemStack p_49816_, @Nullable BlockGetter p_49817_, List<net.minecraft.network.chat.Component> tooltip, TooltipFlag p_49819_) {
+        super.appendHoverText(p_49816_, p_49817_, tooltip, p_49819_);
+        if (p_49816_.hasTag()) {
+            TranslatableComponent text = new TranslatableComponent("drawer.block.contents");
+            tooltip.add(text.withStyle(ChatFormatting.GRAY));
+            tooltip.add(new TextComponent(""));
+            tooltip.add(new TextComponent(""));
+        }
+    }
+
+
 }

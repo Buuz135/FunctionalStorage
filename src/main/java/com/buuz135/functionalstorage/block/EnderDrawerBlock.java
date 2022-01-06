@@ -5,15 +5,9 @@ import com.buuz135.functionalstorage.block.tile.DrawerControllerTile;
 import com.buuz135.functionalstorage.block.tile.DrawerTile;
 import com.buuz135.functionalstorage.block.tile.EnderDrawerTile;
 import com.buuz135.functionalstorage.item.LinkingToolItem;
-import com.buuz135.functionalstorage.util.IWoodType;
-import com.buuz135.functionalstorage.util.TooltipUtil;
-import com.google.common.collect.Multimap;
-import com.google.common.collect.MultimapBuilder;
 import com.hrznstudio.titanium.block.RotatableBlock;
 import com.hrznstudio.titanium.datagenerator.loot.block.BasicBlockLootTables;
-import com.hrznstudio.titanium.event.handler.EventManager;
 import com.hrznstudio.titanium.module.DeferredRegistryHelper;
-import com.hrznstudio.titanium.recipe.generator.TitaniumShapedRecipeBuilder;
 import com.hrznstudio.titanium.util.RayTraceUtils;
 import com.hrznstudio.titanium.util.TileUtil;
 import net.minecraft.ChatFormatting;
@@ -22,7 +16,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
 import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.InteractionHand;
@@ -33,25 +26,18 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.functions.CopyNbtFunction;
 import net.minecraft.world.level.storage.loot.providers.nbt.ContextNbtProvider;
-import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.client.event.RenderTooltipEvent;
-import net.minecraftforge.common.Tags;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -67,12 +53,6 @@ import java.util.stream.Collectors;
 import static com.buuz135.functionalstorage.block.DrawerBlock.LOCKED;
 
 public class EnderDrawerBlock extends RotatableBlock<EnderDrawerTile> {
-
-    static {
-        EventManager.forge(RenderTooltipEvent.Pre.class).filter(itemTooltipEvent -> itemTooltipEvent.getItemStack().getItem().equals(FunctionalStorage.ENDER_DRAWER.get().asItem()) && itemTooltipEvent.getItemStack().hasTag()).process(itemTooltipEvent -> {
-            TooltipUtil.renderItems(itemTooltipEvent.getPoseStack(), EnderDrawerBlock.getFrequencyDisplay(itemTooltipEvent.getItemStack().getTag().getCompound("BlockEntityTag").getString("frequency")) , itemTooltipEvent.getX() + 14, itemTooltipEvent.getY() + 11);
-        }).subscribe();
-    }
 
     public EnderDrawerBlock() {
         super("ender_drawer", Properties.copy(Blocks.ENDER_CHEST), EnderDrawerTile.class);

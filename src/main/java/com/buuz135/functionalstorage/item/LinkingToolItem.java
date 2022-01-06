@@ -1,16 +1,13 @@
 package com.buuz135.functionalstorage.item;
 
 import com.buuz135.functionalstorage.FunctionalStorage;
-import com.buuz135.functionalstorage.block.EnderDrawerBlock;
 import com.buuz135.functionalstorage.block.tile.ControllableDrawerTile;
 import com.buuz135.functionalstorage.block.tile.DrawerControllerTile;
 import com.buuz135.functionalstorage.block.tile.EnderDrawerTile;
 import com.buuz135.functionalstorage.inventory.EnderInventoryHandler;
-import com.buuz135.functionalstorage.util.TooltipUtil;
 import com.buuz135.functionalstorage.world.EnderSavedData;
 import com.hrznstudio.titanium.event.handler.EventManager;
 import com.hrznstudio.titanium.item.BasicItem;
-import com.hrznstudio.titanium.util.InventoryUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
@@ -22,25 +19,22 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.*;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
-import net.minecraftforge.client.event.RenderTooltipEvent;
-import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.fml.LogicalSide;
-import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
-import java.util.*;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Locale;
 
 public class LinkingToolItem extends BasicItem {
 
@@ -66,9 +60,6 @@ public class LinkingToolItem extends BasicItem {
     }
 
     static {
-        EventManager.forge(RenderTooltipEvent.Pre.class).filter(itemTooltipEvent -> itemTooltipEvent.getItemStack().is(FunctionalStorage.LINKING_TOOL.get()) && itemTooltipEvent.getItemStack().getOrCreateTag().contains(NBT_ENDER)).process(itemTooltipEvent -> {
-            TooltipUtil.renderItems(itemTooltipEvent.getPoseStack(), EnderDrawerBlock.getFrequencyDisplay(itemTooltipEvent.getItemStack().getOrCreateTag().getString(NBT_ENDER)) , itemTooltipEvent.getX() + 14, itemTooltipEvent.getY() + 11);
-        }).subscribe();
         EventManager.forge(PlayerInteractEvent.LeftClickBlock.class).filter(leftClickBlock -> leftClickBlock.getSide() == LogicalSide.SERVER && leftClickBlock.getItemStack().is(FunctionalStorage.LINKING_TOOL.get())).process(leftClickBlock -> {
             ItemStack stack = leftClickBlock.getItemStack();
             BlockEntity blockEntity = leftClickBlock.getWorld().getBlockEntity(leftClickBlock.getPos());
