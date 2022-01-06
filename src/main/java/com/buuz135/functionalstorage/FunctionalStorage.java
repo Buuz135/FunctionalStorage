@@ -49,6 +49,7 @@ import net.minecraftforge.client.model.generators.BlockModelProvider;
 import net.minecraftforge.client.model.generators.ItemModelProvider;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.util.NonNullLazy;
+import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
@@ -115,6 +116,31 @@ public class FunctionalStorage extends ModuleController {
                     }
                 }
             });
+        }).subscribe();
+        EventManager.forge(BlockEvent.BreakEvent.class).process(breakEvent -> {
+            if (breakEvent.getPlayer().isCreative()) {
+                if (breakEvent.getState().getBlock() instanceof DrawerBlock) {
+                    int hit = ((DrawerBlock) breakEvent.getState().getBlock()).getHit(breakEvent.getState(), breakEvent.getPlayer().getLevel(), breakEvent.getPos(), breakEvent.getPlayer());
+                    if (hit != -1) {
+                        breakEvent.setCanceled(true);
+                        ((DrawerBlock) breakEvent.getState().getBlock()).attack(breakEvent.getState(), breakEvent.getPlayer().getLevel(), breakEvent.getPos(), breakEvent.getPlayer());
+                    }
+                }
+                if (breakEvent.getState().getBlock() instanceof CompactingDrawerBlock) {
+                    int hit = ((CompactingDrawerBlock) breakEvent.getState().getBlock()).getHit(breakEvent.getState(), breakEvent.getPlayer().getLevel(), breakEvent.getPos(), breakEvent.getPlayer());
+                    if (hit != -1) {
+                        breakEvent.setCanceled(true);
+                        ((CompactingDrawerBlock) breakEvent.getState().getBlock()).attack(breakEvent.getState(), breakEvent.getPlayer().getLevel(), breakEvent.getPos(), breakEvent.getPlayer());
+                    }
+                }
+                if (breakEvent.getState().getBlock() instanceof EnderDrawerBlock) {
+                    int hit = ((EnderDrawerBlock) breakEvent.getState().getBlock()).getHit(breakEvent.getState(), breakEvent.getPlayer().getLevel(), breakEvent.getPos(), breakEvent.getPlayer());
+                    if (hit != -1) {
+                        breakEvent.setCanceled(true);
+                        ((EnderDrawerBlock) breakEvent.getState().getBlock()).attack(breakEvent.getState(), breakEvent.getPlayer().getLevel(), breakEvent.getPos(), breakEvent.getPlayer());
+                    }
+                }
+            }
         }).subscribe();
     }
 
