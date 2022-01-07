@@ -2,7 +2,6 @@ package com.buuz135.functionalstorage.block;
 
 import com.buuz135.functionalstorage.FunctionalStorage;
 import com.buuz135.functionalstorage.block.tile.DrawerControllerTile;
-import com.buuz135.functionalstorage.block.tile.DrawerTile;
 import com.buuz135.functionalstorage.block.tile.EnderDrawerTile;
 import com.buuz135.functionalstorage.item.LinkingToolItem;
 import com.hrznstudio.titanium.block.RotatableBlock;
@@ -166,8 +165,8 @@ public class EnderDrawerBlock extends RotatableBlock<EnderDrawerTile> {
     @Override
     public void onRemove(BlockState state, Level worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
         if (!state.is(newState.getBlock())){
-            TileUtil.getTileEntity(worldIn, pos, DrawerTile.class).ifPresent(tile -> {
-                if (tile.getControllerPos() != null){
+            TileUtil.getTileEntity(worldIn, pos, EnderDrawerTile.class).ifPresent(tile -> {
+                if (tile.getControllerPos() != null) {
                     TileUtil.getTileEntity(worldIn, tile.getControllerPos(), DrawerControllerTile.class).ifPresent(drawerControllerTile -> {
                         drawerControllerTile.addConnectedDrawers(LinkingToolItem.ActionMode.REMOVE, pos);
                     });
