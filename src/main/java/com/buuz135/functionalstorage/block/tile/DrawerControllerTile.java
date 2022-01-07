@@ -1,16 +1,12 @@
 package com.buuz135.functionalstorage.block.tile;
 
 import com.buuz135.functionalstorage.FunctionalStorage;
-import com.buuz135.functionalstorage.block.DrawerControllerBlock;
 import com.buuz135.functionalstorage.block.config.FunctionalStorageConfig;
-import com.buuz135.functionalstorage.inventory.BigInventoryHandler;
 import com.buuz135.functionalstorage.inventory.ControllerInventoryHandler;
 import com.buuz135.functionalstorage.item.ConfigurationToolItem;
 import com.buuz135.functionalstorage.item.LinkingToolItem;
-import com.buuz135.functionalstorage.item.UpgradeItem;
 import com.hrznstudio.titanium.annotation.Save;
 import com.hrznstudio.titanium.block.BasicTileBlock;
-import com.hrznstudio.titanium.component.inventory.InventoryComponent;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -36,7 +32,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
-public class DrawerControllerTile extends ControllableDrawerTile<DrawerControllerTile>{
+public class DrawerControllerTile extends ControllableDrawerTile<DrawerControllerTile> {
 
     private static HashMap<UUID, Long> INTERACTION_LOGGER = new HashMap<>();
 
@@ -65,7 +61,7 @@ public class DrawerControllerTile extends ControllableDrawerTile<DrawerControlle
     @Override
     public void serverTick(Level level, BlockPos pos, BlockState state, DrawerControllerTile blockEntity) {
         super.serverTick(level, pos, state, blockEntity);
-        if (this.connectedDrawers.getConnectedDrawers().size() != this.connectedDrawers.getHandlers().size()){
+        if (this.connectedDrawers.getConnectedDrawers().size() != this.connectedDrawers.getHandlers().size()) {
             this.connectedDrawers.setLevel(getLevel());
             this.connectedDrawers.rebuild();
             markForUpdate();
@@ -75,10 +71,11 @@ public class DrawerControllerTile extends ControllableDrawerTile<DrawerControlle
 
     public InteractionResult onSlotActivated(Player playerIn, InteractionHand hand, Direction facing, double hitX, double hitY, double hitZ) {
         ItemStack stack = playerIn.getItemInHand(hand);
-        if (stack.getItem().equals(FunctionalStorage.CONFIGURATION_TOOL.get()) || stack.getItem().equals(FunctionalStorage.LINKING_TOOL.get())) return InteractionResult.PASS;
-        if (isServer()){
+        if (stack.getItem().equals(FunctionalStorage.CONFIGURATION_TOOL.get()) || stack.getItem().equals(FunctionalStorage.LINKING_TOOL.get()))
+            return InteractionResult.PASS;
+        if (isServer()) {
             for (int slot = 0; slot < getStorage().getSlots(); slot++) {
-                if (!stack.isEmpty() && getStorage().insertItem(slot, stack, true).getCount() != stack.getCount()){
+                if (!stack.isEmpty() && getStorage().insertItem(slot, stack, true).getCount() != stack.getCount()) {
                     playerIn.setItemInHand(hand, getStorage().insertItem(slot, stack, false));
                     return InteractionResult.SUCCESS;
                 } else if (System.currentTimeMillis() - INTERACTION_LOGGER.getOrDefault(playerIn.getUUID(), System.currentTimeMillis()) < 300) {
@@ -116,10 +113,10 @@ public class DrawerControllerTile extends ControllableDrawerTile<DrawerControlle
     @Override
     public void toggleLocking() {
         super.toggleLocking();
-        if (isServer()){
+        if (isServer()) {
             for (Long connectedDrawer : new ArrayList<>(this.connectedDrawers.getConnectedDrawers())) {
                 BlockEntity blockEntity = this.level.getBlockEntity(BlockPos.of(connectedDrawer));
-                if (blockEntity instanceof ControllableDrawerTile){
+                if (blockEntity instanceof ControllableDrawerTile) {
                     ((ControllableDrawerTile<?>) blockEntity).setLocked(this.isLocked());
                 }
             }
@@ -129,10 +126,10 @@ public class DrawerControllerTile extends ControllableDrawerTile<DrawerControlle
     @Override
     public void toggleOption(ConfigurationToolItem.ConfigurationAction action) {
         super.toggleOption(action);
-        if (isServer()){
+        if (isServer()) {
             for (Long connectedDrawer : new ArrayList<>(this.connectedDrawers.getConnectedDrawers())) {
                 BlockEntity blockEntity = this.level.getBlockEntity(BlockPos.of(connectedDrawer));
-                if (blockEntity instanceof ControllableDrawerTile){
+                if (blockEntity instanceof ControllableDrawerTile) {
                     ((ControllableDrawerTile<?>) blockEntity).getDrawerOptions().setActive(action, this.getDrawerOptions().isActive(action));
                     ((ControllableDrawerTile<?>) blockEntity).markForUpdate();
                 }
@@ -150,16 +147,18 @@ public class DrawerControllerTile extends ControllableDrawerTile<DrawerControlle
         return connectedDrawers;
     }
 
-    public void addConnectedDrawers(LinkingToolItem.ActionMode action, BlockPos... positions){
+    public void addConnectedDrawers(LinkingToolItem.ActionMode action, BlockPos... positions) {
         for (BlockPos position : positions) {
-           if (this.getBlockPos().closerThan(position, FunctionalStorageConfig.DRAWER_CONTROLLER_LINKING_RANGE)){
-               if (action == LinkingToolItem.ActionMode.ADD){
-                   if (!connectedDrawers.getConnectedDrawers().contains(position.asLong())) this.connectedDrawers.getConnectedDrawers().add(position.asLong());
-               }
-           }
-           if (action == LinkingToolItem.ActionMode.REMOVE){
-               this.connectedDrawers.getConnectedDrawers().removeIf(aLong -> aLong == position.asLong());
-           }
+            if (level.getBlockState(position).is(FunctionalStorage.DRAWER_CONTROLLER.get())) continue;
+            if (this.getBlockPos().closerThan(position, FunctionalStorageConfig.DRAWER_CONTROLLER_LINKING_RANGE)) {
+                if (action == LinkingToolItem.ActionMode.ADD) {
+                    if (!connectedDrawers.getConnectedDrawers().contains(position.asLong()))
+                        this.connectedDrawers.getConnectedDrawers().add(position.asLong());
+                }
+            }
+            if (action == LinkingToolItem.ActionMode.REMOVE) {
+                this.connectedDrawers.getConnectedDrawers().removeIf(aLong -> aLong == position.asLong());
+            }
         }
         this.connectedDrawers.rebuild();
         markForUpdate();
@@ -190,13 +189,13 @@ public class DrawerControllerTile extends ControllableDrawerTile<DrawerControlle
             this.level = level;
         }
 
-        private void rebuild(){
+        private void rebuild() {
             this.handlers = new ArrayList<>();
-            if (level != null && !level.isClientSide()){
+            if (level != null && !level.isClientSide()) {
                 for (Long connectedDrawer : this.connectedDrawers) {
                     BlockPos pos = BlockPos.of(connectedDrawer);
                     BlockEntity entity = level.getBlockEntity(pos);
-                    if (entity instanceof ControllableDrawerTile){
+                    if (entity instanceof ControllableDrawerTile) {
                         this.handlers.add(((ControllableDrawerTile<?>) entity).getStorage());
                     }
                 }
