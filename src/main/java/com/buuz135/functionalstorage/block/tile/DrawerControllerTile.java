@@ -81,9 +81,8 @@ public class DrawerControllerTile extends ControllableDrawerTile<DrawerControlle
                 } else if (System.currentTimeMillis() - INTERACTION_LOGGER.getOrDefault(playerIn.getUUID(), System.currentTimeMillis()) < 300) {
                     boolean worked = false;
                     for (ItemStack itemStack : playerIn.getInventory().items) {
-                        if (!itemStack.isEmpty() && getStorage().insertItem(slot, itemStack, true).isEmpty()) {
-                            getStorage().insertItem(slot, itemStack.copy(), false);
-                            itemStack.setCount(0);
+                        if (!itemStack.isEmpty() && !getStorage().getStackInSlot(slot).isEmpty() && getStorage().insertItem(slot, itemStack, true).getCount() != stack.getCount()) {
+                            itemStack.setCount(getStorage().insertItem(slot, itemStack.copy(), false).getCount());
                             worked = true;
                         }
                     }
