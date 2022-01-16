@@ -1,12 +1,8 @@
 package com.buuz135.functionalstorage.inventory;
 
 import com.buuz135.functionalstorage.FunctionalStorage;
-import com.buuz135.functionalstorage.network.EnderDrawerSyncMessage;
 import com.buuz135.functionalstorage.world.EnderSavedData;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.network.NetworkDirection;
 
 public class EnderInventoryHandler extends BigInventoryHandler{
 
@@ -47,7 +43,11 @@ public class EnderInventoryHandler extends BigInventoryHandler{
 
     @Override
     public int getSlotLimit(int slot) {
-        return (int) Math.min(Integer.MAX_VALUE, FunctionalStorage.DrawerType.X_1.getSlotAmount() * 4);
+        double stackSize = 1;
+        if (!getStoredStacks().get(slot).getStack().isEmpty()) {
+            stackSize = getStoredStacks().get(slot).getStack().getMaxStackSize() / 64D;
+        }
+        return (int) Math.floor(Math.min(Integer.MAX_VALUE, FunctionalStorage.DrawerType.X_1.getSlotAmount() * 4) * stackSize);
     }
 
     @Override

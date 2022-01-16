@@ -89,8 +89,12 @@ public abstract class BigInventoryHandler implements IItemHandler, INBTSerializa
 
     @Override
     public int getSlotLimit(int slot) {
-        if (hasDowngrade()) return 64;
-        return (int) Math.min(Integer.MAX_VALUE, type.getSlotAmount() * (long) getMultiplier());
+        double stackSize = 1;
+        if (!getStoredStacks().get(slot).getStack().isEmpty()) {
+            stackSize = getStoredStacks().get(slot).getStack().getMaxStackSize() / 64D;
+        }
+        if (hasDowngrade()) return (int) Math.floor(64 * stackSize);
+        return (int) Math.floor(Math.min(Integer.MAX_VALUE, type.getSlotAmount() * (long) getMultiplier()) * stackSize);
     }
 
     @Override
