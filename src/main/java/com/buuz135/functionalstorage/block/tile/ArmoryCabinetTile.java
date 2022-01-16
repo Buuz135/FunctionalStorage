@@ -1,13 +1,13 @@
 package com.buuz135.functionalstorage.block.tile;
 
 import com.buuz135.functionalstorage.inventory.ArmoryCabinetInventoryHandler;
-import com.buuz135.functionalstorage.inventory.CompactingInventoryHandler;
 import com.hrznstudio.titanium.annotation.Save;
 import com.hrznstudio.titanium.block.BasicTileBlock;
 import com.hrznstudio.titanium.block.tile.ActiveTile;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
@@ -56,6 +56,20 @@ public class ArmoryCabinetTile extends ActiveTile<ArmoryCabinetTile> {
     @Override
     public ClientboundBlockEntityDataPacket getUpdatePacket() {
         return ClientboundBlockEntityDataPacket.create(this, blockEntity -> new CompoundTag());
+    }
+
+    @Override
+    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt) {
+        //super.onDataPacket(net, pkt);
+    }
+
+    public boolean isEverythingEmpty() {
+        for (int i = 0; i < getStorage().getSlots(); i++) {
+            if (!getStorage().getStackInSlot(i).isEmpty()) {
+                return false;
+            }
+        }
+        return true;
     }
 
     @NotNull

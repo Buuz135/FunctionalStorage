@@ -12,7 +12,7 @@ buildscript {
 apply plugin: 'net.minecraftforge.gradle'
 
 group = 'com.buuz135'
-version = '1.18.1-0.0.7'
+version = '1.18.1-0.0.8'
 
 java {
     archivesBaseName = 'functionalstorage'
@@ -29,6 +29,8 @@ minecraft {
             workingDirectory project.file('run')
             property 'forge.logging.markers', 'REGISTRIES'
             property 'forge.logging.console.level', 'debug'
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
 
             mods {
                 functionalstorage {
@@ -40,6 +42,8 @@ minecraft {
         server {
             property 'forge.logging.markers', 'REGISTRIES'
             property 'forge.logging.console.level', 'debug'
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
 
             mods {
                 functionalstorage {
@@ -53,6 +57,8 @@ minecraft {
             property 'forge.logging.markers', 'REGISTRIES'
 
             property 'forge.logging.console.level', 'debug'
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
 
             args '--mod', 'functionalstorage', '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
 
@@ -91,6 +97,9 @@ dependencies {
     runtimeOnly fg.deobf("mezz.jei:jei-1.18.1:9.1.0.46")
     runtimeOnly fg.deobf("curse.maven:refined-storage-243076:3569563")
     implementation fg.deobf("curse.maven:the-one-probe-245211:3586969")
+    runtimeOnly fg.deobf("curse.maven:create-328085:3600402")
+    runtimeOnly fg.deobf("curse.maven:flywheel-486392:3600401")
+    annotationProcessor "org.spongepowered:mixin:0.8.5:processor"
 }
 
 // Example for how to get properties into the manifest for reading at runtime.

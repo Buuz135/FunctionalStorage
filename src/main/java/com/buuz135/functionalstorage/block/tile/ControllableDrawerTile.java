@@ -335,6 +335,25 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
         getOptional().invalidate();
     }
 
+    public boolean isEverythingEmpty() {
+        for (int i = 0; i < getStorage().getSlots(); i++) {
+            if (!getStorage().getStackInSlot(i).isEmpty()) {
+                return false;
+            }
+        }
+        for (int i = 0; i < getStorageUpgrades().getSlots(); i++) {
+            if (!getStorageUpgrades().getStackInSlot(i).isEmpty()) {
+                return false;
+            }
+        }
+        for (int i = 0; i < getUtilityUpgrades().getSlots(); i++) {
+            if (!getUtilityUpgrades().getStackInSlot(i).isEmpty()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     public static class DrawerOptions implements INBTSerializable<CompoundTag> {
 
         public HashMap<ConfigurationToolItem.ConfigurationAction, Boolean> options;

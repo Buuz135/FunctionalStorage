@@ -36,8 +36,8 @@ public class DrawerStackItemHandler implements IItemHandler, INBTSerializable<Co
             this.storedStacks.add(i, new BigInventoryHandler.BigStack(ItemStack.EMPTY, 0));
         }
         if (stack.hasTag()) {
-            deserializeNBT(stack.getTag().getCompound("BlockEntityTag").getCompound("handler"));
-            for (Tag tag : stack.getOrCreateTag().getCompound("BlockEntityTag").getCompound("storageUpgrades").getList("Items", Tag.TAG_COMPOUND)) {
+            deserializeNBT(stack.getTag().getCompound("Tile").getCompound("handler"));
+            for (Tag tag : stack.getOrCreateTag().getCompound("Tile").getCompound("storageUpgrades").getList("Items", Tag.TAG_COMPOUND)) {
                 ItemStack itemStack = ItemStack.of((CompoundTag) tag);
                 if (itemStack.getItem() instanceof StorageUpgradeItem) {
                     if (multiplier == 1) multiplier = ((StorageUpgradeItem) itemStack.getItem()).getStorageMultiplier();
@@ -47,7 +47,7 @@ public class DrawerStackItemHandler implements IItemHandler, INBTSerializable<Co
                     this.downgrade = true;
                 }
             }
-            for (Tag tag : stack.getOrCreateTag().getCompound("BlockEntityTag").getCompound("utilityUpgrades").getList("Items", Tag.TAG_COMPOUND)) {
+            for (Tag tag : stack.getOrCreateTag().getCompound("Tile").getCompound("utilityUpgrades").getList("Items", Tag.TAG_COMPOUND)) {
                 ItemStack itemStack = ItemStack.of((CompoundTag) tag);
                 if (itemStack.getItem().equals(FunctionalStorage.VOID_UPGRADE.get())) {
                     this.isVoid = true;
@@ -114,9 +114,9 @@ public class DrawerStackItemHandler implements IItemHandler, INBTSerializable<Co
     }
 
     private void onChange() {
-        if (stack.getOrCreateTag().contains("BlockEntityTag"))
-            stack.getOrCreateTag().put("BlockEntityTag", new CompoundTag());
-        stack.getOrCreateTag().getCompound("BlockEntityTag").put("handler", serializeNBT());
+        if (stack.getOrCreateTag().contains("Tile"))
+            stack.getOrCreateTag().put("Tile", new CompoundTag());
+        stack.getOrCreateTag().getCompound("Tile").put("handler", serializeNBT());
     }
 
     private boolean isValid(int slot, @Nonnull ItemStack stack) {

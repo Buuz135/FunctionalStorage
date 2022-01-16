@@ -24,6 +24,7 @@ import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
@@ -32,13 +33,14 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.LootTable;
-import net.minecraft.world.level.storage.loot.functions.CopyNbtFunction;
-import net.minecraft.world.level.storage.loot.providers.nbt.ContextNbtProvider;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
@@ -213,11 +215,27 @@ public class DrawerBlock extends RotatableBlock<DrawerTile> {
 
     @Override
     public LootTable.Builder getLootTable(@Nonnull BasicBlockLootTables blockLootTables) {
-        CopyNbtFunction.Builder nbtBuilder = CopyNbtFunction.copyData(ContextNbtProvider.BLOCK_ENTITY);
-        nbtBuilder.copy("handler",  "BlockEntityTag.handler");
-        nbtBuilder.copy("storageUpgrades",  "BlockEntityTag.storageUpgrades");
-        nbtBuilder.copy("utilityUpgrades",  "BlockEntityTag.utilityUpgrades");
-        return blockLootTables.droppingSelfWithNbt(this, nbtBuilder);
+        //CopyNbtFunction.Builder nbtBuilder = CopyNbtFunction.copyData(ContextNbtProvider.BLOCK_ENTITY);
+        //nbtBuilder.copy("handler",  "BlockEntityTag.handler");
+        //nbtBuilder.copy("storageUpgrades",  "BlockEntityTag.storageUpgrades");
+        //nbtBuilder.copy("utilityUpgrades",  "BlockEntityTag.utilityUpgrades");
+        //return blockLootTables.droppingSelfWithNbt(this, nbtBuilder);
+        return blockLootTables.droppingNothing();
+    }
+
+
+    @Override
+    public List<ItemStack> getDrops(BlockState p_60537_, LootContext.Builder builder) {
+        NonNullList<ItemStack> stacks = NonNullList.create();
+        ItemStack stack = new ItemStack(this);
+        BlockEntity drawerTile = builder.getOptionalParameter(LootContextParams.BLOCK_ENTITY);
+        if (drawerTile instanceof DrawerTile) {
+            if (!((DrawerTile) drawerTile).isEverythingEmpty()) {
+                stack.getOrCreateTag().put("Tile", drawerTile.saveWithoutMetadata());
+            }
+        }
+        stacks.add(stack);
+        return stacks;
     }
 
     @Override
@@ -226,8 +244,20 @@ public class DrawerBlock extends RotatableBlock<DrawerTile> {
     }
 
     @Override
+    public void setPlacedBy(Level level, BlockPos pos, BlockState p_49849_, @Nullable LivingEntity p_49850_, ItemStack stack) {
+        super.setPlacedBy(level, pos, p_49849_, p_49850_, stack);
+        if (stack.hasTag() && stack.getTag().contains("Tile")) {
+            BlockEntity entity = level.getBlockEntity(pos);
+            if (entity instanceof DrawerTile) {
+                entity.load(stack.getTag().getCompound("Tile"));
+                ((DrawerTile) entity).markForUpdate();
+            }
+        }
+    }
+
+    @Override
     public void registerRecipe(Consumer<FinishedRecipe> consumer) {
-        if (type == FunctionalStorage.DrawerType.X_1){
+        if (type == FunctionalStorage.DrawerType.X_1) {
             TitaniumShapedRecipeBuilder.shapedRecipe(this)
                     .pattern("PPP").pattern("PCP").pattern("PPP")
                     .define('P', woodType.getPlanks())
