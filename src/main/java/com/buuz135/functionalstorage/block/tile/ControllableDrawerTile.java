@@ -256,7 +256,7 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
                 playerIn.setItemInHand(hand, getStorage().insertItem(slot, stack, false));
             } else if (System.currentTimeMillis() - INTERACTION_LOGGER.getOrDefault(playerIn.getUUID(), System.currentTimeMillis()) < 300) {
                 for (ItemStack itemStack : playerIn.getInventory().items) {
-                    if (!itemStack.isEmpty() && !getStorage().getStackInSlot(slot).isEmpty() && getStorage().insertItem(slot, itemStack, true).getCount() != stack.getCount()) {
+                    if (!itemStack.isEmpty() && !getStorage().getStackInSlot(slot).isEmpty() && getStorage().insertItem(slot, itemStack, true).getCount() != itemStack.getCount()) {
                         itemStack.setCount(getStorage().insertItem(slot, itemStack.copy(), false).getCount());
                     }
                 }
