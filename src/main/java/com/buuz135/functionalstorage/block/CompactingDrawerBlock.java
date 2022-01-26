@@ -2,6 +2,7 @@ package com.buuz135.functionalstorage.block;
 
 import com.buuz135.functionalstorage.FunctionalStorage;
 import com.buuz135.functionalstorage.block.tile.CompactingDrawerTile;
+import com.buuz135.functionalstorage.block.tile.ControllableDrawerTile;
 import com.buuz135.functionalstorage.block.tile.DrawerControllerTile;
 import com.buuz135.functionalstorage.block.tile.DrawerTile;
 import com.buuz135.functionalstorage.item.LinkingToolItem;
@@ -169,8 +170,8 @@ public class CompactingDrawerBlock extends RotatableBlock<CompactingDrawerTile> 
         NonNullList<ItemStack> stacks = NonNullList.create();
         ItemStack stack = new ItemStack(this);
         BlockEntity drawerTile = builder.getOptionalParameter(LootContextParams.BLOCK_ENTITY);
-        if (drawerTile instanceof DrawerTile) {
-            if (!((DrawerTile) drawerTile).isEverythingEmpty()) {
+        if (drawerTile instanceof ControllableDrawerTile) {
+            if (!((ControllableDrawerTile<?>) drawerTile).isEverythingEmpty()) {
                 stack.getOrCreateTag().put("Tile", drawerTile.saveWithoutMetadata());
             }
         }
@@ -188,9 +189,9 @@ public class CompactingDrawerBlock extends RotatableBlock<CompactingDrawerTile> 
         super.setPlacedBy(level, pos, p_49849_, p_49850_, stack);
         if (stack.hasTag()) {
             BlockEntity entity = level.getBlockEntity(pos);
-            if (entity instanceof DrawerTile && stack.getTag().contains("Tile")) {
+            if (entity instanceof ControllableDrawerTile && stack.getTag().contains("Tile")) {
                 entity.load(stack.getTag().getCompound("Tile"));
-                ((DrawerTile) entity).markForUpdate();
+                ((ControllableDrawerTile<?>) entity).markForUpdate();
             }
         }
     }
