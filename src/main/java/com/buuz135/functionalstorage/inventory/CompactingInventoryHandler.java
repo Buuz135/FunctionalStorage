@@ -129,7 +129,7 @@ public abstract class CompactingInventoryHandler implements IItemHandler, INBTSe
 
     @Override
     public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
-        return isSetup() && slot < 3 && stack.isEmpty();
+        return isSetup() && slot < 3 && !stack.isEmpty();
     }
 
     private boolean isValid(int slot, @Nonnull ItemStack stack){
