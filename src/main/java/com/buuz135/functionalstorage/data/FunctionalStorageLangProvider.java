@@ -33,7 +33,7 @@ public class FunctionalStorageLangProvider extends LanguageProvider {
         this.add("linkingtool.linkingmode.multiple.desc", "Links multiple drawers between 2 points");
         this.add("linkingtool.controller", "Controller: ");
         this.add("linkingtool.linkingaction", "Linking Action: ");
-        this.add("linkingtool.use", "Sneak + Right Click in the air to change modes or to clear frequency. \nLeft Click an Ender Drawer to store its Frequency. \nRight Click in the air to change actions. \nRight click a controller to setup the tool then use it nearby drawers to link. \n\nWhile holding the tool it will show the connected drawers to the selected controller.");
+        this.add("linkingtool.use", "* Sneak + Right Click in the air to change modes or to clear frequency. \n* Left Click an Ender Drawer to store its Frequency. \n* Right Click in the air to change actions. \n\nRight click a controller to setup the tool then use it nearby drawers to link. \n\nWhile holding the tool it will show the connected drawers to the selected controller.");
         this.add("linkingtool.linkingaction.add", "Add");
         this.add("linkingtool.linkingaction.remove", "Remove");
         this.add("key.categories.utility", "Utility");
