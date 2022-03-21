@@ -76,15 +76,13 @@ public class DrawerControllerTile extends ControllableDrawerTile<DrawerControlle
             return InteractionResult.PASS;
         if (isServer()) {
             for (int slot = 0; slot < getStorage().getSlots(); slot++) {
-                if (!stack.isEmpty() && getStorage().insertItem(slot, stack, true).getCount() != stack.getCount()) {
+                if (!stack.isEmpty() && !getStorage().getStackInSlot(slot).isEmpty() && getStorage().insertItem(slot, stack, true).getCount() != stack.getCount()) {
                     playerIn.setItemInHand(hand, getStorage().insertItem(slot, stack, false));
                     return InteractionResult.SUCCESS;
                 } else if (System.currentTimeMillis() - INTERACTION_LOGGER.getOrDefault(playerIn.getUUID(), System.currentTimeMillis()) < 300) {
-                    boolean worked = false;
                     for (ItemStack itemStack : playerIn.getInventory().items) {
                         if (!itemStack.isEmpty() && !getStorage().getStackInSlot(slot).isEmpty() && getStorage().insertItem(slot, itemStack, true).getCount() != itemStack.getCount()) {
                             itemStack.setCount(getStorage().insertItem(slot, itemStack.copy(), false).getCount());
-                            worked = true;
                         }
                     }
                 }
