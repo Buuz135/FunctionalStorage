@@ -13,7 +13,7 @@ public abstract class ControllerInventoryHandler implements IItemHandler {
 
     @Override
     public int getSlots() {
-        return getDrawers().getHandlers().stream().map(IItemHandler::getSlots).mapToInt(Integer::intValue).sum();
+        return getDrawers().getHandlers().stream().filter(iItemHandler -> !(iItemHandler instanceof ControllerInventoryHandler)).map(IItemHandler::getSlots).mapToInt(Integer::intValue).sum();
     }
 
     @NotNull
