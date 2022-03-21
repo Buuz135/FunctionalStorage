@@ -16,6 +16,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraftforge.common.capabilities.Capability;
@@ -41,8 +42,8 @@ public class DrawerControllerTile extends ControllableDrawerTile<DrawerControlle
     public ControllerInventoryHandler handler;
     private LazyOptional<IItemHandler> lazyStorage;
 
-    public DrawerControllerTile(BasicTileBlock<DrawerControllerTile> base, BlockPos pos, BlockState state) {
-        super(base, pos, state);
+    public DrawerControllerTile(BasicTileBlock<DrawerControllerTile> base, BlockEntityType<DrawerControllerTile> blockEntityType, BlockPos pos, BlockState state) {
+        super(base, blockEntityType, pos, state);
         this.connectedDrawers = new ConnectedDrawers(null);
         this.handler = new ControllerInventoryHandler() {
             @Override
@@ -147,7 +148,7 @@ public class DrawerControllerTile extends ControllableDrawerTile<DrawerControlle
 
     public void addConnectedDrawers(LinkingToolItem.ActionMode action, BlockPos... positions) {
         for (BlockPos position : positions) {
-            if (level.getBlockState(position).is(FunctionalStorage.DRAWER_CONTROLLER.get())) continue;
+            if (level.getBlockState(position).is(FunctionalStorage.DRAWER_CONTROLLER.getLeft().get())) continue;
             if (this.getBlockPos().closerThan(position, FunctionalStorageConfig.DRAWER_CONTROLLER_LINKING_RANGE)) {
                 if (action == LinkingToolItem.ActionMode.ADD) {
                     if (!connectedDrawers.getConnectedDrawers().contains(position.asLong()))

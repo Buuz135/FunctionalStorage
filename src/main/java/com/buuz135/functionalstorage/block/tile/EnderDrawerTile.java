@@ -18,6 +18,7 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
@@ -36,8 +37,8 @@ public class EnderDrawerTile extends ControllableDrawerTile<EnderDrawerTile> {
     private String frequency;
     private LazyOptional<IItemHandler> lazyStorage;
 
-    public EnderDrawerTile(BasicTileBlock<EnderDrawerTile> base, BlockPos pos, BlockState state) {
-        super(base, pos, state);
+    public EnderDrawerTile(BasicTileBlock<EnderDrawerTile> base, BlockEntityType<EnderDrawerTile> blockEntityType, BlockPos pos, BlockState state) {
+        super(base, blockEntityType, pos, state);
         this.frequency = UUID.randomUUID().toString();
         this.lazyStorage = LazyOptional.empty();
     }

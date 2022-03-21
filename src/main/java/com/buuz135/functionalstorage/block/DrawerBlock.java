@@ -50,6 +50,7 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
+import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -59,6 +60,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 public class DrawerBlock extends RotatableBlock<DrawerTile> {
 
@@ -140,11 +142,6 @@ public class DrawerBlock extends RotatableBlock<DrawerTile> {
         p_206840_1_.add(LOCKED);
     }
 
-    @Override
-    public void addAlternatives(DeferredRegistryHelper registry) {
-        super.addAlternatives(registry);
-    }
-
     @NotNull
     @Override
     public RotationType getRotationType() {
@@ -153,7 +150,7 @@ public class DrawerBlock extends RotatableBlock<DrawerTile> {
 
     @Override
     public BlockEntityType.BlockEntitySupplier<DrawerTile> getTileEntityFactory() {
-        return (blockPos, state) -> new DrawerTile(this, blockPos, state, type);
+        return (blockPos, state) -> new DrawerTile(this, (BlockEntityType<DrawerTile>) FunctionalStorage.DRAWER_TYPES.get(type).stream().filter(registryObjectRegistryObjectPair -> registryObjectRegistryObjectPair.getLeft().get().equals(this)).map(Pair::getRight).findFirst().get().get(), blockPos, state, type);
     }
 
     @Override

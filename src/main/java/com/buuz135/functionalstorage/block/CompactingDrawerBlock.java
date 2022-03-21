@@ -76,11 +76,6 @@ public class CompactingDrawerBlock extends RotatableBlock<CompactingDrawerTile> 
         registerDefaultState(defaultBlockState().setValue(RotatableBlock.FACING_HORIZONTAL, Direction.NORTH).setValue(DrawerBlock.LOCKED, false));
     }
 
-    @Override
-    public void addAlternatives(DeferredRegistryHelper registry) {
-        super.addAlternatives(registry);
-    }
-
     @NotNull
     @Override
     public RotationType getRotationType() {
@@ -89,7 +84,7 @@ public class CompactingDrawerBlock extends RotatableBlock<CompactingDrawerTile> 
 
     @Override
     public BlockEntityType.BlockEntitySupplier<CompactingDrawerTile> getTileEntityFactory() {
-        return (blockPos, state) -> new CompactingDrawerTile(this, blockPos, state);
+        return (blockPos, state) -> new CompactingDrawerTile(this, (BlockEntityType<CompactingDrawerTile>) FunctionalStorage.COMPACTING_DRAWER.getRight().get(), blockPos, state);
     }
 
     @Override

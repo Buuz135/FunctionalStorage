@@ -74,11 +74,6 @@ public class EnderDrawerBlock extends RotatableBlock<EnderDrawerTile> {
         p_206840_1_.add(LOCKED);
     }
 
-    @Override
-    public void addAlternatives(DeferredRegistryHelper registry) {
-        super.addAlternatives(registry);
-    }
-
     @NotNull
     @Override
     public RotationType getRotationType() {
@@ -87,7 +82,7 @@ public class EnderDrawerBlock extends RotatableBlock<EnderDrawerTile> {
 
     @Override
     public BlockEntityType.BlockEntitySupplier<EnderDrawerTile> getTileEntityFactory() {
-        return (blockPos, state) -> new EnderDrawerTile(this, blockPos, state);
+        return (blockPos, state) -> new EnderDrawerTile(this, (BlockEntityType<EnderDrawerTile>) FunctionalStorage.ENDER_DRAWER.getRight().get(),blockPos, state);
     }
 
     @Override

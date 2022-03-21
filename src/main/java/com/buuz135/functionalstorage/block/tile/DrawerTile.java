@@ -15,6 +15,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
@@ -37,8 +38,8 @@ public class DrawerTile extends ControllableDrawerTile<DrawerTile> {
     private final LazyOptional<IItemHandler> lazyStorage;
     private FunctionalStorage.DrawerType type;
 
-    public DrawerTile(BasicTileBlock<DrawerTile> base, BlockPos pos, BlockState state, FunctionalStorage.DrawerType type) {
-        super(base, pos, state);
+    public DrawerTile(BasicTileBlock<DrawerTile> base, BlockEntityType<DrawerTile> blockEntityType, BlockPos pos, BlockState state, FunctionalStorage.DrawerType type) {
+        super(base, blockEntityType, pos, state);
         this.type = type;
         this.handler = new BigInventoryHandler(type) {
             @Override

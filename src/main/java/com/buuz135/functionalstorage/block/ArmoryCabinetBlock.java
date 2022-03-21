@@ -31,7 +31,7 @@ public class ArmoryCabinetBlock extends RotatableBlock<ArmoryCabinetTile> {
 
     @Override
     public BlockEntityType.BlockEntitySupplier<?> getTileEntityFactory() {
-        return (p_155268_, p_155269_) -> new ArmoryCabinetTile(this, p_155268_, p_155269_);
+        return (p_155268_, p_155269_) -> new ArmoryCabinetTile(this, FunctionalStorage.ARMORY_CABINET.getRight().get(), p_155268_, p_155269_);
     }
 
     @NotNull

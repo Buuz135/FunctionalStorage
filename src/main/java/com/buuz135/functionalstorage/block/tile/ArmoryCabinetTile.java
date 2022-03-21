@@ -9,6 +9,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
@@ -25,8 +26,8 @@ public class ArmoryCabinetTile extends ActiveTile<ArmoryCabinetTile> {
     public ArmoryCabinetInventoryHandler handler;
     private final LazyOptional<IItemHandler> lazyStorage;
 
-    public ArmoryCabinetTile(BasicTileBlock<ArmoryCabinetTile> base, BlockPos pos, BlockState state) {
-        super(base, pos, state);
+    public ArmoryCabinetTile(BasicTileBlock<ArmoryCabinetTile> base, BlockEntityType<?> entityType, BlockPos pos, BlockState state) {
+        super(base, entityType, pos, state);
         this.handler = new ArmoryCabinetInventoryHandler() {
             @Override
             public void onChange() {
