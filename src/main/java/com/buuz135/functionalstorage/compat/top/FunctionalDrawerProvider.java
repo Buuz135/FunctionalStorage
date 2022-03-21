@@ -56,17 +56,30 @@ public class FunctionalDrawerProvider implements IProbeInfoProvider {
             iProbeInfo.getElements().removeIf(iElement -> iElement instanceof ElementVertical);
             ElementVertical vertical = new ElementVertical();
             if (blockEntity instanceof DrawerTile) {
-                ElementHorizontal abstractElementPanel = new ElementHorizontal(iProbeInfo.defaultLayoutStyle().spacing(8).leftPadding(7).rightPadding(7));
-                abstractElementPanel.getStyle().borderColor(Color.CYAN.darker().getRGB());
                 BigInventoryHandler handler = ((DrawerTile) blockEntity).getHandler();
-                for (int i = 0; i < handler.getStoredStacks().size(); i++) {
-                    BigInventoryHandler.BigStack storedStack = handler.getStoredStacks().get(i);
-                    if (storedStack.getAmount() > 0 || (handler.isLocked() && !storedStack.getStack().isEmpty())) {
-                        abstractElementPanel.element(new CustomElementItemStack(storedStack.getStack(), NumberUtils.getFormatedBigNumber(storedStack.getAmount()) + "/" + NumberUtils.getFormatedBigNumber(handler.getSlotLimit(i)), iProbeInfo.defaultItemStyle()));
+                if (handler.getSlots() == 1 || player.isShiftKeyDown() || probeMode == ProbeMode.EXTENDED){
+                    ElementVertical elementVertical = new ElementVertical(iProbeInfo.defaultLayoutStyle().spacing(2).leftPadding(7).rightPadding(7));
+                    elementVertical.getStyle().borderColor(Color.CYAN.darker().getRGB());
+                    for (int i = 0; i < handler.getStoredStacks().size(); i++) {
+                        BigInventoryHandler.BigStack storedStack = handler.getStoredStacks().get(i);
+                        if (storedStack.getAmount() > 0 || (handler.isLocked() && !storedStack.getStack().isEmpty())) {
+                            elementVertical.element(new CustomElementItemStack(storedStack.getStack(), NumberUtils.getFormatedBigNumber(storedStack.getAmount()) + "/" + NumberUtils.getFormatedBigNumber(handler.getSlotLimit(i)), iProbeInfo.defaultItemStyle(), true));
+                        }
                     }
+                    if (elementVertical.getElements().size() > 0) vertical.element(elementVertical);
+                    vertical.element(new ElementVertical(iProbeInfo.defaultLayoutStyle().topPadding(4)));
+                } else {
+                    ElementHorizontal abstractElementPanel = new ElementHorizontal(iProbeInfo.defaultLayoutStyle().spacing(8).leftPadding(7).rightPadding(7));
+                    abstractElementPanel.getStyle().borderColor(Color.CYAN.darker().getRGB());
+                    for (int i = 0; i < handler.getStoredStacks().size(); i++) {
+                        BigInventoryHandler.BigStack storedStack = handler.getStoredStacks().get(i);
+                        if (storedStack.getAmount() > 0 || (handler.isLocked() && !storedStack.getStack().isEmpty())) {
+                            abstractElementPanel.element(new CustomElementItemStack(storedStack.getStack(), NumberUtils.getFormatedBigNumber(storedStack.getAmount()) + "/" + NumberUtils.getFormatedBigNumber(handler.getSlotLimit(i)), iProbeInfo.defaultItemStyle()));
+                        }
+                    }
+                    if (abstractElementPanel.getElements().size() > 0) vertical.element(abstractElementPanel);
+                    vertical.element(new ElementVertical(iProbeInfo.defaultLayoutStyle().topPadding(4)));
                 }
-                if (abstractElementPanel.getElements().size() > 0) vertical.element(abstractElementPanel);
-                vertical.element(new ElementVertical(iProbeInfo.defaultLayoutStyle().topPadding(4)));
             }
             if (blockEntity instanceof EnderDrawerTile) {
                 ElementHorizontal abstractElementPanel = new ElementHorizontal(iProbeInfo.defaultLayoutStyle().spacing(8).leftPadding(7).rightPadding(7));
@@ -75,7 +88,7 @@ public class FunctionalDrawerProvider implements IProbeInfoProvider {
                 for (int i = 0; i < savedData.getStoredStacks().size(); i++) {
                     BigInventoryHandler.BigStack storedStack = savedData.getStoredStacks().get(i);
                     if (storedStack.getAmount() > 0 || (savedData.isLocked() && !storedStack.getStack().isEmpty())) {
-                        abstractElementPanel.element(new CustomElementItemStack(storedStack.getStack(), NumberUtils.getFormatedBigNumber(storedStack.getAmount()) + "/" + NumberUtils.getFormatedBigNumber(savedData.getSlotLimit(i)), iProbeInfo.defaultItemStyle()));
+                        abstractElementPanel.element(new CustomElementItemStack(storedStack.getStack(), NumberUtils.getFormatedBigNumber(storedStack.getAmount()) + "/" + NumberUtils.getFormatedBigNumber(savedData.getSlotLimit(i)), iProbeInfo.defaultItemStyle(), player.isShiftKeyDown() || probeMode == ProbeMode.EXTENDED));
                     }
                 }
                 if (abstractElementPanel.getElements().size() > 0) vertical.element(abstractElementPanel);
@@ -94,11 +107,11 @@ public class FunctionalDrawerProvider implements IProbeInfoProvider {
             if (blockEntity instanceof CompactingDrawerTile) {
                 CompactingInventoryHandler inventoryHandler = ((CompactingDrawerTile) blockEntity).getHandler();
                 if (player.isShiftKeyDown() || probeMode == ProbeMode.EXTENDED) {
-                    ElementHorizontal abstractElementPanel = new ElementHorizontal(iProbeInfo.defaultLayoutStyle().spacing(12).leftPadding(7).rightPadding(7));
+                    ElementVertical abstractElementPanel = new ElementVertical(iProbeInfo.defaultLayoutStyle().spacing(2).leftPadding(7).rightPadding(7));
                     abstractElementPanel.getStyle().borderColor(Color.CYAN.darker().getRGB());
-                    abstractElementPanel.element(new CustomElementItemStack(inventoryHandler.getResultList().get(2).getResult(), NumberUtils.getFormatedBigNumber(inventoryHandler.getStackInSlot(2).getCount()) + "/" + NumberUtils.getFormatedBigNumber(inventoryHandler.getSlotLimit(2)), iProbeInfo.defaultItemStyle()));
-                    abstractElementPanel.element(new CustomElementItemStack(inventoryHandler.getResultList().get(1).getResult(), NumberUtils.getFormatedBigNumber(inventoryHandler.getStackInSlot(1).getCount()) + "/" + NumberUtils.getFormatedBigNumber(inventoryHandler.getSlotLimit(1)), iProbeInfo.defaultItemStyle()));
-                    abstractElementPanel.element(new CustomElementItemStack(inventoryHandler.getResultList().get(0).getResult(), NumberUtils.getFormatedBigNumber(inventoryHandler.getStackInSlot(0).getCount()) + "/" + NumberUtils.getFormatedBigNumber(inventoryHandler.getSlotLimit(0)), iProbeInfo.defaultItemStyle()));
+                    abstractElementPanel.element(new CustomElementItemStack(inventoryHandler.getResultList().get(2).getResult(), NumberUtils.getFormatedBigNumber(inventoryHandler.getStackInSlot(2).getCount()) + "/" + NumberUtils.getFormatedBigNumber(inventoryHandler.getSlotLimit(2)), iProbeInfo.defaultItemStyle(), true));
+                    abstractElementPanel.element(new CustomElementItemStack(inventoryHandler.getResultList().get(1).getResult(), NumberUtils.getFormatedBigNumber(inventoryHandler.getStackInSlot(1).getCount()) + "/" + NumberUtils.getFormatedBigNumber(inventoryHandler.getSlotLimit(1)), iProbeInfo.defaultItemStyle(), true));
+                    abstractElementPanel.element(new CustomElementItemStack(inventoryHandler.getResultList().get(0).getResult(), NumberUtils.getFormatedBigNumber(inventoryHandler.getStackInSlot(0).getCount()) + "/" + NumberUtils.getFormatedBigNumber(inventoryHandler.getSlotLimit(0)), iProbeInfo.defaultItemStyle(), true));
                     if (abstractElementPanel.getElements().size() > 0) vertical.element(abstractElementPanel);
                 } else {
                     ElementHorizontal abstractElementPanel = new ElementHorizontal(iProbeInfo.defaultLayoutStyle().spacing(8).leftPadding(7).rightPadding(7));

@@ -22,11 +22,18 @@ public class CustomElementItemStack implements IElement {
     private final ItemStack itemStack;
     private final IItemStyle style;
     private final String display;
+    private boolean displayName;
 
     public CustomElementItemStack(ItemStack itemStack, String display, IItemStyle style) {
         this.itemStack = itemStack;
         this.style = style;
         this.display = display;
+        this.displayName = false;
+    }
+
+    public CustomElementItemStack(ItemStack itemStack, String display, IItemStyle style, boolean displayName) {
+        this(itemStack, display, style);
+        this.displayName = true;
     }
 
     public CustomElementItemStack(FriendlyByteBuf buf) {
@@ -38,6 +45,7 @@ public class CustomElementItemStack implements IElement {
 
         this.style = (new ItemStyle()).width(buf.readInt()).height(buf.readInt());
         this.display = buf.readUtf();
+        this.displayName = buf.readBoolean();
     }
 
     public void render(PoseStack matrixStack, int x, int y) {
@@ -50,12 +58,16 @@ public class CustomElementItemStack implements IElement {
                 ChatFormatting var10004 = ChatFormatting.RED;
                 RenderHelper.renderText(var10000, matrixStack, x, y, var10004 + "ERROR: " + itemStack.getHoverName());
             }
+            if (this.displayName){
+                RenderHelper.renderText(Minecraft.getInstance(), matrixStack, x + 22, y + 7, itemStack.getHoverName());
+            }
+
         }
 
     }
 
     public int getWidth() {
-        return this.style.getWidth();
+        return this.style.getWidth() + (this.displayName ? Minecraft.getInstance().font.width(itemStack.getHoverName().getString()) : 0) ;
     }
 
     public int getHeight() {
@@ -73,6 +85,7 @@ public class CustomElementItemStack implements IElement {
         buf.writeInt(this.style.getWidth());
         buf.writeInt(this.style.getHeight());
         buf.writeUtf(this.display);
+        buf.writeBoolean(this.displayName);
     }
 
     public ResourceLocation getID() {
