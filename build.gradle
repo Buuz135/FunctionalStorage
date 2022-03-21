@@ -92,7 +92,7 @@ repositories {
 dependencies {
 
     minecraft 'net.minecraftforge:forge:1.18.2-40.0.19'
-    implementation fg.deobf (project.dependencies.create('com.hrznstudio:titanium:1.18-3.4.0-27'))
+    implementation fg.deobf (project.dependencies.create('com.hrznstudio:titanium:1.18.2-3.5.0-32'))
     compileOnly fg.deobf("mezz.jei:jei-1.18.2:9.5.3.143:api")
     runtimeOnly fg.deobf("mezz.jei:jei-1.18.2:9.5.3.143")
     //runtimeOnly fg.deobf("curse.maven:refined-storage-243076:3569563")
