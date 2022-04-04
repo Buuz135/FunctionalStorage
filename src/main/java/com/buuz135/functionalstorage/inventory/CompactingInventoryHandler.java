@@ -71,7 +71,13 @@ public abstract class CompactingInventoryHandler implements IItemHandler, INBTSe
 
     public void setup(CompactingUtil compactingUtil){
         this.resultList = compactingUtil.getResults();
-        this.parent = compactingUtil.getResults().get(2).getResult();
+        this.parent = compactingUtil.getResults().get(0).getResult();
+        if (this.parent.isEmpty()) {
+            this.parent = compactingUtil.getResults().get(1).getResult();
+        }
+        if (this.parent.isEmpty()) {
+            this.parent = compactingUtil.getResults().get(2).getResult();
+        }
         onChange();
     }
 

@@ -97,6 +97,7 @@ dependencies {
     runtimeOnly fg.deobf("mezz.jei:jei-1.18.2:9.5.3.143")
     //runtimeOnly fg.deobf("curse.maven:refined-storage-243076:3569563")
     implementation fg.deobf("curse.maven:the-one-probe-245211:3671753")
+    //implementation fg.deobf("curse.maven:allthecompressed-514045:3723881")
     //runtimeOnly fg.deobf("curse.maven:create-328085:3600402")
     //runtimeOnly fg.deobf("curse.maven:flywheel-486392:3600401")
     annotationProcessor "org.spongepowered:mixin:0.8.5:processor"
