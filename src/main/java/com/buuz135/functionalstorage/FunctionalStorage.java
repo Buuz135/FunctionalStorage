@@ -20,6 +20,7 @@ import com.buuz135.functionalstorage.item.LinkingToolItem;
 import com.buuz135.functionalstorage.item.StorageUpgradeItem;
 import com.buuz135.functionalstorage.item.UpgradeItem;
 import com.buuz135.functionalstorage.network.EnderDrawerSyncMessage;
+import com.buuz135.functionalstorage.recipe.DrawerlessWoodIngredient;
 import com.buuz135.functionalstorage.util.*;
 import com.hrznstudio.titanium.block.BasicBlock;
 import com.hrznstudio.titanium.block.BasicTileBlock;
@@ -43,6 +44,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraftforge.api.distmarker.Dist;
@@ -53,7 +55,9 @@ import net.minecraftforge.client.event.RenderTooltipEvent;
 import net.minecraftforge.client.model.generators.BlockModelProvider;
 import net.minecraftforge.client.model.generators.ItemModelProvider;
 import net.minecraftforge.common.Tags;
+import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.common.util.NonNullLazy;
+import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
@@ -130,6 +134,9 @@ public class FunctionalStorage extends ModuleController {
                     }
                 }
             }
+        }).subscribe();
+        EventManager.modGeneric(RegistryEvent.Register.class, RecipeSerializer.class).process(register -> {
+            CraftingHelper.register(DrawerlessWoodIngredient.NAME, DrawerlessWoodIngredient.SERIALIZER);
         }).subscribe();
     }
 
@@ -265,9 +272,46 @@ public class FunctionalStorage extends ModuleController {
                                 .isPresent())
                         .collect(Collectors.toList())
         );
-        event.getGenerator().addProvider(new BlockItemModelGeneratorProvider(event.getGenerator(), MOD_ID, blocksToProcess));
-        event.getGenerator().addProvider(new FunctionalStorageBlockstateProvider(event.getGenerator(), event.getExistingFileHelper(), blocksToProcess));
-        event.getGenerator().addProvider(new TitaniumLootTableProvider(event.getGenerator(), blocksToProcess));
+        if (false){
+            event.getGenerator().addProvider(new BlockItemModelGeneratorProvider(event.getGenerator(), MOD_ID, blocksToProcess));
+            event.getGenerator().addProvider(new FunctionalStorageBlockstateProvider(event.getGenerator(), event.getExistingFileHelper(), blocksToProcess));
+            event.getGenerator().addProvider(new TitaniumLootTableProvider(event.getGenerator(), blocksToProcess));
+
+            event.getGenerator().addProvider(new FunctionalStorageItemTagsProvider(event.getGenerator(), new BlockTagsProvider(event.getGenerator()), MOD_ID, event.getExistingFileHelper()));
+            event.getGenerator().addProvider(new FunctionalStorageLangProvider(event.getGenerator(), MOD_ID, "en_us"));
+            event.getGenerator().addProvider(new FunctionalStorageBlockTagsProvider(event.getGenerator(), MOD_ID, event.getExistingFileHelper()));
+            event.getGenerator().addProvider(new ItemModelProvider(event.getGenerator(), MOD_ID, event.getExistingFileHelper()) {
+                @Override
+                protected void registerModels() {
+                    for (StorageUpgradeItem.StorageTier storageTier : STORAGE_UPGRADES.keySet()) {
+                        item(STORAGE_UPGRADES.get(storageTier).get());
+                    }
+                    item(COLLECTOR_UPGRADE.get());
+                    item(PULLING_UPGRADE.get());
+                    item(PUSHING_UPGRADE.get());
+                    item(VOID_UPGRADE.get());
+                }
+
+                private void item(Item item) {
+                    singleTexture(item.getRegistryName().getPath(), new ResourceLocation("minecraft:item/generated"), "layer0", new ResourceLocation(MOD_ID, "items/" + item.getRegistryName().getPath()));
+                }
+            });
+            event.getGenerator().addProvider(new BlockModelProvider(event.getGenerator(), MOD_ID, event.getExistingFileHelper()) {
+                @Override
+                protected void registerModels() {
+                    for (DrawerType value : DrawerType.values()) {
+                        for (RegistryObject<Block> blockRegistryObject : DRAWER_TYPES.get(value).stream().map(Pair::getLeft).collect(Collectors.toList())) {
+                            withExistingParent(blockRegistryObject.get().getRegistryName().getPath() + "_locked", modLoc(blockRegistryObject.get().getRegistryName().getPath()))
+                                    .texture("lock_icon", modLoc("blocks/lock"));
+                        }
+                    }
+                    withExistingParent(COMPACTING_DRAWER.getLeft().get().getRegistryName().getPath() + "_locked", modLoc(COMPACTING_DRAWER.getLeft().get().getRegistryName().getPath()))
+                            .texture("lock_icon", modLoc("blocks/lock"));
+                    withExistingParent(ENDER_DRAWER.getLeft().get().getRegistryName().getPath() + "_locked", modLoc(ENDER_DRAWER.getLeft().get().getRegistryName().getPath()))
+                            .texture("lock_icon", modLoc("blocks/lock"));
+                }
+            });
+        }
         event.getGenerator().addProvider(new TitaniumRecipeProvider(event.getGenerator()) {
             @Override
             public void register(Consumer<FinishedRecipe> consumer) {
@@ -361,40 +405,6 @@ public class FunctionalStorage extends ModuleController {
                         .define('C', Tags.Items.CHESTS_ENDER)
                         .define('L', StorageTags.DRAWER)
                         .save(consumer);
-            }
-        });
-        event.getGenerator().addProvider(new FunctionalStorageItemTagsProvider(event.getGenerator(), new BlockTagsProvider(event.getGenerator()), MOD_ID, event.getExistingFileHelper()));
-        event.getGenerator().addProvider(new FunctionalStorageLangProvider(event.getGenerator(), MOD_ID, "en_us"));
-        event.getGenerator().addProvider(new FunctionalStorageBlockTagsProvider(event.getGenerator(), MOD_ID, event.getExistingFileHelper()));
-        event.getGenerator().addProvider(new ItemModelProvider(event.getGenerator(), MOD_ID, event.getExistingFileHelper()) {
-            @Override
-            protected void registerModels() {
-                for (StorageUpgradeItem.StorageTier storageTier : STORAGE_UPGRADES.keySet()) {
-                    item(STORAGE_UPGRADES.get(storageTier).get());
-                }
-                item(COLLECTOR_UPGRADE.get());
-                item(PULLING_UPGRADE.get());
-                item(PUSHING_UPGRADE.get());
-                item(VOID_UPGRADE.get());
-            }
-
-            private void item(Item item) {
-                singleTexture(item.getRegistryName().getPath(), new ResourceLocation("minecraft:item/generated"), "layer0", new ResourceLocation(MOD_ID, "items/" + item.getRegistryName().getPath()));
-            }
-        });
-        event.getGenerator().addProvider(new BlockModelProvider(event.getGenerator(), MOD_ID, event.getExistingFileHelper()) {
-            @Override
-            protected void registerModels() {
-                for (DrawerType value : DrawerType.values()) {
-                    for (RegistryObject<Block> blockRegistryObject : DRAWER_TYPES.get(value).stream().map(Pair::getLeft).collect(Collectors.toList())) {
-                        withExistingParent(blockRegistryObject.get().getRegistryName().getPath() + "_locked", modLoc(blockRegistryObject.get().getRegistryName().getPath()))
-                                .texture("lock_icon", modLoc("blocks/lock"));
-                    }
-                }
-                withExistingParent(COMPACTING_DRAWER.getLeft().get().getRegistryName().getPath() + "_locked", modLoc(COMPACTING_DRAWER.getLeft().get().getRegistryName().getPath()))
-                        .texture("lock_icon", modLoc("blocks/lock"));
-                withExistingParent(ENDER_DRAWER.getLeft().get().getRegistryName().getPath() + "_locked", modLoc(ENDER_DRAWER.getLeft().get().getRegistryName().getPath()))
-                        .texture("lock_icon", modLoc("blocks/lock"));
             }
         });
     }
