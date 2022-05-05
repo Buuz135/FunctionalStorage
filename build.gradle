@@ -12,7 +12,7 @@ buildscript {
 apply plugin: 'net.minecraftforge.gradle'
 
 group = 'com.buuz135'
-version = '1.18.2-0.0.12'
+version = '1.18.2-0.0.13'
 
 java {
     archivesBaseName = 'functionalstorage'
