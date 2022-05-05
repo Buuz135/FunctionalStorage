@@ -63,6 +63,7 @@ public class DrawerControllerTile extends ControllableDrawerTile<DrawerControlle
     public void serverTick(Level level, BlockPos pos, BlockState state, DrawerControllerTile blockEntity) {
         super.serverTick(level, pos, state, blockEntity);
         if (this.connectedDrawers.getConnectedDrawers().size() != this.connectedDrawers.getHandlers().size()) {
+            this.connectedDrawers.getConnectedDrawers().removeIf(aLong -> !(this.getLevel().getBlockEntity(BlockPos.of(aLong)) instanceof ControllableDrawerTile<?>));
             this.connectedDrawers.setLevel(getLevel());
             this.connectedDrawers.rebuild();
             markForUpdate();
@@ -147,7 +148,7 @@ public class DrawerControllerTile extends ControllableDrawerTile<DrawerControlle
     public void addConnectedDrawers(LinkingToolItem.ActionMode action, BlockPos... positions) {
         for (BlockPos position : positions) {
             if (level.getBlockState(position).is(FunctionalStorage.DRAWER_CONTROLLER.getLeft().get())) continue;
-            if (this.getBlockPos().closerThan(position, FunctionalStorageConfig.DRAWER_CONTROLLER_LINKING_RANGE)) {
+            if (this.getBlockPos().closerThan(position, FunctionalStorageConfig.DRAWER_CONTROLLER_LINKING_RANGE) && this.getLevel().getBlockEntity(position) instanceof ControllableDrawerTile<?>) {
                 if (action == LinkingToolItem.ActionMode.ADD) {
                     if (!connectedDrawers.getConnectedDrawers().contains(position.asLong()))
                         this.connectedDrawers.getConnectedDrawers().add(position.asLong());
