@@ -4,6 +4,10 @@
     "minecraft:clay",
     "minecraft:clay_ball",
     "minecraft:glowstone",
-    "minecraft:glowstone_dust"
+    "minecraft:glowstone_dust",
+    "minecraft:melon",
+    "minecraft:melon_slice",
+    "minecraft:quartz",
+    "minecraft:quartz_block"
   ]
 }

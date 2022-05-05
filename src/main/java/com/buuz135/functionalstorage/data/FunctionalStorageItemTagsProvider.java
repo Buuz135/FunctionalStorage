@@ -9,6 +9,7 @@ import net.minecraft.data.tags.TagsProvider;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
 import net.minecraftforge.common.ForgeTier;
@@ -35,6 +36,6 @@ public class FunctionalStorageItemTagsProvider extends ItemTagsProvider {
                 tTagAppender.add(blockRegistryObject.get().asItem());
             }
         }
-        this.tag(StorageTags.IGNORE_CRAFTING_CHECK).add(Items.CLAY).add(Items.CLAY_BALL).add(Items.GLOWSTONE).add(Items.GLOWSTONE_DUST);
+        this.tag(StorageTags.IGNORE_CRAFTING_CHECK).add(Items.CLAY).add(Items.CLAY_BALL).add(Items.GLOWSTONE).add(Items.GLOWSTONE_DUST).add(Items.MELON).add(Items.MELON_SLICE).add(Items.QUARTZ).add(Items.QUARTZ_BLOCK);
     }
 }
