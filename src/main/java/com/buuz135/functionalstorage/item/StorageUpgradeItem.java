@@ -7,6 +7,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
@@ -46,6 +48,7 @@ public class StorageUpgradeItem extends UpgradeItem{
 
 
     @Override
+    @OnlyIn(Dist.CLIENT)
     public Component getName(ItemStack p_41458_) {
         Component component = super.getName(p_41458_);
         if (component instanceof TranslatableComponent){
