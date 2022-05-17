@@ -22,7 +22,6 @@ public abstract class ControllerInventoryHandler implements IItemHandler {
         this.slots = getDrawers().getHandlers().stream().filter(iItemHandler -> !(iItemHandler instanceof ControllerInventoryHandler)).map(IItemHandler::getSlots).mapToInt(Integer::intValue).sum();
     }
 
-
     @NotNull
     @Override
     public ItemStack getStackInSlot(int slot) {

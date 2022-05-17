@@ -11,7 +11,7 @@ import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class CompactingInventoryHandler implements IItemHandler, INBTSerializable<CompoundTag> {
+public abstract class CompactingInventoryHandler implements IItemHandler, INBTSerializable<CompoundTag>, ILockable {
 
     public static String PARENT = "Parent";
     public static String BIG_ITEMS = "BigItems";
@@ -178,8 +178,6 @@ public abstract class CompactingInventoryHandler implements IItemHandler, INBTSe
     public abstract int getMultiplier();
 
     public abstract boolean isVoid();
-
-    public abstract boolean isLocked();
 
     public List<CompactingUtil.Result> getResultList() {
         return resultList;

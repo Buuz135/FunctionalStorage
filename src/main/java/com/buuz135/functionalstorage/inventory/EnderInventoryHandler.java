@@ -4,7 +4,7 @@ import com.buuz135.functionalstorage.FunctionalStorage;
 import com.buuz135.functionalstorage.world.EnderSavedData;
 import net.minecraft.nbt.CompoundTag;
 
-public class EnderInventoryHandler extends BigInventoryHandler{
+public class EnderInventoryHandler extends BigInventoryHandler implements ILockable {
 
     public static String NBT_LOCKED = "Locked";
     public static String NBT_VOID = "Void";

@@ -11,7 +11,7 @@ import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class BigInventoryHandler implements IItemHandler, INBTSerializable<CompoundTag> {
+public abstract class BigInventoryHandler implements IItemHandler, INBTSerializable<CompoundTag>, ILockable {
 
     public static String BIG_ITEMS = "BigItems";
     public static String STACK = "Stack";
@@ -20,7 +20,7 @@ public abstract class BigInventoryHandler implements IItemHandler, INBTSerializa
     private final FunctionalStorage.DrawerType type;
     private List<BigStack> storedStacks;
 
-    public BigInventoryHandler(FunctionalStorage.DrawerType type){
+    public BigInventoryHandler(FunctionalStorage.DrawerType type) {
         this.type = type;
         this.storedStacks = new ArrayList<>();
         for (int i = 0; i < type.getSlots(); i++) {

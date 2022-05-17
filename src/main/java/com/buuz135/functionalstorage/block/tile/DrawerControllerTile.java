@@ -3,6 +3,7 @@ package com.buuz135.functionalstorage.block.tile;
 import com.buuz135.functionalstorage.FunctionalStorage;
 import com.buuz135.functionalstorage.block.config.FunctionalStorageConfig;
 import com.buuz135.functionalstorage.inventory.ControllerInventoryHandler;
+import com.buuz135.functionalstorage.inventory.ILockable;
 import com.buuz135.functionalstorage.item.ConfigurationToolItem;
 import com.buuz135.functionalstorage.item.LinkingToolItem;
 import com.hrznstudio.titanium.annotation.Save;
@@ -76,14 +77,34 @@ public class DrawerControllerTile extends ControllableDrawerTile<DrawerControlle
         if (stack.getItem().equals(FunctionalStorage.CONFIGURATION_TOOL.get()) || stack.getItem().equals(FunctionalStorage.LINKING_TOOL.get()))
             return InteractionResult.PASS;
         if (isServer()) {
-            for (int slot = 0; slot < getStorage().getSlots(); slot++) {
-                if (!stack.isEmpty() && !getStorage().getStackInSlot(slot).isEmpty() && getStorage().insertItem(slot, stack, true).getCount() != stack.getCount()) {
-                    playerIn.setItemInHand(hand, getStorage().insertItem(slot, stack, false));
-                    return InteractionResult.SUCCESS;
-                } else if (System.currentTimeMillis() - INTERACTION_LOGGER.getOrDefault(playerIn.getUUID(), System.currentTimeMillis()) < 300) {
-                    for (ItemStack itemStack : playerIn.getInventory().items) {
-                        if (!itemStack.isEmpty() && !getStorage().getStackInSlot(slot).isEmpty() && getStorage().insertItem(slot, itemStack, true).getCount() != itemStack.getCount()) {
-                            itemStack.setCount(getStorage().insertItem(slot, itemStack.copy(), false).getCount());
+            for (IItemHandler iItemHandler : this.getConnectedDrawers().handlers) {
+                if (iItemHandler instanceof ILockable && ((ILockable) iItemHandler).isLocked()) {
+                    for (int slot = 0; slot < iItemHandler.getSlots(); slot++) {
+                        if (!stack.isEmpty() && iItemHandler.insertItem(slot, stack, true).getCount() != stack.getCount()) {
+                            playerIn.setItemInHand(hand, iItemHandler.insertItem(slot, stack, false));
+                            return InteractionResult.SUCCESS;
+                        } else if (System.currentTimeMillis() - INTERACTION_LOGGER.getOrDefault(playerIn.getUUID(), System.currentTimeMillis()) < 300) {
+                            for (ItemStack itemStack : playerIn.getInventory().items) {
+                                if (!itemStack.isEmpty() && iItemHandler.insertItem(slot, itemStack, true).getCount() != itemStack.getCount()) {
+                                    itemStack.setCount(iItemHandler.insertItem(slot, itemStack.copy(), false).getCount());
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            for (IItemHandler iItemHandler : this.getConnectedDrawers().handlers) {
+                if (iItemHandler instanceof ILockable && !((ILockable) iItemHandler).isLocked()) {
+                    for (int slot = 0; slot < iItemHandler.getSlots(); slot++) {
+                        if (!stack.isEmpty() && !iItemHandler.getStackInSlot(slot).isEmpty() && iItemHandler.insertItem(slot, stack, true).getCount() != stack.getCount()) {
+                            playerIn.setItemInHand(hand, iItemHandler.insertItem(slot, stack, false));
+                            return InteractionResult.SUCCESS;
+                        } else if (System.currentTimeMillis() - INTERACTION_LOGGER.getOrDefault(playerIn.getUUID(), System.currentTimeMillis()) < 300) {
+                            for (ItemStack itemStack : playerIn.getInventory().items) {
+                                if (!itemStack.isEmpty() && !iItemHandler.getStackInSlot(slot).isEmpty() && iItemHandler.insertItem(slot, itemStack, true).getCount() != itemStack.getCount()) {
+                                    itemStack.setCount(iItemHandler.insertItem(slot, itemStack.copy(), false).getCount());
+                                }
+                            }
                         }
                     }
                 }
