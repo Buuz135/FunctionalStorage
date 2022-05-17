@@ -171,7 +171,7 @@ public class DrawerControllerTile extends ControllableDrawerTile<DrawerControlle
         return super.getCapability(cap, side);
     }
 
-    public static class ConnectedDrawers implements INBTSerializable<CompoundTag> {
+    public class ConnectedDrawers implements INBTSerializable<CompoundTag> {
 
         private List<Long> connectedDrawers;
         private List<IItemHandler> handlers;
@@ -198,6 +198,7 @@ public class DrawerControllerTile extends ControllableDrawerTile<DrawerControlle
                     }
                 }
             }
+            DrawerControllerTile.this.handler.invalidateSlots();
         }
 
         @Override

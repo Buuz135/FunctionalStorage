@@ -7,14 +7,21 @@ import org.jetbrains.annotations.NotNull;
 
 public abstract class ControllerInventoryHandler implements IItemHandler {
 
-    public ControllerInventoryHandler() {
+    private int slots = 0;
 
+    public ControllerInventoryHandler() {
+        invalidateSlots();
     }
 
     @Override
     public int getSlots() {
-        return getDrawers().getHandlers().stream().filter(iItemHandler -> !(iItemHandler instanceof ControllerInventoryHandler)).map(IItemHandler::getSlots).mapToInt(Integer::intValue).sum();
+        return slots;
     }
+
+    public void invalidateSlots() {
+        this.slots = getDrawers().getHandlers().stream().filter(iItemHandler -> !(iItemHandler instanceof ControllerInventoryHandler)).map(IItemHandler::getSlots).mapToInt(Integer::intValue).sum();
+    }
+
 
     @NotNull
     @Override
@@ -22,7 +29,7 @@ public abstract class ControllerInventoryHandler implements IItemHandler {
         int index = 0;
         for (IItemHandler handler : getDrawers().getHandlers()) {
             int relativeIndex = slot - index;
-            if (relativeIndex < handler.getSlots()){
+            if (relativeIndex < handler.getSlots()) {
                 return handler.getStackInSlot(relativeIndex);
             }
             index += handler.getSlots();
