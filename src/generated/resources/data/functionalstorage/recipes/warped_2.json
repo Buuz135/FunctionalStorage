@@ -29,7 +29,8 @@
           }
         },
         "result": {
-          "item": "functionalstorage:warped_2"
+          "item": "functionalstorage:warped_2",
+          "count": 2
         }
       }
     }

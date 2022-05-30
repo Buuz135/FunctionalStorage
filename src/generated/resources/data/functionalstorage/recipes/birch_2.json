@@ -29,7 +29,8 @@
           }
         },
         "result": {
-          "item": "functionalstorage:birch_2"
+          "item": "functionalstorage:birch_2",
+          "count": 2
         }
       }
     }

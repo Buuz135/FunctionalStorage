@@ -29,7 +29,8 @@
           }
         },
         "result": {
-          "item": "functionalstorage:spruce_4"
+          "item": "functionalstorage:spruce_4",
+          "count": 4
         }
       }
     }

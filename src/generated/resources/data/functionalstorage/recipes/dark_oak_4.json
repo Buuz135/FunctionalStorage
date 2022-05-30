@@ -29,7 +29,8 @@
           }
         },
         "result": {
-          "item": "functionalstorage:dark_oak_4"
+          "item": "functionalstorage:dark_oak_4",
+          "count": 4
         }
       }
     }
