@@ -100,7 +100,7 @@ dependencies {
     //implementation fg.deobf("curse.maven:allthecompressed-514045:3723881")
     //runtimeOnly fg.deobf("curse.maven:create-328085:3600402")
     //runtimeOnly fg.deobf("curse.maven:flywheel-486392:3600401")
-    runtimeOnly fg.deobf("curse.maven:mekanism-268560:3810540")
+    implementation fg.deobf("curse.maven:mekanism-268560:3810540")
     runtimeOnly fg.deobf("curse.maven:refined-pipes-370696:3816785")
     annotationProcessor "org.spongepowered:mixin:0.8.5:processor"
 }

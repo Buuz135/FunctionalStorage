@@ -28,6 +28,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -60,6 +61,7 @@ import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -125,17 +127,6 @@ public class DrawerBlock extends RotatableBlock<DrawerTile> {
         this.type = type;
         setItemGroup(FunctionalStorage.TAB);
         registerDefaultState(defaultBlockState().setValue(RotatableBlock.FACING_HORIZONTAL, Direction.NORTH).setValue(LOCKED, false));
-    }
-
-    @Override
-    public Supplier<Item> getItemBlockFactory() {
-        return () -> new BlockItem(this, new Item.Properties().tab(this.getItemGroup())) {
-            @Nullable
-            @Override
-            public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundTag nbt) {
-                return new DrawerCapabilityProvider(stack, type);
-            }
-        };
     }
 
     @Override
@@ -333,6 +324,26 @@ public class DrawerBlock extends RotatableBlock<DrawerTile> {
             tooltip.add(text.withStyle(ChatFormatting.GRAY));
             tooltip.add(new TextComponent(""));
             tooltip.add(new TextComponent(""));
+        }
+    }
+
+    public static class DrawerItem extends BlockItem{
+
+        private DrawerBlock drawerBlock;
+        public DrawerItem(DrawerBlock p_40565_, Properties p_40566_) {
+            super(p_40565_, p_40566_);
+            this.drawerBlock = p_40565_;
+        }
+
+        @Override
+        public Optional<TooltipComponent> getTooltipImage(ItemStack stack) {
+            return super.getTooltipImage(stack);
+        }
+
+        @Nullable
+        @Override
+        public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundTag nbt) {
+            return new DrawerCapabilityProvider(stack, this.drawerBlock.getType());
         }
     }
 
