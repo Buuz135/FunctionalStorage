@@ -38,6 +38,9 @@ public class EnderDrawerRenderer implements BlockEntityRenderer<EnderDrawerTile>
 
     @Override
     public void render(EnderDrawerTile tile, float partialTicks, PoseStack matrixStack, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
+        if (Minecraft.getInstance().player != null && !tile.getBlockPos().closerThan(Minecraft.getInstance().player.getOnPos(), FunctionalStorageClientConfig.DRAWER_RENDER_RANGE)){
+            return;
+        }
         matrixStack.pushPose();
 
         Direction facing = tile.getFacingDirection();
