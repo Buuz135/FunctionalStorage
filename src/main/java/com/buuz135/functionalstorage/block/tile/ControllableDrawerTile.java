@@ -55,7 +55,7 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
     @Save
     private DrawerOptions drawerOptions;
 
-    public ControllableDrawerTile(BasicTileBlock<T> base, BlockEntityType<T> entityType,  BlockPos pos, BlockState state) {
+    public ControllableDrawerTile(BasicTileBlock<T> base, BlockEntityType<T> entityType, BlockPos pos, BlockState state) {
         super(base, entityType, pos, state);
         this.drawerOptions = new DrawerOptions();
         this.storageUpgrades = new InventoryComponent<ControllableDrawerTile<T>>("storage_upgrades", 10, 70, getStorageSlotAmount()) {
@@ -63,17 +63,19 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
             @Override
             public ItemStack extractItem(int slot, int amount, boolean simulate) {
                 ItemStack stack = this.getStackInSlot(slot);
-                if (stack.getItem() instanceof StorageUpgradeItem){
+                if (stack.getItem() instanceof StorageUpgradeItem) {
                     int mult = 1;
                     for (int i = 0; i < storageUpgrades.getSlots(); i++) {
-                        if (storageUpgrades.getStackInSlot(i).getItem() instanceof StorageUpgradeItem){
+                        if (storageUpgrades.getStackInSlot(i).getItem() instanceof StorageUpgradeItem) {
                             if (i == slot) continue;
-                            if (mult == 1) mult = ((StorageUpgradeItem) storageUpgrades.getStackInSlot(i).getItem()).getStorageMultiplier();
-                            else mult *= ((StorageUpgradeItem) storageUpgrades.getStackInSlot(i).getItem()).getStorageMultiplier();
+                            if (mult == 1)
+                                mult = ((StorageUpgradeItem) storageUpgrades.getStackInSlot(i).getItem()).getStorageMultiplier();
+                            else
+                                mult *= ((StorageUpgradeItem) storageUpgrades.getStackInSlot(i).getItem()).getStorageMultiplier();
                         }
                     }
                     for (int i = 0; i < getStorage().getSlots(); i++) {
-                        if (getBaseSize(i) * mult < getStorage().getStackInSlot(i).getCount()){
+                        if (getBaseSize(i) * mult < getStorage().getStackInSlot(i).getCount()) {
                             return ItemStack.EMPTY;
                         }
                     }
@@ -82,9 +84,9 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
             }
         }
                 .setInputFilter((stack, integer) -> {
-                    if (stack.getItem().equals(FunctionalStorage.STORAGE_UPGRADES.get(StorageUpgradeItem.StorageTier.IRON).get())){
+                    if (stack.getItem().equals(FunctionalStorage.STORAGE_UPGRADES.get(StorageUpgradeItem.StorageTier.IRON).get())) {
                         for (int i = 0; i < getStorage().getSlots(); i++) {
-                            if (getStorage().getStackInSlot(i).getCount() > 64){
+                            if (getStorage().getStackInSlot(i).getCount() > 64) {
                                 return false;
                             }
                         }
@@ -92,7 +94,7 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
                     return stack.getItem() instanceof UpgradeItem && ((UpgradeItem) stack.getItem()).getType() == UpgradeItem.Type.STORAGE;
                 })
                 .setSlotLimit(1);
-        if (getStorageSlotAmount() > 0){
+        if (getStorageSlotAmount() > 0) {
             this.addInventory((InventoryComponent<T>) this.storageUpgrades);
         }
         this.addInventory((InventoryComponent<T>) (this.utilityUpgrades = new InventoryComponent<ControllableDrawerTile<T>>("utility_upgrades", 114, 70, 3)
@@ -106,24 +108,24 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
     @OnlyIn(Dist.CLIENT)
     public void initClient() {
         super.initClient();
-        if (getStorageSlotAmount() > 0){
-            addGuiAddonFactory(() -> new TextScreenAddon("Storage", 10, 59, false, ChatFormatting.DARK_GRAY.getColor()){
+        if (getStorageSlotAmount() > 0) {
+            addGuiAddonFactory(() -> new TextScreenAddon("Storage", 10, 59, false, ChatFormatting.DARK_GRAY.getColor()) {
                 @Override
                 public String getText() {
-                    return  new TranslatableComponent("key.categories.storage").getString();
+                    return new TranslatableComponent("key.categories.storage").getString();
                 }
             });
         }
-        addGuiAddonFactory(() -> new TextScreenAddon("Utility", 114, 59, false, ChatFormatting.DARK_GRAY.getColor()){
+        addGuiAddonFactory(() -> new TextScreenAddon("Utility", 114, 59, false, ChatFormatting.DARK_GRAY.getColor()) {
             @Override
             public String getText() {
-                return  new TranslatableComponent("key.categories.utility").getString();
+                return new TranslatableComponent("key.categories.utility").getString();
             }
         });
-        addGuiAddonFactory(() -> new TextScreenAddon("key.categories.inventory", 8, 92, false, ChatFormatting.DARK_GRAY.getColor()){
+        addGuiAddonFactory(() -> new TextScreenAddon("key.categories.inventory", 8, 92, false, ChatFormatting.DARK_GRAY.getColor()) {
             @Override
             public String getText() {
-                return  new TranslatableComponent("key.categories.inventory").getString();
+                return new TranslatableComponent("key.categories.inventory").getString();
             }
         });
     }
@@ -131,12 +133,12 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
     @Override
     public void serverTick(Level level, BlockPos pos, BlockState state, T blockEntity) {
         super.serverTick(level, pos, state, blockEntity);
-        if (level.getGameTime() % 4 == 0){
+        if (level.getGameTime() % 4 == 0) {
             for (int i = 0; i < this.utilityUpgrades.getSlots(); i++) {
                 ItemStack stack = this.utilityUpgrades.getStackInSlot(i);
-                if (!stack.isEmpty()){
+                if (!stack.isEmpty()) {
                     Item item = stack.getItem();
-                    if (item.equals(FunctionalStorage.PULLING_UPGRADE.get())){
+                    if (item.equals(FunctionalStorage.PULLING_UPGRADE.get())) {
                         Direction direction = UpgradeItem.getDirection(stack);
                         TileUtil.getTileEntity(level, pos.relative(direction)).ifPresent(blockEntity1 -> {
                             blockEntity1.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, direction.getOpposite()).ifPresent(iItemHandler -> {
@@ -146,8 +148,8 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
                                     boolean hasWorked = false;
                                     for (int ourSlot = 0; ourSlot < this.getStorage().getSlots(); ourSlot++) {
                                         ItemStack simulated = getStorage().insertItem(ourSlot, pulledStack, true);
-                                        if (simulated.getCount() != pulledStack.getCount()){
-                                            getStorage().insertItem(ourSlot, iItemHandler.extractItem(otherSlot, pulledStack.getCount() - simulated.getCount(), false), false );
+                                        if (simulated.getCount() != pulledStack.getCount()) {
+                                            getStorage().insertItem(ourSlot, iItemHandler.extractItem(otherSlot, pulledStack.getCount() - simulated.getCount(), false), false);
                                             hasWorked = true;
                                             break;
                                         }
@@ -157,7 +159,7 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
                             });
                         });
                     }
-                    if (item.equals(FunctionalStorage.PUSHING_UPGRADE.get())){
+                    if (item.equals(FunctionalStorage.PUSHING_UPGRADE.get())) {
                         Direction direction = UpgradeItem.getDirection(stack);
                         TileUtil.getTileEntity(level, pos.relative(direction)).ifPresent(blockEntity1 -> {
                             blockEntity1.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, direction.getOpposite()).ifPresent(otherHandler -> {
@@ -167,8 +169,8 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
                                     boolean hasWorked = false;
                                     for (int ourSlot = 0; ourSlot < otherHandler.getSlots(); ourSlot++) {
                                         ItemStack simulated = otherHandler.insertItem(ourSlot, pulledStack, true);
-                                        if (simulated.getCount() != pulledStack.getCount()){
-                                            otherHandler.insertItem(ourSlot, getStorage().extractItem(otherSlot, pulledStack.getCount() - simulated.getCount(), false), false );
+                                        if (simulated.getCount() != pulledStack.getCount()) {
+                                            otherHandler.insertItem(ourSlot, getStorage().extractItem(otherSlot, pulledStack.getCount() - simulated.getCount(), false), false);
                                             hasWorked = true;
                                             break;
                                         }
@@ -178,7 +180,7 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
                             });
                         });
                     }
-                    if (item.equals(FunctionalStorage.COLLECTOR_UPGRADE.get())){
+                    if (item.equals(FunctionalStorage.COLLECTOR_UPGRADE.get())) {
                         Direction direction = UpgradeItem.getDirection(stack);
                         AABB box = new AABB(pos.relative(direction));
                         for (ItemEntity entitiesOfClass : level.getEntitiesOfClass(ItemEntity.class, box)) {
@@ -187,7 +189,7 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
                             boolean hasWorked = false;
                             for (int ourSlot = 0; ourSlot < this.getStorage().getSlots(); ourSlot++) {
                                 ItemStack simulated = getStorage().insertItem(ourSlot, pulledStack, true);
-                                if (simulated.getCount() != pulledStack.getCount()){
+                                if (simulated.getCount() != pulledStack.getCount()) {
                                     getStorage().insertItem(ourSlot, ItemHandlerHelper.copyStackWithSize(entitiesOfClass.getItem(), pulledStack.getCount() - simulated.getCount()), false);
                                     entitiesOfClass.getItem().shrink(pulledStack.getCount() - simulated.getCount());
                                     hasWorked = true;
@@ -207,7 +209,7 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
     }
 
     public void setControllerPos(BlockPos controllerPos) {
-        if (this.controllerPos != null){
+        if (this.controllerPos != null) {
             TileUtil.getTileEntity(getLevel(), this.controllerPos, DrawerControllerTile.class).ifPresent(drawerControllerTile -> {
                 drawerControllerTile.addConnectedDrawers(LinkingToolItem.ActionMode.REMOVE, getBlockPos());
             });
@@ -215,20 +217,21 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
         this.controllerPos = controllerPos;
     }
 
-    public int getStorageMultiplier(){
+    public int getStorageMultiplier() {
         int mult = 1;
         for (int i = 0; i < storageUpgrades.getSlots(); i++) {
-            if (storageUpgrades.getStackInSlot(i).getItem() instanceof StorageUpgradeItem){
-                if (mult == 1) mult = ((StorageUpgradeItem) storageUpgrades.getStackInSlot(i).getItem()).getStorageMultiplier();
+            if (storageUpgrades.getStackInSlot(i).getItem() instanceof StorageUpgradeItem) {
+                if (mult == 1)
+                    mult = ((StorageUpgradeItem) storageUpgrades.getStackInSlot(i).getItem()).getStorageMultiplier();
                 else mult *= ((StorageUpgradeItem) storageUpgrades.getStackInSlot(i).getItem()).getStorageMultiplier();
             }
         }
         return mult;
     }
 
-    public boolean isVoid(){
+    public boolean isVoid() {
         for (int i = 0; i < this.utilityUpgrades.getSlots(); i++) {
-            if (this.utilityUpgrades.getStackInSlot(i).getItem().equals(FunctionalStorage.VOID_UPGRADE.get())){
+            if (this.utilityUpgrades.getStackInSlot(i).getItem().equals(FunctionalStorage.VOID_UPGRADE.get())) {
                 return true;
             }
         }
@@ -237,11 +240,12 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
 
     public InteractionResult onSlotActivated(Player playerIn, InteractionHand hand, Direction facing, double hitX, double hitY, double hitZ, int slot) {
         ItemStack stack = playerIn.getItemInHand(hand);
-        if (stack.getItem().equals(FunctionalStorage.CONFIGURATION_TOOL.get()) || stack.getItem().equals(FunctionalStorage.LINKING_TOOL.get())) return InteractionResult.PASS;
-        if (!stack.isEmpty() && stack.getItem() instanceof UpgradeItem){
+        if (stack.getItem().equals(FunctionalStorage.CONFIGURATION_TOOL.get()) || stack.getItem().equals(FunctionalStorage.LINKING_TOOL.get()))
+            return InteractionResult.PASS;
+        if (!stack.isEmpty() && stack.getItem() instanceof UpgradeItem) {
             InventoryComponent component = ((UpgradeItem) stack.getItem()).getType() == UpgradeItem.Type.STORAGE ? storageUpgrades : utilityUpgrades;
             for (int i = 0; i < component.getSlots(); i++) {
-                if (component.getStackInSlot(i).isEmpty()){
+                if (component.getStackInSlot(i).isEmpty()) {
                     playerIn.setItemInHand(hand, component.insertItem(i, stack, false));
                     return InteractionResult.SUCCESS;
                 }
@@ -250,14 +254,15 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
         if (super.onActivated(playerIn, hand, facing, hitX, hitY, hitZ) == InteractionResult.SUCCESS) {
             return InteractionResult.SUCCESS;
         }
-        if (slot == -1){
+        if (slot == -1) {
             openGui(playerIn);
-        } else if (isServer()){
-            if (!stack.isEmpty() && getStorage().isItemValid(slot, stack)) {
+        } else if (isServer()) {
+            if (!stack.isEmpty() && getStorage().insertItem(slot, stack, true).getCount() != stack.getCount()) {
                 playerIn.setItemInHand(hand, getStorage().insertItem(slot, stack, false));
+                return InteractionResult.SUCCESS;
             } else if (System.currentTimeMillis() - INTERACTION_LOGGER.getOrDefault(playerIn.getUUID(), System.currentTimeMillis()) < 300) {
                 for (ItemStack itemStack : playerIn.getInventory().items) {
-                    if (!itemStack.isEmpty() && !getStorage().getStackInSlot(slot).isEmpty() && getStorage().insertItem(slot, itemStack, true).getCount() != itemStack.getCount()) {
+                    if (!itemStack.isEmpty() && getStorage().insertItem(slot, itemStack, true).getCount() != itemStack.getCount()) {
                         itemStack.setCount(getStorage().insertItem(slot, itemStack.copy(), false).getCount());
                     }
                 }
@@ -270,12 +275,12 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
     public abstract int getStorageSlotAmount();
 
     public void onClicked(Player playerIn, int slot) {
-        if (isServer() && slot != -1){
+        if (isServer() && slot != -1) {
             HitResult rayTraceResult = RayTraceUtils.rayTraceSimple(this.level, playerIn, 16, 0);
             if (rayTraceResult.getType() == HitResult.Type.BLOCK) {
                 BlockHitResult blockResult = (BlockHitResult) rayTraceResult;
                 Direction facing = blockResult.getDirection();
-                if (facing.equals(this.getFacingDirection())){
+                if (facing.equals(this.getFacingDirection())) {
                     ItemHandlerHelper.giveItemToPlayer(playerIn, getStorage().extractItem(slot, playerIn.isShiftKeyDown() ? getStorage().getStackInSlot(slot).getMaxStackSize() : 1, false));
                 }
             }
@@ -288,16 +293,16 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
 
     public abstract int getBaseSize(int lost);
 
-    public boolean hasDowngrade(){
+    public boolean hasDowngrade() {
         for (int i = 0; i < this.storageUpgrades.getSlots(); i++) {
-            if (storageUpgrades.getStackInSlot(i).getItem().equals(FunctionalStorage.STORAGE_UPGRADES.get(StorageUpgradeItem.StorageTier.IRON).get())){
+            if (storageUpgrades.getStackInSlot(i).getItem().equals(FunctionalStorage.STORAGE_UPGRADES.get(StorageUpgradeItem.StorageTier.IRON).get())) {
                 return true;
             }
         }
         return false;
     }
 
-    public void toggleLocking(){
+    public void toggleLocking() {
         setLocked(!this.isLocked());
     }
 
@@ -306,12 +311,12 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
     }
 
     public void setLocked(boolean locked) {
-        if (this.getBlockState().hasProperty(DrawerBlock.LOCKED) ){
+        if (this.getBlockState().hasProperty(DrawerBlock.LOCKED)) {
             this.level.setBlock(this.getBlockPos(), this.getBlockState().setValue(DrawerBlock.LOCKED, locked), 3);
         }
     }
 
-    public void toggleOption(ConfigurationToolItem.ConfigurationAction action){
+    public void toggleOption(ConfigurationToolItem.ConfigurationAction action) {
         this.drawerOptions.setActive(action, !this.drawerOptions.isActive(action));
         markForUpdate();
     }
@@ -365,17 +370,17 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
             this.options.put(ConfigurationToolItem.ConfigurationAction.TOGGLE_UPGRADES, true);
         }
 
-        public boolean isActive(ConfigurationToolItem.ConfigurationAction configurationAction){
+        public boolean isActive(ConfigurationToolItem.ConfigurationAction configurationAction) {
             return options.getOrDefault(configurationAction, true);
         }
 
-        public void setActive(ConfigurationToolItem.ConfigurationAction configurationAction, boolean active){
+        public void setActive(ConfigurationToolItem.ConfigurationAction configurationAction, boolean active) {
             this.options.put(configurationAction, active);
         }
 
         @Override
         public CompoundTag serializeNBT() {
-            CompoundTag compoundTag =new CompoundTag();
+            CompoundTag compoundTag = new CompoundTag();
             for (ConfigurationToolItem.ConfigurationAction action : this.options.keySet()) {
                 compoundTag.putBoolean(action.name(), this.options.get(action));
             }

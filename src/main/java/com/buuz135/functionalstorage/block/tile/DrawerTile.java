@@ -85,7 +85,7 @@ public class DrawerTile extends ControllableDrawerTile<DrawerTile> {
     public InteractionResult onSlotActivated(Player playerIn, InteractionHand hand, Direction facing, double hitX, double hitY, double hitZ, int slot) {
         ItemStack stack = playerIn.getItemInHand(hand);
         if (stack.getItem().equals(FunctionalStorage.CONFIGURATION_TOOL.get()) || stack.getItem().equals(FunctionalStorage.LINKING_TOOL.get())) return InteractionResult.PASS;
-        if (slot != -1 && isLocked() && !playerIn.getItemInHand(hand).isEmpty()){
+        if (slot != -1 && !playerIn.getItemInHand(hand).isEmpty()){
             BigInventoryHandler.BigStack bigStack = getHandler().getStoredStacks().get(slot);
             if (bigStack.getStack().isEmpty()){
                 bigStack.setStack(playerIn.getItemInHand(hand));
