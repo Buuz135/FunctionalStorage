@@ -87,8 +87,7 @@ public class CompactingDrawerTile extends ControllableDrawerTile<CompactingDrawe
                 }
             }
         }
-        super.onSlotActivated(playerIn, hand, facing, hitX, hitY, hitZ, slot);
-        return InteractionResult.SUCCESS;
+        return super.onSlotActivated(playerIn, hand, facing, hitX, hitY, hitZ, slot);
     }
 
     @Override
