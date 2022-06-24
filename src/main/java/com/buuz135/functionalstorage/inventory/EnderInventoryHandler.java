@@ -35,7 +35,6 @@ public class EnderInventoryHandler extends BigInventoryHandler implements ILocka
         this.voidItems = nbt.getBoolean(NBT_VOID);
     }
 
-    //TODO Implement all of these methods
     @Override
     public void onChange() {
         manager.setDirty();
@@ -43,6 +42,7 @@ public class EnderInventoryHandler extends BigInventoryHandler implements ILocka
 
     @Override
     public int getSlotLimit(int slot) {
+        if (slot == 1) return Integer.MAX_VALUE;
         double stackSize = 1;
         if (!getStoredStacks().get(slot).getStack().isEmpty()) {
             stackSize = getStoredStacks().get(slot).getStack().getMaxStackSize() / 64D;

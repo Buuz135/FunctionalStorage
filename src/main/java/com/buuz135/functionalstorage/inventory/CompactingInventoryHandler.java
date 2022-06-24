@@ -34,12 +34,14 @@ public abstract class CompactingInventoryHandler implements IItemHandler, INBTSe
 
     @Override
     public int getSlots() {
+        if (isVoid()) return 4;
         return 3;
     }
 
     @Nonnull
     @Override
     public ItemStack getStackInSlot(int slot) {
+        if (slot == 3) return ItemStack.EMPTY;
         CompactingUtil.Result bigStack = this.resultList.get(slot);
         ItemStack copied = bigStack.getResult().copy();
         copied.setCount(this.amount / bigStack.getNeeded());
@@ -49,6 +51,7 @@ public abstract class CompactingInventoryHandler implements IItemHandler, INBTSe
     @Nonnull
     @Override
     public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
+        if (isVoid() && slot == 3 && isVoidValid(stack)) return ItemStack.EMPTY;
         if (isValid(slot, stack)) {
             CompactingUtil.Result result = this.resultList.get(slot);
             int inserted = Math.min(getSlotLimit(slot) * result.getNeeded() - amount, stack.getCount() * result.getNeeded());
@@ -62,6 +65,13 @@ public abstract class CompactingInventoryHandler implements IItemHandler, INBTSe
 
         }
         return stack;
+    }
+
+    private boolean isVoidValid(ItemStack stack) {
+        for (CompactingUtil.Result result : this.resultList) {
+            if (result.getResult().sameItem(stack) && ItemStack.tagMatches(result.getResult(), stack)) return true;
+        }
+        return false;
     }
 
 
@@ -96,7 +106,7 @@ public abstract class CompactingInventoryHandler implements IItemHandler, INBTSe
     @Nonnull
     @Override
     public ItemStack extractItem(int slot, int amount, boolean simulate) {
-        if (amount == 0) return ItemStack.EMPTY;
+        if (amount == 0 || slot == 3) return ItemStack.EMPTY;
         if (slot < 3){
             CompactingUtil.Result bigStack = this.resultList.get(slot);
             if (bigStack.getResult().isEmpty()) return ItemStack.EMPTY;
@@ -126,6 +136,7 @@ public abstract class CompactingInventoryHandler implements IItemHandler, INBTSe
 
     @Override
     public int getSlotLimit(int slot) {
+        if (slot == 3) return Integer.MAX_VALUE;
         return (int) Math.min(Integer.MAX_VALUE, Math.floor((TOTAL_AMOUNT * getMultiplier()) / this.resultList.get(slot).getNeeded()));
     }
 

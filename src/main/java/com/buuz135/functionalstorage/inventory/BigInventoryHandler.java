@@ -30,12 +30,14 @@ public abstract class BigInventoryHandler implements IItemHandler, INBTSerializa
 
     @Override
     public int getSlots() {
+        if (isVoid()) return type.getSlots() + 1;
         return type.getSlots();
     }
 
     @Nonnull
     @Override
     public ItemStack getStackInSlot(int slot) {
+        if (type.getSlots() == slot) return ItemStack.EMPTY;
         BigStack bigStack = this.storedStacks.get(slot);
         ItemStack copied = bigStack.getStack().copy();
         copied.setCount(bigStack.getAmount());
@@ -45,6 +47,7 @@ public abstract class BigInventoryHandler implements IItemHandler, INBTSerializa
     @Nonnull
     @Override
     public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
+        if (isVoid() && type.getSlots() == slot && isVoidValid(stack)) return ItemStack.EMPTY;
         if (isValid(slot, stack)) {
             BigStack bigStack = this.storedStacks.get(slot);
             int inserted = Math.min(getSlotLimit(slot) - bigStack.getAmount(), stack.getCount());
@@ -62,7 +65,7 @@ public abstract class BigInventoryHandler implements IItemHandler, INBTSerializa
     @Nonnull
     @Override
     public ItemStack extractItem(int slot, int amount, boolean simulate) {
-        if (amount == 0) return ItemStack.EMPTY;
+        if (amount == 0 || type.getSlots() == slot) return ItemStack.EMPTY;
         if (slot < type.getSlots()){
             BigStack bigStack = this.storedStacks.get(slot);
             if (bigStack.getStack().isEmpty()) return ItemStack.EMPTY;
@@ -89,6 +92,7 @@ public abstract class BigInventoryHandler implements IItemHandler, INBTSerializa
 
     @Override
     public int getSlotLimit(int slot) {
+        if (type.getSlots() == slot) return Integer.MAX_VALUE;
         double stackSize = 1;
         if (!getStoredStacks().get(slot).getStack().isEmpty()) {
             stackSize = getStoredStacks().get(slot).getStack().getMaxStackSize() / 64D;
@@ -108,6 +112,13 @@ public abstract class BigInventoryHandler implements IItemHandler, INBTSerializa
             ItemStack fl = bigStack.getStack();
             if (isLocked() && fl.isEmpty()) return false;
             return fl.isEmpty() || (fl.sameItem(stack) && ItemStack.tagMatches(fl, stack));
+        }
+        return false;
+    }
+
+    private boolean isVoidValid(ItemStack stack){
+        for (BigStack storedStack : this.storedStacks) {
+            if (storedStack.getStack().sameItem(stack) && ItemStack.tagMatches(storedStack.getStack(), stack)) return true;
         }
         return false;
     }
