@@ -12,19 +12,25 @@ import com.hrznstudio.titanium.recipe.generator.TitaniumShapedRecipeBuilder;
 import com.hrznstudio.titanium.util.ItemHandlerUtil;
 import com.hrznstudio.titanium.util.TileUtil;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.NonNullList;
 import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.loot.LootContext;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
+import net.minecraft.world.phys.HitResult;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.items.ItemHandlerHelper;
@@ -33,6 +39,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 
@@ -75,6 +82,32 @@ public class FramedDrawerBlock extends DrawerBlock{
         style.putString("front", second.getItem().getRegistryName().toString());
         drawer.getOrCreateTag().put("Style", style);
         return drawer;
+    }
+
+    @Override
+    public List<ItemStack> getDrops(BlockState p_60537_, LootContext.Builder builder) {
+        NonNullList<ItemStack> stacks = NonNullList.create();
+        ItemStack stack = new ItemStack(this);
+        BlockEntity drawerTile = builder.getOptionalParameter(LootContextParams.BLOCK_ENTITY);
+        if (drawerTile instanceof FramedDrawerTile) {
+            if (!((FramedDrawerTile) drawerTile).isEverythingEmpty()) {
+                stack.getOrCreateTag().put("Tile", drawerTile.saveWithoutMetadata());
+            }
+            stack.getOrCreateTag().put("Style", ((FramedDrawerTile) drawerTile).getFramedDrawerModelData().serializeNBT());
+        }
+        stacks.add(stack);
+        return stacks;
+    }
+
+    @Override
+    public ItemStack getCloneItemStack(BlockState state, HitResult target, BlockGetter level, BlockPos pos, Player player) {
+        BlockEntity entity = level.getBlockEntity(pos);
+        if (entity instanceof FramedDrawerTile framedDrawerTile){
+            ItemStack stack = new ItemStack(this);
+            stack.getOrCreateTag().put("Style", framedDrawerTile.getFramedDrawerModelData().serializeNBT());
+            return stack;
+        }
+        return super.getCloneItemStack(state, target, level, pos, player);
     }
 
     @Override
