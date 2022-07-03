@@ -1,6 +1,6 @@
 {
 	"loader": "functionalstorage:framed",
-	"parent": "functionalstorage:block/base_x_1",
+	"parent": "functionalstorage:block/base_x_4_framed",
 	"textures": {
 
 	},

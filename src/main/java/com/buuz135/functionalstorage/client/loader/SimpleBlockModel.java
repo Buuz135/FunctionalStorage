@@ -47,6 +47,8 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
+ * Class from Mantle {@url https://github.com/SlimeKnights/Mantle/blob/1.18.2/src/main/java/slimeknights/mantle/client/}
+ *
  * Simplier version of {@link BlockModel} for use in an {@link net.minecraftforge.client.model.IModelLoader}, as the owner handles most block model properties
  */
 @SuppressWarnings("WeakerAccess")
@@ -247,7 +249,7 @@ public class SimpleBlockModel implements IModelGeometry<SimpleBlockModel> {
             }
             // bake the face
             TextureAtlasSprite sprite = spriteGetter.apply(owner.resolveTexture(texture));
-            BakedQuad bakedQuad = BlockModel.makeBakedQuad(part, face, sprite, direction, transform, location);
+            BakedQuad bakedQuad = BlockModel.bakeFace(part, face, sprite, direction, transform, location);
             // apply cull face
             if (face.cullForDirection == null) {
                 builder.addUnculledFace(bakedQuad);

@@ -1,5 +1,7 @@
 package com.buuz135.functionalstorage.client.loader;
 
+import com.buuz135.functionalstorage.block.FramedDrawerBlock;
+import com.buuz135.functionalstorage.client.model.FramedDrawerModelData;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 import com.google.gson.JsonArray;
@@ -25,8 +27,6 @@ import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.client.model.IModelConfiguration;
 import net.minecraftforge.client.model.IModelLoader;
@@ -37,11 +37,7 @@ import net.minecraftforge.client.model.geometry.IModelGeometry;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
@@ -55,6 +51,11 @@ import java.util.function.Function;
 public class RetexturedModel implements IModelGeometry<RetexturedModel> {
     private final SimpleBlockModel model;
     private final Set<String> retextured;
+
+    public RetexturedModel(SimpleBlockModel model, Set<String> retextured) {
+        this.model = model;
+        this.retextured = retextured;
+    }
 
     @Override
     public Collection<Material> getTextures(IModelConfiguration owner, Function<ResourceLocation,UnbakedModel> modelGetter, Set<Pair<String,String>> missingTextureErrors) {
@@ -143,7 +144,7 @@ public class RetexturedModel implements IModelGeometry<RetexturedModel> {
     /** Baked variant of the model, used to swap out quads based on the texture */
     public static class Baked extends DynamicBakedWrapper<BakedModel> {
         /** Cache of texture name to baked model */
-        private final Map<ResourceLocation,BakedModel> cache = new ConcurrentHashMap<>();
+        private final Map<String, BakedModel> cache = new ConcurrentHashMap<>();
         /* Properties for rebaking */
         private final IModelConfiguration owner;
         private final SimpleBlockModel model;
@@ -161,29 +162,29 @@ public class RetexturedModel implements IModelGeometry<RetexturedModel> {
 
         /**
          * Gets the model with the given texture applied
-         * @param name  Texture location
+         * @param framedDrawerModelData  Texture location
          * @return  Retextured model
          */
-        private BakedModel getRetexturedModel(ResourceLocation name) {
-            return model.bakeDynamic(new RetexturedConfiguration(owner, retextured, name), transform);
+        private BakedModel getRetexturedModel(FramedDrawerModelData framedDrawerModelData) {
+            return model.bakeDynamic(new RetexturedConfiguration(owner, retextured, framedDrawerModelData), transform);
         }
 
         /**
          * Gets a cached retextured model, computing it if missing from the cache
-         * @param block  Block determining the texture
+         * @param framedDrawerModelData  Block determining the texture
          * @return  Retextured model
          */
-        private BakedModel getCachedModel(Block block) {
-            return cache.computeIfAbsent(ModelHelper.getParticleTexture(block), this::getRetexturedModel);
+        private BakedModel getCachedModel(FramedDrawerModelData framedDrawerModelData) {
+            return cache.computeIfAbsent(framedDrawerModelData.getCode(), (s) -> this.getRetexturedModel(framedDrawerModelData));
         }
 
         @Override
         public TextureAtlasSprite getParticleIcon(IModelData data) {
             // if particle is retextured, fetch particle from the cached model
             if (retextured.contains("particle")) {
-                Block block = data.getData(RetexturedHelper.BLOCK_PROPERTY);
-                if (block != null) {
-                    return getCachedModel(block).getParticleIcon(data);
+                FramedDrawerModelData framedDrawerModelData = data.getData(FramedDrawerModelData.FRAMED_PROPERTY);
+                if (framedDrawerModelData != null) {
+                    return getCachedModel(framedDrawerModelData).getParticleIcon(data);
                 }
             }
             return originalModel.getParticleIcon(data);
@@ -192,11 +193,11 @@ public class RetexturedModel implements IModelGeometry<RetexturedModel> {
         @Nonnull
         @Override
         public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction direction, Random random, IModelData data) {
-            Block block = data.getData(RetexturedHelper.BLOCK_PROPERTY);
-            if (block == null) {
+            FramedDrawerModelData framedDrawerModelData = data.getData(FramedDrawerModelData.FRAMED_PROPERTY);
+            if (framedDrawerModelData == null) {
                 return originalModel.getQuads(state, direction, random, data);
             }
-            return getCachedModel(block).getQuads(state, direction, random, data);
+            return getCachedModel(framedDrawerModelData).getQuads(state, direction, random, data);
         }
 
         @Override
@@ -212,7 +213,7 @@ public class RetexturedModel implements IModelGeometry<RetexturedModel> {
         /** List of textures to retexture */
         private final Set<String> retextured;
         /** Replacement texture */
-        private final Material texture;
+        private final HashMap<String, Material> texture;
 
         /**
          * Creates a new configuration wrapper
@@ -220,24 +221,27 @@ public class RetexturedModel implements IModelGeometry<RetexturedModel> {
          * @param retextured  Set of textures that should be retextured
          * @param texture     New texture to replace those in the set
          */
-        public RetexturedConfiguration(IModelConfiguration base, Set<String> retextured, ResourceLocation texture) {
+        public RetexturedConfiguration(IModelConfiguration base, Set<String> retextured, FramedDrawerModelData texture) {
             super(base);
             this.retextured = retextured;
-            this.texture = ModelLoaderRegistry.blockMaterial(texture);
+            this.texture = new HashMap<>();
+            texture.getDesign().forEach((s, item) -> {
+                this.texture.put(s, ModelLoaderRegistry.blockMaterial(ModelHelper.getParticleTexture(item)));
+            });
         }
 
         @Override
         public boolean isTexturePresent(String name) {
-            if (retextured.contains(name)) {
-                return !MissingTextureAtlasSprite.getLocation().equals(texture.texture());
+            if (retextured.contains(name) && texture.containsKey(name)) {
+                return !MissingTextureAtlasSprite.getLocation().equals(texture.get(name).texture());
             }
             return super.isTexturePresent(name);
         }
 
         @Override
         public Material resolveTexture(String name) {
-            if (retextured.contains(name)) {
-                return texture;
+            if (retextured.contains(name) && texture.containsKey(name)) {
+                return texture.get(name);
             }
             return super.resolveTexture(name);
         }
@@ -255,13 +259,13 @@ public class RetexturedModel implements IModelGeometry<RetexturedModel> {
             }
 
             // get the block first, ensuring its valid
-            Block block = RetexturedBlockItem.getTexture(stack);
-            if (block == Blocks.AIR) {
+            FramedDrawerModelData data = FramedDrawerBlock.getDrawerModelData(stack);
+            if (data == null) {
                 return originalModel;
             }
 
             // if valid, use the block
-            return ((Baked)originalModel).getCachedModel(block);
+            return ((Baked)originalModel).getCachedModel(data);
         }
     }
 }
