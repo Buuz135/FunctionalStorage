@@ -70,5 +70,6 @@
   "storageupgrade.desc": "Multiplies the block storage by ",
   "upgrade.type": "Type: ",
   "upgrade.type.storage": "Storage",
-  "upgrade.type.utility": "Utility"
+  "upgrade.type.utility": "Utility",
+  "frameddrawer.use": "How 2 Change Texture: \nInside a crafting window place the block you want use the texture of for the outside of the drawer in the first slot of the crafting window, on the second slot put the block that will be used for the texture on the inside of the framed drawer and on the third slot put a framed drawer. \n"
 }

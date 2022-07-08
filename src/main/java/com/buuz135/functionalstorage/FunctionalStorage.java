@@ -22,7 +22,6 @@ import com.buuz135.functionalstorage.recipe.DrawerlessWoodIngredient;
 import com.buuz135.functionalstorage.recipe.FramedDrawerRecipe;
 import com.buuz135.functionalstorage.util.*;
 import com.hrznstudio.titanium.block.BasicBlock;
-import com.hrznstudio.titanium.block.BasicTileBlock;
 import com.hrznstudio.titanium.datagenerator.loot.TitaniumLootTableProvider;
 import com.hrznstudio.titanium.datagenerator.model.BlockItemModelGeneratorProvider;
 import com.hrznstudio.titanium.event.handler.EventManager;
@@ -154,10 +153,12 @@ public class FunctionalStorage extends ModuleController {
         WOOD_TYPES.addAll(List.of(DrawerWoodType.values()));
         for (DrawerType value : DrawerType.values()) {
             for (IWoodType woodType : WOOD_TYPES) {
-                String name = woodType.getName() + "_" + value.getSlots();
+                var name = woodType.getName() + "_" + value.getSlots();
                 if (woodType == DrawerWoodType.FRAMED){
-                    DRAWER_TYPES.computeIfAbsent(value, drawerType -> new ArrayList<>()).add(getRegistries().registerBlockWithTileItem(name, () -> new FramedDrawerBlock(value), blockRegistryObject -> () ->
-                            new DrawerBlock.DrawerItem((DrawerBlock) blockRegistryObject.get(), new Item.Properties().tab(TAB))));
+                    var pair = getRegistries().registerBlockWithTileItem(name, () -> new FramedDrawerBlock(value), blockRegistryObject -> () ->
+                            new DrawerBlock.DrawerItem((DrawerBlock) blockRegistryObject.get(), new Item.Properties().tab(TAB)));
+                    DRAWER_TYPES.computeIfAbsent(value, drawerType -> new ArrayList<>()).add(pair);
+                    CompactingFramedDrawerBlock.FRAMED.add(pair.getLeft());
                 } else {
                     DRAWER_TYPES.computeIfAbsent(value, drawerType -> new ArrayList<>()).add(getRegistries().registerBlockWithTileItem(name, () -> new DrawerBlock(woodType, value), blockRegistryObject -> () ->
                             new DrawerBlock.DrawerItem((DrawerBlock) blockRegistryObject.get(), new Item.Properties().tab(TAB))));
