@@ -319,7 +319,7 @@ public class DrawerBlock extends RotatableBlock<DrawerTile> {
     @Override
     public void appendHoverText(ItemStack p_49816_, @Nullable BlockGetter p_49817_, List<net.minecraft.network.chat.Component> tooltip, TooltipFlag p_49819_) {
         super.appendHoverText(p_49816_, p_49817_, tooltip, p_49819_);
-        if (p_49816_.hasTag()) {
+        if (p_49816_.hasTag() && p_49816_.getTag().contains("Tile")) {
             TranslatableComponent text = new TranslatableComponent("drawer.block.contents");
             tooltip.add(text.withStyle(ChatFormatting.GRAY));
             tooltip.add(new TextComponent(""));
