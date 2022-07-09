@@ -70,8 +70,8 @@ public class CompactingDrawerBlock extends RotatableBlock<CompactingDrawerTile> 
     }
 
 
-    public CompactingDrawerBlock(String name) {
-        super(name, Properties.copy(Blocks.STONE_BRICKS), CompactingDrawerTile.class);
+    public CompactingDrawerBlock(String name, Properties properties) {
+        super(name, properties, CompactingDrawerTile.class);
         setItemGroup(FunctionalStorage.TAB);
         registerDefaultState(defaultBlockState().setValue(RotatableBlock.FACING_HORIZONTAL, Direction.NORTH).setValue(DrawerBlock.LOCKED, false));
     }

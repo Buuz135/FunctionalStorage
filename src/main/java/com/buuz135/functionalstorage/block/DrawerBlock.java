@@ -38,6 +38,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
@@ -121,13 +122,14 @@ public class DrawerBlock extends RotatableBlock<DrawerTile> {
     private final FunctionalStorage.DrawerType type;
     private final IWoodType woodType;
 
-    public DrawerBlock(IWoodType woodType, FunctionalStorage.DrawerType type) {
-        super(woodType.getName() + "_" + type.getSlots(), Properties.copy(woodType.getPlanks()), DrawerTile.class);
+    public DrawerBlock(IWoodType woodType, FunctionalStorage.DrawerType type, BlockBehaviour.Properties properties) {
+        super(woodType.getName() + "_" + type.getSlots(), properties, DrawerTile.class);
         this.woodType = woodType;
         this.type = type;
         setItemGroup(FunctionalStorage.TAB);
         registerDefaultState(defaultBlockState().setValue(RotatableBlock.FACING_HORIZONTAL, Direction.NORTH).setValue(LOCKED, false));
     }
+
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> p_206840_1_) {
@@ -319,7 +321,7 @@ public class DrawerBlock extends RotatableBlock<DrawerTile> {
     @Override
     public void appendHoverText(ItemStack p_49816_, @Nullable BlockGetter p_49817_, List<net.minecraft.network.chat.Component> tooltip, TooltipFlag p_49819_) {
         super.appendHoverText(p_49816_, p_49817_, tooltip, p_49819_);
-        if (p_49816_.hasTag()) {
+        if (p_49816_.hasTag() && p_49816_.getTag().contains("Tile")) {
             TranslatableComponent text = new TranslatableComponent("drawer.block.contents");
             tooltip.add(text.withStyle(ChatFormatting.GRAY));
             tooltip.add(new TextComponent(""));

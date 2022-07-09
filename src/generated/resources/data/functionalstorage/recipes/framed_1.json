@@ -1,0 +1,37 @@
+{
+  "type": "forge:conditional",
+  "recipes": [
+    {
+      "conditions": [
+        {
+          "values": [
+            {
+              "item": "functionalstorage:framed_1",
+              "type": "forge:item_exists"
+            }
+          ],
+          "type": "forge:and"
+        }
+      ],
+      "recipe": {
+        "type": "minecraft:crafting_shaped",
+        "pattern": [
+          "PPP",
+          "PCP",
+          "PPP"
+        ],
+        "key": {
+          "P": {
+            "item": "minecraft:iron_nugget"
+          },
+          "C": {
+            "tag": "forge:chests/wooden"
+          }
+        },
+        "result": {
+          "item": "functionalstorage:framed_1"
+        }
+      }
+    }
+  ]
+}

@@ -14,7 +14,8 @@ public enum DrawerWoodType implements IWoodType {
     ACACIA(Blocks.ACACIA_LOG, Blocks.ACACIA_PLANKS),
     DARK_OAK(Blocks.DARK_OAK_LOG, Blocks.DARK_OAK_PLANKS),
     CRIMSON(Blocks.CRIMSON_STEM, Blocks.CRIMSON_PLANKS),
-    WARPED(Blocks.WARPED_STEM, Blocks.WARPED_PLANKS);
+    WARPED(Blocks.WARPED_STEM, Blocks.WARPED_PLANKS),
+    FRAMED(Blocks.STONE, Blocks.STONE);
 
 
     private final Block log;

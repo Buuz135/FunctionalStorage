@@ -1,0 +1,51 @@
+{
+  "type": "forge:conditional",
+  "recipes": [
+    {
+      "conditions": [
+        {
+          "values": [
+            {
+              "item": "functionalstorage:compacting_framed_drawer",
+              "type": "forge:item_exists"
+            }
+          ],
+          "type": "forge:and"
+        }
+      ],
+      "recipe": {
+        "type": "minecraft:crafting_shaped",
+        "pattern": [
+          "SSS",
+          "PDP",
+          "SIS"
+        ],
+        "key": {
+          "S": {
+            "item": "minecraft:stone"
+          },
+          "P": {
+            "item": "minecraft:piston"
+          },
+          "D": [
+            {
+              "item": "functionalstorage:framed_1"
+            },
+            {
+              "item": "functionalstorage:framed_2"
+            },
+            {
+              "item": "functionalstorage:framed_4"
+            }
+          ],
+          "I": {
+            "tag": "forge:ingots/iron"
+          }
+        },
+        "result": {
+          "item": "functionalstorage:compacting_framed_drawer"
+        }
+      }
+    }
+  ]
+}
