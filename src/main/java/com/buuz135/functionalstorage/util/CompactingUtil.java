@@ -58,6 +58,7 @@ public class CompactingUtil {
         while (results.size() < 3){
             results.add(0, new Result(ItemStack.EMPTY, 1));
         }
+        results.stream().filter(result1 -> result1.getResult().getCount() > 0).forEach(result1 -> result1.setNeeded(result1.getNeeded() / result1.getResult().getCount()));
     }
 
     public List<Result> getResults() {
@@ -158,7 +159,7 @@ public class CompactingUtil {
                 }
             }
         }
-        return ItemStack.EMPTY;
+        return candidates.size() > 0 ? candidates.get(0) : ItemStack.EMPTY;
     }
 
 
