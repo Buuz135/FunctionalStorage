@@ -20,6 +20,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.common.util.LazyOptional;
@@ -167,9 +168,10 @@ public class DrawerControllerTile extends ControllableDrawerTile<DrawerControlle
     }
 
     public void addConnectedDrawers(LinkingToolItem.ActionMode action, BlockPos... positions) {
+        var area = new AABB(this.getBlockPos()).inflate( FunctionalStorageConfig.DRAWER_CONTROLLER_LINKING_RANGE);
         for (BlockPos position : positions) {
             if (level.getBlockState(position).is(FunctionalStorage.DRAWER_CONTROLLER.getLeft().get())) continue;
-            if (this.getBlockPos().closerThan(position, FunctionalStorageConfig.DRAWER_CONTROLLER_LINKING_RANGE) && this.getLevel().getBlockEntity(position) instanceof ControllableDrawerTile<?>) {
+            if (area.contains(Vec3.atCenterOf(position))  && this.getLevel().getBlockEntity(position) instanceof ControllableDrawerTile<?>) {
                 if (action == LinkingToolItem.ActionMode.ADD) {
                     if (!connectedDrawers.getConnectedDrawers().contains(position.asLong()))
                         this.connectedDrawers.getConnectedDrawers().add(position.asLong());
