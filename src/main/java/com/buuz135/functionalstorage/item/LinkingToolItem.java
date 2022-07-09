@@ -151,7 +151,11 @@ public class LinkingToolItem extends BasicItem {
                 if (linkingMode == LinkingMode.SINGLE) {
                     ((ControllableDrawerTile<?>) blockEntity).setControllerPos(controller.getBlockPos());
                     ((DrawerControllerTile) controller).addConnectedDrawers(linkingAction, pos);
-                    context.getPlayer().displayClientMessage(new TextComponent("Linked drawer to the controller").setStyle(Style.EMPTY.withColor(linkingMode.color)), true);
+                    if (linkingAction == ActionMode.ADD){
+                        context.getPlayer().displayClientMessage(new TextComponent("Linked drawer to the controller").setStyle(Style.EMPTY.withColor(linkingMode.color)), true);
+                    }else {
+                        context.getPlayer().displayClientMessage(new TextComponent("Removed drawer from the controller").setStyle(Style.EMPTY.withColor(linkingMode.color)), true);
+                    }
                 } else {
                     if (stack.getOrCreateTag().contains(NBT_FIRST)) {
                         CompoundTag firstpos = stack.getOrCreateTag().getCompound(NBT_FIRST);
@@ -159,6 +163,11 @@ public class LinkingToolItem extends BasicItem {
                         AABB aabb = new AABB(Math.min(firstPos.getX(), pos.getX()), Math.min(firstPos.getY(), pos.getY()), Math.min(firstPos.getZ(), pos.getZ()), Math.max(firstPos.getX(), pos.getX()) + 1, Math.max(firstPos.getY(), pos.getY()) + 1, Math.max(firstPos.getZ(), pos.getZ()) + 1);
                         ((DrawerControllerTile) controller).addConnectedDrawers(linkingAction, getBlockPosInAABB(aabb).toArray(BlockPos[]::new));
                         stack.getOrCreateTag().remove(NBT_FIRST);
+                        if (linkingAction == ActionMode.ADD){
+                            context.getPlayer().displayClientMessage(new TextComponent("Linked drawers to the controller").setStyle(Style.EMPTY.withColor(linkingMode.color)), true);
+                        }else {
+                            context.getPlayer().displayClientMessage(new TextComponent("Removed drawers from the controller").setStyle(Style.EMPTY.withColor(linkingMode.color)), true);
+                        }
                     } else {
                         CompoundTag firstPos = new CompoundTag();
                         firstPos.putInt("X", pos.getX());
