@@ -25,9 +25,12 @@ import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.MaterialColor;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.HitResult;
@@ -46,7 +49,7 @@ import java.util.function.Consumer;
 public class FramedDrawerBlock extends DrawerBlock{
 
     public FramedDrawerBlock(FunctionalStorage.DrawerType type) {
-        super(DrawerWoodType.FRAMED, type);
+        super(DrawerWoodType.FRAMED, type, Properties.copy(Blocks.OAK_PLANKS).noOcclusion().isViewBlocking((p_61036_, p_61037_, p_61038_) -> false));
     }
 
     @Override
@@ -69,6 +72,7 @@ public class FramedDrawerBlock extends DrawerBlock{
             data.put("particle", ForgeRegistries.ITEMS.getValue(new ResourceLocation(tag.getString("particle"))));
             data.put("front", ForgeRegistries.ITEMS.getValue(new ResourceLocation(tag.getString("front"))));
             data.put("side", ForgeRegistries.ITEMS.getValue(new ResourceLocation(tag.getString("side"))));
+            data.put("front_divider", ForgeRegistries.ITEMS.getValue(new ResourceLocation(tag.getString("front_divider"))));
             return new FramedDrawerModelData(data);
         }
         return null;
@@ -80,6 +84,7 @@ public class FramedDrawerBlock extends DrawerBlock{
         style.putString("particle", first.getItem().getRegistryName().toString());
         style.putString("side", first.getItem().getRegistryName().toString());
         style.putString("front", second.getItem().getRegistryName().toString());
+        style.putString("front_divider", first.getItem().getRegistryName().toString());
         drawer.getOrCreateTag().put("Style", style);
         return drawer;
     }
@@ -102,7 +107,7 @@ public class FramedDrawerBlock extends DrawerBlock{
     @Override
     public ItemStack getCloneItemStack(BlockState state, HitResult target, BlockGetter level, BlockPos pos, Player player) {
         BlockEntity entity = level.getBlockEntity(pos);
-        if (entity instanceof FramedDrawerTile framedDrawerTile){
+        if (entity instanceof FramedDrawerTile framedDrawerTile && framedDrawerTile.getFramedDrawerModelData() != null && !framedDrawerTile.getFramedDrawerModelData().getDesign().isEmpty()){
             ItemStack stack = new ItemStack(this);
             stack.getOrCreateTag().put("Style", framedDrawerTile.getFramedDrawerModelData().serializeNBT());
             return stack;

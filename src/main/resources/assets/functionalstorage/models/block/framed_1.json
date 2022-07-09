@@ -2,7 +2,9 @@
 	"loader": "functionalstorage:framed",
 	"parent": "functionalstorage:block/base_x_1",
 	"textures": {
-
+		"front": "functionalstorage:blocks/framed_side",
+		"particle": "functionalstorage:blocks/framed_side",
+		"side": "functionalstorage:blocks/framed_side"
 	},
-	"retextured": [ "particle", "side", "front" ]
+	"retextured": [ "particle", "side", "front", "front_divider" ]
 }

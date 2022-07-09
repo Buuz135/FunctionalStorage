@@ -3,6 +3,7 @@ package com.buuz135.functionalstorage.block;
 import com.buuz135.functionalstorage.FunctionalStorage;
 import com.buuz135.functionalstorage.block.tile.CompactingDrawerTile;
 import com.buuz135.functionalstorage.block.tile.CompactingFramedDrawerTile;
+import com.buuz135.functionalstorage.block.tile.FramedDrawerTile;
 import com.hrznstudio.titanium.recipe.generator.TitaniumShapedRecipeBuilder;
 import com.hrznstudio.titanium.util.TileUtil;
 import net.minecraft.ChatFormatting;
@@ -39,7 +40,7 @@ public class CompactingFramedDrawerBlock extends CompactingDrawerBlock{
     public static List<RegistryObject<Block>> FRAMED = new ArrayList<>();
 
     public CompactingFramedDrawerBlock(String name) {
-        super(name);
+        super(name, Properties.copy(Blocks.STONE).noOcclusion().isViewBlocking((p_61036_, p_61037_, p_61038_) -> false));
     }
 
     @Override
@@ -74,7 +75,7 @@ public class CompactingFramedDrawerBlock extends CompactingDrawerBlock{
     @Override
     public ItemStack getCloneItemStack(BlockState state, HitResult target, BlockGetter level, BlockPos pos, Player player) {
         BlockEntity entity = level.getBlockEntity(pos);
-        if (entity instanceof CompactingFramedDrawerTile framedDrawerTile){
+        if (entity instanceof FramedDrawerTile framedDrawerTile && framedDrawerTile.getFramedDrawerModelData() != null && !framedDrawerTile.getFramedDrawerModelData().getDesign().isEmpty()){
             ItemStack stack = new ItemStack(this);
             stack.getOrCreateTag().put("Style", framedDrawerTile.getFramedDrawerModelData().serializeNBT());
             return stack;
