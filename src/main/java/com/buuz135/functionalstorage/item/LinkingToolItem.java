@@ -202,6 +202,7 @@ public class LinkingToolItem extends BasicItem {
                         stack.getOrCreateTag().putString(NBT_MODE, LinkingMode.SINGLE.name());
                         player.displayClientMessage(new TextComponent("Swapped mode to " + LinkingMode.SINGLE.name().toLowerCase(Locale.ROOT)).setStyle(Style.EMPTY.withColor(LinkingMode.SINGLE.getColor())), true);
                     }
+                    stack.getOrCreateTag().remove(NBT_FIRST);
                 } else {
                     ActionMode linkingMode = getActionMode(stack);
                     if (linkingMode == ActionMode.ADD) {
