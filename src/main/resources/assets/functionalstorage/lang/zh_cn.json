@@ -27,6 +27,10 @@
     "block.functionalstorage.warped_1": "诡异木抽屉（1x1）",
     "block.functionalstorage.warped_2": "诡异木抽屉（1x2）",
     "block.functionalstorage.warped_4": "诡异木抽屉（2x2）",
+    "block.functionalstorage.framed_1": "镶框抽屉（1x1）",
+    "block.functionalstorage.framed_2": "镶框抽屉（1x2）",
+    "block.functionalstorage.framed_4": "镶框抽屉（2x2）",
+    "block.functionalstorage.compacting_framed_drawer": "压缩镶框抽屉",
     "configurationtool.configmode": "配置模式：",
     "configurationtool.configmode.locking": "锁定",
     "configurationtool.configmode.toggle_numbers": "隐藏/显示数量",
@@ -48,7 +52,7 @@
     "item.utility.direction": "方向：",
     "item.utility.direction.desc": "在GUI中右击变更方向",
     "item.utility.downgrade": "栏位堆叠上限降级为64",
-    "itemGroup.functionalstorage": "Functional Storage",
+    "itemGroup.functionalstorage": "功能性存储",
     "key.categories.storage": "存储",
     "key.categories.utility": "功能",
     "linkingtool.controller": "控制器：",
@@ -66,5 +70,6 @@
     "storageupgrade.desc": "存储上限×",
     "upgrade.type": "种类：",
     "upgrade.type.storage": "存储",
-    "upgrade.type.utility": "功能"
+    "upgrade.type.utility": "功能",
+    "frameddrawer.use": "如何改变材质：\n在合成界面，第一个栏位放置用做抽屉外纹理的方块，第二个栏位放置用做抽屉内纹理的方块，第三个栏位放置镶框抽屉。\n"
   }
