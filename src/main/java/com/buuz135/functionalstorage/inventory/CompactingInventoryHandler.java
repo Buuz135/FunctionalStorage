@@ -137,12 +137,16 @@ public abstract class CompactingInventoryHandler implements IItemHandler, INBTSe
     @Override
     public int getSlotLimit(int slot) {
         if (slot == 3) return Integer.MAX_VALUE;
-        return (int) Math.min(Integer.MAX_VALUE, Math.floor((TOTAL_AMOUNT * getMultiplier()) / this.resultList.get(slot).getNeeded()));
+        int total = TOTAL_AMOUNT;
+        if (hasDowngrade()) total = 64 * 9 * 9;
+        return (int) Math.min(Integer.MAX_VALUE, Math.floor((total * getMultiplier()) / this.resultList.get(slot).getNeeded()));
     }
 
-    public int getSlotLimitBase(int slot){
+    public int getSlotLimitBase(int slot) {
         if (slot == 3) return Integer.MAX_VALUE;
-        return (int) Math.min(Integer.MAX_VALUE, Math.floor(TOTAL_AMOUNT / this.resultList.get(slot).getNeeded()));
+        int total = TOTAL_AMOUNT;
+        if (hasDowngrade()) total = 64 * 9 * 9;
+        return (int) Math.min(Integer.MAX_VALUE, Math.floor(total / this.resultList.get(slot).getNeeded()));
     }
 
     @Override
@@ -198,4 +202,6 @@ public abstract class CompactingInventoryHandler implements IItemHandler, INBTSe
     public ItemStack getParent() {
         return parent;
     }
+
+    public abstract boolean hasDowngrade();
 }
