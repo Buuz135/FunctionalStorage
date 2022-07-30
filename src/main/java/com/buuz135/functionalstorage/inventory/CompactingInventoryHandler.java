@@ -141,6 +141,7 @@ public abstract class CompactingInventoryHandler implements IItemHandler, INBTSe
     }
 
     public int getSlotLimitBase(int slot){
+        if (slot == 3) return Integer.MAX_VALUE;
         return (int) Math.min(Integer.MAX_VALUE, Math.floor(TOTAL_AMOUNT / this.resultList.get(slot).getNeeded()));
     }
 
