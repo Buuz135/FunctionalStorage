@@ -49,6 +49,11 @@ public class CompactingDrawerTile extends ControllableDrawerTile<CompactingDrawe
             }
 
             @Override
+            public boolean hasDowngrade() {
+                return CompactingDrawerTile.this.hasDowngrade();
+            }
+
+            @Override
             public boolean isLocked() {
                 return CompactingDrawerTile.this.isLocked();
             }
