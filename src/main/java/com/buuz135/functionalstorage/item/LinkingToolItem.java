@@ -149,7 +149,6 @@ public class LinkingToolItem extends BasicItem {
             BlockEntity controller = level.getBlockEntity(new BlockPos(controllerNBT.getInt("X"), controllerNBT.getInt("Y"), controllerNBT.getInt("Z")));
             if (controller instanceof DrawerControllerTile) {
                 if (linkingMode == LinkingMode.SINGLE) {
-                    ((ControllableDrawerTile<?>) blockEntity).setControllerPos(controller.getBlockPos());
                     ((DrawerControllerTile) controller).addConnectedDrawers(linkingAction, pos);
                     if (linkingAction == ActionMode.ADD){
                         context.getPlayer().displayClientMessage(new TextComponent("Linked drawer to the controller").setStyle(Style.EMPTY.withColor(linkingMode.color)), true);

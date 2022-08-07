@@ -2,6 +2,7 @@ package com.buuz135.functionalstorage.block;
 
 import com.buuz135.functionalstorage.FunctionalStorage;
 import com.buuz135.functionalstorage.block.tile.CompactingDrawerTile;
+import com.buuz135.functionalstorage.block.tile.ControllableDrawerTile;
 import com.buuz135.functionalstorage.block.tile.DrawerControllerTile;
 import com.hrznstudio.titanium.block.RotatableBlock;
 import com.hrznstudio.titanium.util.TileUtil;
@@ -18,6 +19,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Optional;
 
 public class DrawerControllerBlock extends RotatableBlock<DrawerControllerTile> {
 
@@ -47,5 +50,19 @@ public class DrawerControllerBlock extends RotatableBlock<DrawerControllerTile> 
     @Override
     public InteractionResult use(BlockState state, Level worldIn, BlockPos pos, Player player, InteractionHand hand, BlockHitResult ray) {
         return TileUtil.getTileEntity(worldIn, pos, DrawerControllerTile.class).map(drawerTile -> drawerTile.onSlotActivated(player, hand, ray.getDirection(), ray.getLocation().x, ray.getLocation().y, ray.getLocation().z)).orElse(InteractionResult.PASS);
+    }
+
+    @Override
+    public void onRemove(BlockState state, Level worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
+        TileUtil.getTileEntity(worldIn, pos, DrawerControllerTile.class).ifPresent(drawerControllerTile -> {
+            drawerControllerTile.getConnectedDrawers().getConnectedDrawers().stream()
+                    .map(BlockPos::of)
+                    .map(blockPos -> TileUtil.getTileEntity(worldIn, blockPos, ControllableDrawerTile.class))
+                    .filter(Optional::isPresent)
+                    .map(Optional::get)
+                    .forEach(controllableDrawerTile -> controllableDrawerTile.setControllerPos(null));
+        });
+        super.onRemove(state, worldIn, pos, newState, isMoving);
+
     }
 }

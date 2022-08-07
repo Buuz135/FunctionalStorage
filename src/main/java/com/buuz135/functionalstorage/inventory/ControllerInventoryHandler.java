@@ -41,6 +41,7 @@ public abstract class ControllerInventoryHandler implements IItemHandler {
     public ItemStack insertItem(int slot, @NotNull ItemStack stack, boolean simulate) {
         int index = 0;
         for (IItemHandler handler : getDrawers().getHandlers()) {
+            if (handler instanceof ControllerInventoryHandler) continue;
             int relativeIndex = slot - index;
             if (relativeIndex < handler.getSlots()){
                 return handler.insertItem(relativeIndex, stack, simulate);
@@ -55,6 +56,7 @@ public abstract class ControllerInventoryHandler implements IItemHandler {
     public ItemStack extractItem(int slot, int amount, boolean simulate) {
         int index = 0;
         for (IItemHandler handler : getDrawers().getHandlers()) {
+            if (handler instanceof ControllerInventoryHandler) continue;
             int relativeIndex = slot - index;
             if (relativeIndex < handler.getSlots()){
                 return handler.extractItem(relativeIndex, amount, simulate);
@@ -68,6 +70,7 @@ public abstract class ControllerInventoryHandler implements IItemHandler {
     public int getSlotLimit(int slot) {
         int index = 0;
         for (IItemHandler handler : getDrawers().getHandlers()) {
+            if (handler instanceof ControllerInventoryHandler) continue;
             int relativeIndex = slot - index;
             if (relativeIndex < handler.getSlots()){
                 return handler.getSlotLimit(relativeIndex);
@@ -81,6 +84,7 @@ public abstract class ControllerInventoryHandler implements IItemHandler {
     public boolean isItemValid(int slot, @NotNull ItemStack stack) {
         int index = 0;
         for (IItemHandler handler : getDrawers().getHandlers()) {
+            if (handler instanceof ControllerInventoryHandler) continue;
             int relativeIndex = slot - index;
             if (relativeIndex < handler.getSlots()){
                 return handler.isItemValid(relativeIndex, stack);

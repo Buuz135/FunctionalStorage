@@ -80,7 +80,7 @@ public class ControllerRenderer implements BlockEntityRenderer<DrawerControllerT
                     BlockPos hit = ((BlockHitResult)result).getBlockPos();
                     AABB aabb = new AABB(Math.min(firstPos.getX(), hit.getX()), Math.min(firstPos.getY(), hit.getY()), Math.min(firstPos.getZ(), hit.getZ()), Math.max(firstPos.getX(), hit.getX()) + 1, Math.max(firstPos.getY(), hit.getY()) + 1, Math.max(firstPos.getZ(), hit.getZ()) + 1);
                     VoxelShape shape = Shapes.create(aabb);
-                    LevelRenderer.renderVoxelShape(matrixStack, bufferIn.getBuffer(TYPE), shape, -controller.getX(), -controller.getY(), -controller.getZ(), 1f, 1f, 1f, 1f);
+                    renderShape(matrixStack, bufferIn.getBuffer(TYPE), shape, -controller.getX(), -controller.getY(), -controller.getZ(), 1f, 1f, 1f, 1f);
                     return;
                 }
             }

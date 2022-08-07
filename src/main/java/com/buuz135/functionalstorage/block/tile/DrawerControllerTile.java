@@ -168,13 +168,15 @@ public class DrawerControllerTile extends ControllableDrawerTile<DrawerControlle
     }
 
     public void addConnectedDrawers(LinkingToolItem.ActionMode action, BlockPos... positions) {
-        var area = new AABB(this.getBlockPos()).inflate( FunctionalStorageConfig.DRAWER_CONTROLLER_LINKING_RANGE);
+        var area = new AABB(this.getBlockPos()).inflate(FunctionalStorageConfig.DRAWER_CONTROLLER_LINKING_RANGE);
         for (BlockPos position : positions) {
             if (level.getBlockState(position).is(FunctionalStorage.DRAWER_CONTROLLER.getLeft().get())) continue;
-            if (area.contains(Vec3.atCenterOf(position))  && this.getLevel().getBlockEntity(position) instanceof ControllableDrawerTile<?>) {
+            if (area.contains(Vec3.atCenterOf(position)) && this.getLevel().getBlockEntity(position) instanceof ControllableDrawerTile<?> controllableDrawerTile) {
                 if (action == LinkingToolItem.ActionMode.ADD) {
-                    if (!connectedDrawers.getConnectedDrawers().contains(position.asLong()))
+                    controllableDrawerTile.setControllerPos(this.getBlockPos());
+                    if (!connectedDrawers.getConnectedDrawers().contains(position.asLong())){
                         this.connectedDrawers.getConnectedDrawers().add(position.asLong());
+                    }
                 }
             }
             if (action == LinkingToolItem.ActionMode.REMOVE) {
