@@ -40,19 +40,21 @@ public abstract class BigInventoryHandler implements IItemHandler, INBTSerializa
         if (type.getSlots() == slot) return ItemStack.EMPTY;
         BigStack bigStack = this.storedStacks.get(slot);
         ItemStack copied = bigStack.getStack().copy();
-        copied.setCount(bigStack.getAmount());
+        copied.setCount(isCreative() ? Integer.MAX_VALUE : bigStack.getAmount());
         return copied;
     }
 
     @Nonnull
     @Override
     public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
-        if (isVoid() && type.getSlots() == slot && isVoidValid(stack)) return ItemStack.EMPTY;
+        if (isVoid() && type.getSlots() == slot && isVoidValid(stack) || (isVoidValid(stack) && isCreative()))
+            return ItemStack.EMPTY;
         if (isValid(slot, stack)) {
             BigStack bigStack = this.storedStacks.get(slot);
             int inserted = Math.min(getSlotLimit(slot) - bigStack.getAmount(), stack.getCount());
-            if (!simulate){
-                if (bigStack.getStack().isEmpty()) bigStack.setStack(ItemHandlerHelper.copyStackWithSize(stack, stack.getMaxStackSize()));
+            if (!simulate) {
+                if (bigStack.getStack().isEmpty())
+                    bigStack.setStack(ItemHandlerHelper.copyStackWithSize(stack, stack.getMaxStackSize()));
                 bigStack.setAmount(Math.min(bigStack.getAmount() + inserted, getSlotLimit(slot)));
                 onChange();
             }
@@ -72,7 +74,7 @@ public abstract class BigInventoryHandler implements IItemHandler, INBTSerializa
             if (bigStack.getAmount() <= amount) {
                 ItemStack out = bigStack.getStack().copy();
                 int newAmount = bigStack.getAmount();
-                if (!simulate) {
+                if (!simulate && !isCreative()) {
                     if (!isLocked()) bigStack.setStack(ItemStack.EMPTY);
                     bigStack.setAmount(0);
                     onChange();
@@ -80,7 +82,7 @@ public abstract class BigInventoryHandler implements IItemHandler, INBTSerializa
                 out.setCount(newAmount);
                 return out;
             } else {
-                if (!simulate) {
+                if (!simulate && !isCreative()) {
                     bigStack.setAmount(bigStack.getAmount() - amount);
                     onChange();
                 }
@@ -92,6 +94,7 @@ public abstract class BigInventoryHandler implements IItemHandler, INBTSerializa
 
     @Override
     public int getSlotLimit(int slot) {
+        if (isCreative()) return Integer.MAX_VALUE;
         if (type.getSlots() == slot) return Integer.MAX_VALUE;
         double stackSize = 1;
         if (!getStoredStacks().get(slot).getStack().isEmpty()) {
@@ -154,6 +157,8 @@ public abstract class BigInventoryHandler implements IItemHandler, INBTSerializa
     public abstract boolean hasDowngrade();
 
     public abstract boolean isLocked();
+
+    public abstract boolean isCreative();
 
     public List<BigStack> getStoredStacks() {
         return storedStacks;

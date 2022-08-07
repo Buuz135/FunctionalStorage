@@ -13,7 +13,10 @@ import com.buuz135.functionalstorage.data.FunctionalStorageItemTagsProvider;
 import com.buuz135.functionalstorage.data.FunctionalStorageLangProvider;
 import com.buuz135.functionalstorage.inventory.BigInventoryHandler;
 import com.buuz135.functionalstorage.inventory.item.DrawerStackItemHandler;
-import com.buuz135.functionalstorage.item.*;
+import com.buuz135.functionalstorage.item.ConfigurationToolItem;
+import com.buuz135.functionalstorage.item.LinkingToolItem;
+import com.buuz135.functionalstorage.item.StorageUpgradeItem;
+import com.buuz135.functionalstorage.item.UpgradeItem;
 import com.buuz135.functionalstorage.network.EnderDrawerSyncMessage;
 import com.buuz135.functionalstorage.recipe.DrawerlessWoodIngredient;
 import com.buuz135.functionalstorage.recipe.FramedDrawerRecipe;
@@ -107,6 +110,7 @@ public class FunctionalStorage extends ModuleController {
     public static RegistryObject<Item> VOID_UPGRADE;
     public static RegistryObject<Item> CONFIGURATION_TOOL;
     public static RegistryObject<Item> REDSTONE_UPGRADE;
+    public static RegistryObject<Item> CREATIVE_UPGRADE;
 
     public static AdvancedTitaniumTab TAB = new AdvancedTitaniumTab("functionalstorage", true);
 
@@ -180,7 +184,13 @@ public class FunctionalStorage extends ModuleController {
         ARMORY_CABINET = getRegistries().registerBlockWithTile("armory_cabinet", ArmoryCabinetBlock::new);
         CONFIGURATION_TOOL = getRegistries().registerGeneric(Item.class, "configuration_tool", ConfigurationToolItem::new);
         ENDER_DRAWER = getRegistries().registerBlockWithTile("ender_drawer", EnderDrawerBlock::new);
-        REDSTONE_UPGRADE = getRegistries().registerGeneric(Item.class, "redstone_upgrade",  () -> new UpgradeItem(new Item.Properties(), UpgradeItem.Type.UTILITY));
+        REDSTONE_UPGRADE = getRegistries().registerGeneric(Item.class, "redstone_upgrade", () -> new UpgradeItem(new Item.Properties(), UpgradeItem.Type.UTILITY));
+        CREATIVE_UPGRADE = getRegistries().registerGeneric(Item.class, "creative_vending_upgrade", () -> new UpgradeItem(new Item.Properties(), UpgradeItem.Type.STORAGE) {
+            @Override
+            public boolean isFoil(ItemStack p_41453_) {
+                return true;
+            }
+        });
     }
 
     public enum DrawerType {
@@ -294,7 +304,7 @@ public class FunctionalStorage extends ModuleController {
                                 .isPresent())
                         .collect(Collectors.toList())
         );
-        if (false){
+        if (true) {
             event.getGenerator().addProvider(new BlockItemModelGeneratorProvider(event.getGenerator(), MOD_ID, blocksToProcess));
             event.getGenerator().addProvider(new FunctionalStorageBlockstateProvider(event.getGenerator(), event.getExistingFileHelper(), blocksToProcess));
             event.getGenerator().addProvider(new TitaniumLootTableProvider(event.getGenerator(), blocksToProcess));
@@ -313,6 +323,7 @@ public class FunctionalStorage extends ModuleController {
                     item(PUSHING_UPGRADE.get());
                     item(VOID_UPGRADE.get());
                     item(REDSTONE_UPGRADE.get());
+                    item(CREATIVE_UPGRADE.get());
                 }
 
                 private void item(Item item) {
@@ -331,6 +342,8 @@ public class FunctionalStorage extends ModuleController {
                     withExistingParent(COMPACTING_DRAWER.getLeft().get().getRegistryName().getPath() + "_locked", modLoc(COMPACTING_DRAWER.getLeft().get().getRegistryName().getPath()))
                             .texture("lock_icon", modLoc("blocks/lock"));
                     withExistingParent(ENDER_DRAWER.getLeft().get().getRegistryName().getPath() + "_locked", modLoc(ENDER_DRAWER.getLeft().get().getRegistryName().getPath()))
+                            .texture("lock_icon", modLoc("blocks/lock"));
+                    withExistingParent(FRAMED_COMPACTING_DRAWER.getLeft().get().getRegistryName().getPath() + "_locked", modLoc(FRAMED_COMPACTING_DRAWER.getLeft().get().getRegistryName().getPath()))
                             .texture("lock_icon", modLoc("blocks/lock"));
                 }
             });

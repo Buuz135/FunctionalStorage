@@ -250,6 +250,15 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
         return false;
     }
 
+    public boolean isCreative() {
+        for (int i = 0; i < storageUpgrades.getSlots(); i++) {
+            if (storageUpgrades.getStackInSlot(i).getItem().equals(FunctionalStorage.CREATIVE_UPGRADE.get())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public InteractionResult onSlotActivated(Player playerIn, InteractionHand hand, Direction facing, double hitX, double hitY, double hitZ, int slot) {
         ItemStack stack = playerIn.getItemInHand(hand);
         if (stack.getItem().equals(FunctionalStorage.CONFIGURATION_TOOL.get()) || stack.getItem().equals(FunctionalStorage.LINKING_TOOL.get()))

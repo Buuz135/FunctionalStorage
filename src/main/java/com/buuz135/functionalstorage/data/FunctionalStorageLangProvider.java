@@ -51,7 +51,8 @@ public class FunctionalStorageLangProvider extends LanguageProvider {
         this.add(FunctionalStorage.PULLING_UPGRADE.get(), WordUtils.capitalize(FunctionalStorage.PULLING_UPGRADE.get().getRegistryName().getPath().replace('_', ' ').toLowerCase()) );
         this.add(FunctionalStorage.PUSHING_UPGRADE.get(), WordUtils.capitalize(FunctionalStorage.PUSHING_UPGRADE.get().getRegistryName().getPath().replace('_', ' ').toLowerCase()) );
         this.add(FunctionalStorage.VOID_UPGRADE.get(), WordUtils.capitalize(FunctionalStorage.VOID_UPGRADE.get().getRegistryName().getPath().replace('_', ' ').toLowerCase()) );
-        this.add(FunctionalStorage.REDSTONE_UPGRADE.get(), WordUtils.capitalize(FunctionalStorage.REDSTONE_UPGRADE.get().getRegistryName().getPath().replace('_', ' ').toLowerCase()) );
+        this.add(FunctionalStorage.REDSTONE_UPGRADE.get(), WordUtils.capitalize(FunctionalStorage.REDSTONE_UPGRADE.get().getRegistryName().getPath().replace('_', ' ').toLowerCase()));
+        this.add(FunctionalStorage.CREATIVE_UPGRADE.get(), WordUtils.capitalize(FunctionalStorage.CREATIVE_UPGRADE.get().getRegistryName().getPath().replace('_', ' ').toLowerCase()));
         this.add(FunctionalStorage.ARMORY_CABINET.getLeft().get(), "Armory Cabinet");
         this.add(FunctionalStorage.CONFIGURATION_TOOL.get(), "Configuration Tool");
         this.add("item.utility.downgrade", "Downgrades the slots to a max of 64 items");

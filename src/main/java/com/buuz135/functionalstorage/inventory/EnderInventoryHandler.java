@@ -70,6 +70,11 @@ public class EnderInventoryHandler extends BigInventoryHandler implements ILocka
         return locked;
     }
 
+    @Override
+    public boolean isCreative() {
+        return false;
+    }
+
     public void setFrequency(String frequency) {
         this.frequency = frequency;
     }

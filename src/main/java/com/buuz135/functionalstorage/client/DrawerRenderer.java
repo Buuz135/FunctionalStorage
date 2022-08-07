@@ -6,34 +6,22 @@ import com.buuz135.functionalstorage.block.tile.DrawerTile;
 import com.buuz135.functionalstorage.inventory.BigInventoryHandler;
 import com.buuz135.functionalstorage.item.ConfigurationToolItem;
 import com.buuz135.functionalstorage.util.NumberUtils;
-import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.math.Matrix3f;
-import com.mojang.math.Matrix4f;
 import com.mojang.math.Quaternion;
 import com.mojang.math.Vector3f;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.renderer.*;
+import net.minecraft.client.renderer.LevelRenderer;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
-import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.resources.model.BakedModel;
-import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.phys.shapes.CollisionContext;
-import net.minecraft.world.phys.shapes.VoxelShape;
 
 public class DrawerRenderer implements BlockEntityRenderer<DrawerTile> {
 
@@ -110,7 +98,7 @@ public class DrawerRenderer implements BlockEntityRenderer<DrawerTile> {
         if (!inventoryHandler.getStoredStacks().get(0).getStack().isEmpty()){
             matrixStack.translate(0.5, 0.5, 0.0005f);
             ItemStack stack = inventoryHandler.getStoredStacks().get(0).getStack();
-            renderStack(matrixStack,  bufferIn, combinedLightIn, combinedOverlayIn, stack, inventoryHandler.getStoredStacks().get(0).getAmount(), 0.015f, tile.getDrawerOptions());
+            renderStack(matrixStack, bufferIn, combinedLightIn, combinedOverlayIn, stack, inventoryHandler.getStackInSlot(0).getCount(), 0.015f, tile.getDrawerOptions());
         }
     }
 
@@ -121,7 +109,7 @@ public class DrawerRenderer implements BlockEntityRenderer<DrawerTile> {
             matrixStack.translate(0.5, 0.27f, 0.0005f);
             matrixStack.scale(0.5f, 0.5f, 0.5f);
             ItemStack stack = inventoryHandler.getStoredStacks().get(0).getStack();
-            renderStack(matrixStack,  bufferIn, combinedLightIn, combinedOverlayIn, stack, inventoryHandler.getStoredStacks().get(0).getAmount(), 0.02f, tile.getDrawerOptions());
+            renderStack(matrixStack, bufferIn, combinedLightIn, combinedOverlayIn, stack, inventoryHandler.getStackInSlot(0).getCount(), 0.02f, tile.getDrawerOptions());
             matrixStack.popPose();
         }
         if (!inventoryHandler.getStoredStacks().get(1).getStack().isEmpty()){
@@ -129,7 +117,7 @@ public class DrawerRenderer implements BlockEntityRenderer<DrawerTile> {
             matrixStack.translate(0.5, 0.77f, 0.0005f);
             matrixStack.scale(0.5f, 0.5f, 0.5f);
             ItemStack stack = inventoryHandler.getStoredStacks().get(1).getStack();
-            renderStack(matrixStack,  bufferIn, combinedLightIn, combinedOverlayIn, stack, inventoryHandler.getStoredStacks().get(1).getAmount(), 0.02f, tile.getDrawerOptions());
+            renderStack(matrixStack, bufferIn, combinedLightIn, combinedOverlayIn, stack, inventoryHandler.getStackInSlot(1).getCount(), 0.02f, tile.getDrawerOptions());
             matrixStack.popPose();
         }
     }
@@ -140,7 +128,7 @@ public class DrawerRenderer implements BlockEntityRenderer<DrawerTile> {
             matrixStack.translate(0.75, 0.27f, 0.0005f);
             matrixStack.scale(0.5f, 0.5f, 0.5f);
             ItemStack stack = inventoryHandler.getStoredStacks().get(0).getStack();
-            renderStack(matrixStack,  bufferIn, combinedLightIn, combinedOverlayIn, stack, inventoryHandler.getStoredStacks().get(0).getAmount(), 0.02f, tile.getDrawerOptions());
+            renderStack(matrixStack, bufferIn, combinedLightIn, combinedOverlayIn, stack, inventoryHandler.getStackInSlot(0).getCount(), 0.02f, tile.getDrawerOptions());
             matrixStack.popPose();
         }
         if (!inventoryHandler.getStoredStacks().get(1).getStack().isEmpty()){ //BOTTOM LEFT
@@ -148,7 +136,7 @@ public class DrawerRenderer implements BlockEntityRenderer<DrawerTile> {
             matrixStack.translate(0.25, 0.27f, 0.0005f);
             matrixStack.scale(0.5f, 0.5f, 0.5f);
             ItemStack stack = inventoryHandler.getStoredStacks().get(1).getStack();
-            renderStack(matrixStack,  bufferIn, combinedLightIn, combinedOverlayIn, stack, inventoryHandler.getStoredStacks().get(1).getAmount(), 0.02f, tile.getDrawerOptions());
+            renderStack(matrixStack, bufferIn, combinedLightIn, combinedOverlayIn, stack, inventoryHandler.getStackInSlot(1).getCount(), 0.02f, tile.getDrawerOptions());
             matrixStack.popPose();
         }
         if (!inventoryHandler.getStoredStacks().get(2).getStack().isEmpty()){ //TOP RIGHT
@@ -156,7 +144,7 @@ public class DrawerRenderer implements BlockEntityRenderer<DrawerTile> {
             matrixStack.translate(0.75, 0.77f, 0.0005f);
             matrixStack.scale(0.5f, 0.5f, 0.5f);
             ItemStack stack = inventoryHandler.getStoredStacks().get(2).getStack();
-            renderStack(matrixStack,  bufferIn, combinedLightIn, combinedOverlayIn, stack, inventoryHandler.getStoredStacks().get(2).getAmount(), 0.02f, tile.getDrawerOptions());
+            renderStack(matrixStack, bufferIn, combinedLightIn, combinedOverlayIn, stack, inventoryHandler.getStackInSlot(2).getCount(), 0.02f, tile.getDrawerOptions());
             matrixStack.popPose();
         }
         if (!inventoryHandler.getStoredStacks().get(3).getStack().isEmpty()){ //TOP LEFT
@@ -164,7 +152,7 @@ public class DrawerRenderer implements BlockEntityRenderer<DrawerTile> {
             matrixStack.translate(0.25, 0.77f, 0.0005f);
             matrixStack.scale(0.5f, 0.5f, 0.5f);
             ItemStack stack = inventoryHandler.getStoredStacks().get(3).getStack();
-            renderStack(matrixStack,  bufferIn, combinedLightIn, combinedOverlayIn, stack, inventoryHandler.getStoredStacks().get(3).getAmount(), 0.02f, tile.getDrawerOptions());
+            renderStack(matrixStack, bufferIn, combinedLightIn, combinedOverlayIn, stack, inventoryHandler.getStackInSlot(3).getCount(), 0.02f, tile.getDrawerOptions());
             matrixStack.popPose();
         }
     }
