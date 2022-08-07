@@ -218,6 +218,7 @@ public class DrawerControllerTile extends ControllableDrawerTile<DrawerControlle
                 for (Long connectedDrawer : this.connectedDrawers) {
                     BlockPos pos = BlockPos.of(connectedDrawer);
                     BlockEntity entity = level.getBlockEntity(pos);
+                    if (entity instanceof DrawerControllerTile) continue;
                     if (entity instanceof ControllableDrawerTile) {
                         this.handlers.add(((ControllableDrawerTile<?>) entity).getStorage());
                     }
