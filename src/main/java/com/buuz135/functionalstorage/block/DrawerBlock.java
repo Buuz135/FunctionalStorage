@@ -1,6 +1,7 @@
 package com.buuz135.functionalstorage.block;
 
 import com.buuz135.functionalstorage.FunctionalStorage;
+import com.buuz135.functionalstorage.block.tile.ControllableDrawerTile;
 import com.buuz135.functionalstorage.block.tile.DrawerControllerTile;
 import com.buuz135.functionalstorage.block.tile.DrawerTile;
 import com.buuz135.functionalstorage.inventory.item.DrawerCapabilityProvider;
@@ -24,6 +25,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
@@ -59,10 +61,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -327,6 +326,33 @@ public class DrawerBlock extends RotatableBlock<DrawerTile> {
             tooltip.add(new TextComponent(""));
             tooltip.add(new TextComponent(""));
         }
+    }
+
+    @Override
+    public boolean canConnectRedstone(BlockState state, BlockGetter level, BlockPos pos, @Nullable Direction direction) {
+        return true;
+    }
+
+    @Override
+    public boolean isSignalSource(BlockState p_60571_) {
+        return true;
+    }
+
+    @Override
+    public int getSignal(BlockState p_60483_, BlockGetter blockGetter, BlockPos blockPos, Direction p_60486_) {
+        ControllableDrawerTile tile = TileUtil.getTileEntity(blockGetter, blockPos, ControllableDrawerTile.class).orElse(null);
+        if (tile != null){
+            for (int i = 0; i < tile.getUtilityUpgrades().getSlots(); i++) {
+                ItemStack stack = tile.getUtilityUpgrades().getStackInSlot(i);
+                if (stack.getItem().equals(FunctionalStorage.REDSTONE_UPGRADE.get())){
+                    int redstoneSlot = stack.getOrCreateTag().getInt("Slot");
+                    if (redstoneSlot < tile.getStorage().getSlots()){
+                        return (int) ((tile.getStorage().getStackInSlot(redstoneSlot).getCount() / (double)tile.getStorage().getSlotLimit(redstoneSlot)) * 15);
+                    }
+                }
+            }
+        }
+        return 0;
     }
 
     public static class DrawerItem extends BlockItem{

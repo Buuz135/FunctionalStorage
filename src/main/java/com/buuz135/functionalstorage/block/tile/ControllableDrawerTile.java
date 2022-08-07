@@ -133,6 +133,18 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
     @Override
     public void serverTick(Level level, BlockPos pos, BlockState state, T blockEntity) {
         super.serverTick(level, pos, state, blockEntity);
+        if (level.getGameTime() % 20 == 0) {
+            for (int i = 0; i < this.utilityUpgrades.getSlots(); i++) {
+                ItemStack stack = this.utilityUpgrades.getStackInSlot(i);
+                if (!stack.isEmpty()) {
+                    Item item = stack.getItem();
+                    if (item.equals(FunctionalStorage.REDSTONE_UPGRADE.get())) {
+                        level.updateNeighborsAt(this.getBlockPos(), this.getBasicTileBlock());
+                        break;
+                    }
+                }
+            }
+        }
         if (level.getGameTime() % 4 == 0) {
             for (int i = 0; i < this.utilityUpgrades.getSlots(); i++) {
                 ItemStack stack = this.utilityUpgrades.getStackInSlot(i);

@@ -13,10 +13,7 @@ import com.buuz135.functionalstorage.data.FunctionalStorageItemTagsProvider;
 import com.buuz135.functionalstorage.data.FunctionalStorageLangProvider;
 import com.buuz135.functionalstorage.inventory.BigInventoryHandler;
 import com.buuz135.functionalstorage.inventory.item.DrawerStackItemHandler;
-import com.buuz135.functionalstorage.item.ConfigurationToolItem;
-import com.buuz135.functionalstorage.item.LinkingToolItem;
-import com.buuz135.functionalstorage.item.StorageUpgradeItem;
-import com.buuz135.functionalstorage.item.UpgradeItem;
+import com.buuz135.functionalstorage.item.*;
 import com.buuz135.functionalstorage.network.EnderDrawerSyncMessage;
 import com.buuz135.functionalstorage.recipe.DrawerlessWoodIngredient;
 import com.buuz135.functionalstorage.recipe.FramedDrawerRecipe;
@@ -109,6 +106,7 @@ public class FunctionalStorage extends ModuleController {
     public static RegistryObject<Item> PUSHING_UPGRADE;
     public static RegistryObject<Item> VOID_UPGRADE;
     public static RegistryObject<Item> CONFIGURATION_TOOL;
+    public static RegistryObject<Item> REDSTONE_UPGRADE;
 
     public static AdvancedTitaniumTab TAB = new AdvancedTitaniumTab("functionalstorage", true);
 
@@ -182,6 +180,7 @@ public class FunctionalStorage extends ModuleController {
         ARMORY_CABINET = getRegistries().registerBlockWithTile("armory_cabinet", ArmoryCabinetBlock::new);
         CONFIGURATION_TOOL = getRegistries().registerGeneric(Item.class, "configuration_tool", ConfigurationToolItem::new);
         ENDER_DRAWER = getRegistries().registerBlockWithTile("ender_drawer", EnderDrawerBlock::new);
+        REDSTONE_UPGRADE = getRegistries().registerGeneric(Item.class, "redstone_upgrade",  () -> new UpgradeItem(new Item.Properties(), UpgradeItem.Type.UTILITY));
     }
 
     public enum DrawerType {
@@ -313,6 +312,7 @@ public class FunctionalStorage extends ModuleController {
                     item(PULLING_UPGRADE.get());
                     item(PUSHING_UPGRADE.get());
                     item(VOID_UPGRADE.get());
+                    item(REDSTONE_UPGRADE.get());
                 }
 
                 private void item(Item item) {
@@ -378,11 +378,18 @@ public class FunctionalStorage extends ModuleController {
                         .define('D', STORAGE_UPGRADES.get(StorageUpgradeItem.StorageTier.COPPER).get())
                         .save(consumer);
                 TitaniumShapedRecipeBuilder.shapedRecipe(STORAGE_UPGRADES.get(StorageUpgradeItem.StorageTier.DIAMOND).get())
-                        .pattern("IBI").pattern("CDC").pattern("BBB")
+                        .pattern("IBI").pattern("CDC").pattern("IBI")
                         .define('I', Tags.Items.GEMS_DIAMOND)
                         .define('B', Tags.Items.STORAGE_BLOCKS_DIAMOND)
                         .define('C', Tags.Items.CHESTS_WOODEN)
                         .define('D', STORAGE_UPGRADES.get(StorageUpgradeItem.StorageTier.GOLD).get())
+                        .save(consumer);
+                TitaniumShapedRecipeBuilder.shapedRecipe(REDSTONE_UPGRADE.get())
+                        .pattern("IBI").pattern("CDC").pattern("IBI")
+                        .define('I', Items.REDSTONE)
+                        .define('B', Items.REDSTONE_BLOCK)
+                        .define('C', Items.COMPARATOR)
+                        .define('D', StorageTags.DRAWER)
                         .save(consumer);
                 UpgradeRecipeBuilder.smithing(Ingredient.of(STORAGE_UPGRADES.get(StorageUpgradeItem.StorageTier.DIAMOND).get()), Ingredient.of(Items.NETHERITE_INGOT), STORAGE_UPGRADES.get(StorageUpgradeItem.StorageTier.NETHERITE).get())
                         .unlocks("has_netherite_ingot", has(Items.NETHERITE_INGOT))

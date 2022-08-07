@@ -26,6 +26,7 @@ import java.util.Locale;
 
 public class UpgradeItem extends BasicItem {
 
+    public static int MAX_SLOT = 4;
 
     public static Direction getDirection(ItemStack stack){
         if (stack.hasTag()){
@@ -55,6 +56,9 @@ public class UpgradeItem extends BasicItem {
         if (item.equals(FunctionalStorage.PULLING_UPGRADE.get()) || item.equals(FunctionalStorage.PUSHING_UPGRADE.get()) || item.equals(FunctionalStorage.COLLECTOR_UPGRADE.get())){
             stack.getOrCreateTag().putString("Direction", Direction.values()[0].name());
         }
+        if (item.equals(FunctionalStorage.REDSTONE_UPGRADE.get())){
+            stack.getOrCreateTag().putInt("Slot", 0);
+        }
         return stack;
     }
 
@@ -81,6 +85,12 @@ public class UpgradeItem extends BasicItem {
                 p_150896_.playSound(SoundEvents.UI_BUTTON_CLICK, 0.5f, 1);
                 return true;
             }
+            if (item.equals(FunctionalStorage.REDSTONE_UPGRADE.get())){
+                int slot = first.getOrCreateTag().getInt("Slot");
+                first.getOrCreateTag().putInt("Slot", (slot + 1) % MAX_SLOT);
+                p_150896_.playSound(SoundEvents.UI_BUTTON_CLICK, 0.5f, 1);
+                return true;
+            }
         }
         return super.overrideOtherStackedOnMe(first, second, p_150894_, clickAction, p_150896_, p_150897_);
     }
@@ -92,6 +102,11 @@ public class UpgradeItem extends BasicItem {
         Item item = stack.getItem();
         if (item.equals(FunctionalStorage.PULLING_UPGRADE.get()) || item.equals(FunctionalStorage.PUSHING_UPGRADE.get()) || item.equals(FunctionalStorage.COLLECTOR_UPGRADE.get())){
             tooltip.add(new TranslatableComponent("item.utility.direction").withStyle(ChatFormatting.YELLOW).append(new TranslatableComponent(WordUtils.capitalize(getDirection(stack).name().toLowerCase(Locale.ROOT))).withStyle(ChatFormatting.WHITE)));
+            tooltip.add(new TextComponent(""));
+            tooltip.add(new TranslatableComponent("item.utility.direction.desc").withStyle(ChatFormatting.GRAY));
+        }
+        if (item.equals(FunctionalStorage.REDSTONE_UPGRADE.get()) ){
+            tooltip.add(new TranslatableComponent("item.utility.slot").withStyle(ChatFormatting.YELLOW).append(new TextComponent(stack.getOrCreateTag().getInt("Slot") + "").withStyle(ChatFormatting.WHITE)));
             tooltip.add(new TextComponent(""));
             tooltip.add(new TranslatableComponent("item.utility.direction.desc").withStyle(ChatFormatting.GRAY));
         }

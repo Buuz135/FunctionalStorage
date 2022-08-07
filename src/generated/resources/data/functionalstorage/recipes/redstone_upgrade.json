@@ -6,7 +6,7 @@
         {
           "values": [
             {
-              "item": "functionalstorage:diamond_upgrade",
+              "item": "functionalstorage:redstone_upgrade",
               "type": "forge:item_exists"
             }
           ],
@@ -22,20 +22,20 @@
         ],
         "key": {
           "I": {
-            "tag": "forge:gems/diamond"
+            "item": "minecraft:redstone"
           },
           "B": {
-            "tag": "forge:storage_blocks/diamond"
+            "item": "minecraft:redstone_block"
           },
           "C": {
-            "tag": "forge:chests/wooden"
+            "item": "minecraft:comparator"
           },
           "D": {
-            "item": "functionalstorage:gold_upgrade"
+            "tag": "functionalstorage:drawer"
           }
         },
         "result": {
-          "item": "functionalstorage:diamond_upgrade"
+          "item": "functionalstorage:redstone_upgrade"
         }
       }
     }

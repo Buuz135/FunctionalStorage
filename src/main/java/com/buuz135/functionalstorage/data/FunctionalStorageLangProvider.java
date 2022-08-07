@@ -51,6 +51,7 @@ public class FunctionalStorageLangProvider extends LanguageProvider {
         this.add(FunctionalStorage.PULLING_UPGRADE.get(), WordUtils.capitalize(FunctionalStorage.PULLING_UPGRADE.get().getRegistryName().getPath().replace('_', ' ').toLowerCase()) );
         this.add(FunctionalStorage.PUSHING_UPGRADE.get(), WordUtils.capitalize(FunctionalStorage.PUSHING_UPGRADE.get().getRegistryName().getPath().replace('_', ' ').toLowerCase()) );
         this.add(FunctionalStorage.VOID_UPGRADE.get(), WordUtils.capitalize(FunctionalStorage.VOID_UPGRADE.get().getRegistryName().getPath().replace('_', ' ').toLowerCase()) );
+        this.add(FunctionalStorage.REDSTONE_UPGRADE.get(), WordUtils.capitalize(FunctionalStorage.REDSTONE_UPGRADE.get().getRegistryName().getPath().replace('_', ' ').toLowerCase()) );
         this.add(FunctionalStorage.ARMORY_CABINET.getLeft().get(), "Armory Cabinet");
         this.add(FunctionalStorage.CONFIGURATION_TOOL.get(), "Configuration Tool");
         this.add("item.utility.downgrade", "Downgrades the slots to a max of 64 items");
@@ -69,5 +70,7 @@ public class FunctionalStorageLangProvider extends LanguageProvider {
         this.add("linkingtool.ender.clear", "Sneak + Right Click in the air to clear frequency.");
         this.add("drawer.block.contents", "Contents: ");
         this.add("frameddrawer.use", "How 2 Change Texture: \nInside a crafting window place the block you want use the texture of for the outside of the drawer in the first slot of the crafting window, on the second slot put the block that will be used for the texture on the inside of the framed drawer and on the third slot put a framed drawer. \n");
+        this.add("item.utility.slot", "Slot: ");
+        this.add("item.utility.slot.desc", "Right click in a GUI to change slot");
     }
 }
