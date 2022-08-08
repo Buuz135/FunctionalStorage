@@ -1,13 +1,9 @@
 package com.buuz135.functionalstorage.data;
 
 import com.buuz135.functionalstorage.FunctionalStorage;
-import com.buuz135.functionalstorage.util.StorageTags;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.tags.BlockTagsProvider;
-import net.minecraft.data.tags.ItemTagsProvider;
 import net.minecraft.tags.BlockTags;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
 import net.minecraftforge.common.data.ExistingFileHelper;
 import net.minecraftforge.registries.RegistryObject;
@@ -30,6 +26,11 @@ public class FunctionalStorageBlockTagsProvider extends BlockTagsProvider {
                 tTagAppender.add(blockRegistryObject.get());
             }
         }
-        this.tag(BlockTags.MINEABLE_WITH_PICKAXE).add(FunctionalStorage.COMPACTING_DRAWER.getLeft().get()).add(FunctionalStorage.DRAWER_CONTROLLER.getLeft().get()).add(FunctionalStorage.ARMORY_CABINET.getLeft().get()).add(FunctionalStorage.ENDER_DRAWER.getLeft().get());
+        this.tag(BlockTags.MINEABLE_WITH_PICKAXE)
+                .add(FunctionalStorage.COMPACTING_DRAWER.getLeft().get())
+                .add(FunctionalStorage.DRAWER_CONTROLLER.getLeft().get())
+                .add(FunctionalStorage.ARMORY_CABINET.getLeft().get())
+                .add(FunctionalStorage.ENDER_DRAWER.getLeft().get())
+                .add(FunctionalStorage.FRAMED_COMPACTING_DRAWER.getLeft().get());
     }
 }

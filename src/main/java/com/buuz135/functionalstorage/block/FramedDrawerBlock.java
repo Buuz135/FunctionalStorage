@@ -4,12 +4,8 @@ import com.buuz135.functionalstorage.FunctionalStorage;
 import com.buuz135.functionalstorage.block.tile.DrawerTile;
 import com.buuz135.functionalstorage.block.tile.FramedDrawerTile;
 import com.buuz135.functionalstorage.client.model.FramedDrawerModelData;
-import com.buuz135.functionalstorage.inventory.item.DrawerCapabilityProvider;
-import com.buuz135.functionalstorage.recipe.DrawerlessWoodIngredient;
 import com.buuz135.functionalstorage.util.DrawerWoodType;
-import com.buuz135.functionalstorage.util.IWoodType;
 import com.hrznstudio.titanium.recipe.generator.TitaniumShapedRecipeBuilder;
-import com.hrznstudio.titanium.util.ItemHandlerUtil;
 import com.hrznstudio.titanium.util.TileUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -21,21 +17,20 @@ import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.tooltip.TooltipComponent;
-import net.minecraft.world.item.*;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.Material;
-import net.minecraft.world.level.material.MaterialColor;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.HitResult;
 import net.minecraftforge.common.Tags;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.commons.lang3.tuple.Pair;
@@ -43,7 +38,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Optional;
 import java.util.function.Consumer;
 
 public class FramedDrawerBlock extends DrawerBlock{
@@ -68,6 +62,7 @@ public class FramedDrawerBlock extends DrawerBlock{
     public static FramedDrawerModelData getDrawerModelData(ItemStack stack){
         if (stack.hasTag() && stack.getTag().contains("Style")){
             CompoundTag tag = stack.getTag().getCompound("Style");
+            if (tag.isEmpty()) return null;
             HashMap<String, Item> data = new HashMap<>();
             data.put("particle", ForgeRegistries.ITEMS.getValue(new ResourceLocation(tag.getString("particle"))));
             data.put("front", ForgeRegistries.ITEMS.getValue(new ResourceLocation(tag.getString("front"))));
@@ -94,11 +89,13 @@ public class FramedDrawerBlock extends DrawerBlock{
         NonNullList<ItemStack> stacks = NonNullList.create();
         ItemStack stack = new ItemStack(this);
         BlockEntity drawerTile = builder.getOptionalParameter(LootContextParams.BLOCK_ENTITY);
-        if (drawerTile instanceof FramedDrawerTile) {
-            if (!((FramedDrawerTile) drawerTile).isEverythingEmpty()) {
+        if (drawerTile instanceof FramedDrawerTile framedDrawerTile) {
+            if (!framedDrawerTile.isEverythingEmpty()) {
                 stack.getOrCreateTag().put("Tile", drawerTile.saveWithoutMetadata());
             }
-            stack.getOrCreateTag().put("Style", ((FramedDrawerTile) drawerTile).getFramedDrawerModelData().serializeNBT());
+            if (framedDrawerTile.getFramedDrawerModelData() != null) {
+                stack.getOrCreateTag().put("Style", framedDrawerTile.getFramedDrawerModelData().serializeNBT());
+            }
         }
         stacks.add(stack);
         return stacks;

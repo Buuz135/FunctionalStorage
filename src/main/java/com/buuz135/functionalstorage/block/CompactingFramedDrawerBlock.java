@@ -62,11 +62,13 @@ public class CompactingFramedDrawerBlock extends CompactingDrawerBlock{
         NonNullList<ItemStack> stacks = NonNullList.create();
         ItemStack stack = new ItemStack(this);
         BlockEntity drawerTile = builder.getOptionalParameter(LootContextParams.BLOCK_ENTITY);
-        if (drawerTile instanceof CompactingFramedDrawerTile) {
-            if (!((CompactingFramedDrawerTile) drawerTile).isEverythingEmpty()) {
+        if (drawerTile instanceof CompactingFramedDrawerTile framedDrawerTile) {
+            if (!framedDrawerTile.isEverythingEmpty()) {
                 stack.getOrCreateTag().put("Tile", drawerTile.saveWithoutMetadata());
             }
-            stack.getOrCreateTag().put("Style", ((CompactingFramedDrawerTile) drawerTile).getFramedDrawerModelData().serializeNBT());
+            if (framedDrawerTile.getFramedDrawerModelData() != null) {
+                stack.getOrCreateTag().put("Style", framedDrawerTile.getFramedDrawerModelData().serializeNBT());
+            }
         }
         stacks.add(stack);
         return stacks;
