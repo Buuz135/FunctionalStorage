@@ -1,7 +1,6 @@
 package com.buuz135.functionalstorage.block;
 
 import com.buuz135.functionalstorage.FunctionalStorage;
-import com.buuz135.functionalstorage.block.tile.CompactingDrawerTile;
 import com.buuz135.functionalstorage.block.tile.ControllableDrawerTile;
 import com.buuz135.functionalstorage.block.tile.DrawerControllerTile;
 import com.hrznstudio.titanium.block.RotatableBlock;
@@ -14,13 +13,14 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Optional;
+import java.util.ArrayList;
 
 public class DrawerControllerBlock extends RotatableBlock<DrawerControllerTile> {
 
@@ -54,14 +54,17 @@ public class DrawerControllerBlock extends RotatableBlock<DrawerControllerTile> 
 
     @Override
     public void onRemove(BlockState state, Level worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
-        TileUtil.getTileEntity(worldIn, pos, DrawerControllerTile.class).ifPresent(drawerControllerTile -> {
-            drawerControllerTile.getConnectedDrawers().getConnectedDrawers().stream()
-                    .map(BlockPos::of)
-                    .map(blockPos -> TileUtil.getTileEntity(worldIn, blockPos, ControllableDrawerTile.class))
-                    .filter(Optional::isPresent)
-                    .map(Optional::get)
-                    .forEach(controllableDrawerTile -> controllableDrawerTile.setControllerPos(null));
-        });
+        if (!state.is(newState.getBlock())) {
+            TileUtil.getTileEntity(worldIn, pos, DrawerControllerTile.class).ifPresent(drawerControllerTile -> {
+                for (Long connectedDrawer : new ArrayList<>(drawerControllerTile.getConnectedDrawers().getConnectedDrawers())) {
+                    BlockEntity blockEntity = worldIn.getBlockEntity(BlockPos.of(connectedDrawer));
+                    if (blockEntity instanceof DrawerControllerTile) continue;
+                    if (blockEntity instanceof ControllableDrawerTile controllableDrawerTile) {
+                        controllableDrawerTile.setControllerPos(null);
+                    }
+                }
+            });
+        }
         super.onRemove(state, worldIn, pos, newState, isMoving);
 
     }

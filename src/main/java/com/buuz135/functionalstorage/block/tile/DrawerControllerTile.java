@@ -136,6 +136,7 @@ public class DrawerControllerTile extends ControllableDrawerTile<DrawerControlle
         if (isServer()) {
             for (Long connectedDrawer : new ArrayList<>(this.connectedDrawers.getConnectedDrawers())) {
                 BlockEntity blockEntity = this.level.getBlockEntity(BlockPos.of(connectedDrawer));
+                if (blockEntity instanceof DrawerControllerTile) continue;
                 if (blockEntity instanceof ControllableDrawerTile) {
                     ((ControllableDrawerTile<?>) blockEntity).setLocked(this.isLocked());
                 }
@@ -149,6 +150,7 @@ public class DrawerControllerTile extends ControllableDrawerTile<DrawerControlle
         if (isServer()) {
             for (Long connectedDrawer : new ArrayList<>(this.connectedDrawers.getConnectedDrawers())) {
                 BlockEntity blockEntity = this.level.getBlockEntity(BlockPos.of(connectedDrawer));
+                if (blockEntity instanceof DrawerControllerTile) continue;
                 if (blockEntity instanceof ControllableDrawerTile) {
                     ((ControllableDrawerTile<?>) blockEntity).getDrawerOptions().setActive(action, this.getDrawerOptions().isActive(action));
                     ((ControllableDrawerTile<?>) blockEntity).markForUpdate();
