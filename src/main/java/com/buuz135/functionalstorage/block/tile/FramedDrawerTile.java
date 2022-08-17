@@ -2,10 +2,10 @@ package com.buuz135.functionalstorage.block.tile;
 
 import com.buuz135.functionalstorage.FunctionalStorage;
 import com.buuz135.functionalstorage.client.model.FramedDrawerModelData;
+import com.buuz135.functionalstorage.util.DrawerWoodType;
 import com.hrznstudio.titanium.annotation.Save;
 import com.hrznstudio.titanium.block.BasicTileBlock;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.client.model.data.IModelData;
@@ -19,7 +19,7 @@ public class FramedDrawerTile extends DrawerTile{
     private FramedDrawerModelData framedDrawerModelData;
 
     public FramedDrawerTile(BasicTileBlock<DrawerTile> base, BlockEntityType<DrawerTile> blockEntityType, BlockPos pos, BlockState state, FunctionalStorage.DrawerType type) {
-        super(base, blockEntityType, pos, state, type);
+        super(base, blockEntityType, pos, state, type, DrawerWoodType.FRAMED);
         this.framedDrawerModelData = new FramedDrawerModelData(new HashMap<>());
     }
 

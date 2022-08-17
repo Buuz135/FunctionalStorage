@@ -1,17 +1,16 @@
 package com.buuz135.functionalstorage.block.tile;
 
 import com.buuz135.functionalstorage.FunctionalStorage;
-import com.buuz135.functionalstorage.block.DrawerBlock;
-import com.buuz135.functionalstorage.inventory.BigInventoryHandler;
+import com.buuz135.functionalstorage.client.gui.DrawerInfoGuiAddon;
 import com.buuz135.functionalstorage.inventory.EnderInventoryHandler;
 import com.buuz135.functionalstorage.network.EnderDrawerSyncMessage;
 import com.buuz135.functionalstorage.world.EnderSavedData;
 import com.hrznstudio.titanium.annotation.Save;
 import com.hrznstudio.titanium.block.BasicTileBlock;
-import com.mojang.datafixers.types.Func;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -24,7 +23,6 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.network.NetworkDirection;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
@@ -48,6 +46,18 @@ public class EnderDrawerTile extends ControllableDrawerTile<EnderDrawerTile> {
         super.setLevel(p_155231_);
         this.lazyStorage.invalidate();
         this.lazyStorage = LazyOptional.of(() -> EnderSavedData.getInstance(this.level).getFrequency(this.frequency));
+    }
+
+    @Override
+    public void initClient() {
+        super.initClient();
+        addGuiAddonFactory(() -> new DrawerInfoGuiAddon(64, 16,
+                new ResourceLocation(FunctionalStorage.MOD_ID, "textures/blocks/ender_front.png"),
+                1,
+                FunctionalStorage.DrawerType.X_1.getSlotPosition(),
+                integer -> getStorage().getStackInSlot(integer),
+                integer -> getStorage().getSlotLimit(integer)
+        ));
     }
 
     @Nonnull

@@ -1,12 +1,14 @@
 package com.buuz135.functionalstorage.block.tile;
 
 import com.buuz135.functionalstorage.FunctionalStorage;
+import com.buuz135.functionalstorage.client.gui.DrawerInfoGuiAddon;
 import com.buuz135.functionalstorage.inventory.CompactingInventoryHandler;
 import com.buuz135.functionalstorage.util.CompactingUtil;
 import com.hrznstudio.titanium.annotation.Save;
 import com.hrznstudio.titanium.block.BasicTileBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -18,6 +20,7 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
+import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
@@ -69,10 +72,26 @@ public class CompactingDrawerTile extends ControllableDrawerTile<CompactingDrawe
     }
 
     @Override
+    public void initClient() {
+        super.initClient();
+        addGuiAddonFactory(() -> new DrawerInfoGuiAddon(64, 16,
+                new ResourceLocation(FunctionalStorage.MOD_ID, "textures/blocks/compacting_drawer_front.png"),
+                3,
+                integer -> {
+                    if (integer == 0) return Pair.of(28, 28);
+                    if (integer == 1) return Pair.of(4, 28);
+                    return Pair.of(16, 4);
+                },
+                integer -> getStorage().getStackInSlot(integer),
+                integer -> getStorage().getSlotLimit(integer)
+        ));
+    }
+
+    @Override
     public void serverTick(Level level, BlockPos pos, BlockState state, CompactingDrawerTile blockEntity) {
         super.serverTick(level, pos, state, blockEntity);
-        if (!hasCheckedRecipes){
-            if (!handler.getParent().isEmpty()){
+        if (!hasCheckedRecipes) {
+            if (!handler.getParent().isEmpty()) {
                 CompactingUtil compactingUtil = new CompactingUtil(this.level);
                 compactingUtil.setup(handler.getParent());
                 handler.setup(compactingUtil);

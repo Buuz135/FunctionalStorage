@@ -1,11 +1,14 @@
 package com.buuz135.functionalstorage.block.tile;
 
 import com.buuz135.functionalstorage.FunctionalStorage;
+import com.buuz135.functionalstorage.client.gui.DrawerInfoGuiAddon;
 import com.buuz135.functionalstorage.inventory.BigInventoryHandler;
+import com.buuz135.functionalstorage.util.IWoodType;
 import com.hrznstudio.titanium.annotation.Save;
 import com.hrznstudio.titanium.block.BasicTileBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -27,10 +30,12 @@ public class DrawerTile extends ControllableDrawerTile<DrawerTile> {
     public BigInventoryHandler handler;
     private final LazyOptional<IItemHandler> lazyStorage;
     private FunctionalStorage.DrawerType type;
+    private IWoodType woodType;
 
-    public DrawerTile(BasicTileBlock<DrawerTile> base, BlockEntityType<DrawerTile> blockEntityType, BlockPos pos, BlockState state, FunctionalStorage.DrawerType type) {
+    public DrawerTile(BasicTileBlock<DrawerTile> base, BlockEntityType<DrawerTile> blockEntityType, BlockPos pos, BlockState state, FunctionalStorage.DrawerType type, IWoodType woodType) {
         super(base, blockEntityType, pos, state);
         this.type = type;
+        this.woodType = woodType;
         this.handler = new BigInventoryHandler(type) {
             @Override
             public void onChange() {
@@ -65,6 +70,18 @@ public class DrawerTile extends ControllableDrawerTile<DrawerTile> {
 
         };
         lazyStorage = LazyOptional.of(() -> this.handler);
+    }
+
+    @Override
+    public void initClient() {
+        super.initClient();
+        addGuiAddonFactory(() -> new DrawerInfoGuiAddon(64, 16,
+                new ResourceLocation(FunctionalStorage.MOD_ID, "textures/blocks/" + woodType.getName() + "_front_" + type.getSlots() + ".png"),
+                type.getSlots(),
+                type.getSlotPosition(),
+                integer -> getHandler().getStackInSlot(integer),
+                integer -> getHandler().getSlotLimit(integer)
+        ));
     }
 
     @Nonnull
