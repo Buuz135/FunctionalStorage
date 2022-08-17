@@ -263,12 +263,30 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
         ItemStack stack = playerIn.getItemInHand(hand);
         if (stack.getItem().equals(FunctionalStorage.CONFIGURATION_TOOL.get()) || stack.getItem().equals(FunctionalStorage.LINKING_TOOL.get()))
             return InteractionResult.PASS;
-        if (!stack.isEmpty() && stack.getItem() instanceof UpgradeItem) {
-            InventoryComponent component = ((UpgradeItem) stack.getItem()).getType() == UpgradeItem.Type.STORAGE ? storageUpgrades : utilityUpgrades;
-            for (int i = 0; i < component.getSlots(); i++) {
-                if (component.getStackInSlot(i).isEmpty()) {
-                    playerIn.setItemInHand(hand, component.insertItem(i, stack, false));
-                    return InteractionResult.SUCCESS;
+        if (!stack.isEmpty() && stack.getItem() instanceof UpgradeItem upgradeItem) {
+            if (upgradeItem instanceof StorageUpgradeItem storageUpgradeItem) {
+                InventoryComponent component = storageUpgrades;
+                for (int i = 0; i < component.getSlots(); i++) {
+                    if (component.getStackInSlot(i).isEmpty()) {
+                        playerIn.setItemInHand(hand, component.insertItem(i, stack, false));
+                        return InteractionResult.SUCCESS;
+                    }
+                }
+                for (int i = 0; i < component.getSlots(); i++) {
+                    if (!component.getStackInSlot(i).isEmpty() && component.getStackInSlot(i).getItem() instanceof StorageUpgradeItem instertedUpgrade && instertedUpgrade.getStorageMultiplier() < storageUpgradeItem.getStorageMultiplier()) {
+                        ItemHandlerHelper.giveItemToPlayer(playerIn, component.getStackInSlot(i).copy());
+                        component.setStackInSlot(i, ItemStack.EMPTY);
+                        playerIn.setItemInHand(hand, component.insertItem(i, stack, false));
+                        return InteractionResult.SUCCESS;
+                    }
+                }
+            } else {
+                InventoryComponent component = utilityUpgrades;
+                for (int i = 0; i < component.getSlots(); i++) {
+                    if (component.getStackInSlot(i).isEmpty()) {
+                        playerIn.setItemInHand(hand, component.insertItem(i, stack, false));
+                        return InteractionResult.SUCCESS;
+                    }
                 }
             }
         }
