@@ -15,6 +15,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
@@ -72,6 +74,7 @@ public class DrawerTile extends ControllableDrawerTile<DrawerTile> {
         lazyStorage = LazyOptional.of(() -> this.handler);
     }
 
+    @OnlyIn(Dist.CLIENT)
     @Override
     public void initClient() {
         super.initClient();
