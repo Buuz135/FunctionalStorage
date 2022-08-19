@@ -214,7 +214,7 @@ public class DrawerControllerTile extends ControllableDrawerTile<DrawerControlle
             this.level = level;
         }
 
-        private void rebuild() {
+        public void rebuild() {
             this.handlers = new ArrayList<>();
             if (level != null && !level.isClientSide()) {
                 for (Long connectedDrawer : this.connectedDrawers) {

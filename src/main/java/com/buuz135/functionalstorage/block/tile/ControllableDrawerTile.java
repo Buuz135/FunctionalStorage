@@ -98,8 +98,14 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
             this.addInventory((InventoryComponent<T>) this.storageUpgrades);
         }
         this.addInventory((InventoryComponent<T>) (this.utilityUpgrades = new InventoryComponent<ControllableDrawerTile<T>>("utility_upgrades", 114, 70, 3)
-                .setInputFilter((stack, integer) -> stack.getItem() instanceof UpgradeItem && ((UpgradeItem) stack.getItem()).getType() == UpgradeItem.Type.UTILITY)
-                .setSlotLimit(1))
+                        .setInputFilter((stack, integer) -> stack.getItem() instanceof UpgradeItem && ((UpgradeItem) stack.getItem()).getType() == UpgradeItem.Type.UTILITY)
+                        .setSlotLimit(1)
+                        .setOnSlotChanged((itemStack, integer) -> {
+                            if (controllerPos != null && this.level.getBlockEntity(controllerPos) instanceof DrawerControllerTile controllerTile) {
+                                controllerTile.getConnectedDrawers().rebuild();
+                            }
+                        })
+                )
         );
 
     }
