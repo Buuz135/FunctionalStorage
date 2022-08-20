@@ -13,7 +13,6 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -76,10 +75,10 @@ public class FramedDrawerBlock extends DrawerBlock{
     public static ItemStack fill(ItemStack first, ItemStack second, ItemStack drawer){
         drawer = ItemHandlerHelper.copyStackWithSize(drawer, 1);
         CompoundTag style = drawer.getOrCreateTagElement("Style");
-        style.putString("particle", first.getItem().getRegistryName().toString());
-        style.putString("side", first.getItem().getRegistryName().toString());
-        style.putString("front", second.getItem().getRegistryName().toString());
-        style.putString("front_divider", first.getItem().getRegistryName().toString());
+        style.putString("particle", ForgeRegistries.ITEMS.getKey(first.getItem()).toString());
+        style.putString("side", ForgeRegistries.ITEMS.getKey(first.getItem()).toString());
+        style.putString("front", ForgeRegistries.ITEMS.getKey(second.getItem()).toString());
+        style.putString("front_divider", ForgeRegistries.ITEMS.getKey(first.getItem()).toString());
         drawer.getOrCreateTag().put("Style", style);
         return drawer;
     }
@@ -141,7 +140,7 @@ public class FramedDrawerBlock extends DrawerBlock{
 
     @Override
     public void appendHoverText(ItemStack p_49816_, @Nullable BlockGetter p_49817_, List<Component> components, TooltipFlag p_49819_) {
-        components.add(new TranslatableComponent("frameddrawer.use").withStyle(ChatFormatting.GRAY));
+        components.add(Component.translatable("frameddrawer.use").withStyle(ChatFormatting.GRAY));
         super.appendHoverText(p_49816_, p_49817_, components, p_49819_);
     }
 }

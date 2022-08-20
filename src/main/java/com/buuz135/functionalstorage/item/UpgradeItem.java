@@ -6,8 +6,6 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.SlotAccess;
 import net.minecraft.world.entity.player.Player;
@@ -64,7 +62,7 @@ public class UpgradeItem extends BasicItem {
 
     @Override
     public void fillItemCategory(CreativeModeTab group, NonNullList<ItemStack> items) {
-        if (allowdedIn(group)) {
+        if (this.allowedIn(group)) {
             items.add(initNbt(new ItemStack(this)));
         }
     }
@@ -98,17 +96,19 @@ public class UpgradeItem extends BasicItem {
     @Override
     public void addTooltipDetails(@Nullable BasicItem.Key key, ItemStack stack, List<Component> tooltip, boolean advanced) {
         super.addTooltipDetails(key, stack, tooltip, advanced);
-        tooltip.add(new TranslatableComponent("upgrade.type").withStyle(ChatFormatting.YELLOW).append(new TranslatableComponent("upgrade.type." + getType().name().toLowerCase(Locale.ROOT)).withStyle(ChatFormatting.WHITE)));
+        tooltip.add(Component.translatable("upgrade.type").withStyle(ChatFormatting.YELLOW).append(Component.translatable("upgrade.type." + getType().name().toLowerCase(Locale.ROOT)).withStyle(ChatFormatting.WHITE)));
         Item item = stack.getItem();
-        if (item.equals(FunctionalStorage.PULLING_UPGRADE.get()) || item.equals(FunctionalStorage.PUSHING_UPGRADE.get()) || item.equals(FunctionalStorage.COLLECTOR_UPGRADE.get())){
-            tooltip.add(new TranslatableComponent("item.utility.direction").withStyle(ChatFormatting.YELLOW).append(new TranslatableComponent(WordUtils.capitalize(getDirection(stack).name().toLowerCase(Locale.ROOT))).withStyle(ChatFormatting.WHITE)));
-            tooltip.add(new TextComponent(""));
-            tooltip.add(new TranslatableComponent("item.utility.direction.desc").withStyle(ChatFormatting.GRAY));
-        }
-        if (item.equals(FunctionalStorage.REDSTONE_UPGRADE.get()) ){
-            tooltip.add(new TranslatableComponent("item.utility.slot").withStyle(ChatFormatting.YELLOW).append(new TextComponent(stack.getOrCreateTag().getInt("Slot") + "").withStyle(ChatFormatting.WHITE)));
-            tooltip.add(new TextComponent(""));
-            tooltip.add(new TranslatableComponent("item.utility.direction.desc").withStyle(ChatFormatting.GRAY));
+        if (stack.hasTag()) {
+            if (item.equals(FunctionalStorage.PULLING_UPGRADE.get()) || item.equals(FunctionalStorage.PUSHING_UPGRADE.get()) || item.equals(FunctionalStorage.COLLECTOR_UPGRADE.get())) {
+                tooltip.add(Component.translatable("item.utility.direction").withStyle(ChatFormatting.YELLOW).append(Component.translatable(WordUtils.capitalize(getDirection(stack).name().toLowerCase(Locale.ROOT))).withStyle(ChatFormatting.WHITE)));
+                tooltip.add(Component.literal(""));
+                tooltip.add(Component.translatable("item.utility.direction.desc").withStyle(ChatFormatting.GRAY));
+            }
+            if (item.equals(FunctionalStorage.REDSTONE_UPGRADE.get())) {
+                tooltip.add(Component.translatable("item.utility.slot").withStyle(ChatFormatting.YELLOW).append(Component.literal(stack.getOrCreateTag().getInt("Slot") + "").withStyle(ChatFormatting.WHITE)));
+                tooltip.add(Component.literal(""));
+                tooltip.add(Component.translatable("item.utility.direction.desc").withStyle(ChatFormatting.GRAY));
+            }
         }
 
     }

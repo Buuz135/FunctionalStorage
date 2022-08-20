@@ -11,7 +11,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
 import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -97,7 +96,7 @@ public class CompactingFramedDrawerBlock extends CompactingDrawerBlock{
     }
     @Override
     public void appendHoverText(ItemStack p_49816_, @Nullable BlockGetter p_49817_, List<Component> components, TooltipFlag p_49819_) {
-        components.add(new TranslatableComponent("frameddrawer.use").withStyle(ChatFormatting.GRAY));
+        components.add(Component.translatable("frameddrawer.use").withStyle(ChatFormatting.GRAY));
         super.appendHoverText(p_49816_, p_49817_, components, p_49819_);
     }
 }

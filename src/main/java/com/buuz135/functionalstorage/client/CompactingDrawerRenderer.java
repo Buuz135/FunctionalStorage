@@ -1,23 +1,15 @@
 package com.buuz135.functionalstorage.client;
 
-import com.buuz135.functionalstorage.FunctionalStorage;
 import com.buuz135.functionalstorage.block.tile.CompactingDrawerTile;
-import com.buuz135.functionalstorage.block.tile.DrawerTile;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Matrix3f;
 import com.mojang.math.Quaternion;
 import com.mojang.math.Vector3f;
-import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.core.Direction;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 
 public class CompactingDrawerRenderer implements BlockEntityRenderer<CompactingDrawerTile> {

@@ -2,9 +2,7 @@ package com.buuz135.functionalstorage.client.loader;
 
 import com.mojang.datafixers.util.Either;
 import net.minecraft.client.renderer.block.model.BlockModel;
-import net.minecraft.client.resources.model.UnbakedModel;
 import net.minecraft.client.resources.model.Material;
-import net.minecraftforge.client.model.IModelConfiguration;
 
 import javax.annotation.Nullable;
 import java.util.Iterator;
@@ -36,16 +34,14 @@ public class ModelTextureIteratable implements Iterable<Map<String,Either<Materi
     }
 
     /**
-     *
-     * @param owner     Model configuration owner
-     * @param fallback  Fallback in case the owner does not contain a block model
-     * @return  Iteratable over block model texture maps
+     * @param fallback Fallback in case the owner does not contain a block model
+     * @return Iteratable over block model texture maps
      */
-    public static ModelTextureIteratable of(IModelConfiguration owner, SimpleBlockModel fallback) {
-        UnbakedModel unbaked = owner.getOwnerModel();
-        if (unbaked instanceof BlockModel) {
-            return new ModelTextureIteratable(null, (BlockModel)unbaked);
-        }
+    public static ModelTextureIteratable of(SimpleBlockModel fallback) {
+        //UnbakedModel unbaked = owner.getOwnerModel();
+        //if (unbaked instanceof BlockModel) {
+        //    return new ModelTextureIteratable(null, (BlockModel)unbaked);
+        //}
         return new ModelTextureIteratable(fallback.getTextures(), fallback.getParent());
     }
 

@@ -3,23 +3,18 @@ package com.buuz135.functionalstorage.client.loader;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
-import com.mojang.blaze3d.vertex.VertexFormatElement;
 import com.mojang.math.Vector3f;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.MultiPartBakedModel;
 import net.minecraft.client.resources.model.WeightedBakedModel;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.minecraft.util.GsonHelper;
-import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.client.model.pipeline.BakedQuadBuilder;
-import net.minecraftforge.client.model.pipeline.VertexTransformer;
 
 import javax.annotation.Nullable;
 import java.util.Map;
@@ -160,51 +155,11 @@ public class ModelHelper {
             throw new JsonParseException("Invalid '" + key + "' " + i + " found, only 0/90/180/270 allowed");
         }
     }
-
+  /*
     public static BakedQuad colorQuad(int color, BakedQuad quad) {
-        ColorTransformer transformer = new ColorTransformer(color, quad);
-        quad.pipe(transformer);
+        //ColorTransformer transformer = new ColorTransformer(color, quad);
+        //quad.pipe(transformer);
         return transformer.build();
     }
-
-
-    private static class ColorTransformer extends VertexTransformer {
-
-        private final float r, g, b, a;
-
-        public ColorTransformer(int color, BakedQuad quad) {
-            super(new BakedQuadBuilder(quad.getSprite()));
-
-            int a = (color >> 24);
-            if (a == 0) {
-                a = 255;
-            }
-            int r = (color >> 16) & 0xFF;
-            int g = (color >> 8) & 0xFF;
-            int b = (color >> 0) & 0xFF;
-
-            this.r = (float) r / 255f;
-            this.g = (float) g / 255f;
-            this.b = (float) b / 255f;
-            this.a = (float) a / 255f;
-        }
-
-        @Override
-        public void put(int element, float... data) {
-            VertexFormatElement.Usage usage = this.parent.getVertexFormat().getElements().get(element).getUsage();
-
-            // transform normals and position
-            if (usage == VertexFormatElement.Usage.COLOR && data.length >= 4) {
-                data[0] = this.r;
-                data[1] = this.g;
-                data[2] = this.b;
-                data[3] = this.a;
-            }
-            super.put(element, data);
-        }
-
-        public BakedQuad build() {
-            return ((BakedQuadBuilder) this.parent).build();
-        }
-    }
+    */
 }

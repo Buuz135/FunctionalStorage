@@ -20,7 +20,6 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.item.ItemStack;
 
 public class DrawerRenderer implements BlockEntityRenderer<DrawerTile> {
@@ -182,7 +181,8 @@ public class DrawerRenderer implements BlockEntityRenderer<DrawerTile> {
         }
 
 
-        if (options.isActive(ConfigurationToolItem.ConfigurationAction.TOGGLE_NUMBERS)) renderText(matrixStack, bufferIn, combinedOverlayIn, new TextComponent(ChatFormatting.WHITE + "" + NumberUtils.getFormatedBigNumber(amount)), Direction.NORTH, scale);
+        if (options.isActive(ConfigurationToolItem.ConfigurationAction.TOGGLE_NUMBERS))
+            renderText(matrixStack, bufferIn, combinedOverlayIn, Component.literal(ChatFormatting.WHITE + "" + NumberUtils.getFormatedBigNumber(amount)), Direction.NORTH, scale);
     }
 
 

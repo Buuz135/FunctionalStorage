@@ -52,7 +52,7 @@ public class FramedDrawerModelData implements INBTSerializable<CompoundTag> {
     @Override
     public CompoundTag serializeNBT() {
         CompoundTag compoundTag = new CompoundTag();
-        design.forEach((s, item) -> compoundTag.putString(s, item.getRegistryName().toString()));
+        design.forEach((s, item) -> compoundTag.putString(s, ForgeRegistries.ITEMS.getKey(item).toString()));
         return compoundTag;
     }
 
@@ -68,7 +68,7 @@ public class FramedDrawerModelData implements INBTSerializable<CompoundTag> {
     private void generateCode(){
         this.code = "";
         this.design.forEach((s, item) -> {
-            this.code += (s + item.getRegistryName().toString());
+            this.code += (s + ForgeRegistries.ITEMS.getKey(item).toString());
         });
     }
 

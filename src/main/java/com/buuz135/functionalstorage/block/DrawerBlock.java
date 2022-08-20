@@ -21,8 +21,8 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
 import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -319,10 +319,10 @@ public class DrawerBlock extends RotatableBlock<DrawerTile> {
     public void appendHoverText(ItemStack p_49816_, @Nullable BlockGetter p_49817_, List<net.minecraft.network.chat.Component> tooltip, TooltipFlag p_49819_) {
         super.appendHoverText(p_49816_, p_49817_, tooltip, p_49819_);
         if (p_49816_.hasTag() && p_49816_.getTag().contains("Tile")) {
-            TranslatableComponent text = new TranslatableComponent("drawer.block.contents");
+            MutableComponent text = Component.translatable("drawer.block.contents");
             tooltip.add(text.withStyle(ChatFormatting.GRAY));
-            tooltip.add(new TextComponent(""));
-            tooltip.add(new TextComponent(""));
+            tooltip.add(Component.literal(""));
+            tooltip.add(Component.literal(""));
         }
     }
 

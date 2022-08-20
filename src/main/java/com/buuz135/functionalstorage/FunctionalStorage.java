@@ -43,30 +43,28 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.client.event.EntityRenderersEvent;
-import net.minecraftforge.client.event.ModelRegistryEvent;
+import net.minecraftforge.client.event.ModelEvent;
+import net.minecraftforge.client.event.RegisterColorHandlersEvent;
 import net.minecraftforge.client.event.RenderTooltipEvent;
-import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.client.model.generators.BlockModelProvider;
 import net.minecraftforge.client.model.generators.ItemModelProvider;
 import net.minecraftforge.common.Tags;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.common.util.NonNullLazy;
-import net.minecraftforge.event.RegistryEvent;
-import net.minecraftforge.event.world.BlockEvent;
+import net.minecraftforge.data.event.GatherDataEvent;
+import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
-import net.minecraftforge.forge.event.lifecycle.GatherDataEvent;
-import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 import org.apache.commons.lang3.tuple.Pair;
@@ -142,12 +140,9 @@ public class FunctionalStorage extends ModuleController {
                 }
             }
         }).subscribe();
-        EventManager.modGeneric(RegistryEvent.Register.class, RecipeSerializer.class).process(register -> {
+        EventManager.mod(FMLCommonSetupEvent.class).process(fmlCommonSetupEvent -> {
             CraftingHelper.register(DrawerlessWoodIngredient.NAME, DrawerlessWoodIngredient.SERIALIZER);
         }).subscribe();
-        EventManager.modGeneric(RegistryEvent.Register.class, RecipeSerializer.class)
-                .process(register -> ((RegistryEvent.Register) register).getRegistry()
-                        .registerAll(FramedDrawerRecipe.SERIALIZER.setRegistryName(new ResourceLocation(MOD_ID, "framed_recipe")))).subscribe();
         NBTManager.getInstance().scanTileClassForAnnotations(FramedDrawerTile.class);
         NBTManager.getInstance().scanTileClassForAnnotations(CompactingFramedDrawerTile.class);
     }
@@ -174,24 +169,25 @@ public class FunctionalStorage extends ModuleController {
         COMPACTING_DRAWER = getRegistries().registerBlockWithTile("compacting_drawer", () -> new CompactingDrawerBlock("compacting_drawer", BlockBehaviour.Properties.copy(Blocks.STONE_BRICKS)));
         FRAMED_COMPACTING_DRAWER = getRegistries().registerBlockWithTile("compacting_framed_drawer", () -> new CompactingFramedDrawerBlock("compacting_framed_drawer"));
         DRAWER_CONTROLLER = getRegistries().registerBlockWithTile("storage_controller", DrawerControllerBlock::new);
-        LINKING_TOOL = getRegistries().registerGeneric(Item.class, "linking_tool", LinkingToolItem::new);
+        LINKING_TOOL = getRegistries().registerGeneric(ForgeRegistries.ITEMS.getRegistryKey(), "linking_tool", LinkingToolItem::new);
         for (StorageUpgradeItem.StorageTier value : StorageUpgradeItem.StorageTier.values()) {
-            STORAGE_UPGRADES.put(value, getRegistries().registerGeneric(Item.class, value.name().toLowerCase(Locale.ROOT) + (value == StorageUpgradeItem.StorageTier.IRON ? "_downgrade" : "_upgrade"), () -> new StorageUpgradeItem(value)));
+            STORAGE_UPGRADES.put(value, getRegistries().registerGeneric(ForgeRegistries.ITEMS.getRegistryKey(), value.name().toLowerCase(Locale.ROOT) + (value == StorageUpgradeItem.StorageTier.IRON ? "_downgrade" : "_upgrade"), () -> new StorageUpgradeItem(value)));
         }
-        COLLECTOR_UPGRADE = getRegistries().registerGeneric(Item.class, "collector_upgrade", () -> new UpgradeItem(new Item.Properties(), UpgradeItem.Type.UTILITY));
-        PULLING_UPGRADE = getRegistries().registerGeneric(Item.class, "puller_upgrade", () -> new UpgradeItem(new Item.Properties(), UpgradeItem.Type.UTILITY));
-        PUSHING_UPGRADE = getRegistries().registerGeneric(Item.class, "pusher_upgrade", () -> new UpgradeItem(new Item.Properties(), UpgradeItem.Type.UTILITY));
-        VOID_UPGRADE = getRegistries().registerGeneric(Item.class, "void_upgrade", () -> new UpgradeItem(new Item.Properties(), UpgradeItem.Type.UTILITY));
+        COLLECTOR_UPGRADE = getRegistries().registerGeneric(ForgeRegistries.ITEMS.getRegistryKey(), "collector_upgrade", () -> new UpgradeItem(new Item.Properties(), UpgradeItem.Type.UTILITY));
+        PULLING_UPGRADE = getRegistries().registerGeneric(ForgeRegistries.ITEMS.getRegistryKey(), "puller_upgrade", () -> new UpgradeItem(new Item.Properties(), UpgradeItem.Type.UTILITY));
+        PUSHING_UPGRADE = getRegistries().registerGeneric(ForgeRegistries.ITEMS.getRegistryKey(), "pusher_upgrade", () -> new UpgradeItem(new Item.Properties(), UpgradeItem.Type.UTILITY));
+        VOID_UPGRADE = getRegistries().registerGeneric(ForgeRegistries.ITEMS.getRegistryKey(), "void_upgrade", () -> new UpgradeItem(new Item.Properties(), UpgradeItem.Type.UTILITY));
         ARMORY_CABINET = getRegistries().registerBlockWithTile("armory_cabinet", ArmoryCabinetBlock::new);
-        CONFIGURATION_TOOL = getRegistries().registerGeneric(Item.class, "configuration_tool", ConfigurationToolItem::new);
+        CONFIGURATION_TOOL = getRegistries().registerGeneric(ForgeRegistries.ITEMS.getRegistryKey(), "configuration_tool", ConfigurationToolItem::new);
         ENDER_DRAWER = getRegistries().registerBlockWithTile("ender_drawer", EnderDrawerBlock::new);
-        REDSTONE_UPGRADE = getRegistries().registerGeneric(Item.class, "redstone_upgrade", () -> new UpgradeItem(new Item.Properties(), UpgradeItem.Type.UTILITY));
-        CREATIVE_UPGRADE = getRegistries().registerGeneric(Item.class, "creative_vending_upgrade", () -> new UpgradeItem(new Item.Properties(), UpgradeItem.Type.STORAGE) {
+        REDSTONE_UPGRADE = getRegistries().registerGeneric(ForgeRegistries.ITEMS.getRegistryKey(), "redstone_upgrade", () -> new UpgradeItem(new Item.Properties(), UpgradeItem.Type.UTILITY));
+        CREATIVE_UPGRADE = getRegistries().registerGeneric(ForgeRegistries.ITEMS.getRegistryKey(), "creative_vending_upgrade", () -> new UpgradeItem(new Item.Properties(), UpgradeItem.Type.STORAGE) {
             @Override
             public boolean isFoil(ItemStack p_41453_) {
                 return true;
             }
         });
+        getRegistries().registerGeneric(ForgeRegistries.RECIPE_SERIALIZERS.getRegistryKey(), "framed_recipe", () -> FramedDrawerRecipe.SERIALIZER);
     }
 
     public enum DrawerType {
@@ -249,12 +245,12 @@ public class FunctionalStorage extends ModuleController {
             registerRenderers.registerBlockEntityRenderer((BlockEntityType<? extends DrawerControllerTile>) DRAWER_CONTROLLER.getRight().get(), p -> new ControllerRenderer());
             registerRenderers.registerBlockEntityRenderer((BlockEntityType<? extends EnderDrawerTile>) ENDER_DRAWER.getRight().get(), p_173571_ -> new EnderDrawerRenderer());
         }).subscribe();
-        EventManager.mod(ColorHandlerEvent.Item.class).process(item -> {
+        EventManager.mod(RegisterColorHandlersEvent.Item.class).process(item -> {
             item.getItemColors().register((stack, tint) -> {
                 CompoundTag tag = stack.getOrCreateTag();
                 LinkingToolItem.LinkingMode linkingMode = LinkingToolItem.getLinkingMode(stack);
                 LinkingToolItem.ActionMode linkingAction = LinkingToolItem.getActionMode(stack);
-                if (tint != 0 && stack.getOrCreateTag().contains(LinkingToolItem.NBT_ENDER)){
+                if (tint != 0 && stack.getOrCreateTag().contains(LinkingToolItem.NBT_ENDER)) {
                     return new Color(44, 150, 88).getRGB();
                 }
                 if (tint == 3 && tag.contains(LinkingToolItem.NBT_CONTROLLER)) {
@@ -293,7 +289,7 @@ public class FunctionalStorage extends ModuleController {
             if (itemTooltipEvent.getItemStack().is(FunctionalStorage.LINKING_TOOL.get()) && itemTooltipEvent.getItemStack().getOrCreateTag().contains(LinkingToolItem.NBT_ENDER)) {
                 TooltipUtil.renderItems(itemTooltipEvent.getPoseStack(), EnderDrawerBlock.getFrequencyDisplay(itemTooltipEvent.getItemStack().getOrCreateTag().getString(LinkingToolItem.NBT_ENDER)), itemTooltipEvent.getX() + 14, itemTooltipEvent.getY() + 11);
             }
-            itemTooltipEvent.getItemStack().getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).ifPresent(iItemHandler -> {
+            itemTooltipEvent.getItemStack().getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(iItemHandler -> {
                 if (iItemHandler instanceof DrawerStackItemHandler) {
                     int i = 0;
                     for (BigInventoryHandler.BigStack storedStack : ((DrawerStackItemHandler) iItemHandler).getStoredStacks()) {
@@ -303,8 +299,8 @@ public class FunctionalStorage extends ModuleController {
                 }
             });
         }).subscribe();
-        EventManager.mod(ModelRegistryEvent.class).process(modelRegistryEvent -> {
-            ModelLoaderRegistry.registerLoader(new ResourceLocation(MOD_ID, "framed"), RetexturedModel.Loader.INSTANCE);
+        EventManager.mod(ModelEvent.RegisterGeometryLoaders.class).process(modelRegistryEvent -> {
+            modelRegistryEvent.register("framed", RetexturedModel.Loader.INSTANCE);
         }).subscribe();
     }
 
@@ -313,21 +309,21 @@ public class FunctionalStorage extends ModuleController {
         NonNullLazy<List<Block>> blocksToProcess = NonNullLazy.of(() ->
                 ForgeRegistries.BLOCKS.getValues()
                         .stream()
-                        .filter(basicBlock -> Optional.ofNullable(basicBlock.getRegistryName())
+                        .filter(basicBlock -> Optional.ofNullable(ForgeRegistries.BLOCKS.getKey(basicBlock))
                                 .map(ResourceLocation::getNamespace)
                                 .filter(MOD_ID::equalsIgnoreCase)
                                 .isPresent())
                         .collect(Collectors.toList())
         );
         if (true) {
-            event.getGenerator().addProvider(new BlockItemModelGeneratorProvider(event.getGenerator(), MOD_ID, blocksToProcess));
-            event.getGenerator().addProvider(new FunctionalStorageBlockstateProvider(event.getGenerator(), event.getExistingFileHelper(), blocksToProcess));
-            event.getGenerator().addProvider(new TitaniumLootTableProvider(event.getGenerator(), blocksToProcess));
+            event.getGenerator().addProvider(true, new BlockItemModelGeneratorProvider(event.getGenerator(), MOD_ID, blocksToProcess));
+            event.getGenerator().addProvider(true, new FunctionalStorageBlockstateProvider(event.getGenerator(), event.getExistingFileHelper(), blocksToProcess));
+            event.getGenerator().addProvider(true, new TitaniumLootTableProvider(event.getGenerator(), blocksToProcess));
 
-            event.getGenerator().addProvider(new FunctionalStorageItemTagsProvider(event.getGenerator(), new BlockTagsProvider(event.getGenerator()), MOD_ID, event.getExistingFileHelper()));
-            event.getGenerator().addProvider(new FunctionalStorageLangProvider(event.getGenerator(), MOD_ID, "en_us"));
-            event.getGenerator().addProvider(new FunctionalStorageBlockTagsProvider(event.getGenerator(), MOD_ID, event.getExistingFileHelper()));
-            event.getGenerator().addProvider(new ItemModelProvider(event.getGenerator(), MOD_ID, event.getExistingFileHelper()) {
+            event.getGenerator().addProvider(true, new FunctionalStorageItemTagsProvider(event.getGenerator(), new BlockTagsProvider(event.getGenerator()), MOD_ID, event.getExistingFileHelper()));
+            event.getGenerator().addProvider(true, new FunctionalStorageLangProvider(event.getGenerator(), MOD_ID, "en_us"));
+            event.getGenerator().addProvider(true, new FunctionalStorageBlockTagsProvider(event.getGenerator(), MOD_ID, event.getExistingFileHelper()));
+            event.getGenerator().addProvider(true, new ItemModelProvider(event.getGenerator(), MOD_ID, event.getExistingFileHelper()) {
                 @Override
                 protected void registerModels() {
                     for (StorageUpgradeItem.StorageTier storageTier : STORAGE_UPGRADES.keySet()) {
@@ -342,28 +338,28 @@ public class FunctionalStorage extends ModuleController {
                 }
 
                 private void item(Item item) {
-                    singleTexture(item.getRegistryName().getPath(), new ResourceLocation("minecraft:item/generated"), "layer0", new ResourceLocation(MOD_ID, "items/" + item.getRegistryName().getPath()));
+                    singleTexture(ForgeRegistries.ITEMS.getKey(item).getPath(), new ResourceLocation("minecraft:item/generated"), "layer0", new ResourceLocation(MOD_ID, "items/" + ForgeRegistries.ITEMS.getKey(item).getPath()));
                 }
             });
-            event.getGenerator().addProvider(new BlockModelProvider(event.getGenerator(), MOD_ID, event.getExistingFileHelper()) {
+            event.getGenerator().addProvider(true, new BlockModelProvider(event.getGenerator(), MOD_ID, event.getExistingFileHelper()) {
                 @Override
                 protected void registerModels() {
                     for (DrawerType value : DrawerType.values()) {
                         for (RegistryObject<Block> blockRegistryObject : DRAWER_TYPES.get(value).stream().map(Pair::getLeft).collect(Collectors.toList())) {
-                            withExistingParent(blockRegistryObject.get().getRegistryName().getPath() + "_locked", modLoc(blockRegistryObject.get().getRegistryName().getPath()))
+                            withExistingParent(ForgeRegistries.BLOCKS.getKey(blockRegistryObject.get()).getPath() + "_locked", modLoc(ForgeRegistries.BLOCKS.getKey(blockRegistryObject.get()).getPath()))
                                     .texture("lock_icon", modLoc("blocks/lock"));
                         }
                     }
-                    withExistingParent(COMPACTING_DRAWER.getLeft().get().getRegistryName().getPath() + "_locked", modLoc(COMPACTING_DRAWER.getLeft().get().getRegistryName().getPath()))
+                    withExistingParent(ForgeRegistries.BLOCKS.getKey(COMPACTING_DRAWER.getLeft().get()).getPath() + "_locked", modLoc(ForgeRegistries.BLOCKS.getKey(COMPACTING_DRAWER.getLeft().get()).getPath()))
                             .texture("lock_icon", modLoc("blocks/lock"));
-                    withExistingParent(ENDER_DRAWER.getLeft().get().getRegistryName().getPath() + "_locked", modLoc(ENDER_DRAWER.getLeft().get().getRegistryName().getPath()))
+                    withExistingParent(ForgeRegistries.BLOCKS.getKey(ENDER_DRAWER.getLeft().get()).getPath() + "_locked", modLoc(ForgeRegistries.BLOCKS.getKey(ENDER_DRAWER.getLeft().get()).getPath()))
                             .texture("lock_icon", modLoc("blocks/lock"));
-                    withExistingParent(FRAMED_COMPACTING_DRAWER.getLeft().get().getRegistryName().getPath() + "_locked", modLoc(FRAMED_COMPACTING_DRAWER.getLeft().get().getRegistryName().getPath()))
+                    withExistingParent(ForgeRegistries.BLOCKS.getKey(FRAMED_COMPACTING_DRAWER.getLeft().get()).getPath() + "_locked", modLoc(ForgeRegistries.BLOCKS.getKey(FRAMED_COMPACTING_DRAWER.getLeft().get()).getPath()))
                             .texture("lock_icon", modLoc("blocks/lock"));
                 }
             });
         }
-        event.getGenerator().addProvider(new TitaniumRecipeProvider(event.getGenerator()) {
+        event.getGenerator().addProvider(true, new TitaniumRecipeProvider(event.getGenerator()) {
             @Override
             public void register(Consumer<FinishedRecipe> consumer) {
                 blocksToProcess.get().stream().map(block -> (BasicBlock) block).forEach(basicBlock -> basicBlock.registerRecipe(consumer));
@@ -421,7 +417,7 @@ public class FunctionalStorage extends ModuleController {
                         .save(consumer);
                 UpgradeRecipeBuilder.smithing(Ingredient.of(STORAGE_UPGRADES.get(StorageUpgradeItem.StorageTier.DIAMOND).get()), Ingredient.of(Items.NETHERITE_INGOT), STORAGE_UPGRADES.get(StorageUpgradeItem.StorageTier.NETHERITE).get())
                         .unlocks("has_netherite_ingot", has(Items.NETHERITE_INGOT))
-                        .save(consumer, STORAGE_UPGRADES.get(StorageUpgradeItem.StorageTier.NETHERITE).get().getRegistryName());
+                        .save(consumer, ForgeRegistries.ITEMS.getKey(STORAGE_UPGRADES.get(StorageUpgradeItem.StorageTier.NETHERITE).get()));
                 TitaniumShapedRecipeBuilder.shapedRecipe(DRAWER_CONTROLLER.getLeft().get())
                         .pattern("IBI").pattern("CDC").pattern("IBI")
                         .define('I', Tags.Items.STONE)

@@ -7,8 +7,8 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.*;
+import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TextColor;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -54,7 +54,7 @@ public class ConfigurationToolItem extends BasicItem {
 
     @Override
     public void fillItemCategory(CreativeModeTab group, NonNullList<ItemStack> items) {
-        if (allowdedIn(group)) {
+        if (this.allowedIn(group)) {
             items.add(initNbt(new ItemStack(this)));
         }
     }
@@ -85,8 +85,8 @@ public class ConfigurationToolItem extends BasicItem {
                 ConfigurationAction action = getAction(stack);
                 ConfigurationAction newAction = ConfigurationAction.values()[(Arrays.asList(ConfigurationAction.values()).indexOf(action) + 1) % ConfigurationAction.values().length];
                 stack.getOrCreateTag().putString(NBT_MODE, newAction.name());
-                player.displayClientMessage(new TextComponent("Swapped mode to ").setStyle(Style.EMPTY.withColor(newAction.getColor()))
-                        .append(new TranslatableComponent("configurationtool.configmode." + newAction.name().toLowerCase(Locale.ROOT))), true);
+                player.displayClientMessage(Component.literal("Swapped mode to ").setStyle(Style.EMPTY.withColor(newAction.getColor()))
+                        .append(Component.translatable("configurationtool.configmode." + newAction.name().toLowerCase(Locale.ROOT))), true);
                 player.playSound(SoundEvents.ITEM_FRAME_REMOVE_ITEM, 0.5f, 1);
                 return InteractionResultHolder.success(stack);
             }
@@ -99,10 +99,10 @@ public class ConfigurationToolItem extends BasicItem {
         super.addTooltipDetails(key, stack, tooltip, advanced);
         ConfigurationAction linkingMode = getAction(stack);
         if (key == null) {
-            tooltip.add(new TranslatableComponent("configurationtool.configmode").withStyle(ChatFormatting.YELLOW)
-                    .append(new TranslatableComponent("configurationtool.configmode." + linkingMode.name().toLowerCase(Locale.ROOT)).withStyle(Style.EMPTY.withColor(linkingMode.getColor()))));
-            tooltip.add(new TextComponent("").withStyle(ChatFormatting.GRAY));
-            tooltip.add(new TranslatableComponent("configurationtool.use").withStyle(ChatFormatting.GRAY));
+            tooltip.add(Component.translatable("configurationtool.configmode").withStyle(ChatFormatting.YELLOW)
+                    .append(Component.translatable("configurationtool.configmode." + linkingMode.name().toLowerCase(Locale.ROOT)).withStyle(Style.EMPTY.withColor(linkingMode.getColor()))));
+            tooltip.add(Component.literal("").withStyle(ChatFormatting.GRAY));
+            tooltip.add(Component.translatable("configurationtool.use").withStyle(ChatFormatting.GRAY));
         }
     }
 

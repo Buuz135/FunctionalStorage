@@ -10,8 +10,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import org.apache.commons.lang3.tuple.Pair;
@@ -83,13 +81,13 @@ public class DrawerInfoGuiAddon extends BasicScreenAddon {
                 var componentList = new ArrayList<Component>();
                 var over = slotStack.apply(i);
                 if (over.isEmpty()) {
-                    componentList.add(new TranslatableComponent("gui.functionalstorage.item").withStyle(ChatFormatting.GOLD).append(new TextComponent("Empty").withStyle(ChatFormatting.WHITE)));
+                    componentList.add(Component.translatable("gui.functionalstorage.item").withStyle(ChatFormatting.GOLD).append(Component.literal("Empty").withStyle(ChatFormatting.WHITE)));
                 } else {
-                    componentList.add(new TranslatableComponent("gui.functionalstorage.item").withStyle(ChatFormatting.GOLD).append(over.getHoverName().copy().withStyle(ChatFormatting.WHITE)));
+                    componentList.add(Component.translatable("gui.functionalstorage.item").withStyle(ChatFormatting.GOLD).append(over.getHoverName().copy().withStyle(ChatFormatting.WHITE)));
                     var amount = NumberUtils.getFormatedBigNumber(over.getCount()) + "/" + NumberUtils.getFormatedBigNumber(slotMaxAmount.apply(i));
-                    componentList.add(new TranslatableComponent("gui.functionalstorage.amount").withStyle(ChatFormatting.GOLD).append(new TextComponent(amount).withStyle(ChatFormatting.WHITE)));
+                    componentList.add(Component.translatable("gui.functionalstorage.amount").withStyle(ChatFormatting.GOLD).append(Component.literal(amount).withStyle(ChatFormatting.WHITE)));
                 }
-                componentList.add(new TranslatableComponent("gui.functionalstorage.slot").withStyle(ChatFormatting.GOLD).append(new TextComponent(i + "").withStyle(ChatFormatting.WHITE)));
+                componentList.add(Component.translatable("gui.functionalstorage.slot").withStyle(ChatFormatting.GOLD).append(Component.literal(i + "").withStyle(ChatFormatting.WHITE)));
                 screen.renderTooltip(stack, componentList, Optional.empty(), mouseX - guiX, mouseY - guiY);
             }
         }

@@ -4,8 +4,8 @@ import com.hrznstudio.titanium.item.BasicItem;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -35,9 +35,9 @@ public class StorageUpgradeItem extends UpgradeItem{
     public void addTooltipDetails(@Nullable BasicItem.Key key, ItemStack stack, List<Component> tooltip, boolean advanced) {
         super.addTooltipDetails(key, stack, tooltip, advanced);
         if (storageTier == StorageTier.IRON){
-            tooltip.add(new TranslatableComponent("item.utility.downgrade").withStyle(ChatFormatting.GRAY));
+            tooltip.add(Component.translatable("item.utility.downgrade").withStyle(ChatFormatting.GRAY));
         } else {
-            tooltip.add(new TranslatableComponent("storageupgrade.desc").withStyle(ChatFormatting.GRAY).append(this.storageTier.getStorageMultiplier() + ""));
+            tooltip.add(Component.translatable("storageupgrade.desc").withStyle(ChatFormatting.GRAY).append(this.storageTier.getStorageMultiplier() + ""));
         }
     }
 
@@ -51,8 +51,8 @@ public class StorageUpgradeItem extends UpgradeItem{
     @OnlyIn(Dist.CLIENT)
     public Component getName(ItemStack p_41458_) {
         Component component = super.getName(p_41458_);
-        if (component instanceof TranslatableComponent){
-            ((TranslatableComponent) component).setStyle(Style.EMPTY.withColor(storageTier == StorageTier.NETHERITE && Minecraft.getInstance().level != null ? Color.HSBtoRGB((Minecraft.getInstance().level.getGameTime() % 360) / 360f , 1, 1) : storageTier.getColor()));
+        if (component instanceof MutableComponent) {
+            ((MutableComponent) component).setStyle(Style.EMPTY.withColor(storageTier == StorageTier.NETHERITE && Minecraft.getInstance().level != null ? Color.HSBtoRGB((Minecraft.getInstance().level.getGameTime() % 360) / 360f, 1, 1) : storageTier.getColor()));
         }
         return component;
     }

@@ -10,6 +10,7 @@ import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.*;
 
@@ -149,10 +150,10 @@ public class CompactingUtil {
     }
 
     private ItemStack findSimilar(ItemStack reference, List<ItemStack> candidates) {
-        ResourceLocation referenceName = reference.getItem().getRegistryName();
+        ResourceLocation referenceName = ForgeRegistries.ITEMS.getKey(reference.getItem());
         if (referenceName != null) {
             for (ItemStack candidate : candidates) {
-                ResourceLocation matchName = candidate.getItem().getRegistryName();
+                ResourceLocation matchName = ForgeRegistries.ITEMS.getKey(candidate.getItem());
                 if (matchName != null) {
                     if (referenceName.getNamespace().equals(matchName.getNamespace()))
                         return candidate;
@@ -196,6 +197,11 @@ public class CompactingUtil {
 
     private CraftingContainer createContainerAndFill(int size, ItemStack stack){
         CraftingContainer inventoryCrafting = new CraftingContainer(new AbstractContainerMenu(null, 0) {
+            @Override
+            public ItemStack quickMoveStack(Player p_38941_, int p_38942_) {
+                return null;
+            }
+
             @Override
             public boolean stillValid(Player playerIn) {
                 return false;

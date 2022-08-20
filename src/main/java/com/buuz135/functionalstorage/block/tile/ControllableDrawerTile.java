@@ -17,7 +17,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -32,9 +32,9 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 import org.jetbrains.annotations.NotNull;
@@ -118,20 +118,20 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
             addGuiAddonFactory(() -> new TextScreenAddon("Storage", 10, 59, false, ChatFormatting.DARK_GRAY.getColor()) {
                 @Override
                 public String getText() {
-                    return new TranslatableComponent("key.categories.storage").getString();
+                    return Component.translatable("key.categories.storage").getString();
                 }
             });
         }
         addGuiAddonFactory(() -> new TextScreenAddon("Utility", 114, 59, false, ChatFormatting.DARK_GRAY.getColor()) {
             @Override
             public String getText() {
-                return new TranslatableComponent("key.categories.utility").getString();
+                return Component.translatable("key.categories.utility").getString();
             }
         });
         addGuiAddonFactory(() -> new TextScreenAddon("key.categories.inventory", 8, 92, false, ChatFormatting.DARK_GRAY.getColor()) {
             @Override
             public String getText() {
-                return new TranslatableComponent("key.categories.inventory").getString();
+                return Component.translatable("key.categories.inventory").getString();
             }
         });
     }
@@ -159,7 +159,7 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
                     if (item.equals(FunctionalStorage.PULLING_UPGRADE.get())) {
                         Direction direction = UpgradeItem.getDirection(stack);
                         TileUtil.getTileEntity(level, pos.relative(direction)).ifPresent(blockEntity1 -> {
-                            blockEntity1.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, direction.getOpposite()).ifPresent(iItemHandler -> {
+                            blockEntity1.getCapability(ForgeCapabilities.ITEM_HANDLER, direction.getOpposite()).ifPresent(iItemHandler -> {
                                 for (int otherSlot = 0; otherSlot < iItemHandler.getSlots(); otherSlot++) {
                                     ItemStack pulledStack = iItemHandler.extractItem(otherSlot, 2, true);
                                     if (pulledStack.isEmpty()) continue;
@@ -180,7 +180,7 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
                     if (item.equals(FunctionalStorage.PUSHING_UPGRADE.get())) {
                         Direction direction = UpgradeItem.getDirection(stack);
                         TileUtil.getTileEntity(level, pos.relative(direction)).ifPresent(blockEntity1 -> {
-                            blockEntity1.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, direction.getOpposite()).ifPresent(otherHandler -> {
+                            blockEntity1.getCapability(ForgeCapabilities.ITEM_HANDLER, direction.getOpposite()).ifPresent(otherHandler -> {
                                 for (int otherSlot = 0; otherSlot < getStorage().getSlots(); otherSlot++) {
                                     ItemStack pulledStack = getStorage().extractItem(otherSlot, 2, true);
                                     if (pulledStack.isEmpty()) continue;

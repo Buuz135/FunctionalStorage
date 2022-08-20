@@ -13,7 +13,7 @@ import mcjty.theoneprobe.api.*;
 import mcjty.theoneprobe.apiimpl.elements.ElementHorizontal;
 import mcjty.theoneprobe.apiimpl.elements.ElementVertical;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -94,7 +94,7 @@ public class FunctionalDrawerProvider implements IProbeInfoProvider {
                 if (abstractElementPanel.getElements().size() > 0) vertical.element(abstractElementPanel);
                 ElementVertical elementVertical = new ElementVertical(iProbeInfo.defaultLayoutStyle());
                 elementVertical.getStyle().borderColor(Color.CYAN.darker().getRGB());
-                elementVertical.text(new TranslatableComponent("linkingtool.ender.frequency"));
+                elementVertical.text(Component.translatable("linkingtool.ender.frequency"));
                 vertical.element(new ElementVertical(iProbeInfo.defaultLayoutStyle().topPadding(4)));
                 abstractElementPanel = new ElementHorizontal(iProbeInfo.defaultLayoutStyle().leftPadding(4).topPadding(2).rightPadding(4));
                 for (ItemStack stack : EnderDrawerBlock.getFrequencyDisplay(((EnderDrawerTile) blockEntity).getFrequency())) {
