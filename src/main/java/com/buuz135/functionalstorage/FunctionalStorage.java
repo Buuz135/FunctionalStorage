@@ -326,6 +326,7 @@ public class FunctionalStorage extends ModuleController {
             event.getGenerator().addProvider(true, new ItemModelProvider(event.getGenerator(), MOD_ID, event.getExistingFileHelper()) {
                 @Override
                 protected void registerModels() {
+                    blocksToProcess.get().forEach(block -> withExistingParent(ForgeRegistries.BLOCKS.getKey(block).getPath(), new ResourceLocation(FunctionalStorage.MOD_ID, "block/" + ForgeRegistries.BLOCKS.getKey(block).getPath())));
                     for (StorageUpgradeItem.StorageTier storageTier : STORAGE_UPGRADES.keySet()) {
                         item(STORAGE_UPGRADES.get(storageTier).get());
                     }
@@ -335,6 +336,7 @@ public class FunctionalStorage extends ModuleController {
                     item(VOID_UPGRADE.get());
                     item(REDSTONE_UPGRADE.get());
                     item(CREATIVE_UPGRADE.get());
+
                 }
 
                 private void item(Item item) {

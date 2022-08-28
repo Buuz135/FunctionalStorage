@@ -1,5 +1,9 @@
 {
   "variants": {
+    "subfacing=east": {
+      "model": "functionalstorage:block/armory_cabinet",
+      "y": 90
+    },
     "subfacing=north": {
       "model": "functionalstorage:block/armory_cabinet"
     },
@@ -10,10 +14,6 @@
     "subfacing=west": {
       "model": "functionalstorage:block/armory_cabinet",
       "y": 270
-    },
-    "subfacing=east": {
-      "model": "functionalstorage:block/armory_cabinet",
-      "y": 90
     }
   }
 }

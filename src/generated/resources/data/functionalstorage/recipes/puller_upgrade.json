@@ -4,26 +4,18 @@
     {
       "conditions": [
         {
+          "type": "forge:and",
           "values": [
             {
-              "item": "functionalstorage:puller_upgrade",
-              "type": "forge:item_exists"
+              "type": "forge:item_exists",
+              "item": "functionalstorage:puller_upgrade"
             }
-          ],
-          "type": "forge:and"
+          ]
         }
       ],
       "recipe": {
         "type": "minecraft:crafting_shaped",
-        "pattern": [
-          "ICI",
-          "IDI",
-          "IBI"
-        ],
         "key": {
-          "I": {
-            "tag": "forge:stone"
-          },
           "B": {
             "tag": "forge:dusts/redstone"
           },
@@ -32,8 +24,16 @@
           },
           "D": {
             "tag": "functionalstorage:drawer"
+          },
+          "I": {
+            "tag": "forge:stone"
           }
         },
+        "pattern": [
+          "ICI",
+          "IDI",
+          "IBI"
+        ],
         "result": {
           "item": "functionalstorage:puller_upgrade"
         }

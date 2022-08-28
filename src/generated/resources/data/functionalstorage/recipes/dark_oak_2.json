@@ -4,33 +4,33 @@
     {
       "conditions": [
         {
+          "type": "forge:and",
           "values": [
             {
-              "item": "functionalstorage:dark_oak_2",
-              "type": "forge:item_exists"
+              "type": "forge:item_exists",
+              "item": "functionalstorage:dark_oak_2"
             }
-          ],
-          "type": "forge:and"
+          ]
         }
       ],
       "recipe": {
         "type": "minecraft:crafting_shaped",
+        "key": {
+          "C": {
+            "tag": "forge:chests/wooden"
+          },
+          "P": {
+            "item": "minecraft:dark_oak_planks"
+          }
+        },
         "pattern": [
           "PCP",
           "PPP",
           "PCP"
         ],
-        "key": {
-          "P": {
-            "item": "minecraft:dark_oak_planks"
-          },
-          "C": {
-            "tag": "forge:chests/wooden"
-          }
-        },
         "result": {
-          "item": "functionalstorage:dark_oak_2",
-          "count": 2
+          "count": 2,
+          "item": "functionalstorage:dark_oak_2"
         }
       }
     }

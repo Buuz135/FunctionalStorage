@@ -27,9 +27,9 @@ public class UpgradeItem extends BasicItem {
     public static int MAX_SLOT = 4;
 
     public static Direction getDirection(ItemStack stack){
-        if (stack.hasTag()){
+        if (stack.hasTag() && stack.getTag().contains("Direction")) {
             Item item = stack.getItem();
-            if (item.equals(FunctionalStorage.PULLING_UPGRADE.get()) || item.equals(FunctionalStorage.PUSHING_UPGRADE.get()) || item.equals(FunctionalStorage.COLLECTOR_UPGRADE.get())){
+            if (item.equals(FunctionalStorage.PULLING_UPGRADE.get()) || item.equals(FunctionalStorage.PUSHING_UPGRADE.get()) || item.equals(FunctionalStorage.COLLECTOR_UPGRADE.get())) {
                 return Direction.byName(stack.getOrCreateTag().getString("Direction"));
             }
         }
@@ -52,7 +52,7 @@ public class UpgradeItem extends BasicItem {
     private ItemStack initNbt(ItemStack stack){
         Item item = stack.getItem();
         if (item.equals(FunctionalStorage.PULLING_UPGRADE.get()) || item.equals(FunctionalStorage.PUSHING_UPGRADE.get()) || item.equals(FunctionalStorage.COLLECTOR_UPGRADE.get())){
-            stack.getOrCreateTag().putString("Direction", Direction.values()[0].name());
+            stack.getOrCreateTag().putString("Direction", Direction.values()[0].getName());
         }
         if (item.equals(FunctionalStorage.REDSTONE_UPGRADE.get())){
             stack.getOrCreateTag().putInt("Slot", 0);
@@ -79,7 +79,7 @@ public class UpgradeItem extends BasicItem {
             if (item.equals(FunctionalStorage.PULLING_UPGRADE.get()) || item.equals(FunctionalStorage.PUSHING_UPGRADE.get()) || item.equals(FunctionalStorage.COLLECTOR_UPGRADE.get())){
                 Direction direction = getDirection(first);
                 Direction next = Direction.values()[(Arrays.asList(Direction.values()).indexOf(direction) + 1 ) % Direction.values().length];
-                first.getOrCreateTag().putString("Direction", next.name());
+                first.getOrCreateTag().putString("Direction", next.getName());
                 p_150896_.playSound(SoundEvents.UI_BUTTON_CLICK, 0.5f, 1);
                 return true;
             }
@@ -100,7 +100,7 @@ public class UpgradeItem extends BasicItem {
         Item item = stack.getItem();
         if (stack.hasTag()) {
             if (item.equals(FunctionalStorage.PULLING_UPGRADE.get()) || item.equals(FunctionalStorage.PUSHING_UPGRADE.get()) || item.equals(FunctionalStorage.COLLECTOR_UPGRADE.get())) {
-                tooltip.add(Component.translatable("item.utility.direction").withStyle(ChatFormatting.YELLOW).append(Component.translatable(WordUtils.capitalize(getDirection(stack).name().toLowerCase(Locale.ROOT))).withStyle(ChatFormatting.WHITE)));
+                tooltip.add(Component.translatable("item.utility.direction").withStyle(ChatFormatting.YELLOW).append(Component.translatable(WordUtils.capitalize(getDirection(stack).getName().toLowerCase(Locale.ROOT))).withStyle(ChatFormatting.WHITE)));
                 tooltip.add(Component.literal(""));
                 tooltip.add(Component.translatable("item.utility.direction.desc").withStyle(ChatFormatting.GRAY));
             }

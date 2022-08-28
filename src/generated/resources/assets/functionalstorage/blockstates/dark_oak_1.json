@@ -1,34 +1,34 @@
 {
   "variants": {
+    "locked=false,subfacing=east": {
+      "model": "functionalstorage:block/dark_oak_1",
+      "y": 90
+    },
     "locked=false,subfacing=north": {
       "model": "functionalstorage:block/dark_oak_1"
     },
-    "locked=true,subfacing=north": {
-      "model": "functionalstorage:block/dark_oak_1_locked"
-    },
     "locked=false,subfacing=south": {
       "model": "functionalstorage:block/dark_oak_1",
-      "y": 180
-    },
-    "locked=true,subfacing=south": {
-      "model": "functionalstorage:block/dark_oak_1_locked",
       "y": 180
     },
     "locked=false,subfacing=west": {
       "model": "functionalstorage:block/dark_oak_1",
       "y": 270
     },
-    "locked=true,subfacing=west": {
-      "model": "functionalstorage:block/dark_oak_1_locked",
-      "y": 270
-    },
-    "locked=false,subfacing=east": {
-      "model": "functionalstorage:block/dark_oak_1",
-      "y": 90
-    },
     "locked=true,subfacing=east": {
       "model": "functionalstorage:block/dark_oak_1_locked",
       "y": 90
+    },
+    "locked=true,subfacing=north": {
+      "model": "functionalstorage:block/dark_oak_1_locked"
+    },
+    "locked=true,subfacing=south": {
+      "model": "functionalstorage:block/dark_oak_1_locked",
+      "y": 180
+    },
+    "locked=true,subfacing=west": {
+      "model": "functionalstorage:block/dark_oak_1_locked",
+      "y": 270
     }
   }
 }

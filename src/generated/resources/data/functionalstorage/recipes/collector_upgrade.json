@@ -4,36 +4,36 @@
     {
       "conditions": [
         {
+          "type": "forge:and",
           "values": [
             {
-              "item": "functionalstorage:collector_upgrade",
-              "type": "forge:item_exists"
+              "type": "forge:item_exists",
+              "item": "functionalstorage:collector_upgrade"
             }
-          ],
-          "type": "forge:and"
+          ]
         }
       ],
       "recipe": {
         "type": "minecraft:crafting_shaped",
+        "key": {
+          "B": {
+            "item": "minecraft:hopper"
+          },
+          "D": {
+            "tag": "functionalstorage:drawer"
+          },
+          "I": {
+            "tag": "forge:stone"
+          },
+          "R": {
+            "tag": "forge:dusts/redstone"
+          }
+        },
         "pattern": [
           "IBI",
           "RDR",
           "IBI"
         ],
-        "key": {
-          "I": {
-            "tag": "forge:stone"
-          },
-          "B": {
-            "item": "minecraft:hopper"
-          },
-          "R": {
-            "tag": "forge:dusts/redstone"
-          },
-          "D": {
-            "tag": "functionalstorage:drawer"
-          }
-        },
         "result": {
           "item": "functionalstorage:collector_upgrade"
         }

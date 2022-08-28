@@ -4,36 +4,36 @@
     {
       "conditions": [
         {
+          "type": "forge:and",
           "values": [
             {
-              "item": "functionalstorage:compacting_drawer",
-              "type": "forge:item_exists"
+              "type": "forge:item_exists",
+              "item": "functionalstorage:compacting_drawer"
             }
-          ],
-          "type": "forge:and"
+          ]
         }
       ],
       "recipe": {
         "type": "minecraft:crafting_shaped",
-        "pattern": [
-          "SSS",
-          "PDP",
-          "SIS"
-        ],
         "key": {
-          "S": {
-            "item": "minecraft:stone"
-          },
-          "P": {
-            "item": "minecraft:piston"
-          },
           "D": {
             "tag": "functionalstorage:drawer"
           },
           "I": {
             "tag": "forge:ingots/iron"
+          },
+          "P": {
+            "item": "minecraft:piston"
+          },
+          "S": {
+            "item": "minecraft:stone"
           }
         },
+        "pattern": [
+          "SSS",
+          "PDP",
+          "SIS"
+        ],
         "result": {
           "item": "functionalstorage:compacting_drawer"
         }

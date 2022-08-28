@@ -404,6 +404,11 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
         return true;
     }
 
+    @Override
+    public int getTitleColor() {
+        return ChatFormatting.DARK_GRAY.getColor();
+    }
+
     public static class DrawerOptions implements INBTSerializable<CompoundTag> {
 
         public HashMap<ConfigurationToolItem.ConfigurationAction, Boolean> options;
