@@ -5,8 +5,42 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.IItemHandler;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+import java.util.List;
+
+class HandlerSlotSelector {
+    IItemHandler handler;
+    int slot;
+
+    public HandlerSlotSelector(IItemHandler handler, int slot) {
+        this.handler = handler;
+        this.slot = slot;
+    }
+
+    public ItemStack getStackInSlot() {
+        return handler.getStackInSlot(slot);
+    }
+
+    public ItemStack insertItem(@NotNull ItemStack stack, boolean simulate) {
+        return handler.insertItem(slot, stack, simulate);
+    }
+
+    public ItemStack extractItem(int amount, boolean simulate) {
+        return handler.extractItem(slot, amount, simulate);
+    }
+
+    public int getSlotLimit() {
+        return handler.getSlotLimit(slot);
+    }
+
+    public boolean isItemValid(@NotNull ItemStack stack) {
+        return handler.isItemValid(slot, stack);
+    }
+}
+
 public abstract class ControllerInventoryHandler implements IItemHandler {
 
+    HandlerSlotSelector[] selectors;
     private int slots = 0;
 
     public ControllerInventoryHandler() {
@@ -19,79 +53,54 @@ public abstract class ControllerInventoryHandler implements IItemHandler {
     }
 
     public void invalidateSlots() {
-        this.slots = getDrawers().getHandlers().stream().filter(iItemHandler -> !(iItemHandler instanceof ControllerInventoryHandler)).map(IItemHandler::getSlots).mapToInt(Integer::intValue).sum();
+        List<HandlerSlotSelector> selectors = new ArrayList<HandlerSlotSelector>();
+        this.slots = 0;
+        for (IItemHandler handler : getDrawers().getHandlers()) {
+            if (handler instanceof ControllerInventoryHandler) continue;
+            int handlerSlots = handler.getSlots();
+            for (int i = 0; i < handlerSlots; ++i) {
+                selectors.add(new HandlerSlotSelector(handler, i));
+            }
+            this.slots += handlerSlots;
+        }
+        this.selectors = selectors.toArray(new HandlerSlotSelector[selectors.size()]);
+    }
+
+    private HandlerSlotSelector selectorForSlot(int slot) {
+        return slot >= 0 && slot < selectors.length ? selectors[slot] : null;
     }
 
     @NotNull
     @Override
     public ItemStack getStackInSlot(int slot) {
-        int index = 0;
-        for (IItemHandler handler : getDrawers().getHandlers()) {
-            int relativeIndex = slot - index;
-            if (relativeIndex < handler.getSlots()) {
-                return handler.getStackInSlot(relativeIndex);
-            }
-            index += handler.getSlots();
-        }
-        return ItemStack.EMPTY;
+        HandlerSlotSelector selector = selectorForSlot(slot);
+        return null != selector ? selector.getStackInSlot() : ItemStack.EMPTY;
     }
 
     @NotNull
     @Override
     public ItemStack insertItem(int slot, @NotNull ItemStack stack, boolean simulate) {
-        int index = 0;
-        for (IItemHandler handler : getDrawers().getHandlers()) {
-            if (handler instanceof ControllerInventoryHandler) continue;
-            int relativeIndex = slot - index;
-            if (relativeIndex < handler.getSlots()){
-                return handler.insertItem(relativeIndex, stack, simulate);
-            }
-            index += handler.getSlots();
-        }
-        return ItemStack.EMPTY;
+        HandlerSlotSelector selector = selectorForSlot(slot);
+        return null != selector ? selector.insertItem(stack, simulate) : ItemStack.EMPTY;
     }
 
     @NotNull
     @Override
     public ItemStack extractItem(int slot, int amount, boolean simulate) {
-        int index = 0;
-        for (IItemHandler handler : getDrawers().getHandlers()) {
-            if (handler instanceof ControllerInventoryHandler) continue;
-            int relativeIndex = slot - index;
-            if (relativeIndex < handler.getSlots()){
-                return handler.extractItem(relativeIndex, amount, simulate);
-            }
-            index += handler.getSlots();
-        }
-        return ItemStack.EMPTY;
+        HandlerSlotSelector selector = selectorForSlot(slot);
+        return null != selector ? selector.extractItem(amount, simulate) : ItemStack.EMPTY;
     }
 
     @Override
     public int getSlotLimit(int slot) {
-        int index = 0;
-        for (IItemHandler handler : getDrawers().getHandlers()) {
-            if (handler instanceof ControllerInventoryHandler) continue;
-            int relativeIndex = slot - index;
-            if (relativeIndex < handler.getSlots()){
-                return handler.getSlotLimit(relativeIndex);
-            }
-            index += handler.getSlots();
-        }
-        return 0;
+        HandlerSlotSelector selector = selectorForSlot(slot);
+        return null != selector ? selector.getSlotLimit() : 0;
     }
 
     @Override
     public boolean isItemValid(int slot, @NotNull ItemStack stack) {
-        int index = 0;
-        for (IItemHandler handler : getDrawers().getHandlers()) {
-            if (handler instanceof ControllerInventoryHandler) continue;
-            int relativeIndex = slot - index;
-            if (relativeIndex < handler.getSlots()){
-                return handler.isItemValid(relativeIndex, stack);
-            }
-            index += handler.getSlots();
-        }
-        return false;
+        HandlerSlotSelector selector = selectorForSlot(slot);
+        return null != selector ? selector.isItemValid(stack) : false;
     }
 
     public abstract DrawerControllerTile.ConnectedDrawers getDrawers();
