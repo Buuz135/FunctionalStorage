@@ -46,6 +46,8 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
 
     private static HashMap<UUID, Long> INTERACTION_LOGGER = new HashMap<>();
 
+    private boolean needsUpgradeCache = true;
+
     @Save
     private BlockPos controllerPos;
     @Save
@@ -54,6 +56,14 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
     private InventoryComponent<ControllableDrawerTile<T>> utilityUpgrades;
     @Save
     private DrawerOptions drawerOptions;
+    @Save
+    private boolean m_hasDowngrade = false;
+    @Save
+    private boolean m_isCreative = false;
+    @Save
+    private boolean m_isVoid = false;
+    @Save
+    private int m_mult = 1;
 
     public ControllableDrawerTile(BasicTileBlock<T> base, BlockEntityType<T> entityType, BlockPos pos, BlockState state) {
         super(base, entityType, pos, state);
@@ -93,6 +103,9 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
                     }
                     return stack.getItem() instanceof UpgradeItem && ((UpgradeItem) stack.getItem()).getType() == UpgradeItem.Type.STORAGE;
                 })
+                .setOnSlotChanged((stack, integer) -> {
+                    needsUpgradeCache = true;
+                })
                 .setSlotLimit(1);
         if (getStorageSlotAmount() > 0) {
             this.addInventory((InventoryComponent<T>) this.storageUpgrades);
@@ -101,6 +114,7 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
                         .setInputFilter((stack, integer) -> stack.getItem() instanceof UpgradeItem && ((UpgradeItem) stack.getItem()).getType() == UpgradeItem.Type.UTILITY)
                         .setSlotLimit(1)
                         .setOnSlotChanged((itemStack, integer) -> {
+                            needsUpgradeCache = true;
                             if (controllerPos != null && this.level.getBlockEntity(controllerPos) instanceof DrawerControllerTile controllerTile) {
                                 controllerTile.getConnectedDrawers().rebuild();
                             }
@@ -236,33 +250,18 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
     }
 
     public int getStorageMultiplier() {
-        int mult = 1;
-        for (int i = 0; i < storageUpgrades.getSlots(); i++) {
-            if (storageUpgrades.getStackInSlot(i).getItem() instanceof StorageUpgradeItem) {
-                if (mult == 1)
-                    mult = ((StorageUpgradeItem) storageUpgrades.getStackInSlot(i).getItem()).getStorageMultiplier();
-                else mult *= ((StorageUpgradeItem) storageUpgrades.getStackInSlot(i).getItem()).getStorageMultiplier();
-            }
-        }
-        return mult;
+        maybeCacheUpgrades();
+        return m_mult;
     }
 
     public boolean isVoid() {
-        for (int i = 0; i < this.utilityUpgrades.getSlots(); i++) {
-            if (this.utilityUpgrades.getStackInSlot(i).getItem().equals(FunctionalStorage.VOID_UPGRADE.get())) {
-                return true;
-            }
-        }
-        return false;
+        maybeCacheUpgrades();
+        return m_isVoid;
     }
 
     public boolean isCreative() {
-        for (int i = 0; i < storageUpgrades.getSlots(); i++) {
-            if (storageUpgrades.getStackInSlot(i).getItem().equals(FunctionalStorage.CREATIVE_UPGRADE.get())) {
-                return true;
-            }
-        }
-        return false;
+        maybeCacheUpgrades();
+        return m_isCreative;
     }
 
     public InteractionResult onSlotActivated(Player playerIn, InteractionHand hand, Direction facing, double hitX, double hitY, double hitZ, int slot) {
@@ -338,13 +337,36 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
 
     public abstract int getBaseSize(int lost);
 
-    public boolean hasDowngrade() {
-        for (int i = 0; i < this.storageUpgrades.getSlots(); i++) {
-            if (storageUpgrades.getStackInSlot(i).getItem().equals(FunctionalStorage.STORAGE_UPGRADES.get(StorageUpgradeItem.StorageTier.IRON).get())) {
-                return true;
+    private void maybeCacheUpgrades() {
+        if (needsUpgradeCache) {
+            m_isCreative = false;
+            m_hasDowngrade = false;
+            m_mult = 1;
+            for (int i = 0; i < storageUpgrades.getSlots(); i++) {
+                Item upgrade = storageUpgrades.getStackInSlot(i).getItem();
+                if (upgrade.equals(FunctionalStorage.STORAGE_UPGRADES.get(StorageUpgradeItem.StorageTier.IRON).get())) {
+                    m_hasDowngrade = true;
+                }
+                if (upgrade.equals(FunctionalStorage.CREATIVE_UPGRADE.get())) {
+                    m_isCreative = true;
+                }
+                if (upgrade instanceof StorageUpgradeItem) {
+                    m_mult *= ((StorageUpgradeItem) upgrade).getStorageMultiplier();
+                }
             }
+            m_isVoid = false;
+            for (int i = 0; i < utilityUpgrades.getSlots(); i++) {
+                if (utilityUpgrades.getStackInSlot(i).getItem().equals(FunctionalStorage.VOID_UPGRADE.get())) {
+                    m_isVoid = true;
+                }
+            }
+            needsUpgradeCache = false;
         }
-        return false;
+    }
+
+    public boolean hasDowngrade() {
+        maybeCacheUpgrades();
+        return m_hasDowngrade;
     }
 
     public void toggleLocking() {
