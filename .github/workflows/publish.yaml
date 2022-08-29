@@ -32,7 +32,7 @@ jobs:
           files-secondary: build/libs/*-@(dev|sources).jar
           version-type: beta
           loaders: forge
-          game-versions: 1.18.2
+          game-versions: 1.19.2
           java: 17
           name: ""
           changelog: "https://github.com/Buuz135/FunctionalStorage/commits/main"
