@@ -70,6 +70,9 @@ public class CompactingFramedDrawerBlock extends CompactingDrawerBlock{
             if (framedDrawerTile.getFramedDrawerModelData() != null) {
                 stack.getOrCreateTag().put("Style", framedDrawerTile.getFramedDrawerModelData().serializeNBT());
             }
+            if (framedDrawerTile.isLocked()){
+                stack.getOrCreateTag().putBoolean("Locked", framedDrawerTile.isLocked());
+            }
         }
         stacks.add(stack);
         return stacks;

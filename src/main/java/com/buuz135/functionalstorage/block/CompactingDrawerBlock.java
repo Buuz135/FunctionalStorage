@@ -165,9 +165,12 @@ public class CompactingDrawerBlock extends RotatableBlock<CompactingDrawerTile> 
         NonNullList<ItemStack> stacks = NonNullList.create();
         ItemStack stack = new ItemStack(this);
         BlockEntity drawerTile = builder.getOptionalParameter(LootContextParams.BLOCK_ENTITY);
-        if (drawerTile instanceof ControllableDrawerTile) {
-            if (!((ControllableDrawerTile<?>) drawerTile).isEverythingEmpty()) {
+        if (drawerTile instanceof ControllableDrawerTile tile) {
+            if (!tile.isEverythingEmpty()) {
                 stack.getOrCreateTag().put("Tile", drawerTile.saveWithoutMetadata());
+            }
+            if (tile.isLocked()){
+                stack.getOrCreateTag().putBoolean("Locked", tile.isLocked());
             }
         }
         stacks.add(stack);
@@ -183,10 +186,18 @@ public class CompactingDrawerBlock extends RotatableBlock<CompactingDrawerTile> 
     public void setPlacedBy(Level level, BlockPos pos, BlockState p_49849_, @Nullable LivingEntity p_49850_, ItemStack stack) {
         super.setPlacedBy(level, pos, p_49849_, p_49850_, stack);
         if (stack.hasTag()) {
-            BlockEntity entity = level.getBlockEntity(pos);
-            if (entity instanceof ControllableDrawerTile && stack.getTag().contains("Tile")) {
-                entity.load(stack.getTag().getCompound("Tile"));
-                ((ControllableDrawerTile<?>) entity).markForUpdate();
+            if (stack.getTag().contains("Tile")){
+                BlockEntity entity = level.getBlockEntity(pos);
+                if (entity instanceof ControllableDrawerTile tile) {
+                    entity.load(stack.getTag().getCompound("Tile"));
+                    tile.markForUpdate();
+                }
+            }
+            if (stack.getTag().contains("Locked")){
+                BlockEntity entity = level.getBlockEntity(pos);
+                if (entity instanceof ControllableDrawerTile tile) {
+                    tile.setLocked(stack.getTag().getBoolean("Locked"));
+                }
             }
         }
     }

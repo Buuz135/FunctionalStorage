@@ -218,9 +218,12 @@ public class DrawerBlock extends RotatableBlock<DrawerTile> {
         NonNullList<ItemStack> stacks = NonNullList.create();
         ItemStack stack = new ItemStack(this);
         BlockEntity drawerTile = builder.getOptionalParameter(LootContextParams.BLOCK_ENTITY);
-        if (drawerTile instanceof DrawerTile) {
-            if (!((DrawerTile) drawerTile).isEverythingEmpty()) {
+        if (drawerTile instanceof DrawerTile tile) {
+            if (!tile.isEverythingEmpty()) {
                 stack.getOrCreateTag().put("Tile", drawerTile.saveWithoutMetadata());
+            }
+            if (tile.isLocked()){
+                stack.getOrCreateTag().putBoolean("Locked", tile.isLocked());
             }
         }
         stacks.add(stack);
@@ -235,11 +238,19 @@ public class DrawerBlock extends RotatableBlock<DrawerTile> {
     @Override
     public void setPlacedBy(Level level, BlockPos pos, BlockState p_49849_, @Nullable LivingEntity p_49850_, ItemStack stack) {
         super.setPlacedBy(level, pos, p_49849_, p_49850_, stack);
-        if (stack.hasTag() && stack.getTag().contains("Tile")) {
-            BlockEntity entity = level.getBlockEntity(pos);
-            if (entity instanceof DrawerTile) {
-                entity.load(stack.getTag().getCompound("Tile"));
-                ((DrawerTile) entity).markForUpdate();
+        if (stack.hasTag()) {
+            if (stack.getTag().contains("Tile")){
+                BlockEntity entity = level.getBlockEntity(pos);
+                if (entity instanceof ControllableDrawerTile tile) {
+                    entity.load(stack.getTag().getCompound("Tile"));
+                    tile.markForUpdate();
+                }
+            }
+            if (stack.getTag().contains("Locked")){
+                BlockEntity entity = level.getBlockEntity(pos);
+                if (entity instanceof ControllableDrawerTile tile) {
+                    tile.setLocked(stack.getTag().getBoolean("Locked"));
+                }
             }
         }
     }
