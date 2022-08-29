@@ -16,6 +16,15 @@
       "recipe": {
         "type": "minecraft:crafting_shaped",
         "key": {
+<<<<<<< HEAD
+=======
+          "S": {
+            "item": "minecraft:iron_nugget"
+          },
+          "P": {
+            "item": "minecraft:piston"
+          },
+>>>>>>> 1.18
           "D": [
             {
               "item": "functionalstorage:framed_1"
