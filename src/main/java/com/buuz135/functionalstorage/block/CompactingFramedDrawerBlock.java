@@ -15,6 +15,7 @@ import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.BlockGetter;
@@ -89,7 +90,7 @@ public class CompactingFramedDrawerBlock extends CompactingDrawerBlock{
     public void registerRecipe(Consumer<FinishedRecipe> consumer) {
         TitaniumShapedRecipeBuilder.shapedRecipe(this)
                 .pattern("SSS").pattern("PDP").pattern("SIS")
-                .define('S', Blocks.STONE)
+                .define('S', Items.IRON_NUGGET)
                 .define('P', Blocks.PISTON)
                 .define('D', Ingredient.of(FRAMED.stream().map(itemSupplier -> new ItemStack(itemSupplier.get()))))
                 .define('I', Tags.Items.INGOTS_IRON)

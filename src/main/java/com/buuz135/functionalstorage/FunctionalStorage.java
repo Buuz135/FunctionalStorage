@@ -319,7 +319,7 @@ public class FunctionalStorage extends ModuleController {
                                 .isPresent())
                         .collect(Collectors.toList())
         );
-        if (true) {
+        if (false) {
             event.getGenerator().addProvider(new BlockItemModelGeneratorProvider(event.getGenerator(), MOD_ID, blocksToProcess));
             event.getGenerator().addProvider(new FunctionalStorageBlockstateProvider(event.getGenerator(), event.getExistingFileHelper(), blocksToProcess));
             event.getGenerator().addProvider(new TitaniumLootTableProvider(event.getGenerator(), blocksToProcess));

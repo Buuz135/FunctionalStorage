@@ -22,7 +22,7 @@
         ],
         "key": {
           "S": {
-            "item": "minecraft:stone"
+            "item": "minecraft:iron_nugget"
           },
           "P": {
             "item": "minecraft:piston"
