@@ -6,6 +6,7 @@ import com.buuz135.functionalstorage.client.CompactingDrawerRenderer;
 import com.buuz135.functionalstorage.client.ControllerRenderer;
 import com.buuz135.functionalstorage.client.DrawerRenderer;
 import com.buuz135.functionalstorage.client.EnderDrawerRenderer;
+import com.buuz135.functionalstorage.client.loader.FramedModel;
 import com.buuz135.functionalstorage.client.loader.RetexturedModel;
 import com.buuz135.functionalstorage.data.FunctionalStorageBlockTagsProvider;
 import com.buuz135.functionalstorage.data.FunctionalStorageBlockstateProvider;
@@ -79,10 +80,10 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 // The value here should match an entry in the META-INF/mods.toml file
-@Mod("functionalstorage")
+@Mod(FunctionalStorage.MOD_ID)
 public class FunctionalStorage extends ModuleController {
 
-    public static String MOD_ID = "functionalstorage";
+    public final static String MOD_ID = "functionalstorage";
     public static NetworkHandler NETWORK = new NetworkHandler(MOD_ID);
 
     static {
@@ -301,6 +302,9 @@ public class FunctionalStorage extends ModuleController {
         }).subscribe();
         EventManager.mod(ModelEvent.RegisterGeometryLoaders.class).process(modelRegistryEvent -> {
             modelRegistryEvent.register("framed", RetexturedModel.Loader.INSTANCE);
+        }).subscribe();
+        EventManager.mod(ModelEvent.RegisterGeometryLoaders.class).process(modelRegistryEvent -> {
+            modelRegistryEvent.register("framedblock", FramedModel.Loader.INSTANCE);
         }).subscribe();
     }
 
