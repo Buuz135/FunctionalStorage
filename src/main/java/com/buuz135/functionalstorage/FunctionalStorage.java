@@ -7,7 +7,6 @@ import com.buuz135.functionalstorage.client.ControllerRenderer;
 import com.buuz135.functionalstorage.client.DrawerRenderer;
 import com.buuz135.functionalstorage.client.EnderDrawerRenderer;
 import com.buuz135.functionalstorage.client.loader.FramedModel;
-import com.buuz135.functionalstorage.client.loader.RetexturedModel;
 import com.buuz135.functionalstorage.data.FunctionalStorageBlockTagsProvider;
 import com.buuz135.functionalstorage.data.FunctionalStorageBlockstateProvider;
 import com.buuz135.functionalstorage.data.FunctionalStorageItemTagsProvider;
@@ -301,9 +300,6 @@ public class FunctionalStorage extends ModuleController {
             });
         }).subscribe();
         EventManager.mod(ModelEvent.RegisterGeometryLoaders.class).process(modelRegistryEvent -> {
-            modelRegistryEvent.register("framed", RetexturedModel.Loader.INSTANCE);
-        }).subscribe();
-        EventManager.mod(ModelEvent.RegisterGeometryLoaders.class).process(modelRegistryEvent -> {
             modelRegistryEvent.register("framedblock", FramedModel.Loader.INSTANCE);
         }).subscribe();
     }
@@ -352,6 +348,9 @@ public class FunctionalStorage extends ModuleController {
                 protected void registerModels() {
                     for (DrawerType value : DrawerType.values()) {
                         for (RegistryObject<Block> blockRegistryObject : DRAWER_TYPES.get(value).stream().map(Pair::getLeft).collect(Collectors.toList())) {
+                            if (blockRegistryObject.get() instanceof FramedDrawerBlock) {
+                                continue;
+                            }
                             withExistingParent(ForgeRegistries.BLOCKS.getKey(blockRegistryObject.get()).getPath() + "_locked", modLoc(ForgeRegistries.BLOCKS.getKey(blockRegistryObject.get()).getPath()))
                                     .texture("lock_icon", modLoc("blocks/lock"));
                         }
@@ -360,9 +359,9 @@ public class FunctionalStorage extends ModuleController {
                             .texture("lock_icon", modLoc("blocks/lock"));
                     withExistingParent(ForgeRegistries.BLOCKS.getKey(ENDER_DRAWER.getLeft().get()).getPath() + "_locked", modLoc(ForgeRegistries.BLOCKS.getKey(ENDER_DRAWER.getLeft().get()).getPath()))
                             .texture("lock_icon", modLoc("blocks/lock"));
-                    withExistingParent(ForgeRegistries.BLOCKS.getKey(FRAMED_COMPACTING_DRAWER.getLeft().get()).getPath() + "_locked", modLoc(ForgeRegistries.BLOCKS.getKey(FRAMED_COMPACTING_DRAWER.getLeft().get()).getPath()))
-                            .texture("lock_icon", modLoc("blocks/lock"));
-                }
+//                    withExistingParent(ForgeRegistries.BLOCKS.getKey(FRAMED_COMPACTING_DRAWER.getLeft().get()).getPath() + "_locked", modLoc(ForgeRegistries.BLOCKS.getKey(FRAMED_COMPACTING_DRAWER.getLeft().get()).getPath()))
+//                            .texture("lock_icon", modLoc("blocks/lock"));
+                   }
             });
         }
         event.getGenerator().addProvider(true, new TitaniumRecipeProvider(event.getGenerator()) {

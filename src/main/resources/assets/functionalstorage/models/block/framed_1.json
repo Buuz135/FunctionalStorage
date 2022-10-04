@@ -3,7 +3,10 @@
 	"loader": "functionalstorage:framedblock",
 	"children": {
 		"lock": {
-			"parent": "functionalstorage:block/lock"
+			"parent": "functionalstorage:block/lock",
+			"textures": {
+				"lock_icon": "functionalstorage:blocks/unlock"
+			}
 		},
 		"front": {
 			"parent": "functionalstorage:block/front",
@@ -24,8 +27,7 @@
 		"side"
 	],
 	"texture": {
-		"particle": "functionalstorage:blocks/framed_front_1",
-		"lock_icon": "functionalstorage:blocks/unlock"
+		"particle": "functionalstorage:blocks/framed_front_1"
 	},
 	"display": {
 		"thirdperson_righthand": {

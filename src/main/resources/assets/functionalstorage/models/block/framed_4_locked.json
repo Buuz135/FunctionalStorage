@@ -5,13 +5,13 @@
 		"lock": {
 			"parent": "functionalstorage:block/lock",
 			"textures": {
-				"lock_icon": "functionalstorage:blocks/unlock"
+				"lock_icon": "functionalstorage:blocks/lock"
 			}
 		},
 		"front": {
-			"parent": "functionalstorage:block/compacting_front",
+			"parent": "functionalstorage:block/front",
 			"textures": {
-				"front": "functionalstorage:blocks/framed_side"
+				"front": "functionalstorage:blocks/framed_front_1"
 			}
 		},
 		"side": {
@@ -21,19 +21,20 @@
 			}
 		},
 		"front_divider" : {
-			"parent": "functionalstorage:block/divider_compacting",
+			"parent": "functionalstorage:block/divider_4",
 			"textures": {
-				"front_divider": "functionalstorage:blocks/framed_front_compacting"
+				"front_divider": "functionalstorage:blocks/framed_side"
 			}
 		}
 	},
 	"item_render_order": [
 		"lock",
+		"front_divider",
 		"front",
 		"side"
 	],
 	"texture": {
-		"particle": "functionalstorage:blocks/framed_side"
+		"particle": "functionalstorage:blocks/framed_front_1"
 	},
 	"display": {
 		"thirdperson_righthand": {
