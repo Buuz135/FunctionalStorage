@@ -1,8 +1,5 @@
 {
   "credit": "Made with Blockbench",
-  "textures": {
-    "lock_icon": "functionalstorage:blocks/unlock"
-  },
   "elements": [
     {
       "from": [7.5, 15, -0.01],

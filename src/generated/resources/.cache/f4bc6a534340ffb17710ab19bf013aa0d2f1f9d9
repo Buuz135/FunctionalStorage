@@ -1,4 +1,4 @@
-// 1.19.2	2022-10-04T01:15:12.4048833	Block Models: functionalstorage
+// 1.19.2	2022-10-04T15:18:18.2600371	Block Models: functionalstorage
 6d54a3aeb1cd5d36308305bace660178e8e562d6 assets/functionalstorage/models/block/acacia_1_locked.json
 8d6752b49bcf17192815d02c04f79887e7adc30a assets/functionalstorage/models/block/acacia_2_locked.json
 11acc40b9bb8ff8a3c99c8f4251056924f686400 assets/functionalstorage/models/block/acacia_4_locked.json
@@ -6,7 +6,6 @@
 d3e027927571ce7d34bf4d011f61c8b82053b50f assets/functionalstorage/models/block/birch_2_locked.json
 1d9a2c88248d5cb6792541dd2f06a160d544cbb0 assets/functionalstorage/models/block/birch_4_locked.json
 4f608c3a1541dab05fcdadd91fb123fa312f7db6 assets/functionalstorage/models/block/compacting_drawer_locked.json
-8f74115b3d28376a9466bd09cc2a19f739f5620f assets/functionalstorage/models/block/compacting_framed_drawer_locked.json
 188d03838b8d0759e470ec8c94229e5ca579b269 assets/functionalstorage/models/block/crimson_1_locked.json
 356212cec06b595a53118ff336c418f8bad10221 assets/functionalstorage/models/block/crimson_2_locked.json
 cf5cedd21bc165b4f6f31a0e6a42807a81725c14 assets/functionalstorage/models/block/crimson_4_locked.json
@@ -14,9 +13,6 @@ cf5cedd21bc165b4f6f31a0e6a42807a81725c14 assets/functionalstorage/models/block/c
 93dc6d016e8744000316d326b75d5e080c55815a assets/functionalstorage/models/block/dark_oak_2_locked.json
 ca06f44b8efc1377efc4bdd0c80f3522a829406e assets/functionalstorage/models/block/dark_oak_4_locked.json
 a2c4563156a818264d7047bf03c2ad9436519c45 assets/functionalstorage/models/block/ender_drawer_locked.json
-50244b237cb4f538f6d6fd2a030e424e2d7b731e assets/functionalstorage/models/block/framed_1_locked.json
-7e3f56b9069b33181e29553255cdf9ad0569123d assets/functionalstorage/models/block/framed_2_locked.json
-3afead375412b5de708f1c8338e977adc07d00a3 assets/functionalstorage/models/block/framed_4_locked.json
 840fbdd137e187d872ec4fd61620080f5b21f456 assets/functionalstorage/models/block/jungle_1_locked.json
 1430f12c060903c753569a3c0dfed7c74a433eb7 assets/functionalstorage/models/block/jungle_2_locked.json
 d059b5d3f663e00a229fb433efce31a6e2b7f46d assets/functionalstorage/models/block/jungle_4_locked.json

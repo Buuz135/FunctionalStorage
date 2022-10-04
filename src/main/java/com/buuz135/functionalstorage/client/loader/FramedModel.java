@@ -8,6 +8,7 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.math.Vector3f;
 import net.minecraft.client.Minecraft;
@@ -33,9 +34,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.client.ChunkRenderTypeSet;
-import net.minecraftforge.client.RenderTypeGroup;
 import net.minecraftforge.client.model.IDynamicBakedModel;
-import net.minecraftforge.client.model.IModelBuilder;
 import net.minecraftforge.client.model.IQuadTransformer;
 import net.minecraftforge.client.model.SimpleModelState;
 import net.minecraftforge.client.model.data.ModelData;
@@ -49,7 +48,6 @@ import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.awt.*;
 import java.util.*;
 import java.util.List;
 import java.util.function.Function;
@@ -257,21 +255,21 @@ public class FramedModel implements IUnbakedGeometry<FramedModel> {
                     uv0[0] = (uv0[0] - toCopy.getSprite().getU0()) * sprite.get(j).getWidth() / toCopy.getSprite().getWidth() + sprite.get(j).getU0();
                     uv0[1] = (uv0[1] - toCopy.getSprite().getV0()) * sprite.get(j).getHeight() / toCopy.getSprite().getHeight() + sprite.get(j).getV0();
                     int[] packedTextureData = packUV(uv0[0], uv0[1]);
-                    copied.getVertices()[4 + i * 8] = packedTextureData[0];
-                    copied.getVertices()[5 + i * 8] = packedTextureData[1];
+                    copied.getVertices()[IQuadTransformer.UV0 + i * IQuadTransformer.STRIDE] = packedTextureData[0];
+                    copied.getVertices()[IQuadTransformer.UV0 + 1 + i * IQuadTransformer.STRIDE] = packedTextureData[1];
 
                     if (color.get(j) != -1) {
                         int[] colors = getColorARGB(copied.getVertices(), i);
-                        Color color1 = new Color(color.get(j), true);
-                        colors[0] = (colors[0] * color1.getAlpha()) / 255;
-                        colors[1] = (colors[1] * color1.getRed()) / 255;
-                        colors[2] = (colors[2] * color1.getGreen()) / 255;
-                        colors[3] = (colors[3] * color1.getBlue()) / 255;
+                        int[] color1 = getColorARGB(color.get(j));
+                        colors[0] = (colors[0] * color1[0]) / 255;
+                        colors[1] = (colors[1] * color1[1]) / 255;
+                        colors[2] = (colors[2] * color1[2]) / 255;
+                        colors[3] = (colors[3] * color1[3]) / 255;
                         int[] packedColor = packColor( colors[3], colors[2], colors[1], colors[0]);
-                        copied.getVertices()[3 + i * 8] = packedColor[0];
+                        copied.getVertices()[IQuadTransformer.COLOR + i * IQuadTransformer.STRIDE] = packedColor[0];
                     }
 
-                    copied.getVertices()[6 + i * 8] = toCopy.getVertices()[6 + i * 8];
+                    copied.getVertices()[IQuadTransformer.UV2 + i * IQuadTransformer.STRIDE] = toCopy.getVertices()[IQuadTransformer.UV2  + i * IQuadTransformer.STRIDE];
 
                 }
                 quads.add(copied);
@@ -290,20 +288,16 @@ public class FramedModel implements IUnbakedGeometry<FramedModel> {
 
         private static int[] getColorARGB(int[] vertices, int vertexIndex) {
             int color = vertices[IQuadTransformer.STRIDE * vertexIndex + IQuadTransformer.COLOR];
+            return getColorARGB(color);
+        }
+
+        private static int[] getColorARGB(int color) {
             int[] argb = new int[4];
             argb[0] = color >> 24 & 0xFF;
             argb[1] = color >> 16 & 0xFF;
             argb[2] = color >> 8 & 0xFF;
             argb[3] = color & 0xFF;
             return argb;
-        }
-
-        private static short[] getUV2(int[] vertices, int vertexIndex) {
-            short[] uv2 = new short[2];
-            int light = vertices[IQuadTransformer.STRIDE * vertexIndex + IQuadTransformer.UV2];
-            uv2[0] = (short) (light >> 16);
-            uv2[1] = (short) (light & 0xffff);
-            return uv2;
         }
 
 
@@ -316,7 +310,11 @@ public class FramedModel implements IUnbakedGeometry<FramedModel> {
 
         public static int[] packColor(int r, int g, int b, int a) {
             int[] quadData = new int[1];
-            quadData[0] = new Color(r,g,b,a).getRGB();
+            quadData[0] =
+                    ((a & 0xFF) << 24) |
+                    ((r & 0xFF) << 16) |
+                    ((g & 0xFF) << 8)  |
+                    ((b & 0xFF));
             return quadData;
         }
 

@@ -5,7 +5,7 @@
 		"lock": {
 			"parent": "functionalstorage:block/lock",
 			"textures": {
-				"lock_icon": "functionalstorage:blocks/unlock"
+				"lock_icon": "functionalstorage:blocks/lock"
 			}
 		},
 		"front": {
