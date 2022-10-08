@@ -8,10 +8,10 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.math.Vector3f;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.BlockModel;
@@ -24,6 +24,7 @@ import net.minecraft.client.resources.model.Material;
 import net.minecraft.client.resources.model.ModelBakery;
 import net.minecraft.client.resources.model.ModelState;
 import net.minecraft.client.resources.model.UnbakedModel;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
 import net.minecraft.resources.ResourceLocation;
@@ -36,6 +37,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.client.ChunkRenderTypeSet;
 import net.minecraftforge.client.model.IDynamicBakedModel;
 import net.minecraftforge.client.model.IQuadTransformer;
+import net.minecraftforge.client.model.QuadTransformers;
 import net.minecraftforge.client.model.SimpleModelState;
 import net.minecraftforge.client.model.data.ModelData;
 import net.minecraftforge.client.model.data.ModelProperty;
@@ -43,6 +45,8 @@ import net.minecraftforge.client.model.geometry.IGeometryBakingContext;
 import net.minecraftforge.client.model.geometry.IGeometryLoader;
 import net.minecraftforge.client.model.geometry.IUnbakedGeometry;
 import net.minecraftforge.common.util.ConcatenatedListView;
+import org.apache.commons.lang3.tuple.ImmutableTriple;
+import org.apache.commons.lang3.tuple.Triple;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
@@ -54,7 +58,11 @@ import java.util.function.Function;
 
 import static com.buuz135.functionalstorage.client.loader.FramedModel.Baked.getQuadsUsingShape;
 
-//Coppied from composite model
+/**
+ * A Custom Model for Framed Drawers. <br>
+ * Based on {@link net.minecraftforge.client.model.CompositeModel} from Forge. <br>
+ * Using parts of <a href="https://github.com/SleepyTrousers/EnderIO-Rewrite/blob/dev/1.19.x/src/decor/java/com/enderio/decoration/client/model/painted/PaintedBlockModel.java"> Painted Block Model</a> from Ender IO.
+ */
 public class FramedModel implements IUnbakedGeometry<FramedModel> {
     private static final Logger LOGGER = LogManager.getLogger();
 
@@ -176,22 +184,21 @@ public class FramedModel implements IUnbakedGeometry<FramedModel> {
             if (frameItem instanceof BlockItem blockItem) {
                 BlockState state1 = blockItem.getBlock().defaultBlockState();
                 BakedModel model = Minecraft.getInstance().getBlockRenderer().getBlockModel(state1);
-                Optional<Pair<List<TextureAtlasSprite>, List<Integer>>> spriteOptional = getSpriteData(model, state1, side, rand, null, renderType);
+                Optional<List<Triple<TextureAtlasSprite, Integer, int[]>>> spriteOptional = getSpriteData(model, state1, side, rand, null, renderType);
                 List<BakedQuad> returnQuads = new ArrayList<>();
                 for (BakedQuad shapeQuad : shape) {
-                    Pair<List<TextureAtlasSprite>, List<Integer>> spriteData = spriteOptional.orElse(getSpriteFromModel(shapeQuad, model, state1,null));
-                    returnQuads.addAll(framedQuad(shapeQuad, spriteData.getFirst(), spriteData.getSecond()));
+                    List<Triple<TextureAtlasSprite, Integer, int[]>> spriteData = spriteOptional.orElse(getSpriteFromModel(shapeQuad, model, state1,null));
+                    returnQuads.addAll(framedQuad(shapeQuad, spriteData, state1.getLightEmission(Minecraft.getInstance().level, BlockPos.ZERO)));
                 }
                 return returnQuads;
             }
             return List.of();
         }
 
-        private static Optional<Pair<List<TextureAtlasSprite>, List<Integer>>> getSpriteData(BakedModel model, BlockState state, @Nullable Direction side, RandomSource rand, @Nullable Direction rotation, @Nullable RenderType renderType) {
+        private static Optional<List<Triple<TextureAtlasSprite, Integer, int[]>>> getSpriteData(BakedModel model, BlockState state, @Nullable Direction side, RandomSource rand, @Nullable Direction rotation, @Nullable RenderType renderType) {
             List<BakedQuad> quads = model.getQuads(state, side, rand, ModelData.EMPTY, renderType);
-            List<TextureAtlasSprite> sprites = new ArrayList<>();
-            List<Integer> tints = new ArrayList<>();
             List<Float> positions = new ArrayList<>();
+            List<Triple<TextureAtlasSprite, Integer, int[]>> modelData = new ArrayList<>();
             if (!quads.isEmpty()) {
                 for (BakedQuad bakedQuad: quads) {
                     float[] position = unpackVertices(bakedQuad.getVertices(), 0, IQuadTransformer.POSITION, 3);
@@ -199,11 +206,16 @@ public class FramedModel implements IUnbakedGeometry<FramedModel> {
                 }
                 List<Integer> index = getMinMaxPosition(positions, side);
                 for (int i = 0; i < index.size(); i++) {
-                    sprites.add(quads.get(i).getSprite());
-                    tints.add(quads.get(i).isTinted() ? Minecraft.getInstance().getBlockColors().getColor(state, Minecraft.getInstance().level, null, quads.get(i).getTintIndex()) : -1);
+                    int[] lights = new int[4];
+                    for (int j=0; j<4 ; j++) {
+                        lights[j] = quads.get(i).getVertices()[IQuadTransformer.UV2 + j * IQuadTransformer.STRIDE];
+                    }
+                    int tint = quads.get(i).isTinted() ? Minecraft.getInstance().getBlockColors().getColor(state, Minecraft.getInstance().level, null, quads.get(i).getTintIndex()) : -1;
+                    Triple<TextureAtlasSprite, Integer, int[]> triple = new ImmutableTriple<>(quads.get(i).getSprite(), tint, lights);
+                    modelData.add(triple);
                 }
             }
-            return quads.isEmpty() ? Optional.empty() : Optional.of(Pair.of(sprites, tints));
+            return quads.isEmpty() ? Optional.empty() : Optional.of(modelData);
         }
 
         private static float getPositionFromDirection(float[] position, Direction side) {
@@ -226,50 +238,56 @@ public class FramedModel implements IUnbakedGeometry<FramedModel> {
             return index;
         }
 
-        protected static Pair<List<TextureAtlasSprite>, List<Integer>> getSpriteFromModel(BakedQuad shape, BakedModel model, BlockState state, Direction rotation) {
+        protected static List<Triple<TextureAtlasSprite, Integer, int[]>> getSpriteFromModel(BakedQuad shape, BakedModel model, BlockState state, Direction rotation) {
             List<BakedQuad> quads = model.getQuads(state, shape.getDirection(), RandomSource.create());
-            List<TextureAtlasSprite> sprites = new ArrayList<>();
-            List<Integer> tints = new ArrayList<>();
             List<Float> positions = new ArrayList<>();
+            List<Triple<TextureAtlasSprite, Integer, int[]>> modelData = new ArrayList<>();
             if (!quads.isEmpty()) {
                 for (BakedQuad bakedQuad: quads) {
                     float[] position = unpackVertices(bakedQuad.getVertices(), 0, IQuadTransformer.POSITION, 3);
                     positions.add(getPositionFromDirection(position, shape.getDirection()));
+
                 }
                 List<Integer> index = getMinMaxPosition(positions, shape.getDirection());
                 for (int i = 0; i < index.size(); i++) {
-                    sprites.add(quads.get(i).getSprite());
-                    tints.add(quads.get(i).isTinted() ? Minecraft.getInstance().getBlockColors().getColor(state, Minecraft.getInstance().level, null, quads.get(i).getTintIndex()) : -1);
+                    int[] lights = new int[4];
+                    for (int j=0; j<4; j++) {
+                        lights[j] = quads.get(i).getVertices()[IQuadTransformer.UV2 + j * IQuadTransformer.STRIDE];
+                    }
+                    int tint = quads.get(i).isTinted() ? Minecraft.getInstance().getBlockColors().getColor(state, Minecraft.getInstance().level, null, quads.get(i).getTintIndex()) : -1;
+                    Triple<TextureAtlasSprite, Integer, int[]> triple = new ImmutableTriple<>(quads.get(i).getSprite(), tint, lights);
+                    modelData.add(triple);
                 }
             }
-            return quads.isEmpty() ? Pair.of(List.of(Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(MissingTextureAtlasSprite.getLocation())), List.of(0)) : Pair.of(sprites, tints);
+            return quads.isEmpty() ? List.of(Triple.of(Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(MissingTextureAtlasSprite.getLocation()), -1, new int[] {0,0,0,0})) : modelData;
         }
 
-        protected static List<BakedQuad> framedQuad(BakedQuad toCopy, List<TextureAtlasSprite> sprite, List<Integer> color) {
+        protected static List<BakedQuad> framedQuad(BakedQuad toCopy, List<Triple<TextureAtlasSprite, Integer, int[]>> modelData, int lightEmission) {
+            lightEmission = LightTexture.pack(lightEmission, lightEmission);
             List<BakedQuad> quads = new ArrayList<>();
-            for (int j = 0; j < sprite.size(); j++) {
-                BakedQuad copied = new BakedQuad(Arrays.copyOf(toCopy.getVertices(), 32), -1, toCopy.getDirection(), sprite.get(j), toCopy.isShade());
+            for (int j = 0; j < modelData.size(); j++) {
+                BakedQuad copied = new BakedQuad(Arrays.copyOf(toCopy.getVertices(), 32), -1, toCopy.getDirection(), modelData.get(j).getLeft(), toCopy.isShade());
 
                 for (int i = 0; i < 4; i++) {
                     float[] uv0 = unpackVertices(copied.getVertices(), i, IQuadTransformer.UV0, 2);
-                    uv0[0] = (uv0[0] - toCopy.getSprite().getU0()) * sprite.get(j).getWidth() / toCopy.getSprite().getWidth() + sprite.get(j).getU0();
-                    uv0[1] = (uv0[1] - toCopy.getSprite().getV0()) * sprite.get(j).getHeight() / toCopy.getSprite().getHeight() + sprite.get(j).getV0();
+                    uv0[0] = (uv0[0] - toCopy.getSprite().getU0()) * modelData.get(j).getLeft().getWidth() / toCopy.getSprite().getWidth() + modelData.get(j).getLeft().getU0();
+                    uv0[1] = (uv0[1] - toCopy.getSprite().getV0()) * modelData.get(j).getLeft().getHeight() / toCopy.getSprite().getHeight() + modelData.get(j).getLeft().getV0();
                     int[] packedTextureData = packUV(uv0[0], uv0[1]);
                     copied.getVertices()[IQuadTransformer.UV0 + i * IQuadTransformer.STRIDE] = packedTextureData[0];
                     copied.getVertices()[IQuadTransformer.UV0 + 1 + i * IQuadTransformer.STRIDE] = packedTextureData[1];
 
-                    if (color.get(j) != -1) {
+                    if (modelData.get(j).getMiddle() != -1) {
                         int[] colors = getColorARGB(copied.getVertices(), i);
-                        int[] color1 = getColorARGB(color.get(j));
+                        int[] color1 = getColorARGB(modelData.get(j).getMiddle());
                         colors[0] = (colors[0] * color1[0]) / 255;
                         colors[1] = (colors[1] * color1[1]) / 255;
                         colors[2] = (colors[2] * color1[2]) / 255;
                         colors[3] = (colors[3] * color1[3]) / 255;
-                        int[] packedColor = packColor( colors[3], colors[2], colors[1], colors[0]);
-                        copied.getVertices()[IQuadTransformer.COLOR + i * IQuadTransformer.STRIDE] = packedColor[0];
+                        int packedColor = packColor( colors[3], colors[2], colors[1], colors[0]);
+                        copied.getVertices()[IQuadTransformer.COLOR + i * IQuadTransformer.STRIDE] = packedColor;
                     }
 
-                    copied.getVertices()[IQuadTransformer.UV2 + i * IQuadTransformer.STRIDE] = toCopy.getVertices()[IQuadTransformer.UV2  + i * IQuadTransformer.STRIDE];
+                    copied.getVertices()[IQuadTransformer.UV2 + i * IQuadTransformer.STRIDE] = Math.max(modelData.get(j).getRight()[i], lightEmission);
 
                 }
                 quads.add(copied);
@@ -300,6 +318,14 @@ public class FramedModel implements IUnbakedGeometry<FramedModel> {
             return argb;
         }
 
+        private static int[] getUV2(int[] vertices, int vertexIndex) {
+            int[] light = new int[2];
+            int uv2 = vertices[IQuadTransformer.STRIDE * vertexIndex + IQuadTransformer.UV2];
+            light[0] = (uv2 & 0xFFFF) >> 4;
+            light[1] = uv2 >> 20 & '\uffff';
+            return light;
+        }
+
 
         public static int[] packUV(float u, float v) {
             int[] quadData = new int[2];
@@ -308,14 +334,15 @@ public class FramedModel implements IUnbakedGeometry<FramedModel> {
             return quadData;
         }
 
-        public static int[] packColor(int r, int g, int b, int a) {
-            int[] quadData = new int[1];
-            quadData[0] =
-                    ((a & 0xFF) << 24) |
+        public static int packColor(int r, int g, int b, int a) {
+            return ((a & 0xFF) << 24) |
                     ((r & 0xFF) << 16) |
                     ((g & 0xFF) << 8)  |
                     ((b & 0xFF));
-            return quadData;
+        }
+
+        public static int packUV2(int u, int v) {
+            return u << 4 | v << 20;
         }
 
         @Override
