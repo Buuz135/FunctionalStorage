@@ -1,6 +1,8 @@
 package com.buuz135.functionalstorage.client;
 
 import com.buuz135.functionalstorage.FunctionalStorage;
+import com.buuz135.functionalstorage.block.CompactingFramedDrawerBlock;
+import com.buuz135.functionalstorage.block.FramedDrawerBlock;
 import com.buuz135.functionalstorage.block.tile.FramedDrawerTile;
 import com.buuz135.functionalstorage.client.model.FramedDrawerModelData;
 import net.minecraft.client.Minecraft;
@@ -52,7 +54,21 @@ public class FramedColors implements BlockColor, ItemColor {
 
     @Override
     public int getColor(ItemStack itemStack, int tintIndex) {
-        return 0;
+        if (tintIndex == 0) {
+            if (itemStack.getItem() instanceof BlockItem item && (item.getBlock() instanceof FramedDrawerBlock || item.getBlock() instanceof CompactingFramedDrawerBlock)) {
+                FramedDrawerModelData framedDrawerModelData = FramedDrawerBlock.getDrawerModelData(itemStack);
+                if (framedDrawerModelData != null) {
+                    for (Map.Entry<String, Item> entry: framedDrawerModelData.getDesign().entrySet()) {
+                        if (entry.getValue() instanceof BlockItem blockItem) {
+                            int color = Minecraft.getInstance().getItemColors().getColor(itemStack, tintIndex);
+                            if (color != -1)
+                                return color;
+                        }
+                    }
+                }
+            }
+        }
+        return 0xFFFFFF;
     }
 
     @SubscribeEvent
@@ -63,5 +79,8 @@ public class FramedColors implements BlockColor, ItemColor {
         event.register(new FramedColors(), block2);
         Block block4 = Registry.BLOCK.get(new ResourceLocation(FunctionalStorage.MOD_ID, "framed_4"));
         event.register(new FramedColors(), block4);
+
+        Block block5 = Registry.BLOCK.get(new ResourceLocation(FunctionalStorage.MOD_ID, "compacting_framed_drawer"));
+        event.register(new FramedColors(), block5);
     }
 }
