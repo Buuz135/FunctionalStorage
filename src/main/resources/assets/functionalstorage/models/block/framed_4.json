@@ -33,7 +33,7 @@
 		"front",
 		"side"
 	],
-	"texture": {
+	"textures": {
 		"particle": "functionalstorage:blocks/framed_front_1"
 	},
 	"display": {

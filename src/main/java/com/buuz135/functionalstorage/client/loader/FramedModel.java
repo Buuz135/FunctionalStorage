@@ -383,7 +383,7 @@ public class FramedModel implements IUnbakedGeometry<FramedModel> {
                     return Minecraft.getInstance().getBlockRenderer().getBlockModel(blockItem.getBlock().defaultBlockState()).getParticleIcon(data);
                 }
             }
-            return IDynamicBakedModel.super.getParticleIcon(data);
+            return particle;
         }
 
         @Override

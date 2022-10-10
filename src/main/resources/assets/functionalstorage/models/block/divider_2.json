@@ -9,7 +9,7 @@
       "faces": {
         "north": {"uv": [1, 7, 15, 9], "texture": "#front_divider", "cullface": "north"},
         "up": {"uv": [15, 7, 1, 9], "texture": "#front_divider"},
-        "down": {"uv": [1, 9, 15, 7], "rotation": 180, "texture": "#front_divider"}
+        "down": {"uv": [1, 9, 15, 7], "texture": "#front_divider"}
       }
     }
   ]
