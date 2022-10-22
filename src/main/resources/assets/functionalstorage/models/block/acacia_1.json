@@ -1,5 +1,5 @@
 {
-  	"parent": "functionalstorage:block/base_x_1",
+	"parent": "functionalstorage:block/base_x_1",
 	"textures": {
 		"particle": "functionalstorage:blocks/acacia_front_1",
 		"front": "functionalstorage:blocks/acacia_front_1",
