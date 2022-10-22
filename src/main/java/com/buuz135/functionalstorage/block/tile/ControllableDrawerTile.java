@@ -85,7 +85,9 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
                         }
                     }
                     for (int i = 0; i < getStorage().getSlots(); i++) {
-                        if (getBaseSize(i) * mult < getStorage().getStackInSlot(i).getCount()) {
+                        if (getStorage().getStackInSlot(i).isEmpty()) continue;
+                        double stackSize = getStorage().getStackInSlot(i).getMaxStackSize() / 64D;
+                        if ((int) Math.floor(Math.min(Integer.MAX_VALUE, getBaseSize(i) * (long) mult) * stackSize) < getStorage().getStackInSlot(i).getCount()) {
                             return ItemStack.EMPTY;
                         }
                     }
