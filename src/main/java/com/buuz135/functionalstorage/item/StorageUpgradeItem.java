@@ -6,12 +6,12 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
+import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.Nullable;
 
-import java.awt.*;
 import java.util.List;
 
 public class StorageUpgradeItem extends UpgradeItem{
@@ -52,17 +52,17 @@ public class StorageUpgradeItem extends UpgradeItem{
     public Component getName(ItemStack p_41458_) {
         Component component = super.getName(p_41458_);
         if (component instanceof MutableComponent) {
-            ((MutableComponent) component).setStyle(Style.EMPTY.withColor(storageTier == StorageTier.NETHERITE && Minecraft.getInstance().level != null ? Color.HSBtoRGB((Minecraft.getInstance().level.getGameTime() % 360) / 360f, 1, 1) : storageTier.getColor()));
+            ((MutableComponent) component).setStyle(Style.EMPTY.withColor(storageTier == StorageTier.NETHERITE && Minecraft.getInstance().level != null ? Mth.hsvToRgb((Minecraft.getInstance().level.getGameTime() % 360) / 360f, 1, 1) : storageTier.getColor()));
         }
         return component;
     }
 
-    public static enum StorageTier{
-        COPPER(8, new Color(204,109,81).getRGB()),
-        GOLD(16, new Color(233,177,21).getRGB()),
-        DIAMOND(24, new Color(32,197,181).getRGB()),
-        NETHERITE(32, new Color(49,41,42).getRGB()),
-        IRON(1, new Color(130,130,130).getRGB());
+    public static enum StorageTier {
+        COPPER(8, Mth.color(204, 109, 81)),
+        GOLD(16, Mth.color(233, 177, 21)),
+        DIAMOND(24, Mth.color(32, 197, 181)),
+        NETHERITE(32, Mth.color(49, 41, 42)),
+        IRON(1, Mth.color(130, 130, 130));
 
         private final int storageMultiplier;
         private final int color;
