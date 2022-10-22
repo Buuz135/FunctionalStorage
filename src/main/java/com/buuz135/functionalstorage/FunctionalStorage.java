@@ -284,7 +284,7 @@ public class FunctionalStorage extends ModuleController {
         }).subscribe();
         EventManager.forge(RenderTooltipEvent.Pre.class).process(itemTooltipEvent -> {
             if (itemTooltipEvent.getItemStack().getItem().equals(FunctionalStorage.ENDER_DRAWER.getLeft().get().asItem()) && itemTooltipEvent.getItemStack().hasTag()) {
-                TooltipUtil.renderItems(itemTooltipEvent.getPoseStack(), EnderDrawerBlock.getFrequencyDisplay(itemTooltipEvent.getItemStack().getTag().getCompound("BlockEntityTag").getString("frequency")), itemTooltipEvent.getX() + 14, itemTooltipEvent.getY() + 11);
+                TooltipUtil.renderItems(itemTooltipEvent.getPoseStack(), EnderDrawerBlock.getFrequencyDisplay(itemTooltipEvent.getItemStack().getTag().getCompound("Tile").getString("frequency")), itemTooltipEvent.getX() + 14, itemTooltipEvent.getY() + 11);
             }
             if (itemTooltipEvent.getItemStack().is(FunctionalStorage.LINKING_TOOL.get()) && itemTooltipEvent.getItemStack().getOrCreateTag().contains(LinkingToolItem.NBT_ENDER)) {
                 TooltipUtil.renderItems(itemTooltipEvent.getPoseStack(), EnderDrawerBlock.getFrequencyDisplay(itemTooltipEvent.getItemStack().getOrCreateTag().getString(LinkingToolItem.NBT_ENDER)), itemTooltipEvent.getX() + 14, itemTooltipEvent.getY() + 11);

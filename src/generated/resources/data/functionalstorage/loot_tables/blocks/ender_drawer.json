@@ -1,33 +1,3 @@
 {
-  "type": "minecraft:block",
-  "pools": [
-    {
-      "bonus_rolls": 0.0,
-      "conditions": [
-        {
-          "condition": "minecraft:survives_explosion"
-        }
-      ],
-      "entries": [
-        {
-          "type": "minecraft:item",
-          "functions": [
-            {
-              "function": "minecraft:copy_nbt",
-              "ops": [
-                {
-                  "op": "replace",
-                  "source": "frequency",
-                  "target": "BlockEntityTag.frequency"
-                }
-              ],
-              "source": "block_entity"
-            }
-          ],
-          "name": "functionalstorage:ender_drawer"
-        }
-      ],
-      "rolls": 1.0
-    }
-  ]
+  "type": "minecraft:block"
 }

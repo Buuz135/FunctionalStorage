@@ -145,12 +145,33 @@ public class EnderDrawerTile extends ControllableDrawerTile<EnderDrawerTile> {
 
     @Override
     public IItemHandler getStorage() {
-        return lazyStorage.resolve().get();
+        return this.lazyStorage.resolve().get();
     }
 
     @Override
     public LazyOptional<IItemHandler> getOptional() {
-        return lazyStorage;
+        return this.lazyStorage;
+    }
+
+    @Override
+    public boolean isEverythingEmpty() {
+        EnderInventoryHandler inventoryHandler = EnderSavedData.getInstance(this.level).getFrequency(this.frequency);
+        for (int i = 0; i < inventoryHandler.getSlots(); i++) {
+            if (!inventoryHandler.getStackInSlot(i).isEmpty()) {
+                return false;
+            }
+        }
+        for (int i = 0; i < getStorageUpgrades().getSlots(); i++) {
+            if (!getStorageUpgrades().getStackInSlot(i).isEmpty()) {
+                return false;
+            }
+        }
+        for (int i = 0; i < getUtilityUpgrades().getSlots(); i++) {
+            if (!getUtilityUpgrades().getStackInSlot(i).isEmpty()) {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override
@@ -158,7 +179,7 @@ public class EnderDrawerTile extends ControllableDrawerTile<EnderDrawerTile> {
         return 1;
     }
 
-    public void setFrequency(String frequency){
+    public void setFrequency(String frequency) {
         if (frequency == null) return;
         this.frequency = frequency;
         this.lazyStorage.invalidate();
