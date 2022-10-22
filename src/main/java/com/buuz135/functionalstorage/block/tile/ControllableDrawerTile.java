@@ -180,7 +180,7 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
                                     boolean hasWorked = false;
                                     for (int ourSlot = 0; ourSlot < this.getStorage().getSlots(); ourSlot++) {
                                         ItemStack simulated = getStorage().insertItem(ourSlot, pulledStack, true);
-                                        if (simulated.getCount() != pulledStack.getCount()) {
+                                        if (simulated.getCount() <= pulledStack.getCount()) {
                                             getStorage().insertItem(ourSlot, iItemHandler.extractItem(otherSlot, pulledStack.getCount() - simulated.getCount(), false), false);
                                             hasWorked = true;
                                             break;
@@ -201,7 +201,7 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
                                     boolean hasWorked = false;
                                     for (int ourSlot = 0; ourSlot < otherHandler.getSlots(); ourSlot++) {
                                         ItemStack simulated = otherHandler.insertItem(ourSlot, pulledStack, true);
-                                        if (simulated.getCount() != pulledStack.getCount()) {
+                                        if (simulated.getCount() <= pulledStack.getCount()) {
                                             otherHandler.insertItem(ourSlot, getStorage().extractItem(otherSlot, pulledStack.getCount() - simulated.getCount(), false), false);
                                             hasWorked = true;
                                             break;
