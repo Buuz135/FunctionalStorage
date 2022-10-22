@@ -7,6 +7,9 @@
     "minecraft:melon",
     "minecraft:melon_slice",
     "minecraft:quartz",
-    "minecraft:quartz_block"
+    "minecraft:quartz_block",
+    "minecraft:ice",
+    "minecraft:blue_ice",
+    "minecraft:packed_ice"
   ]
 }
