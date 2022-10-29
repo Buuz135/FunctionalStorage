@@ -6,6 +6,7 @@ import com.buuz135.functionalstorage.client.CompactingDrawerRenderer;
 import com.buuz135.functionalstorage.client.ControllerRenderer;
 import com.buuz135.functionalstorage.client.DrawerRenderer;
 import com.buuz135.functionalstorage.client.EnderDrawerRenderer;
+import com.buuz135.functionalstorage.client.loader.FramedModel;
 import com.buuz135.functionalstorage.client.loader.RetexturedModel;
 import com.buuz135.functionalstorage.data.FunctionalStorageBlockTagsProvider;
 import com.buuz135.functionalstorage.data.FunctionalStorageBlockstateProvider;
@@ -81,10 +82,10 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 // The value here should match an entry in the META-INF/mods.toml file
-@Mod("functionalstorage")
+@Mod(FunctionalStorage.MOD_ID)
 public class FunctionalStorage extends ModuleController {
 
-    public static String MOD_ID = "functionalstorage";
+    public final static String MOD_ID = "functionalstorage";
     public static NetworkHandler NETWORK = new NetworkHandler(MOD_ID);
 
     static {
@@ -304,7 +305,7 @@ public class FunctionalStorage extends ModuleController {
             });
         }).subscribe();
         EventManager.mod(ModelRegistryEvent.class).process(modelRegistryEvent -> {
-            ModelLoaderRegistry.registerLoader(new ResourceLocation(MOD_ID, "framed"), RetexturedModel.Loader.INSTANCE);
+            ModelLoaderRegistry.registerLoader(new ResourceLocation(MOD_ID, "framedblock"), FramedModel.Loader.INSTANCE);
         }).subscribe();
     }
 
@@ -319,7 +320,7 @@ public class FunctionalStorage extends ModuleController {
                                 .isPresent())
                         .collect(Collectors.toList())
         );
-        if (false) {
+        if (true) {
             event.getGenerator().addProvider(new BlockItemModelGeneratorProvider(event.getGenerator(), MOD_ID, blocksToProcess));
             event.getGenerator().addProvider(new FunctionalStorageBlockstateProvider(event.getGenerator(), event.getExistingFileHelper(), blocksToProcess));
             event.getGenerator().addProvider(new TitaniumLootTableProvider(event.getGenerator(), blocksToProcess));

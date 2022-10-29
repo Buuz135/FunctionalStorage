@@ -1,0 +1,70 @@
+{
+	"parent": "minecraft:block/block",
+	"loader": "functionalstorage:framedblock",
+	"children": {
+		"lock": {
+			"parent": "functionalstorage:block/lock",
+			"textures": {
+				"lock_icon": "functionalstorage:blocks/lock"
+			}
+		},
+		"front": {
+			"parent": "functionalstorage:block/front",
+			"textures": {
+				"front": "functionalstorage:blocks/framed_front_1"
+			}
+		},
+		"side": {
+			"parent": "functionalstorage:block/side",
+			"textures": {
+				"side": "functionalstorage:blocks/framed_side"
+			}
+		},
+		"front_divider" : {
+			"parent": "functionalstorage:block/divider_4",
+			"textures": {
+				"front_divider": "functionalstorage:blocks/framed_side"
+			}
+		}
+	},
+	"item_render_order": [
+		"lock",
+		"front_divider",
+		"front",
+		"side"
+	],
+	"textures": {
+		"particle": "functionalstorage:blocks/framed_front_1"
+	},
+	"display": {
+		"thirdperson_righthand": {
+			"rotation": [75, 45, 0],
+			"translation": [0, 2.5, 0],
+			"scale": [0.375, 0.375, 0.375]
+		},
+		"thirdperson_lefthand": {
+			"rotation": [75, 45, 0],
+			"translation": [0, 2.5, 0],
+			"scale": [0.375, 0.375, 0.375]
+		},
+		"firstperson_righthand": {
+			"rotation": [0, 45, 0],
+			"scale": [0.4, 0.4, 0.4]
+		},
+		"firstperson_lefthand": {
+			"rotation": [0, 225, 0],
+			"scale": [0.4, 0.4, 0.4]
+		},
+		"ground": {
+			"translation": [0, 3, 0],
+			"scale": [0.25, 0.25, 0.25]
+		},
+		"gui": {
+			"rotation": [30, 225, 0],
+			"scale": [0.625, 0.625, 0.625]
+		},
+		"fixed": {
+			"scale": [0.5, 0.5, 0.5]
+		}
+	}
+}

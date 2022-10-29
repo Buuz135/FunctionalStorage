@@ -4,29 +4,18 @@
     {
       "conditions": [
         {
+          "type": "forge:and",
           "values": [
             {
-              "item": "functionalstorage:compacting_framed_drawer",
-              "type": "forge:item_exists"
+              "type": "forge:item_exists",
+              "item": "functionalstorage:compacting_framed_drawer"
             }
-          ],
-          "type": "forge:and"
+          ]
         }
       ],
       "recipe": {
         "type": "minecraft:crafting_shaped",
-        "pattern": [
-          "SSS",
-          "PDP",
-          "SIS"
-        ],
         "key": {
-          "S": {
-            "item": "minecraft:iron_nugget"
-          },
-          "P": {
-            "item": "minecraft:piston"
-          },
           "D": [
             {
               "item": "functionalstorage:framed_1"
@@ -40,8 +29,19 @@
           ],
           "I": {
             "tag": "forge:ingots/iron"
+          },
+          "P": {
+            "item": "minecraft:piston"
+          },
+          "S": {
+            "item": "minecraft:iron_nugget"
           }
         },
+        "pattern": [
+          "SSS",
+          "PDP",
+          "SIS"
+        ],
         "result": {
           "item": "functionalstorage:compacting_framed_drawer"
         }

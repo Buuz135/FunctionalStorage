@@ -1,0 +1,38 @@
+{
+  "credit": "Made with Blockbench",
+  "elements": [
+    {
+      "name": "divider",
+      "from": [7, 1, 0],
+      "to": [9, 15, 2],
+      "rotation": {"angle": 0, "axis": "y", "origin": [-8, 0, -8]},
+      "faces": {
+        "north": {"uv": [7, 1, 9, 15], "texture": "#front_divider", "cullface": "north"},
+        "east": {"uv": [9, 1, 7, 15], "texture": "#front_divider"},
+        "west": {"uv": [9, 1, 7, 15], "texture": "#front_divider"}
+      }
+    },
+    {
+      "name": "divider",
+      "from": [9, 7, 0],
+      "to": [15, 9, 2],
+      "rotation": {"angle": 0, "axis": "y", "origin": [-8, 0, -8]},
+      "faces": {
+        "north": {"uv": [1, 7, 7, 9], "texture": "#front_divider", "cullface": "north"},
+        "up": {"uv": [7, 7, 1, 9], "texture": "#front_divider"},
+        "down": {"uv": [7, 7, 1, 9], "texture": "#front_divider"}
+      }
+    },
+    {
+      "name": "divider",
+      "from": [1, 7, 0],
+      "to": [7, 9, 2],
+      "rotation": {"angle": 0, "axis": "y", "origin": [-8, 0, -8]},
+      "faces": {
+        "north": {"uv": [9, 7, 15, 9], "texture": "#front_divider", "cullface": "north"},
+        "up": {"uv": [15, 7, 9, 9], "texture": "#front_divider"},
+        "down": {"uv": [15, 7, 9, 9], "texture": "#front_divider"}
+      }
+    }
+  ]
+}
