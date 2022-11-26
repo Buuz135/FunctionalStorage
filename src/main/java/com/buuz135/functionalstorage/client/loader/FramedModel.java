@@ -229,7 +229,7 @@ public class FramedModel implements IUnbakedGeometry<FramedModel> {
 
         private static List<Integer> getMinMaxPosition(List<Float> positions, Direction side) {
             List<Integer> index = new ArrayList<>();
-            float minMax = side.getAxisDirection() == Direction.AxisDirection.POSITIVE ? Collections.max(positions) : Collections.min(positions);
+            float minMax = side != null && side.getAxisDirection() == Direction.AxisDirection.POSITIVE ? Collections.max(positions) : Collections.min(positions);
             for (int i = 0; i < positions.size(); i++) {
                 if (Math.abs(positions.get(i) - minMax) < 0.1) {
                     index.add(i);
