@@ -8,6 +8,7 @@ import com.buuz135.functionalstorage.item.ConfigurationToolItem;
 import com.buuz135.functionalstorage.util.NumberUtils;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Matrix3f;
+import com.mojang.math.Matrix4f;
 import com.mojang.math.Quaternion;
 import com.mojang.math.Vector3f;
 import net.minecraft.ChatFormatting;
@@ -159,23 +160,27 @@ public class DrawerRenderer implements BlockEntityRenderer<DrawerTile> {
 
     public static void renderStack(PoseStack matrixStack, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn, ItemStack stack, int amount, float scale, ControllableDrawerTile.DrawerOptions options){
         BakedModel model = Minecraft.getInstance().getItemRenderer().getModel(stack, Minecraft.getInstance().level, null, 0);
-        float offset = -0.15f;
         if (model.isGui3d()){
-            matrixStack.translate(0,0, offset);
-            matrixStack.scale(0.75f, 0.75f, 0.75f);
-
+        	float thickness = (float)FunctionalStorageClientConfig.DRAWER_RENDER_THICKNESS;
+        	Matrix4f pose = new Matrix4f();
+        	// Squish display items instead of translating them backwards into drawer
+        	pose = Matrix4f.createScaleMatrix(0.75f, 0.75f, thickness);
+        	// Avoid scaling normal matrix by using mulPoseMatrix() instead of scale()
+        	matrixStack.mulPoseMatrix(pose);
         } else {
             matrixStack.scale(0.4f, 0.4f, 0.4f);
         }
+        
         matrixStack.mulPose(Vector3f.YP.rotationDegrees(180));
-        if (options.isActive(ConfigurationToolItem.ConfigurationAction.TOGGLE_RENDER)) Minecraft.getInstance().getItemRenderer().renderStatic(stack, ItemTransforms.TransformType.FIXED, combinedLightIn, combinedOverlayIn, matrixStack, bufferIn, 0);
+        if (options.isActive(ConfigurationToolItem.ConfigurationAction.TOGGLE_RENDER))
+        {
+        	Minecraft.getInstance().getItemRenderer().renderStatic(stack, ItemTransforms.TransformType.FIXED, combinedLightIn, combinedOverlayIn, matrixStack, bufferIn, 0);  	
+        }
+        
         matrixStack.mulPose(Vector3f.YP.rotationDegrees(-180));
         if (!model.isGui3d()){
-            matrixStack.scale(1/0.4f, 1/0.4f, 1/0.0001f);
-            matrixStack.scale(0.5f, 0.5f, 0.0001f);
-
-        }else {
-            matrixStack.translate(0,0, 0.2);
+            matrixStack.scale(0.5f / 0.4f, 0.5f / 0.4f, 1);
+        } else {
             float sl = 0.665f;
             matrixStack.scale(sl, sl, sl);
         }
