@@ -4,6 +4,9 @@
     "functionalstorage:storage_controller",
     "functionalstorage:armory_cabinet",
     "functionalstorage:ender_drawer",
-    "functionalstorage:compacting_framed_drawer"
+    "functionalstorage:compacting_framed_drawer",
+    "functionalstorage:fluid_1",
+    "functionalstorage:fluid_2",
+    "functionalstorage:fluid_4"
   ]
 }

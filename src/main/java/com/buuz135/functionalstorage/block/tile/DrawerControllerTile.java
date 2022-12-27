@@ -35,7 +35,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
-public class DrawerControllerTile extends ControllableDrawerTile<DrawerControllerTile> {
+public class DrawerControllerTile extends ItemControllableDrawerTile<DrawerControllerTile> {
 
     private static HashMap<UUID, Long> INTERACTION_LOGGER = new HashMap<>();
 
@@ -221,8 +221,8 @@ public class DrawerControllerTile extends ControllableDrawerTile<DrawerControlle
                     BlockPos pos = BlockPos.of(connectedDrawer);
                     BlockEntity entity = level.getBlockEntity(pos);
                     if (entity instanceof DrawerControllerTile) continue;
-                    if (entity instanceof ControllableDrawerTile) {
-                        this.handlers.add(((ControllableDrawerTile<?>) entity).getStorage());
+                    if (entity instanceof ItemControllableDrawerTile<?>) {
+                        this.handlers.add(((ItemControllableDrawerTile<?>) entity).getStorage());
                     }
                 }
             }

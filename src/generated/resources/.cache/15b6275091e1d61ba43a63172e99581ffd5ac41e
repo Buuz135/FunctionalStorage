@@ -1,4 +1,4 @@
-// 1.19.2	2022-10-04T01:15:12.4078863	Item Models: functionalstorage
+// 1.19.2	2022-12-26T22:48:02.5378409	Item Models: functionalstorage
 05946c7f40bf42b62f86e70d637524afd795cad2 assets/functionalstorage/models/item/acacia_1.json
 9e4990cfbaa0ce0612d18b497169377fe24ee704 assets/functionalstorage/models/item/acacia_2.json
 648c9170a8c4c6068d0fdcf1ff7f6bf387902f3c assets/functionalstorage/models/item/acacia_4.json
@@ -19,6 +19,9 @@ dc3b1084ae34da6e6e15f5e9ac9c93113a698a97 assets/functionalstorage/models/item/cr
 1f78b3d52906fff466e989db8241d9b429cf4018 assets/functionalstorage/models/item/dark_oak_4.json
 4c2e48c2ea6f371cef6978f4078fcd47c308f8b5 assets/functionalstorage/models/item/diamond_upgrade.json
 f38d71d3c646813c0aa9fcf150a112e55794a8ec assets/functionalstorage/models/item/ender_drawer.json
+bba3316482f0dd30047a7e9c8bbb08c44f870384 assets/functionalstorage/models/item/fluid_1.json
+2f5a6d944c5a2d9c03f6f7f4ee94388105411fe7 assets/functionalstorage/models/item/fluid_2.json
+10be4f77784cdb63e9d8e76f2e7ca1dd6e278334 assets/functionalstorage/models/item/fluid_4.json
 9738e07cee8d5bedcf48316dfcf31f6b0707a3b7 assets/functionalstorage/models/item/framed_1.json
 62dfcf3bf7e57c537aea4de7ff9a668b3139abc1 assets/functionalstorage/models/item/framed_2.json
 32c5b556220102e2364d0305f122201115490377 assets/functionalstorage/models/item/framed_4.json

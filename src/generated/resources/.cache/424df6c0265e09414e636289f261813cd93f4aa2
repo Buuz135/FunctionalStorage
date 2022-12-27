@@ -1,4 +1,4 @@
-// 1.19.2	2022-10-11T00:35:45.568035	Block States: functionalstorage
+// 1.19.2	2022-12-26T23:08:39.6864993	Block States: functionalstorage
 b1f76f1b67016350af532beb6de3ffdc4d9a07be assets/functionalstorage/blockstates/acacia_1.json
 a4e462d9775fd4aefa673952d4d69f9d90b2e823 assets/functionalstorage/blockstates/acacia_2.json
 ecd77b58fb3d746ab8e2109adf686ea01cf5d96a assets/functionalstorage/blockstates/acacia_4.json
@@ -15,6 +15,9 @@ be7b43133f176da875f3a80ad8e0abab71f9371f assets/functionalstorage/blockstates/da
 ce80c28816ac64a0c44d92f83933953b48bc9de4 assets/functionalstorage/blockstates/dark_oak_2.json
 2edf712accf2a73e810dfbb0459267a0b086045a assets/functionalstorage/blockstates/dark_oak_4.json
 9e7ca3edca81c30d137fcc6a8cff0056e0f7aaec assets/functionalstorage/blockstates/ender_drawer.json
+c7a4f280c91658f95c9a056ce3d827e7e59f6cdf assets/functionalstorage/blockstates/fluid_1.json
+972ffc2aa3f78dc936745aa4206aeccbed8bc836 assets/functionalstorage/blockstates/fluid_2.json
+e7cad5481c2b9b809adf1f670eb4a08dd19b7d38 assets/functionalstorage/blockstates/fluid_4.json
 b66e872170929f7d24af6720167749014a9cd16f assets/functionalstorage/blockstates/framed_1.json
 ea5c1b0de1f8102d561e1669a42b4ae9145d4b8c assets/functionalstorage/blockstates/framed_2.json
 251a4112ccff54b28ef878d0f31b320c7cf12c11 assets/functionalstorage/blockstates/framed_4.json

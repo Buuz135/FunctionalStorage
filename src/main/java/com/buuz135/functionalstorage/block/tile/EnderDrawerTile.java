@@ -31,7 +31,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.UUID;
 
-public class EnderDrawerTile extends ControllableDrawerTile<EnderDrawerTile> {
+public class EnderDrawerTile extends ItemControllableDrawerTile<EnderDrawerTile> {
 
     @Save
     private String frequency;
