@@ -164,9 +164,8 @@ public class FluidDrawerTile extends ControllableDrawerTile<FluidDrawerTile> {
                 })
                 .setOnSlotChanged((stack, integer) -> {
                     setNeedsUpgradeCache(true);
-                    for (BigFluidHandler.CustomFluidTank customFluidTank : this.fluidHandler.getTankList()) {
-                        customFluidTank.setCapacity(getTankCapacity());
-                    }
+                    this.fluidHandler.setCapacity(getTankCapacity());
+                    syncObject(this.fluidHandler);
                 })
                 .setSlotLimit(1);
     }

@@ -13,12 +13,14 @@ import java.util.function.Predicate;
 public abstract class BigFluidHandler implements IFluidHandler, INBTSerializable<CompoundTag> {
 
     private CustomFluidTank[] tanks;
+    private int capacity;
 
     public BigFluidHandler(int size, int capacity) {
         this.tanks = new CustomFluidTank[size];
         for (int i = 0; i < this.tanks.length; i++) {
             this.tanks[i] = new CustomFluidTank(capacity);
         }
+        this.capacity = capacity;
     }
 
     public CustomFluidTank[] getTankList() {
@@ -83,20 +85,31 @@ public abstract class BigFluidHandler implements IFluidHandler, INBTSerializable
         return FluidStack.EMPTY;
     }
 
+    public void setCapacity(int capacity) {
+        this.capacity = capacity;
+        for (CustomFluidTank tank : this.tanks) {
+            tank.setCapacity(capacity);
+        }
+    }
+
     @Override
     public CompoundTag serializeNBT() {
         CompoundTag compoundTag = new CompoundTag();
         for (int i = 0; i < this.tanks.length; i++) {
             compoundTag.put(i + "", this.tanks[i].writeToNBT(new CompoundTag()));
         }
+        compoundTag.putInt("Capacity", this.capacity);
         return compoundTag;
     }
 
     @Override
     public void deserializeNBT(CompoundTag nbt) {
+        this.capacity = nbt.getInt("Capacity");
         for (int i = 0; i < this.tanks.length; i++) {
             this.tanks[i].readFromNBT(nbt.getCompound(i + ""));
+            this.tanks[i].setCapacity(this.capacity);
         }
+
     }
 
     public abstract void onChange();
