@@ -55,7 +55,6 @@ import java.util.function.Consumer;
 public class FluidDrawerBlock extends RotatableBlock<FluidDrawerTile> {
 
     /**
-     * Creative interaction
      * Drop with contents
      * Utility Upgrades:
      * Collector

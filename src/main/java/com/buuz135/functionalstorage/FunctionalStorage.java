@@ -140,6 +140,13 @@ public class FunctionalStorage extends ModuleController {
                         ((EnderDrawerBlock) breakEvent.getState().getBlock()).attack(breakEvent.getState(), breakEvent.getPlayer().getLevel(), breakEvent.getPos(), breakEvent.getPlayer());
                     }
                 }
+                if (breakEvent.getState().getBlock() instanceof FluidDrawerBlock) {
+                    int hit = ((FluidDrawerBlock) breakEvent.getState().getBlock()).getHit(breakEvent.getState(), breakEvent.getPlayer().getLevel(), breakEvent.getPos(), breakEvent.getPlayer());
+                    if (hit != -1) {
+                        breakEvent.setCanceled(true);
+                        ((FluidDrawerBlock) breakEvent.getState().getBlock()).attack(breakEvent.getState(), breakEvent.getPlayer().getLevel(), breakEvent.getPos(), breakEvent.getPlayer());
+                    }
+                }
             }
         }).subscribe();
         EventManager.mod(FMLCommonSetupEvent.class).process(fmlCommonSetupEvent -> {
