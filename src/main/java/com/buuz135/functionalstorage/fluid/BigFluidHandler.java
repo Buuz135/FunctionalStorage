@@ -50,7 +50,14 @@ public abstract class BigFluidHandler implements IFluidHandler, INBTSerializable
     @Override
     public int fill(FluidStack resource, FluidAction action) {
         for (CustomFluidTank tank : tanks) {
-            if (tank.fill(resource, FluidAction.SIMULATE) != 0) {
+            if (!tank.getFluid().isEmpty() && tank.fill(resource, FluidAction.SIMULATE) != 0) {
+                int ret = tank.fill(resource, action);
+                if (action == FluidAction.EXECUTE) onChange();
+                return ret;
+            }
+        }
+        for (CustomFluidTank tank : tanks) {
+            if (tank.getFluid().isEmpty() && tank.fill(resource, FluidAction.SIMULATE) != 0) {
                 int ret = tank.fill(resource, action);
                 if (action == FluidAction.EXECUTE) onChange();
                 return ret;
@@ -62,6 +69,13 @@ public abstract class BigFluidHandler implements IFluidHandler, INBTSerializable
     @Nonnull
     @Override
     public FluidStack drain(FluidStack resource, FluidAction action) {
+        for (CustomFluidTank tank : tanks) {
+            if (!tank.getFluid().isEmpty() && tank.getFluid().isFluidEqual(resource) && !tank.drain(resource, FluidAction.SIMULATE).isEmpty()) {
+                FluidStack ret = tank.drain(resource, action);
+                if (action == FluidAction.EXECUTE) onChange();
+                return ret;
+            }
+        }
         for (CustomFluidTank tank : tanks) {
             if (!tank.drain(resource, FluidAction.SIMULATE).isEmpty()) {
                 FluidStack ret = tank.drain(resource, action);

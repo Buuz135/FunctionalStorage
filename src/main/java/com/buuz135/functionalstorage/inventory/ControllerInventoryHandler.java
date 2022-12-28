@@ -55,7 +55,7 @@ public abstract class ControllerInventoryHandler implements IItemHandler {
     public void invalidateSlots() {
         List<HandlerSlotSelector> selectors = new ArrayList<HandlerSlotSelector>();
         this.slots = 0;
-        for (IItemHandler handler : getDrawers().getHandlers()) {
+        for (IItemHandler handler : getDrawers().getItemHandlers()) {
             if (handler instanceof ControllerInventoryHandler) continue;
             int handlerSlots = handler.getSlots();
             for (int i = 0; i < handlerSlots; ++i) {
