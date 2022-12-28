@@ -55,7 +55,7 @@ public class FluidDrawerTile extends ControllableDrawerTile<FluidDrawerTile> {
     }
 
     private int getTankCapacity() {
-        long maxCap = ((type.getSlotAmount() / 64) / 2) * 1000L * getStorageMultiplier();
+        long maxCap = ((type.getSlotAmount() / 64)) * 1000L * (getStorageMultiplier() == 1 ? 1 : getStorageMultiplier() / 4);
         return (int) Math.min(Integer.MAX_VALUE, maxCap);
     }
 
