@@ -45,6 +45,11 @@ public class FluidDrawerTile extends ControllableDrawerTile<FluidDrawerTile> {
             public void onChange() {
                 syncObject(fluidHandler);
             }
+
+            @Override
+            public boolean isDrawerLocked() {
+                return isLocked();
+            }
         };
         this.fluidHandlerLazyOptional = LazyOptional.of(() -> fluidHandler);
     }
@@ -132,6 +137,13 @@ public class FluidDrawerTile extends ControllableDrawerTile<FluidDrawerTile> {
 
     public BigFluidHandler getFluidHandler() {
         return fluidHandler;
+    }
+
+    @Override
+    public void setLocked(boolean locked) {
+        super.setLocked(locked);
+        this.fluidHandler.lockHandler();
+        syncObject(this.fluidHandler);
     }
 
     @Override

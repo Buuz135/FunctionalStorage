@@ -13,12 +13,21 @@ import java.util.function.Predicate;
 public abstract class BigFluidHandler implements IFluidHandler, INBTSerializable<CompoundTag> {
 
     private CustomFluidTank[] tanks;
+    private FluidStack[] filterStack;
     private int capacity;
 
     public BigFluidHandler(int size, int capacity) {
         this.tanks = new CustomFluidTank[size];
+        this.filterStack = new FluidStack[size];
         for (int i = 0; i < this.tanks.length; i++) {
-            this.tanks[i] = new CustomFluidTank(capacity);
+            this.filterStack[i] = FluidStack.EMPTY;
+            int finalI = i;
+            this.tanks[i] = new CustomFluidTank(capacity, fluidStack -> {
+                if (isDrawerLocked()) {
+                    return fluidStack.isFluidEqual(this.filterStack[finalI]);
+                }
+                return true;
+            });
         }
         this.capacity = capacity;
     }
@@ -111,6 +120,7 @@ public abstract class BigFluidHandler implements IFluidHandler, INBTSerializable
         CompoundTag compoundTag = new CompoundTag();
         for (int i = 0; i < this.tanks.length; i++) {
             compoundTag.put(i + "", this.tanks[i].writeToNBT(new CompoundTag()));
+            compoundTag.put("Locked" + i, this.filterStack[i].writeToNBT(new CompoundTag()));
         }
         compoundTag.putInt("Capacity", this.capacity);
         return compoundTag;
@@ -122,11 +132,25 @@ public abstract class BigFluidHandler implements IFluidHandler, INBTSerializable
         for (int i = 0; i < this.tanks.length; i++) {
             this.tanks[i].readFromNBT(nbt.getCompound(i + ""));
             this.tanks[i].setCapacity(this.capacity);
+            this.filterStack[i] = FluidStack.loadFluidStackFromNBT(nbt.getCompound("Locked" + i));
         }
 
     }
 
     public abstract void onChange();
+
+    public abstract boolean isDrawerLocked();
+
+    public void lockHandler() {
+        for (int i = 0; i < this.tanks.length; i++) {
+            this.filterStack[i] = this.tanks[i].getFluid().copy();
+            if (!this.filterStack[i].isEmpty()) this.filterStack[i].setAmount(1);
+        }
+    }
+
+    public FluidStack[] getFilterStack() {
+        return filterStack;
+    }
 
     public static class CustomFluidTank extends FluidTank {
 

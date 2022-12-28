@@ -240,6 +240,7 @@ public class DrawerControllerTile extends ItemControllableDrawerTile<DrawerContr
 
         public void rebuild() {
             this.itemHandlers = new ArrayList<>();
+            this.fluidHandlers = new ArrayList<>();
             if (level != null && !level.isClientSide()) {
                 for (Long connectedDrawer : this.connectedDrawers) {
                     BlockPos pos = BlockPos.of(connectedDrawer);

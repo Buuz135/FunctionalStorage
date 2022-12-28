@@ -25,10 +25,8 @@ import net.minecraft.world.phys.AABB;
 import net.minecraftforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.minecraftforge.fluids.FluidStack;
 
-import java.util.HashMap;
 
 public class FluidDrawerRenderer implements BlockEntityRenderer<FluidDrawerTile> {
-    private static HashMap<String, RenderType> CACHED_FLUID_RENDERTYPES = new HashMap<>();
 
     public static void renderFluidStack(PoseStack matrixStack, MultiBufferSource bufferIn, int combinedLight, int combinedOverlay, FluidStack stack, int amount, float scale, ControllableDrawerTile.DrawerOptions options, AABB bounds, boolean halfText) {
         matrixStack.pushPose();
@@ -41,7 +39,7 @@ public class FluidDrawerRenderer implements BlockEntityRenderer<FluidDrawerTile>
         float red = color[1];
         float green = color[2];
         float blue = color[3];
-        float alpha = color[0];
+        float alpha = amount == 0 ? 0.3f : color[0];
 
         float x1 = (float) bounds.minX;
         float x2 = (float) bounds.maxX;
@@ -88,7 +86,7 @@ public class FluidDrawerRenderer implements BlockEntityRenderer<FluidDrawerTile>
             matrixStack.pushPose();
             matrixStack.translate(0.5, 0.84, 0.97);
             if (halfText) matrixStack.translate(-0.25, 0, 0);
-            DrawerRenderer.renderText(matrixStack, bufferIn, combinedOverlay, Component.literal(ChatFormatting.WHITE + "" + NumberUtils.getFormatedBigNumber(amount) + " mB"), Direction.NORTH, scale);
+            DrawerRenderer.renderText(matrixStack, bufferIn, combinedOverlay, Component.literal(ChatFormatting.WHITE + "" + NumberUtils.getFormatedFluidBigNumber(amount)), Direction.NORTH, scale);
             matrixStack.popPose();
         }
 
@@ -139,63 +137,97 @@ public class FluidDrawerRenderer implements BlockEntityRenderer<FluidDrawerTile>
 
     private void render1Slot(PoseStack matrixStack, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn, FluidDrawerTile tile) {
         BigFluidHandler inventoryHandler = tile.getFluidHandler();
-        if (!inventoryHandler.getFluidInTank(0).isEmpty()) {
+        if (!inventoryHandler.getFluidInTank(0).isEmpty() || (tile.isLocked() && !inventoryHandler.getFilterStack()[0].isEmpty())) {
             FluidStack fluidStack = inventoryHandler.getFluidInTank(0);
+            int displayAmount = fluidStack.getAmount();
+            if (fluidStack.isEmpty() && tile.isLocked() && !inventoryHandler.getFilterStack()[0].isEmpty()) {
+                fluidStack = inventoryHandler.getFilterStack()[0];
+                displayAmount = 0;
+            }
             AABB bounds = new AABB(1 / 16D, 1.25 / 16D, 1 / 16D, 15 / 16D, 1.25 / 16D + (fluidStack.getAmount() / (double) inventoryHandler.getTankCapacity(0)) * (12.5 / 16D), 15 / 16D);
-            renderFluidStack(matrixStack, bufferIn, combinedLightIn, combinedOverlayIn, fluidStack, fluidStack.getAmount(), 0.007f, tile.getDrawerOptions(), bounds, false);
+            renderFluidStack(matrixStack, bufferIn, combinedLightIn, combinedOverlayIn, fluidStack, displayAmount, 0.007f, tile.getDrawerOptions(), bounds, false);
         }
 
     }
 
     private void render2Slot(PoseStack matrixStack, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn, FluidDrawerTile tile) {
         BigFluidHandler inventoryHandler = tile.getFluidHandler();
-        if (!inventoryHandler.getFluidInTank(0).isEmpty()) {
+        if (!inventoryHandler.getFluidInTank(0).isEmpty() || (tile.isLocked() && !inventoryHandler.getFilterStack()[0].isEmpty())) {
             FluidStack fluidStack = inventoryHandler.getFluidInTank(0);
+            int displayAmount = fluidStack.getAmount();
+            if (fluidStack.isEmpty() && tile.isLocked() && !inventoryHandler.getFilterStack()[0].isEmpty()) {
+                fluidStack = inventoryHandler.getFilterStack()[0];
+                displayAmount = 0;
+            }
             AABB bounds = new AABB(1 / 16D, 1.25 / 16D, 1 / 16D, 15 / 16D, 1.25 / 16D + (fluidStack.getAmount() / (double) inventoryHandler.getTankCapacity(0)) * (5.5 / 16D), 15 / 16D);
-            renderFluidStack(matrixStack, bufferIn, combinedLightIn, combinedOverlayIn, fluidStack, fluidStack.getAmount(), 0.007f, tile.getDrawerOptions(), bounds, false);
+            renderFluidStack(matrixStack, bufferIn, combinedLightIn, combinedOverlayIn, fluidStack, displayAmount, 0.007f, tile.getDrawerOptions(), bounds, false);
         }
-        if (!inventoryHandler.getFluidInTank(1).isEmpty()) {
+        if (!inventoryHandler.getFluidInTank(1).isEmpty() || (tile.isLocked() && !inventoryHandler.getFilterStack()[1].isEmpty())) {
             matrixStack.pushPose();
             matrixStack.translate(0, 0.5, 0);
             FluidStack fluidStack = inventoryHandler.getFluidInTank(1);
+            int displayAmount = fluidStack.getAmount();
+            if (fluidStack.isEmpty() && tile.isLocked() && !inventoryHandler.getFilterStack()[1].isEmpty()) {
+                fluidStack = inventoryHandler.getFilterStack()[1];
+                displayAmount = 0;
+            }
             AABB bounds = new AABB(1 / 16D, 1.25 / 16D, 1 / 16D, 15 / 16D, 1.25 / 16D + (fluidStack.getAmount() / (double) inventoryHandler.getTankCapacity(1)) * (5.5 / 16D), 15 / 16D);
-            renderFluidStack(matrixStack, bufferIn, combinedLightIn, combinedOverlayIn, fluidStack, fluidStack.getAmount(), 0.007f, tile.getDrawerOptions(), bounds, false);
+            renderFluidStack(matrixStack, bufferIn, combinedLightIn, combinedOverlayIn, fluidStack, displayAmount, 0.007f, tile.getDrawerOptions(), bounds, false);
             matrixStack.popPose();
         }
     }
 
     private void render4Slot(PoseStack matrixStack, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn, FluidDrawerTile tile) {
         BigFluidHandler inventoryHandler = tile.getFluidHandler();
-        if (!inventoryHandler.getFluidInTank(0).isEmpty()) {
+        if (!inventoryHandler.getFluidInTank(0).isEmpty() || (tile.isLocked() && !inventoryHandler.getFilterStack()[0].isEmpty())) {
             matrixStack.pushPose();
             matrixStack.translate(0.5, 0, 0);
             FluidStack fluidStack = inventoryHandler.getFluidInTank(0);
+            int displayAmount = fluidStack.getAmount();
+            if (fluidStack.isEmpty() && tile.isLocked() && !inventoryHandler.getFilterStack()[0].isEmpty()) {
+                fluidStack = inventoryHandler.getFilterStack()[0];
+                displayAmount = 0;
+            }
             AABB bounds = new AABB(1 / 16D, 1.25 / 16D, 1 / 16D, 8 / 16D, 1.25 / 16D + (fluidStack.getAmount() / (double) inventoryHandler.getTankCapacity(0)) * (5.5 / 16D), 15 / 16D);
-            renderFluidStack(matrixStack, bufferIn, combinedLightIn, combinedOverlayIn, fluidStack, fluidStack.getAmount(), 0.007f, tile.getDrawerOptions(), bounds, true);
+            renderFluidStack(matrixStack, bufferIn, combinedLightIn, combinedOverlayIn, fluidStack, displayAmount, 0.007f, tile.getDrawerOptions(), bounds, true);
             matrixStack.popPose();
         }
-        if (!inventoryHandler.getFluidInTank(1).isEmpty()) {
+        if (!inventoryHandler.getFluidInTank(1).isEmpty() || (tile.isLocked() && !inventoryHandler.getFilterStack()[1].isEmpty())) {
             matrixStack.pushPose();
             FluidStack fluidStack = inventoryHandler.getFluidInTank(1);
+            int displayAmount = fluidStack.getAmount();
+            if (fluidStack.isEmpty() && tile.isLocked() && !inventoryHandler.getFilterStack()[1].isEmpty()) {
+                fluidStack = inventoryHandler.getFilterStack()[1];
+                displayAmount = 0;
+            }
             AABB bounds = new AABB(1 / 16D, 1.25 / 16D, 1 / 16D, 8 / 16D, 1.25 / 16D + (fluidStack.getAmount() / (double) inventoryHandler.getTankCapacity(1)) * (5.5 / 16D), 15 / 16D);
-            renderFluidStack(matrixStack, bufferIn, combinedLightIn, combinedOverlayIn, fluidStack, fluidStack.getAmount(), 0.007f, tile.getDrawerOptions(), bounds, true);
+            renderFluidStack(matrixStack, bufferIn, combinedLightIn, combinedOverlayIn, fluidStack, displayAmount, 0.007f, tile.getDrawerOptions(), bounds, true);
             matrixStack.popPose();
         }
-        if (!inventoryHandler.getFluidInTank(2).isEmpty()) {
+        if (!inventoryHandler.getFluidInTank(2).isEmpty() || (tile.isLocked() && !inventoryHandler.getFilterStack()[2].isEmpty())) {
             matrixStack.pushPose();
             matrixStack.translate(0.5, 0.5, 0);
             FluidStack fluidStack = inventoryHandler.getFluidInTank(2);
+            int displayAmount = fluidStack.getAmount();
+            if (fluidStack.isEmpty() && tile.isLocked() && !inventoryHandler.getFilterStack()[2].isEmpty()) {
+                fluidStack = inventoryHandler.getFilterStack()[2];
+                displayAmount = 0;
+            }
             AABB bounds = new AABB(1 / 16D, 1.25 / 16D, 1 / 16D, 8 / 16D, 1.25 / 16D + (fluidStack.getAmount() / (double) inventoryHandler.getTankCapacity(2)) * (5.5 / 16D), 15 / 16D);
-            renderFluidStack(matrixStack, bufferIn, combinedLightIn, combinedOverlayIn, fluidStack, fluidStack.getAmount(), 0.007f, tile.getDrawerOptions(), bounds, true);
+            renderFluidStack(matrixStack, bufferIn, combinedLightIn, combinedOverlayIn, fluidStack, displayAmount, 0.007f, tile.getDrawerOptions(), bounds, true);
             matrixStack.popPose();
         }
-        if (!inventoryHandler.getFluidInTank(3).isEmpty()) {
+        if (!inventoryHandler.getFluidInTank(3).isEmpty() || (tile.isLocked() && !inventoryHandler.getFilterStack()[3].isEmpty())) {
             matrixStack.pushPose();
-            FluidStack fluidStack = inventoryHandler.getFluidInTank(3);
             matrixStack.translate(0, 0.5, 0);
-
+            FluidStack fluidStack = inventoryHandler.getFluidInTank(3);
+            int displayAmount = fluidStack.getAmount();
+            if (fluidStack.isEmpty() && tile.isLocked() && !inventoryHandler.getFilterStack()[3].isEmpty()) {
+                fluidStack = inventoryHandler.getFilterStack()[3];
+                displayAmount = 0;
+            }
             AABB bounds = new AABB(1 / 16D, 1.25 / 16D, 1 / 16D, 8 / 16D, 1.25 / 16D + (fluidStack.getAmount() / (double) inventoryHandler.getTankCapacity(3)) * (5.5 / 16D), 15 / 16D);
-            renderFluidStack(matrixStack, bufferIn, combinedLightIn, combinedOverlayIn, fluidStack, fluidStack.getAmount(), 0.007f, tile.getDrawerOptions(), bounds, true);
+            renderFluidStack(matrixStack, bufferIn, combinedLightIn, combinedOverlayIn, fluidStack, displayAmount, 0.007f, tile.getDrawerOptions(), bounds, true);
             matrixStack.popPose();
         }
     }
