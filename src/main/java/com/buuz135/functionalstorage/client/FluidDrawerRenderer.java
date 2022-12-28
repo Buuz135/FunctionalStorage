@@ -125,13 +125,17 @@ public class FluidDrawerRenderer implements BlockEntityRenderer<FluidDrawerTile>
             matrixStack.mulPose(Vector3f.YP.rotationDegrees(90));
         }
         combinedLightIn = LevelRenderer.getLightColor(tile.getLevel(), tile.getBlockPos().relative(facing));
+
         if (tile.getDrawerType() == FunctionalStorage.DrawerType.X_1)
             render1Slot(matrixStack, bufferIn, combinedLightIn, combinedOverlayIn, tile);
         if (tile.getDrawerType() == FunctionalStorage.DrawerType.X_2)
             render2Slot(matrixStack, bufferIn, combinedLightIn, combinedOverlayIn, tile);
         if (tile.getDrawerType() == FunctionalStorage.DrawerType.X_4)
             render4Slot(matrixStack, bufferIn, combinedLightIn, combinedOverlayIn, tile);
-
+        matrixStack.pushPose();
+        matrixStack.translate(0, 0, 0.9688);
+        DrawerRenderer.renderUpgrades(matrixStack, bufferIn, combinedLightIn, combinedOverlayIn, tile);
+        matrixStack.popPose();
         matrixStack.popPose();
     }
 
