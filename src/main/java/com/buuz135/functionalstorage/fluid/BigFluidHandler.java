@@ -112,6 +112,7 @@ public abstract class BigFluidHandler implements IFluidHandler, INBTSerializable
         this.capacity = capacity;
         for (CustomFluidTank tank : this.tanks) {
             tank.setCapacity(capacity);
+            if (!tank.getFluid().isEmpty()) tank.getFluid().setAmount(Math.min(tank.getFluidAmount(), capacity));
         }
     }
 
@@ -143,6 +144,8 @@ public abstract class BigFluidHandler implements IFluidHandler, INBTSerializable
 
     public abstract boolean isDrawerVoid();
 
+    public abstract boolean isDrawerCreative();
+
     public void lockHandler() {
         for (int i = 0; i < this.tanks.length; i++) {
             this.filterStack[i] = this.tanks[i].getFluid().copy();
@@ -166,7 +169,6 @@ public abstract class BigFluidHandler implements IFluidHandler, INBTSerializable
             super(capacity, validator);
         }
 
-
         @Override
         public int fill(FluidStack resource, FluidAction action) {
             int amount = super.fill(resource, action);
@@ -176,5 +178,46 @@ public abstract class BigFluidHandler implements IFluidHandler, INBTSerializable
             return amount;
         }
 
+        @Override
+        public @NotNull FluidStack getFluidInTank(int tank) {
+            FluidStack stack = super.getFluidInTank(tank);
+            if (isDrawerCreative()) stack.setAmount(Integer.MAX_VALUE);
+            return stack;
+        }
+
+        @Override
+        public int getTankCapacity(int tank) {
+            return isDrawerCreative() ? Integer.MAX_VALUE : super.getTankCapacity(tank);
+        }
+
+        @Override
+        public @NotNull FluidStack drain(FluidStack resource, FluidAction action) {
+            if (isDrawerCreative()) return resource.copy();
+            return super.drain(resource, action);
+        }
+
+        @Override
+        public @NotNull FluidStack drain(int maxDrain, FluidAction action) {
+            FluidStack fluidStack = super.drain(maxDrain, action);
+            if (isDrawerCreative()) fluidStack.setAmount(maxDrain);
+            return fluidStack;
+        }
+
+        @Override
+        public int getCapacity() {
+            return isDrawerCreative() ? Integer.MAX_VALUE : super.getCapacity();
+        }
+
+        @Override
+        public @NotNull FluidStack getFluid() {
+            FluidStack stack = super.getFluid();
+            if (isDrawerCreative()) stack.setAmount(Integer.MAX_VALUE);
+            return stack;
+        }
+
+        @Override
+        public int getFluidAmount() {
+            return isDrawerCreative() ? Integer.MAX_VALUE : super.getFluidAmount();
+        }
     }
 }

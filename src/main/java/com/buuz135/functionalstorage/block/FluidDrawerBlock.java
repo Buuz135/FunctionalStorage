@@ -55,14 +55,6 @@ import java.util.function.Consumer;
 public class FluidDrawerBlock extends RotatableBlock<FluidDrawerTile> {
 
     /**
-     * Drop with contents
-     * Utility Upgrades:
-     * Collector
-     * Pusher
-     * Pulling
-     * Redstone
-     * Creative
-     *
      * Framed version
      * Recipes
      * Upgrade extraction restriction
@@ -70,6 +62,7 @@ public class FluidDrawerBlock extends RotatableBlock<FluidDrawerTile> {
      * Gas rendering
      * TOP Support
      * Better interaction support
+     * Tootlip drawers
      */
 
     private final FunctionalStorage.DrawerType type;
@@ -271,13 +264,15 @@ public class FluidDrawerBlock extends RotatableBlock<FluidDrawerTile> {
 
     @Override
     public int getSignal(BlockState p_60483_, BlockGetter blockGetter, BlockPos blockPos, Direction p_60486_) {
-        ControllableDrawerTile tile = TileUtil.getTileEntity(blockGetter, blockPos, ControllableDrawerTile.class).orElse(null);
+        FluidDrawerTile tile = TileUtil.getTileEntity(blockGetter, blockPos, FluidDrawerTile.class).orElse(null);
         if (tile != null) {
             for (int i = 0; i < tile.getUtilityUpgrades().getSlots(); i++) {
                 ItemStack stack = tile.getUtilityUpgrades().getStackInSlot(i);
                 if (stack.getItem().equals(FunctionalStorage.REDSTONE_UPGRADE.get())) {
                     int redstoneSlot = stack.getOrCreateTag().getInt("Slot");
-
+                    if (redstoneSlot < tile.getFluidHandler().getTanks()) {
+                        return (int) ((tile.getFluidHandler().getFluidInTank(redstoneSlot).getAmount() / (double) tile.getFluidHandler().getTankCapacity(redstoneSlot)) * 16);
+                    }
                 }
             }
         }

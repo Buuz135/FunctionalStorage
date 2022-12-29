@@ -7,6 +7,7 @@ import com.buuz135.functionalstorage.item.UpgradeItem;
 import com.hrznstudio.titanium.annotation.Save;
 import com.hrznstudio.titanium.block.BasicTileBlock;
 import com.hrznstudio.titanium.component.inventory.InventoryComponent;
+import com.hrznstudio.titanium.util.TileUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -15,15 +16,22 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.BucketPickup;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.FluidType;
+import net.minecraftforge.fluids.IFluidBlock;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.minecraftforge.fluids.capability.wrappers.BucketPickupHandlerWrapper;
+import net.minecraftforge.fluids.capability.wrappers.FluidBlockWrapper;
 import net.minecraftforge.items.CapabilityItemHandler;
 import org.jetbrains.annotations.NotNull;
 
@@ -55,6 +63,11 @@ public class FluidDrawerTile extends ControllableDrawerTile<FluidDrawerTile> {
             public boolean isDrawerVoid() {
                 return isVoid();
             }
+
+            @Override
+            public boolean isDrawerCreative() {
+                return isCreative();
+            }
         };
         this.fluidHandlerLazyOptional = LazyOptional.of(() -> fluidHandler);
     }
@@ -80,6 +93,86 @@ public class FluidDrawerTile extends ControllableDrawerTile<FluidDrawerTile> {
             return fluidHandlerLazyOptional.cast();
         }
         return super.getCapability(cap, side);
+    }
+
+    @Override
+    public void serverTick(Level level, BlockPos pos, BlockState stateOwn, FluidDrawerTile blockEntity) {
+        super.serverTick(level, pos, stateOwn, blockEntity);
+        if (level.getGameTime() % 4 == 0) {
+            for (int i = 0; i < this.getUtilityUpgrades().getSlots(); i++) {
+                var stack = this.getUtilityUpgrades().getStackInSlot(i);
+                if (!stack.isEmpty()) {
+                    var item = stack.getItem();
+                    if (item.equals(FunctionalStorage.PUSHING_UPGRADE.get())) {
+                        var direction = UpgradeItem.getDirection(stack);
+                        TileUtil.getTileEntity(level, pos.relative(direction)).ifPresent(blockEntity1 -> {
+                            blockEntity1.getCapability(ForgeCapabilities.FLUID_HANDLER, direction.getOpposite()).ifPresent(otherFluidHandler -> {
+                                for (int tankId = 0; tankId < this.getFluidHandler().getTanks(); tankId++) {
+                                    var fluidTank = this.fluidHandler.getTankList()[tankId];
+                                    if (fluidTank.getFluid().isEmpty()) continue;
+                                    var extracted = fluidTank.drain(500, IFluidHandler.FluidAction.SIMULATE);
+                                    if (extracted.isEmpty()) continue;
+                                    var insertedAmount = otherFluidHandler.fill(extracted, IFluidHandler.FluidAction.EXECUTE);
+                                    if (insertedAmount > 0) {
+                                        fluidTank.drain(insertedAmount, IFluidHandler.FluidAction.EXECUTE);
+                                        this.fluidHandler.onChange();
+                                        break;
+                                    }
+                                }
+                            });
+                        });
+                    }
+                    if (item.equals(FunctionalStorage.PULLING_UPGRADE.get())) {
+                        var direction = UpgradeItem.getDirection(stack);
+                        TileUtil.getTileEntity(level, pos.relative(direction)).ifPresent(blockEntity1 -> {
+                            blockEntity1.getCapability(ForgeCapabilities.FLUID_HANDLER, direction.getOpposite()).ifPresent(otherFluidHandler -> {
+                                for (int tankId = 0; tankId < this.getFluidHandler().getTanks(); tankId++) {
+                                    var fluidTank = this.fluidHandler.getTankList()[tankId];
+                                    var extracted = otherFluidHandler.drain(500, IFluidHandler.FluidAction.SIMULATE);
+                                    if (extracted.isEmpty()) continue;
+                                    var insertedAmount = fluidTank.fill(extracted, IFluidHandler.FluidAction.EXECUTE);
+                                    if (insertedAmount > 0) {
+                                        otherFluidHandler.drain(insertedAmount, IFluidHandler.FluidAction.EXECUTE);
+                                        this.fluidHandler.onChange();
+                                        break;
+                                    }
+                                }
+                            });
+                        });
+                    }
+                    if (item.equals(FunctionalStorage.COLLECTOR_UPGRADE.get()) && level.getGameTime() % 20 == 0) {
+                        var direction = UpgradeItem.getDirection(stack);
+                        var fluidstate = this.level.getFluidState(this.getBlockPos().relative(direction));
+                        if (!fluidstate.isEmpty() && fluidstate.isSource()) {
+                            BlockState state = level.getBlockState(pos.relative(direction));
+                            Block block = state.getBlock();
+                            IFluidHandler targetFluidHandler = null;
+                            if (block instanceof IFluidBlock) {
+                                targetFluidHandler = new FluidBlockWrapper((IFluidBlock) block, level, pos.relative(direction));
+                            } else if (block instanceof BucketPickup) {
+                                targetFluidHandler = new BucketPickupHandlerWrapper((BucketPickup) block, level, pos.relative(direction));
+                            }
+                            if (targetFluidHandler != null) {
+                                var drained = targetFluidHandler.drain(Integer.MAX_VALUE, IFluidHandler.FluidAction.SIMULATE);
+                                if (!drained.isEmpty()) {
+                                    for (int tankId = 0; tankId < this.getFluidHandler().getTanks(); tankId++) {
+                                        var fluidTank = this.fluidHandler.getTankList()[tankId];
+                                        var insertedAmount = fluidTank.fill(drained, IFluidHandler.FluidAction.SIMULATE);
+                                        if (insertedAmount == drained.getAmount()) {
+                                            fluidTank.fill(drained, IFluidHandler.FluidAction.EXECUTE);
+                                            targetFluidHandler.drain(insertedAmount, IFluidHandler.FluidAction.EXECUTE);
+                                            this.fluidHandler.onChange();
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
     }
 
     @Override
