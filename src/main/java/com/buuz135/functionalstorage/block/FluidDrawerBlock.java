@@ -60,7 +60,6 @@ public class FluidDrawerBlock extends RotatableBlock<FluidDrawerTile> {
      * Collector
      * Pusher
      * Pulling
-     * Void
      * Redstone
      * Creative
      *

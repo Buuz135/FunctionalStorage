@@ -141,6 +141,8 @@ public abstract class BigFluidHandler implements IFluidHandler, INBTSerializable
 
     public abstract boolean isDrawerLocked();
 
+    public abstract boolean isDrawerVoid();
+
     public void lockHandler() {
         for (int i = 0; i < this.tanks.length; i++) {
             this.filterStack[i] = this.tanks[i].getFluid().copy();
@@ -152,7 +154,7 @@ public abstract class BigFluidHandler implements IFluidHandler, INBTSerializable
         return filterStack;
     }
 
-    public static class CustomFluidTank extends FluidTank {
+    public class CustomFluidTank extends FluidTank {
 
 
         public CustomFluidTank(int capacity) {
@@ -164,6 +166,15 @@ public abstract class BigFluidHandler implements IFluidHandler, INBTSerializable
             super(capacity, validator);
         }
 
+
+        @Override
+        public int fill(FluidStack resource, FluidAction action) {
+            int amount = super.fill(resource, action);
+            if (isDrawerVoid()
+                    && ((isDrawerLocked() && isFluidValid(resource)) || (!getFluid().isEmpty() && getFluid().isFluidEqual(resource))))
+                return resource.getAmount();
+            return amount;
+        }
 
     }
 }

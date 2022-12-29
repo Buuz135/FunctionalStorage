@@ -50,6 +50,11 @@ public class FluidDrawerTile extends ControllableDrawerTile<FluidDrawerTile> {
             public boolean isDrawerLocked() {
                 return isLocked();
             }
+
+            @Override
+            public boolean isDrawerVoid() {
+                return isVoid();
+            }
         };
         this.fluidHandlerLazyOptional = LazyOptional.of(() -> fluidHandler);
     }
