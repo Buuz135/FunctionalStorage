@@ -6,6 +6,7 @@ import com.buuz135.functionalstorage.block.tile.DrawerControllerTile;
 import com.buuz135.functionalstorage.block.tile.FluidDrawerTile;
 import com.buuz135.functionalstorage.inventory.item.DrawerCapabilityProvider;
 import com.buuz135.functionalstorage.item.LinkingToolItem;
+import com.buuz135.functionalstorage.util.NumberUtils;
 import com.hrznstudio.titanium.block.RotatableBlock;
 import com.hrznstudio.titanium.datagenerator.loot.block.BasicBlockLootTables;
 import com.hrznstudio.titanium.util.RayTraceUtils;
@@ -17,7 +18,6 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
@@ -43,6 +43,7 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
+import net.minecraftforge.fluids.FluidStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -60,7 +61,6 @@ public class FluidDrawerBlock extends RotatableBlock<FluidDrawerTile> {
      * Upgrade extraction restriction
      * Gas rendering
      * TOP Support
-     * Tootlip drawers
      */
 
     private final FunctionalStorage.DrawerType type;
@@ -200,10 +200,7 @@ public class FluidDrawerBlock extends RotatableBlock<FluidDrawerTile> {
                 }
             }
             if (stack.getTag().contains("Locked")) {
-                BlockEntity entity = level.getBlockEntity(pos);
-                if (entity instanceof ControllableDrawerTile tile) {
-                    tile.setLocked(stack.getTag().getBoolean("Locked"));
-                }
+                level.setBlock(pos, p_49849_.setValue(DrawerBlock.LOCKED, true), 3);
             }
         }
     }
@@ -240,13 +237,16 @@ public class FluidDrawerBlock extends RotatableBlock<FluidDrawerTile> {
     }
 
     @Override
-    public void appendHoverText(ItemStack p_49816_, @Nullable BlockGetter p_49817_, List<Component> tooltip, TooltipFlag p_49819_) {
-        super.appendHoverText(p_49816_, p_49817_, tooltip, p_49819_);
-        if (p_49816_.hasTag() && p_49816_.getTag().contains("Tile")) {
-            MutableComponent text = Component.translatable("drawer.block.contents");
-            tooltip.add(text.withStyle(ChatFormatting.GRAY));
-            tooltip.add(Component.literal(""));
-            tooltip.add(Component.literal(""));
+    public void appendHoverText(ItemStack itemStack, @Nullable BlockGetter p_49817_, List<Component> tooltip, TooltipFlag p_49819_) {
+        super.appendHoverText(itemStack, p_49817_, tooltip, p_49819_);
+        if (itemStack.hasTag() && itemStack.getTag().contains("Tile")) {
+            var tileTag = itemStack.getTag().getCompound("Tile").getCompound("fluidHandler");
+            tooltip.add(Component.translatable("drawer.block.contents").withStyle(ChatFormatting.GRAY));
+            for (int i = 0; i < type.getSlots(); i++) {
+                FluidStack stack = FluidStack.loadFluidStackFromNBT(tileTag.getCompound(i + ""));
+                if (!stack.isEmpty())
+                    tooltip.add(Component.literal(" - " + ChatFormatting.YELLOW + NumberUtils.getFormatedFluidBigNumber(stack.getAmount()) + ChatFormatting.WHITE + " of ").append(stack.getDisplayName().copy().withStyle(ChatFormatting.GOLD)));
+            }
         }
     }
 

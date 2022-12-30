@@ -135,7 +135,6 @@ public abstract class BigFluidHandler implements IFluidHandler, INBTSerializable
             this.tanks[i].setCapacity(this.capacity);
             this.filterStack[i] = FluidStack.loadFluidStackFromNBT(nbt.getCompound("Locked" + i));
         }
-
     }
 
     public abstract void onChange();
@@ -162,7 +161,6 @@ public abstract class BigFluidHandler implements IFluidHandler, INBTSerializable
 
         public CustomFluidTank(int capacity) {
             super(capacity);
-
         }
 
         public CustomFluidTank(int capacity, Predicate<FluidStack> validator) {
