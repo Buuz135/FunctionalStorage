@@ -9,14 +9,12 @@ import com.hrznstudio.titanium.annotation.Save;
 import com.hrznstudio.titanium.block.BasicTileBlock;
 import com.hrznstudio.titanium.component.inventory.InventoryComponent;
 import com.hrznstudio.titanium.util.TileUtil;
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -28,7 +26,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.fluids.FluidType;
+import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fluids.IFluidBlock;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
@@ -198,17 +196,18 @@ public class FluidDrawerTile extends ControllableDrawerTile<FluidDrawerTile> {
         if (stack.getItem().equals(FunctionalStorage.CONFIGURATION_TOOL.get()) || stack.getItem().equals(FunctionalStorage.LINKING_TOOL.get()))
             return InteractionResult.PASS;
         if (slot != -1 && !playerIn.getItemInHand(hand).isEmpty()) {
-            InteractionResult result = stack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY).map(iFluidHandlerItem -> {
-                int amount = Minecraft.getInstance().player.containerMenu.getCarried().getItem() instanceof BucketItem ? FluidType.BUCKET_VOLUME : Integer.MAX_VALUE;
-                amount = this.fluidHandler.getTankList()[slot].fill(iFluidHandlerItem.drain(amount, IFluidHandler.FluidAction.SIMULATE), IFluidHandler.FluidAction.EXECUTE);
-                if (!playerIn.isCreative()) {
-                    iFluidHandlerItem.drain(amount, IFluidHandler.FluidAction.EXECUTE);
-                    playerIn.setItemInHand(hand, iFluidHandlerItem.getContainer().copy());
-                }
-                return InteractionResult.SUCCESS;
+            var interactionResult = stack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY).map(iFluidHandlerItem -> {
+                return playerIn.getCapability(ForgeCapabilities.ITEM_HANDLER).map(iItemHandler -> {
+                    var result = FluidUtil.tryEmptyContainerAndStow(stack, this.fluidHandler.getTankList()[slot], iItemHandler, Integer.MAX_VALUE, playerIn, true);
+                    if (result.isSuccess()) {
+                        playerIn.setItemInHand(playerIn.getUsedItemHand(), result.getResult());
+                        return InteractionResult.SUCCESS;
+                    }
+                    return InteractionResult.PASS;
+                }).orElse(InteractionResult.PASS);
             }).orElse(InteractionResult.PASS);
-            if (result == InteractionResult.SUCCESS) {
-                return result;
+            if (interactionResult == InteractionResult.SUCCESS) {
+                return interactionResult;
             }
         }
         return super.onSlotActivated(playerIn, hand, facing, hitX, hitY, hitZ, slot);
@@ -218,15 +217,14 @@ public class FluidDrawerTile extends ControllableDrawerTile<FluidDrawerTile> {
     public void onClicked(Player playerIn, int slot) {
         ItemStack stack = playerIn.getItemInHand(playerIn.getUsedItemHand());
         if (slot != -1 && !stack.isEmpty()) {
-            InteractionResult result = stack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY).map(iFluidHandlerItem -> {
-                int amount = Minecraft.getInstance().player.containerMenu.getCarried().getItem() instanceof BucketItem ? FluidType.BUCKET_VOLUME : Integer.MAX_VALUE;
-                amount = iFluidHandlerItem.fill(this.fluidHandler.getTankList()[slot].drain(amount, IFluidHandler.FluidAction.SIMULATE), IFluidHandler.FluidAction.EXECUTE);
-                if (!playerIn.isCreative()) {
-                    this.fluidHandler.getTankList()[slot].drain(amount, IFluidHandler.FluidAction.EXECUTE);
-                    playerIn.setItemInHand(playerIn.getUsedItemHand(), iFluidHandlerItem.getContainer().copy());
-                }
-                return InteractionResult.SUCCESS;
-            }).orElse(InteractionResult.PASS);
+            stack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY).ifPresent(iFluidHandlerItem -> {
+                playerIn.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(iItemHandler -> {
+                    var result = FluidUtil.tryFillContainerAndStow(stack, this.fluidHandler.getTankList()[slot], iItemHandler, Integer.MAX_VALUE, playerIn, true);
+                    if (result.isSuccess()) {
+                        playerIn.setItemInHand(playerIn.getUsedItemHand(), result.getResult());
+                    }
+                });
+            });
         }
     }
 

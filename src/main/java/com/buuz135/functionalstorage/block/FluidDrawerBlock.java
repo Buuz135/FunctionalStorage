@@ -60,7 +60,6 @@ public class FluidDrawerBlock extends RotatableBlock<FluidDrawerTile> {
      * Upgrade extraction restriction
      * Gas rendering
      * TOP Support
-     * Better interaction support
      * Tootlip drawers
      */
 
