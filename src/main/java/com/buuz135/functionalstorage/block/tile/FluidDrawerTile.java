@@ -1,6 +1,7 @@
 package com.buuz135.functionalstorage.block.tile;
 
 import com.buuz135.functionalstorage.FunctionalStorage;
+import com.buuz135.functionalstorage.client.gui.FluidDrawerInfoGuiAddon;
 import com.buuz135.functionalstorage.fluid.BigFluidHandler;
 import com.buuz135.functionalstorage.item.StorageUpgradeItem;
 import com.buuz135.functionalstorage.item.UpgradeItem;
@@ -11,6 +12,7 @@ import com.hrznstudio.titanium.util.TileUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -81,6 +83,21 @@ public class FluidDrawerTile extends ControllableDrawerTile<FluidDrawerTile> {
     @Override
     public void initClient() {
         super.initClient();
+        var slotName = "";
+        if (type.getSlots() == 2) {
+            slotName = "_2";
+        }
+        if (type.getSlots() == 4) {
+            slotName = "_4";
+        }
+        String finalSlotName = slotName;
+        addGuiAddonFactory(() -> new FluidDrawerInfoGuiAddon(64, 16,
+                new ResourceLocation(FunctionalStorage.MOD_ID, "textures/blocks/fluid_front" + finalSlotName + ".png"),
+                type.getSlots(),
+                type.getSlotPosition(),
+                this::getFluidHandler,
+                integer -> getFluidHandler().getTankCapacity(integer)
+        ));
     }
 
     @Nonnull

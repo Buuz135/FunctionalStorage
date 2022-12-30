@@ -58,7 +58,6 @@ public class FluidDrawerBlock extends RotatableBlock<FluidDrawerTile> {
      * Framed version
      * Recipes
      * Upgrade extraction restriction
-     * GUI Tanks
      * Gas rendering
      * TOP Support
      * Better interaction support

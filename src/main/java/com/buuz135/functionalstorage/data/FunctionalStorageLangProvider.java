@@ -83,5 +83,6 @@ public class FunctionalStorageLangProvider extends LanguageProvider {
         this.add("gui.functionalstorage.item", "Item: ");
         this.add("gui.functionalstorage.amount", "Amount: ");
         this.add("gui.functionalstorage.slot", "Slot: ");
+        this.add("gui.functionalstorage.fluid", "Fluid: ");
     }
 }
