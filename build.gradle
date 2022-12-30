@@ -98,7 +98,7 @@ dependencies {
     compileOnly(fg.deobf("mezz.jei:jei-${mc_version}-forge-api:${jei_version}"))
     runtimeOnly(fg.deobf("mezz.jei:jei-${mc_version}-forge:${jei_version}"))
     runtimeOnly fg.deobf("curse.maven:refined-storage-243076:4216398")
-    implementation fg.deobf("curse.maven:the-one-probe-245211:3927520")
+    implementation fg.deobf("curse.maven:the-one-probe-245211:3965693")
     //implementation fg.deobf("curse.maven:allthecompressed-514045:3723881")
     //runtimeOnly fg.deobf("curse.maven:create-328085:3600402")
     //runtimeOnly fg.deobf("curse.maven:flywheel-486392:3600401")

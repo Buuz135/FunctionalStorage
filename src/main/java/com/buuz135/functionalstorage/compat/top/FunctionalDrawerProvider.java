@@ -11,7 +11,9 @@ import com.buuz135.functionalstorage.util.NumberUtils;
 import com.buuz135.functionalstorage.world.EnderSavedData;
 import mcjty.theoneprobe.api.*;
 import mcjty.theoneprobe.apiimpl.elements.ElementHorizontal;
+import mcjty.theoneprobe.apiimpl.elements.ElementTank;
 import mcjty.theoneprobe.apiimpl.elements.ElementVertical;
+import mcjty.theoneprobe.apiimpl.styles.ProgressStyle;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -126,6 +128,14 @@ public class FunctionalDrawerProvider implements IProbeInfoProvider {
                 }
                 vertical.element(new ElementVertical(iProbeInfo.defaultLayoutStyle().topPadding(4)));
             }
+            if (blockEntity instanceof FluidDrawerTile fluidDrawerTile && (player.isShiftKeyDown() || probeMode == ProbeMode.EXTENDED)) {
+                ElementVertical tanksVertical = new ElementVertical(iProbeInfo.defaultLayoutStyle().spacing(2));
+                for (int i = 0; i < fluidDrawerTile.getFluidHandler().getTanks(); i++) {
+                    var tankReference = TankReference.createTank(fluidDrawerTile.getFluidHandler().getTankList()[i]);
+                    tanksVertical.element(new ElementTank(tankReference, new ProgressStyle().numberFormat(NumberFormat.COMPACT)));
+                }
+                iProbeInfo.element(tanksVertical);
+            }
             if (player.isShiftKeyDown() || probeMode == ProbeMode.EXTENDED) {
                 ElementHorizontal abstractElementPanel = new ElementHorizontal(iProbeInfo.defaultLayoutStyle().topPadding(0).spacing(8).leftPadding(7).rightPadding(7));
                 abstractElementPanel.getStyle().borderColor(Color.CYAN.darker().getRGB());
@@ -146,5 +156,6 @@ public class FunctionalDrawerProvider implements IProbeInfoProvider {
             }
             iProbeInfo.element(vertical);
         }
+
     }
 }

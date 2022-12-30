@@ -60,7 +60,6 @@ public class FluidDrawerBlock extends RotatableBlock<FluidDrawerTile> {
      * Recipes
      * Upgrade extraction restriction
      * Gas rendering
-     * TOP Support
      */
 
     private final FunctionalStorage.DrawerType type;
