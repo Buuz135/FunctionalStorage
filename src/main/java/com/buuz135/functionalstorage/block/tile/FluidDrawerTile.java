@@ -21,6 +21,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.BucketPickup;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Fluids;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.capabilities.Capability;
@@ -175,7 +176,8 @@ public class FluidDrawerTile extends ControllableDrawerTile<FluidDrawerTile> {
                                         var insertedAmount = fluidTank.fill(drained, IFluidHandler.FluidAction.SIMULATE);
                                         if (insertedAmount == drained.getAmount()) {
                                             fluidTank.fill(drained, IFluidHandler.FluidAction.EXECUTE);
-                                            targetFluidHandler.drain(insertedAmount, IFluidHandler.FluidAction.EXECUTE);
+                                            if (!fluidstate.getType().isSame(Fluids.WATER) || !isInifiteSource(this.level, pos.relative(direction)))
+                                                targetFluidHandler.drain(insertedAmount, IFluidHandler.FluidAction.EXECUTE);
                                             this.fluidHandler.onChange();
                                             break;
                                         }
@@ -187,7 +189,19 @@ public class FluidDrawerTile extends ControllableDrawerTile<FluidDrawerTile> {
                 }
             }
         }
+    }
 
+    private boolean isInifiteSource(Level level, BlockPos pos) {
+        int sources = 0;
+        for (Direction value : Direction.values()) {
+            if (!value.getAxis().isHorizontal()) continue;
+            var fluidstate = level.getFluidState(pos.relative(value));
+            if (!fluidstate.isEmpty() && fluidstate.isSource() && fluidstate.getType().isSame(Fluids.WATER)) {
+                ++sources;
+            }
+            if (sources >= 2) return true;
+        }
+        return false;
     }
 
     @Override
