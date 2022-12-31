@@ -9,6 +9,7 @@ import com.buuz135.functionalstorage.item.LinkingToolItem;
 import com.buuz135.functionalstorage.util.NumberUtils;
 import com.hrznstudio.titanium.block.RotatableBlock;
 import com.hrznstudio.titanium.datagenerator.loot.block.BasicBlockLootTables;
+import com.hrznstudio.titanium.recipe.generator.TitaniumShapedRecipeBuilder;
 import com.hrznstudio.titanium.util.RayTraceUtils;
 import com.hrznstudio.titanium.util.TileUtil;
 import net.minecraft.ChatFormatting;
@@ -18,6 +19,7 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
@@ -25,6 +27,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -57,7 +60,6 @@ public class FluidDrawerBlock extends RotatableBlock<FluidDrawerTile> {
 
     /**
      * Framed version
-     * Recipes
      * Upgrade extraction restriction
      * Gas rendering
      */
@@ -207,13 +209,25 @@ public class FluidDrawerBlock extends RotatableBlock<FluidDrawerTile> {
     @Override
     public void registerRecipe(Consumer<FinishedRecipe> consumer) {
         if (type == FunctionalStorage.DrawerType.X_1) {
-
+            TitaniumShapedRecipeBuilder.shapedRecipe(this)
+                    .pattern("PPP").pattern("PCP").pattern("PPP")
+                    .define('P', ItemTags.PLANKS)
+                    .define('C', Items.BUCKET)
+                    .save(consumer);
         }
         if (type == FunctionalStorage.DrawerType.X_2) {
-
+            TitaniumShapedRecipeBuilder.shapedRecipe(this, 2)
+                    .pattern("PCP").pattern("PPP").pattern("PCP")
+                    .define('P', ItemTags.PLANKS)
+                    .define('C', Items.BUCKET)
+                    .save(consumer);
         }
         if (type == FunctionalStorage.DrawerType.X_4) {
-
+            TitaniumShapedRecipeBuilder.shapedRecipe(this, 4)
+                    .pattern("CPC").pattern("PPP").pattern("CPC")
+                    .define('P', ItemTags.PLANKS)
+                    .define('C', Items.BUCKET)
+                    .save(consumer);
         }
     }
 
