@@ -60,7 +60,6 @@ public class FluidDrawerBlock extends RotatableBlock<FluidDrawerTile> {
 
     /**
      * Framed version
-     * Upgrade extraction restriction
      * Gas rendering
      */
 

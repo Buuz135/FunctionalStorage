@@ -48,7 +48,7 @@ public class FluidDrawerTile extends ControllableDrawerTile<FluidDrawerTile> {
     public FluidDrawerTile(BasicTileBlock<FluidDrawerTile> base, BlockEntityType<FluidDrawerTile> blockEntityType, BlockPos pos, BlockState state, FunctionalStorage.DrawerType type) {
         super(base, blockEntityType, pos, state);
         this.type = type;
-        this.fluidHandler = new BigFluidHandler(type.getSlots(), getTankCapacity()) {
+        this.fluidHandler = new BigFluidHandler(type.getSlots(), getTankCapacity(getStorageMultiplier())) {
             @Override
             public void onChange() {
                 syncObject(fluidHandler);
@@ -72,8 +72,8 @@ public class FluidDrawerTile extends ControllableDrawerTile<FluidDrawerTile> {
         this.fluidHandlerLazyOptional = LazyOptional.of(() -> fluidHandler);
     }
 
-    private int getTankCapacity() {
-        long maxCap = ((type.getSlotAmount() / 64)) * 1000L * (getStorageMultiplier() == 1 ? 1 : getStorageMultiplier() / 4);
+    private int getTankCapacity(int storageMultiplier) {
+        long maxCap = ((type.getSlotAmount() / 64)) * 1000L * (storageMultiplier == 1 ? 1 : storageMultiplier / 4);
         return (int) Math.min(Integer.MAX_VALUE, maxCap);
     }
 
@@ -296,19 +296,25 @@ public class FluidDrawerTile extends ControllableDrawerTile<FluidDrawerTile> {
                                 mult *= ((StorageUpgradeItem) getStorageUpgrades().getStackInSlot(i).getItem()).getStorageMultiplier();
                         }
                     }
+                    for (int i = 0; i < getFluidHandler().getTanks(); i++) {
+                        if (getFluidHandler().getFluidInTank(i).isEmpty()) continue;
+                        if (getFluidHandler().getFluidInTank(i).getAmount() > getTankCapacity(mult)) {
+                            return ItemStack.EMPTY;
+                        }
+                    }
                 }
                 return super.extractItem(slot, amount, simulate);
             }
         }
                 .setInputFilter((stack, integer) -> {
                     if (stack.getItem().equals(FunctionalStorage.STORAGE_UPGRADES.get(StorageUpgradeItem.StorageTier.IRON).get())) {
-
+                        return false;
                     }
                     return stack.getItem() instanceof UpgradeItem && ((UpgradeItem) stack.getItem()).getType() == UpgradeItem.Type.STORAGE;
                 })
                 .setOnSlotChanged((stack, integer) -> {
                     setNeedsUpgradeCache(true);
-                    this.fluidHandler.setCapacity(getTankCapacity());
+                    this.fluidHandler.setCapacity(getTankCapacity(getStorageMultiplier()));
                     syncObject(this.fluidHandler);
                 })
                 .setSlotLimit(1);

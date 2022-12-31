@@ -1,7 +1,6 @@
 package com.buuz135.functionalstorage.block.tile;
 
 import com.buuz135.functionalstorage.FunctionalStorage;
-import com.buuz135.functionalstorage.item.ConfigurationToolItem;
 import com.buuz135.functionalstorage.item.StorageUpgradeItem;
 import com.buuz135.functionalstorage.item.UpgradeItem;
 import com.hrznstudio.titanium.block.BasicTileBlock;
@@ -11,7 +10,6 @@ import com.hrznstudio.titanium.util.TileUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -27,7 +25,6 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
@@ -245,39 +242,4 @@ public abstract class ItemControllableDrawerTile<T extends ItemControllableDrawe
         return ChatFormatting.DARK_GRAY.getColor();
     }
 
-    public static class DrawerOptions implements INBTSerializable<CompoundTag> {
-
-        public HashMap<ConfigurationToolItem.ConfigurationAction, Boolean> options;
-
-        public DrawerOptions() {
-            this.options = new HashMap<>();
-            this.options.put(ConfigurationToolItem.ConfigurationAction.TOGGLE_NUMBERS, true);
-            this.options.put(ConfigurationToolItem.ConfigurationAction.TOGGLE_RENDER, true);
-            this.options.put(ConfigurationToolItem.ConfigurationAction.TOGGLE_UPGRADES, true);
-        }
-
-        public boolean isActive(ConfigurationToolItem.ConfigurationAction configurationAction) {
-            return options.getOrDefault(configurationAction, true);
-        }
-
-        public void setActive(ConfigurationToolItem.ConfigurationAction configurationAction, boolean active) {
-            this.options.put(configurationAction, active);
-        }
-
-        @Override
-        public CompoundTag serializeNBT() {
-            CompoundTag compoundTag = new CompoundTag();
-            for (ConfigurationToolItem.ConfigurationAction action : this.options.keySet()) {
-                compoundTag.putBoolean(action.name(), this.options.get(action));
-            }
-            return compoundTag;
-        }
-
-        @Override
-        public void deserializeNBT(CompoundTag nbt) {
-            for (String allKey : nbt.getAllKeys()) {
-                this.options.put(ConfigurationToolItem.ConfigurationAction.valueOf(allKey), nbt.getBoolean(allKey));
-            }
-        }
-    }
 }
