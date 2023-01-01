@@ -35,6 +35,7 @@ public class FunctionalStorageLangProvider extends LanguageProvider {
         this.add(FunctionalStorage.COMPACTING_DRAWER.getLeft().get(), "Compacting Drawer");
         this.add(FunctionalStorage.FRAMED_COMPACTING_DRAWER.getLeft().get(), "Framed Compacting Drawer");
         this.add(FunctionalStorage.ENDER_DRAWER.getLeft().get(), "Ender Drawer");
+        this.add(FunctionalStorage.CONTROLLER_EXTENSION.getLeft().get(), "Controller Extension");
         this.add("linkingtool.linkingmode", "Linking Mode: ");
         this.add("linkingtool.linkingmode.single", "Single");
         this.add("linkingtool.linkingmode.single.desc", "Links a drawer to a controller");

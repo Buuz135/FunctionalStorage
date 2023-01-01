@@ -35,6 +35,7 @@ public class FunctionalStorageBlockTagsProvider extends BlockTagsProvider {
                 .add(FunctionalStorage.FLUID_DRAWER_1.getLeft().get())
                 .add(FunctionalStorage.FLUID_DRAWER_2.getLeft().get())
                 .add(FunctionalStorage.FLUID_DRAWER_4.getLeft().get())
+                .add(FunctionalStorage.CONTROLLER_EXTENSION.getLeft().get())
         ;
     }
 }
