@@ -1,4 +1,4 @@
-// 1.19.2	2022-10-04T01:15:12.396876	Titanium Recipe
+// 1.19.2	2022-12-31T16:42:54.0214248	Titanium Recipe
 f1f858c5c729d3265eca96a08ccc173c60e68cf0 data/functionalstorage/advancements/recipes/functionalstorage/netherite_upgrade.json
 b05cf8697ddf7bd71f6ca3d498da0426928c7744 data/functionalstorage/recipes/acacia_1.json
 918f07592884a21aeb8ee99d7f6df3f50e89766f data/functionalstorage/recipes/acacia_2.json
@@ -20,6 +20,9 @@ e260c361500b5848f4a66b093823dd227cdefc37 data/functionalstorage/recipes/compacti
 df09c6a962115cdea083aa6791bef37539e242cd data/functionalstorage/recipes/dark_oak_4.json
 30b58c315653f3514e0eab3bc80dec0f29259f5c data/functionalstorage/recipes/diamond_upgrade.json
 305304dba1d65f021ee05a76963b8ba019e63d19 data/functionalstorage/recipes/ender_drawer.json
+61972caaa84d29ec5d66dafd3fc03e363dd39db9 data/functionalstorage/recipes/fluid_1.json
+db5eb614b6454d6d7909f982b545a3ee1c109a4f data/functionalstorage/recipes/fluid_2.json
+8450e869abb3fa9c1a5fb91bfe9149d7d09ce2ca data/functionalstorage/recipes/fluid_4.json
 559d3ce38de9db21b4efc149df540d5994e54ef6 data/functionalstorage/recipes/framed_1.json
 2a3031c093185599c255f3eebc44826227175c20 data/functionalstorage/recipes/framed_2.json
 84bbe14ee7ac9fc3b99e6983dcdb85e1edca02d8 data/functionalstorage/recipes/framed_4.json

@@ -28,7 +28,7 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class CompactingDrawerTile extends ControllableDrawerTile<CompactingDrawerTile> {
+public class CompactingDrawerTile extends ItemControllableDrawerTile<CompactingDrawerTile> {
 
     @Save
     public CompactingInventoryHandler handler;

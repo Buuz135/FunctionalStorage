@@ -25,9 +25,13 @@ public class FunctionalStorageLangProvider extends LanguageProvider {
         for (FunctionalStorage.DrawerType drawerType : FunctionalStorage.DRAWER_TYPES.keySet()) {
             for (RegistryObject<Block> blockRegistryObject : FunctionalStorage.DRAWER_TYPES.get(drawerType).stream().map(Pair::getLeft).collect(Collectors.toList())) {
                 DrawerBlock drawerBlock = (DrawerBlock) blockRegistryObject.get();
-                this.add(drawerBlock, WordUtils.capitalize(drawerBlock.getWoodType().getName().replace('_', ' ').toLowerCase()) + " Drawer (" +drawerBlock.getType().getDisplayName() +")");
+                this.add(drawerBlock, WordUtils.capitalize(drawerBlock.getWoodType().getName().replace('_', ' ').toLowerCase()) + " Drawer (" + drawerBlock.getType().getDisplayName() + ")");
             }
         }
+        this.add(FunctionalStorage.FLUID_DRAWER_1.getLeft().get(), "Fluid Drawer (" + FunctionalStorage.DrawerType.X_1.getDisplayName() + ")");
+        this.add(FunctionalStorage.FLUID_DRAWER_2.getLeft().get(), "Fluid Drawer (" + FunctionalStorage.DrawerType.X_2.getDisplayName() + ")");
+        this.add(FunctionalStorage.FLUID_DRAWER_4.getLeft().get(), "Fluid Drawer (" + FunctionalStorage.DrawerType.X_4.getDisplayName() + ")");
+
         this.add(FunctionalStorage.COMPACTING_DRAWER.getLeft().get(), "Compacting Drawer");
         this.add(FunctionalStorage.FRAMED_COMPACTING_DRAWER.getLeft().get(), "Framed Compacting Drawer");
         this.add(FunctionalStorage.ENDER_DRAWER.getLeft().get(), "Ender Drawer");
@@ -45,7 +49,8 @@ public class FunctionalStorageLangProvider extends LanguageProvider {
         this.add("key.categories.storage", "Storage");
         this.add(FunctionalStorage.LINKING_TOOL.get(), "Linking Tool");
         this.add(FunctionalStorage.DRAWER_CONTROLLER.getLeft().get(), "Storage Controller");
-        this.add("storageupgrade.desc", "Multiplies the block storage by ");
+        this.add("storageupgrade.desc.item", "Multiplies the block item storage by ");
+        this.add("storageupgrade.desc.fluid", "Multiplies the block fluid storage by ");
         for (StorageUpgradeItem.StorageTier storageTier : FunctionalStorage.STORAGE_UPGRADES.keySet()) {
             this.add(FunctionalStorage.STORAGE_UPGRADES.get(storageTier).get(), WordUtils.capitalize(storageTier.name().toLowerCase()) + (storageTier == StorageUpgradeItem.StorageTier.IRON ? " Downgrade" : " Upgrade"));
         }
@@ -78,5 +83,6 @@ public class FunctionalStorageLangProvider extends LanguageProvider {
         this.add("gui.functionalstorage.item", "Item: ");
         this.add("gui.functionalstorage.amount", "Amount: ");
         this.add("gui.functionalstorage.slot", "Slot: ");
+        this.add("gui.functionalstorage.fluid", "Fluid: ");
     }
 }

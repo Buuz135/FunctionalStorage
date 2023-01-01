@@ -2,10 +2,9 @@ package com.buuz135.functionalstorage.data;
 
 import com.buuz135.functionalstorage.FunctionalStorage;
 import com.buuz135.functionalstorage.block.CompactingDrawerBlock;
-import com.buuz135.functionalstorage.block.CompactingFramedDrawerBlock;
 import com.buuz135.functionalstorage.block.DrawerBlock;
 import com.buuz135.functionalstorage.block.EnderDrawerBlock;
-import com.buuz135.functionalstorage.block.FramedDrawerBlock;
+import com.buuz135.functionalstorage.block.FluidDrawerBlock;
 import com.hrznstudio.titanium.block.RotatableBlock;
 import net.minecraft.core.Direction;
 import net.minecraft.data.DataGenerator;
@@ -49,7 +48,7 @@ public class FunctionalStorageBlockstateProvider extends BlockStateProvider {
                     if (rotatableBlock.getRotationType().getProperties().length > 0) {
                         for (DirectionProperty property : rotatableBlock.getRotationType().getProperties()) {
                             for (Direction allowedValue : property.getPossibleValues()) {
-                                if (rotatableBlock instanceof DrawerBlock || rotatableBlock instanceof CompactingDrawerBlock || rotatableBlock instanceof CompactingDrawerBlock || rotatableBlock instanceof EnderDrawerBlock) {
+                                if (rotatableBlock instanceof DrawerBlock || rotatableBlock instanceof CompactingDrawerBlock || rotatableBlock instanceof EnderDrawerBlock || rotatableBlock instanceof FluidDrawerBlock) {
                                     builder.partialState().with(property, allowedValue).with(DrawerBlock.LOCKED, false)
                                             .addModels(new ConfiguredModel(new ModelFile.UncheckedModelFile(getModel(rotatableBlock)), allowedValue.get2DDataValue() == -1 ? allowedValue.getOpposite().getAxisDirection().getStep() * 90 : 0, (int) allowedValue.getOpposite().toYRot(), true));
                                     builder.partialState().with(property, allowedValue).with(DrawerBlock.LOCKED, true)
