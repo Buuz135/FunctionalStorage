@@ -76,7 +76,7 @@ public class DrawerControllerTile extends ItemControllableDrawerTile<DrawerContr
     @Override
     public void serverTick(Level level, BlockPos pos, BlockState state, DrawerControllerTile blockEntity) {
         super.serverTick(level, pos, state, blockEntity);
-        if (this.connectedDrawers.getConnectedDrawers().size() != (this.connectedDrawers.getItemHandlers().size() + this.connectedDrawers.getFluidHandlers().size())) {
+        if (this.connectedDrawers.getConnectedDrawers().size() != (this.connectedDrawers.getItemHandlers().size() + this.connectedDrawers.getFluidHandlers().size() + this.connectedDrawers.getExtensions())) {
             this.connectedDrawers.getConnectedDrawers().removeIf(aLong -> !(this.getLevel().getBlockEntity(BlockPos.of(aLong)) instanceof ControllableDrawerTile<?>));
             this.connectedDrawers.setLevel(getLevel());
             this.connectedDrawers.rebuild();
@@ -226,12 +226,14 @@ public class DrawerControllerTile extends ItemControllableDrawerTile<DrawerContr
         private List<IItemHandler> itemHandlers;
         private List<IFluidHandler> fluidHandlers;
         private Level level;
+        private int extensions;
 
         public ConnectedDrawers(Level level) {
             this.connectedDrawers = new ArrayList<>();
             this.itemHandlers = new ArrayList<>();
             this.fluidHandlers = new ArrayList<>();
             this.level = level;
+            this.extensions = 0;
         }
 
         public void setLevel(Level level) {
@@ -246,6 +248,9 @@ public class DrawerControllerTile extends ItemControllableDrawerTile<DrawerContr
                     BlockPos pos = BlockPos.of(connectedDrawer);
                     BlockEntity entity = level.getBlockEntity(pos);
                     if (entity instanceof DrawerControllerTile) continue;
+                    if (entity instanceof ControllerExtensionTile) {
+                        ++extensions;
+                    }
                     if (entity instanceof ItemControllableDrawerTile<?> itemControllableDrawerTile) {
                         this.itemHandlers.add(itemControllableDrawerTile.getStorage());
                     }
@@ -286,6 +291,10 @@ public class DrawerControllerTile extends ItemControllableDrawerTile<DrawerContr
 
         public List<IFluidHandler> getFluidHandlers() {
             return fluidHandlers;
+        }
+
+        public int getExtensions() {
+            return extensions;
         }
     }
 

@@ -1,8 +1,9 @@
 package com.buuz135.functionalstorage.block;
 
 import com.buuz135.functionalstorage.FunctionalStorage;
-import com.buuz135.functionalstorage.block.tile.ControllableDrawerTile;
+import com.buuz135.functionalstorage.block.tile.ControllerExtensionTile;
 import com.buuz135.functionalstorage.block.tile.DrawerControllerTile;
+import com.buuz135.functionalstorage.item.LinkingToolItem;
 import com.buuz135.functionalstorage.util.StorageTags;
 import com.hrznstudio.titanium.block.RotatableBlock;
 import com.hrznstudio.titanium.recipe.generator.TitaniumShapedRecipeBuilder;
@@ -17,7 +18,6 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
@@ -25,20 +25,19 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.common.Tags;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
 import java.util.function.Consumer;
 
-public class DrawerControllerBlock extends RotatableBlock<DrawerControllerTile> {
+public class ControllerExtensionBlock extends RotatableBlock<ControllerExtensionTile> {
 
-    public DrawerControllerBlock() {
-        super("storage_controller", Properties.copy(Blocks.IRON_BLOCK), DrawerControllerTile.class);
+    public ControllerExtensionBlock() {
+        super("controller_extension", Properties.copy(Blocks.IRON_BLOCK), ControllerExtensionTile.class);
         setItemGroup(FunctionalStorage.TAB);
         registerDefaultState(defaultBlockState().setValue(RotatableBlock.FACING_HORIZONTAL, Direction.NORTH).setValue(DrawerBlock.LOCKED, false));
     }
 
     @Override
     public BlockEntityType.BlockEntitySupplier<?> getTileEntityFactory() {
-        return (p_155268_, p_155269_) -> new DrawerControllerTile(this, (BlockEntityType<DrawerControllerTile>) FunctionalStorage.DRAWER_CONTROLLER.getRight().get(), p_155268_, p_155269_);
+        return (p_155268_, p_155269_) -> new ControllerExtensionTile(this, (BlockEntityType<ControllerExtensionTile>) FunctionalStorage.CONTROLLER_EXTENSION.getRight().get(), p_155268_, p_155269_);
     }
 
     @NotNull
@@ -55,19 +54,17 @@ public class DrawerControllerBlock extends RotatableBlock<DrawerControllerTile> 
 
     @Override
     public InteractionResult use(BlockState state, Level worldIn, BlockPos pos, Player player, InteractionHand hand, BlockHitResult ray) {
-        return TileUtil.getTileEntity(worldIn, pos, DrawerControllerTile.class).map(drawerTile -> drawerTile.onSlotActivated(player, hand, ray.getDirection(), ray.getLocation().x, ray.getLocation().y, ray.getLocation().z)).orElse(InteractionResult.PASS);
+        return TileUtil.getTileEntity(worldIn, pos, ControllerExtensionTile.class).map(drawerTile -> drawerTile.onSlotActivated(player, hand, ray.getDirection(), ray.getLocation().x, ray.getLocation().y, ray.getLocation().z)).orElse(InteractionResult.PASS);
     }
 
     @Override
     public void onRemove(BlockState state, Level worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
         if (!state.is(newState.getBlock())) {
-            TileUtil.getTileEntity(worldIn, pos, DrawerControllerTile.class).ifPresent(drawerControllerTile -> {
-                for (Long connectedDrawer : new ArrayList<>(drawerControllerTile.getConnectedDrawers().getConnectedDrawers())) {
-                    BlockEntity blockEntity = worldIn.getBlockEntity(BlockPos.of(connectedDrawer));
-                    if (blockEntity instanceof DrawerControllerTile) continue;
-                    if (blockEntity instanceof ControllableDrawerTile controllableDrawerTile) {
-                        controllableDrawerTile.setControllerPos(null);
-                    }
+            TileUtil.getTileEntity(worldIn, pos, ControllerExtensionTile.class).ifPresent(tile -> {
+                if (tile.getControllerPos() != null) {
+                    TileUtil.getTileEntity(worldIn, tile.getControllerPos(), DrawerControllerTile.class).ifPresent(drawerControllerTile -> {
+                        drawerControllerTile.addConnectedDrawers(LinkingToolItem.ActionMode.REMOVE, pos);
+                    });
                 }
             });
         }
@@ -76,12 +73,12 @@ public class DrawerControllerBlock extends RotatableBlock<DrawerControllerTile> 
 
     @Override
     public void registerRecipe(Consumer<FinishedRecipe> consumer) {
-        TitaniumShapedRecipeBuilder.shapedRecipe(FunctionalStorage.DRAWER_CONTROLLER.getLeft().get())
+        TitaniumShapedRecipeBuilder.shapedRecipe(FunctionalStorage.CONTROLLER_EXTENSION.getLeft().get())
                 .pattern("IBI").pattern("CDC").pattern("IBI")
                 .define('I', Tags.Items.STONE)
                 .define('B', Tags.Items.STORAGE_BLOCKS_QUARTZ)
                 .define('C', StorageTags.DRAWER)
-                .define('D', Items.COMPARATOR)
+                .define('D', Items.REPEATER)
                 .save(consumer);
     }
 }
