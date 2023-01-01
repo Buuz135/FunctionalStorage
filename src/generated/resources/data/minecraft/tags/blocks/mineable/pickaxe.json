@@ -8,6 +8,7 @@
     "functionalstorage:fluid_1",
     "functionalstorage:fluid_2",
     "functionalstorage:fluid_4",
-    "functionalstorage:controller_extension"
+    "functionalstorage:controller_extension",
+    "functionalstorage:simple_compacting_drawer"
   ]
 }

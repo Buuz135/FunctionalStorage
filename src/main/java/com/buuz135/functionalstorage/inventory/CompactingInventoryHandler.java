@@ -18,15 +18,21 @@ public abstract class CompactingInventoryHandler implements IItemHandler, INBTSe
     public static String STACK = "Stack";
     public static String AMOUNT = "Amount";
 
-    public static final int TOTAL_AMOUNT = 512 * 9 * 9;
+    public int totalAmount;
 
     private int amount;
     private ItemStack parent;
     private List<CompactingUtil.Result> resultList;
+    private int slots;
 
-    public CompactingInventoryHandler(){
+    public CompactingInventoryHandler(int slots) {
         this.resultList = new ArrayList<>();
-        for (int i = 0; i < 3; i++) {
+        this.slots = slots;
+        this.totalAmount = 512;
+        for (int i = 0; i < slots - 1; i++) {
+            this.totalAmount *= 9;
+        }
+        for (int i = 0; i < slots; i++) {
             this.resultList.add(i, new CompactingUtil.Result(ItemStack.EMPTY, 1));
         }
         this.parent = ItemStack.EMPTY;
@@ -34,14 +40,14 @@ public abstract class CompactingInventoryHandler implements IItemHandler, INBTSe
 
     @Override
     public int getSlots() {
-        if (isVoid()) return 4;
-        return 3;
+        if (isVoid()) return this.slots + 1;
+        return this.slots;
     }
 
     @Nonnull
     @Override
     public ItemStack getStackInSlot(int slot) {
-        if (slot == 3) return ItemStack.EMPTY;
+        if (slot == this.slots) return ItemStack.EMPTY;
         CompactingUtil.Result bigStack = this.resultList.get(slot);
         ItemStack copied = bigStack.getResult().copy();
         copied.setCount(isCreative() ? Integer.MAX_VALUE : this.amount / bigStack.getNeeded());
@@ -51,13 +57,14 @@ public abstract class CompactingInventoryHandler implements IItemHandler, INBTSe
     @Nonnull
     @Override
     public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
-        if (isVoid() && slot == 3 && isVoidValid(stack) || (isVoidValid(stack) && isCreative())) return ItemStack.EMPTY;
+        if (isVoid() && slot == this.slots && isVoidValid(stack) || (isVoidValid(stack) && isCreative()))
+            return ItemStack.EMPTY;
         if (isValid(slot, stack)) {
             CompactingUtil.Result result = this.resultList.get(slot);
             int inserted = Math.min(getSlotLimit(slot) * result.getNeeded() - amount, stack.getCount() * result.getNeeded());
             inserted = (int) (Math.floor(inserted / result.getNeeded()) * result.getNeeded());
             if (!simulate) {
-                this.amount = Math.min(this.amount + inserted, TOTAL_AMOUNT * getMultiplier());
+                this.amount = Math.min(this.amount + inserted, totalAmount * getMultiplier());
                 onChange();
             }
             if (inserted == stack.getCount() * result.getNeeded() || isVoid()) return ItemStack.EMPTY;
@@ -84,7 +91,7 @@ public abstract class CompactingInventoryHandler implements IItemHandler, INBTSe
         if (this.parent.isEmpty()) {
             this.parent = compactingUtil.getResults().get(1).getResult();
         }
-        if (this.parent.isEmpty()) {
+        if (this.parent.isEmpty() && compactingUtil.getResults().size() >= 3) {
             this.parent = compactingUtil.getResults().get(2).getResult();
         }
         onChange();
@@ -105,8 +112,8 @@ public abstract class CompactingInventoryHandler implements IItemHandler, INBTSe
     @Nonnull
     @Override
     public ItemStack extractItem(int slot, int amount, boolean simulate) {
-        if (amount == 0 || slot == 3) return ItemStack.EMPTY;
-        if (slot < 3){
+        if (amount == 0 || slot == this.slots) return ItemStack.EMPTY;
+        if (slot < this.slots) {
             CompactingUtil.Result bigStack = this.resultList.get(slot);
             if (bigStack.getResult().isEmpty()) return ItemStack.EMPTY;
             int stackAmount = bigStack.getNeeded() * amount;
@@ -136,15 +143,15 @@ public abstract class CompactingInventoryHandler implements IItemHandler, INBTSe
     @Override
     public int getSlotLimit(int slot) {
         if (isCreative()) return Integer.MAX_VALUE;
-        if (slot == 3) return Integer.MAX_VALUE;
-        int total = TOTAL_AMOUNT;
+        if (slot == this.slots) return Integer.MAX_VALUE;
+        int total = totalAmount;
         if (hasDowngrade()) total = 64 * 9 * 9;
         return (int) Math.min(Integer.MAX_VALUE, Math.floor((total * getMultiplier()) / this.resultList.get(slot).getNeeded()));
     }
 
     public int getSlotLimitBase(int slot) {
-        if (slot == 3) return Integer.MAX_VALUE;
-        int total = TOTAL_AMOUNT;
+        if (slot == this.slots) return Integer.MAX_VALUE;
+        int total = totalAmount;
         if (hasDowngrade()) total = 64 * 9 * 9;
         return (int) Math.min(Integer.MAX_VALUE, Math.floor(total / this.resultList.get(slot).getNeeded()));
     }
@@ -155,7 +162,7 @@ public abstract class CompactingInventoryHandler implements IItemHandler, INBTSe
     }
 
     private boolean isValid(int slot, @Nonnull ItemStack stack){
-        if (slot < 3){
+        if (slot < this.slots) {
             CompactingUtil.Result bigStack = this.resultList.get(slot);
             ItemStack fl = bigStack.getResult();
             return !fl.isEmpty() && fl.sameItem(stack) && ItemStack.tagMatches(fl, stack);

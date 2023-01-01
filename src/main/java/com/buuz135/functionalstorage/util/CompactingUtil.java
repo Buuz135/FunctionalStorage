@@ -26,9 +26,11 @@ public class CompactingUtil {
 
     private final Level level;
     private List<Result> results;
+    private final int resultAmount;
 
-    public CompactingUtil(Level level) {
+    public CompactingUtil(Level level, int resultAmount) {
         this.level = level;
+        this.resultAmount = resultAmount;
         this.results = new ArrayList<>();
     }
 
@@ -44,19 +46,19 @@ public class CompactingUtil {
             }
         }
         boolean canFind = true;
-        while (canFind && results.size() < 3){
+        while (canFind && results.size() < resultAmount) {
             result = findLowerTier(results.get(0).getResult());
-            if (!result.getResult().isEmpty()){
+            if (!result.getResult().isEmpty()) {
                 for (Result result1 : results) {
                     result1.setNeeded(result1.getNeeded() * result.getNeeded());
                 }
                 result.setNeeded(1);
                 results.add(0, result);
-            }else{
+            } else {
                 canFind = false;
             }
         }
-        while (results.size() < 3){
+        while (results.size() < resultAmount) {
             results.add(0, new Result(ItemStack.EMPTY, 1));
         }
         results.stream().filter(result1 -> result1.getResult().getCount() > 0).forEach(result1 -> result1.setNeeded(result1.getNeeded() / result1.getResult().getCount()));

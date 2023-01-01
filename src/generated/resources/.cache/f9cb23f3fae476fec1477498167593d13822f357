@@ -1,4 +1,4 @@
-// 1.19.2	2023-01-01T19:28:06.2585003	Titanium Recipe
+// 1.19.2	2023-01-01T21:28:56.6971068	Titanium Recipe
 f1f858c5c729d3265eca96a08ccc173c60e68cf0 data/functionalstorage/advancements/recipes/functionalstorage/netherite_upgrade.json
 b05cf8697ddf7bd71f6ca3d498da0426928c7744 data/functionalstorage/recipes/acacia_1.json
 918f07592884a21aeb8ee99d7f6df3f50e89766f data/functionalstorage/recipes/acacia_2.json
@@ -46,6 +46,7 @@ a79a3ec456db3fc56d8d5c717c264ee13c4bbdd9 data/functionalstorage/recipes/oak_draw
 5f9576e04f3d22c25bf24b1c6d73380a646b5e5f data/functionalstorage/recipes/puller_upgrade.json
 a6530183b52eebec5dbe7e4aa8b2fed73ff8aafe data/functionalstorage/recipes/pusher_upgrade.json
 1f978597c015995d4665be0337ba3c9253a99a6b data/functionalstorage/recipes/redstone_upgrade.json
+a8a010edcaa5dd5b433a50e9f9db83cfd5f23bd2 data/functionalstorage/recipes/simple_compacting_drawer.json
 a84afe1c311bdde26ab919ee9d02f6ccd96dfcb8 data/functionalstorage/recipes/spruce_1.json
 648fc89e40c56a1abc03ef2f736f82c0950b792a data/functionalstorage/recipes/spruce_2.json
 98fbe14751894faf856430cb708d9af702b3d37f data/functionalstorage/recipes/spruce_4.json

@@ -1,4 +1,4 @@
-// 1.19.2	2023-01-01T19:28:06.2580004	Block States: functionalstorage
+// 1.19.2	2023-01-01T21:28:56.6960912	Block States: functionalstorage
 b1f76f1b67016350af532beb6de3ffdc4d9a07be assets/functionalstorage/blockstates/acacia_1.json
 a4e462d9775fd4aefa673952d4d69f9d90b2e823 assets/functionalstorage/blockstates/acacia_2.json
 ecd77b58fb3d746ab8e2109adf686ea01cf5d96a assets/functionalstorage/blockstates/acacia_4.json
@@ -31,6 +31,7 @@ be5ed1859166cc324b2935d509572dc6f8e114f4 assets/functionalstorage/blockstates/ma
 f47b30927e7b46a35f2273f67f8333ab4cc2e889 assets/functionalstorage/blockstates/oak_1.json
 29c84d44a7b8e80a47c97ee891f7e15519f7ca17 assets/functionalstorage/blockstates/oak_2.json
 7ce5d921723c7d0f45ed6fdf58436a61b19dde23 assets/functionalstorage/blockstates/oak_4.json
+944cf78adff114b16702265055e66f1e5c7719b5 assets/functionalstorage/blockstates/simple_compacting_drawer.json
 c53e0a691dd74cb9a6d60ebf825a7b7895382f31 assets/functionalstorage/blockstates/spruce_1.json
 cbc78a9d7d6691b4ddf1dd633e2d693b4b751595 assets/functionalstorage/blockstates/spruce_2.json
 e6d6962cc3719731bc798dcf1757a0c5bcf9099c assets/functionalstorage/blockstates/spruce_4.json

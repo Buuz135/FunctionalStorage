@@ -1,4 +1,4 @@
-// 1.19.2	2023-01-01T19:28:06.2595005	Item Models: functionalstorage
+// 1.19.2	2023-01-01T21:28:56.6971068	Item Models: functionalstorage
 05946c7f40bf42b62f86e70d637524afd795cad2 assets/functionalstorage/models/item/acacia_1.json
 9e4990cfbaa0ce0612d18b497169377fe24ee704 assets/functionalstorage/models/item/acacia_2.json
 648c9170a8c4c6068d0fdcf1ff7f6bf387902f3c assets/functionalstorage/models/item/acacia_4.json
@@ -41,6 +41,7 @@ c47402657897519b8d24fe05c24d8cf5206b8b66 assets/functionalstorage/models/item/oa
 f8a391ef1bd1165e4146fdce9e26c5e148cb6c10 assets/functionalstorage/models/item/puller_upgrade.json
 5c3d1bb1721ef875dd0b838d2362234891128783 assets/functionalstorage/models/item/pusher_upgrade.json
 2dd88009a044be860f02b5696d83b0fcdd011d9f assets/functionalstorage/models/item/redstone_upgrade.json
+d6f8f4ccd5e6bdc362dea5ffc2f3b0126b3dd7d0 assets/functionalstorage/models/item/simple_compacting_drawer.json
 bfcda282f9a0a050e6a35b59b7ef298d8c21ad28 assets/functionalstorage/models/item/spruce_1.json
 a5092df002d1882ba7356af656ffe4449c2ae014 assets/functionalstorage/models/item/spruce_2.json
 13d086813dc0e5718e4230916adb8450b7936f1b assets/functionalstorage/models/item/spruce_4.json

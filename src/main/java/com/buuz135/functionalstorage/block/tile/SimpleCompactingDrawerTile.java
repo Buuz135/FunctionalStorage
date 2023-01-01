@@ -28,19 +28,19 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class CompactingDrawerTile extends ItemControllableDrawerTile<CompactingDrawerTile> {
+public class SimpleCompactingDrawerTile extends ItemControllableDrawerTile<SimpleCompactingDrawerTile> {
 
+    private final LazyOptional<IItemHandler> lazyStorage;
     @Save
     public CompactingInventoryHandler handler;
-    private final LazyOptional<IItemHandler> lazyStorage;
     private boolean hasCheckedRecipes;
 
-    public CompactingDrawerTile(BasicTileBlock<CompactingDrawerTile> base, BlockEntityType<CompactingDrawerTile> blockEntityType, BlockPos pos, BlockState state) {
+    public SimpleCompactingDrawerTile(BasicTileBlock<SimpleCompactingDrawerTile> base, BlockEntityType<SimpleCompactingDrawerTile> blockEntityType, BlockPos pos, BlockState state) {
         super(base, blockEntityType, pos, state);
-        this.handler = new CompactingInventoryHandler(3) {
+        this.handler = new CompactingInventoryHandler(2) {
             @Override
             public void onChange() {
-                CompactingDrawerTile.this.markForUpdate();
+                SimpleCompactingDrawerTile.this.markForUpdate();
             }
 
             @Override
@@ -50,22 +50,22 @@ public class CompactingDrawerTile extends ItemControllableDrawerTile<CompactingD
 
             @Override
             public boolean isVoid() {
-                return CompactingDrawerTile.this.isVoid();
+                return SimpleCompactingDrawerTile.this.isVoid();
             }
 
             @Override
             public boolean hasDowngrade() {
-                return CompactingDrawerTile.this.hasDowngrade();
+                return SimpleCompactingDrawerTile.this.hasDowngrade();
             }
 
             @Override
             public boolean isCreative() {
-                return CompactingDrawerTile.this.isCreative();
+                return SimpleCompactingDrawerTile.this.isCreative();
             }
 
             @Override
             public boolean isLocked() {
-                return CompactingDrawerTile.this.isLocked();
+                return SimpleCompactingDrawerTile.this.isLocked();
             }
 
         };
@@ -78,11 +78,11 @@ public class CompactingDrawerTile extends ItemControllableDrawerTile<CompactingD
     public void initClient() {
         super.initClient();
         addGuiAddonFactory(() -> new DrawerInfoGuiAddon(64, 16,
-                new ResourceLocation(FunctionalStorage.MOD_ID, this instanceof CompactingFramedDrawerTile ? "textures/blocks/framed_front_compacting.png" : "textures/blocks/compacting_drawer_front.png"),
-                3,
+                new ResourceLocation(FunctionalStorage.MOD_ID, "textures/blocks/simple_compacting_drawer_front.png"),
+                2,
                 integer -> {
-                    if (integer == 0) return Pair.of(28, 28);
-                    if (integer == 1) return Pair.of(4, 28);
+                    if (integer == 0) return Pair.of(16, 28);
+                    if (integer == 1) return Pair.of(16, 4);
                     return Pair.of(16, 4);
                 },
                 integer -> getStorage().getStackInSlot(integer),
@@ -91,11 +91,11 @@ public class CompactingDrawerTile extends ItemControllableDrawerTile<CompactingD
     }
 
     @Override
-    public void serverTick(Level level, BlockPos pos, BlockState state, CompactingDrawerTile blockEntity) {
+    public void serverTick(Level level, BlockPos pos, BlockState state, SimpleCompactingDrawerTile blockEntity) {
         super.serverTick(level, pos, state, blockEntity);
         if (!hasCheckedRecipes) {
             if (!handler.getParent().isEmpty()) {
-                CompactingUtil compactingUtil = new CompactingUtil(this.level, 3);
+                CompactingUtil compactingUtil = new CompactingUtil(this.level, 2);
                 compactingUtil.setup(handler.getParent());
                 handler.setup(compactingUtil);
             }
@@ -105,15 +105,16 @@ public class CompactingDrawerTile extends ItemControllableDrawerTile<CompactingD
 
     public InteractionResult onSlotActivated(Player playerIn, InteractionHand hand, Direction facing, double hitX, double hitY, double hitZ, int slot) {
         ItemStack stack = playerIn.getItemInHand(hand);
-        if (stack.getItem().equals(FunctionalStorage.CONFIGURATION_TOOL.get()) || stack.getItem().equals(FunctionalStorage.LINKING_TOOL.get())) return InteractionResult.PASS;
-        if (!handler.isSetup() && slot != -1){
+        if (stack.getItem().equals(FunctionalStorage.CONFIGURATION_TOOL.get()) || stack.getItem().equals(FunctionalStorage.LINKING_TOOL.get()))
+            return InteractionResult.PASS;
+        if (!handler.isSetup() && slot != -1) {
             stack = playerIn.getItemInHand(hand).copy();
             stack.setCount(1);
-            CompactingUtil compactingUtil = new CompactingUtil(this.level, 3);
+            CompactingUtil compactingUtil = new CompactingUtil(this.level, 2);
             compactingUtil.setup(stack);
             handler.setup(compactingUtil);
             for (int i = 0; i < handler.getResultList().size(); i++) {
-                if (ItemStack.isSame(handler.getResultList().get(i).getResult(), stack)){
+                if (ItemStack.isSame(handler.getResultList().get(i).getResult(), stack)) {
                     slot = i;
                     break;
                 }
@@ -153,7 +154,7 @@ public class CompactingDrawerTile extends ItemControllableDrawerTile<CompactingD
 
     @NotNull
     @Override
-    public CompactingDrawerTile getSelf() {
+    public SimpleCompactingDrawerTile getSelf() {
         return this;
     }
 
