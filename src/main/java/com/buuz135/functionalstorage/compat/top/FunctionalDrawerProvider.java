@@ -54,12 +54,12 @@ public class FunctionalDrawerProvider implements IProbeInfoProvider {
     @Override
     public void addProbeInfo(ProbeMode probeMode, IProbeInfo iProbeInfo, Player player, Level level, BlockState blockState, IProbeHitData iProbeHitData) {
         BlockEntity blockEntity = level.getBlockEntity(iProbeHitData.getPos());
-        if (blockEntity instanceof ControllableDrawerTile && !(blockEntity instanceof DrawerControllerTile)) {
+        if (blockEntity instanceof ControllableDrawerTile && !(blockEntity instanceof DrawerControllerTile) && !(blockEntity instanceof ControllerExtensionTile)) {
             iProbeInfo.getElements().removeIf(iElement -> iElement instanceof ElementVertical);
             ElementVertical vertical = new ElementVertical();
             if (blockEntity instanceof DrawerTile) {
                 BigInventoryHandler handler = ((DrawerTile) blockEntity).getHandler();
-                if (handler.getSlots() == 1 || player.isShiftKeyDown() || probeMode == ProbeMode.EXTENDED){
+                if (handler.getSlots() == 1 || player.isShiftKeyDown() || probeMode == ProbeMode.EXTENDED) {
                     ElementVertical elementVertical = new ElementVertical(iProbeInfo.defaultLayoutStyle().spacing(2).leftPadding(7).rightPadding(7));
                     elementVertical.getStyle().borderColor(Color.CYAN.darker().getRGB());
                     for (int i = 0; i < handler.getStoredStacks().size(); i++) {

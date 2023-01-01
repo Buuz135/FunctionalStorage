@@ -1,4 +1,4 @@
-// 1.19.2	2022-12-26T22:48:02.5378409	Item Models: functionalstorage
+// 1.19.2	2023-01-01T19:28:06.2595005	Item Models: functionalstorage
 05946c7f40bf42b62f86e70d637524afd795cad2 assets/functionalstorage/models/item/acacia_1.json
 9e4990cfbaa0ce0612d18b497169377fe24ee704 assets/functionalstorage/models/item/acacia_2.json
 648c9170a8c4c6068d0fdcf1ff7f6bf387902f3c assets/functionalstorage/models/item/acacia_4.json
@@ -9,6 +9,7 @@ a45f12012b6bfc60ab69556aeb322e7306b91508 assets/functionalstorage/models/item/bi
 5d318e863add84269fe30c1eaff1262f3f882cb1 assets/functionalstorage/models/item/collector_upgrade.json
 60c7503ece603a05378f597f6bd0d9fc389f946f assets/functionalstorage/models/item/compacting_drawer.json
 54cb60dc243859b1eb6c46bb2477a70b4b3e9851 assets/functionalstorage/models/item/compacting_framed_drawer.json
+ea2033c10f43b9494d31e7b6bd4eb52d0343c2b4 assets/functionalstorage/models/item/controller_extension.json
 3b8a0d8b75c8eeacfedbd38755e755cedbbc7703 assets/functionalstorage/models/item/copper_upgrade.json
 dc3b1084ae34da6e6e15f5e9ac9c93113a698a97 assets/functionalstorage/models/item/creative_vending_upgrade.json
 1ae8c4c98ff5d75ecea11734070b3ab233af1345 assets/functionalstorage/models/item/crimson_1.json
