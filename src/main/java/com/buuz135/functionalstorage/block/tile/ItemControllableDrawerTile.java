@@ -65,8 +65,9 @@ public abstract class ItemControllableDrawerTile<T extends ItemControllableDrawe
                                     boolean hasWorked = false;
                                     for (int ourSlot = 0; ourSlot < this.getStorage().getSlots(); ourSlot++) {
                                         ItemStack simulated = getStorage().insertItem(ourSlot, pulledStack, true);
-                                        if (simulated.getCount() <= pulledStack.getCount()) {
-                                            getStorage().insertItem(ourSlot, iItemHandler.extractItem(otherSlot, pulledStack.getCount() - simulated.getCount(), false), false);
+                                        if (!simulated.equals(pulledStack)) {
+                                            ItemStack extracted = iItemHandler.extractItem(otherSlot, pulledStack.getCount() - simulated.getCount(), false);
+                                            getStorage().insertItem(ourSlot, extracted, false);
                                             hasWorked = true;
                                             break;
                                         }
