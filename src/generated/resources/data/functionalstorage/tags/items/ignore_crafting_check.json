@@ -10,6 +10,8 @@
     "minecraft:quartz_block",
     "minecraft:ice",
     "minecraft:blue_ice",
-    "minecraft:packed_ice"
+    "minecraft:packed_ice",
+    "minecraft:amethyst_block",
+    "minecraft:amethyst_shard"
   ]
 }
