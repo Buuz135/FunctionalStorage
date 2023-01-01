@@ -7,9 +7,6 @@ import com.buuz135.functionalstorage.inventory.BigInventoryHandler;
 import com.buuz135.functionalstorage.item.ConfigurationToolItem;
 import com.buuz135.functionalstorage.util.NumberUtils;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Matrix3f;
-import com.mojang.math.Matrix4f;
-import com.mojang.math.Quaternion;
 import com.mojang.math.Vector3f;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -23,16 +20,10 @@ import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 
+import static com.buuz135.functionalstorage.util.MathUtils.*;
+
 public class DrawerRenderer implements BlockEntityRenderer<DrawerTile> {
-
-    private static final Matrix3f FAKE_NORMALS;
-
-    static {
-        Vector3f NORMAL = new Vector3f(1, 1, 1);
-        NORMAL.normalize();
-        FAKE_NORMALS = new Matrix3f(new Quaternion(NORMAL, 0, true));
-    }
-
+	
     @Override
     public void render(DrawerTile tile, float partialTicks, PoseStack matrixStack, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
         if (Minecraft.getInstance().player != null && !tile.getBlockPos().closerThan(Minecraft.getInstance().player.getOnPos(), FunctionalStorageClientConfig.DRAWER_RENDER_RANGE)){
@@ -41,22 +32,24 @@ public class DrawerRenderer implements BlockEntityRenderer<DrawerTile> {
         matrixStack.pushPose();
 
         Direction facing = tile.getFacingDirection();
-        matrixStack.mulPose(Vector3f.YP.rotationDegrees(-180));
-        if (facing != Direction.SOUTH) matrixStack.last().normal().load(FAKE_NORMALS);
+        matrixStack.mulPoseMatrix(createTransformMatrix(
+        		Vector3f.ZERO, new Vector3f(0, 180, 0), 1));
+        
         if (facing == Direction.NORTH) {
-            //matrixStack.translate(0, 0, 1.016 / 16D);
-            matrixStack.translate(-1, 0, 0);
+        	matrixStack.mulPoseMatrix(createTransformMatrix(
+        			new Vector3f(-1, 0, 0), Vector3f.ZERO, 1));
         }
-        if (facing == Direction.EAST) {
-            matrixStack.translate(-1, 0, -1);
-            matrixStack.mulPose(Vector3f.YP.rotationDegrees(-90));
+        else if (facing == Direction.EAST) {
+        	matrixStack.mulPoseMatrix(createTransformMatrix(
+        			new Vector3f(-1, 0, -1), new Vector3f(0, -90, 0), 1));
         }
-        if (facing == Direction.SOUTH) {
-            matrixStack.translate(0, 0,-1);
-            matrixStack.mulPose(Vector3f.YP.rotationDegrees(-180));
+        else if (facing == Direction.SOUTH) {
+        	matrixStack.mulPoseMatrix(createTransformMatrix(
+        			new Vector3f(0, 0, -1), new Vector3f(0, 180, 0), 1));
         }
-        if (facing == Direction.WEST) {
-            matrixStack.mulPose(Vector3f.YP.rotationDegrees(90));
+        else if (facing == Direction.WEST) {
+        	matrixStack.mulPoseMatrix(createTransformMatrix(
+        			new Vector3f(0, 0, 0), new Vector3f(0, 90, 0), 1));
         }
         matrixStack.translate(0,0,-0.5/16D);
         combinedLightIn = LevelRenderer.getLightColor(tile.getLevel(), tile.getBlockPos().relative(facing));
@@ -86,8 +79,8 @@ public class DrawerRenderer implements BlockEntityRenderer<DrawerTile> {
         }
         if (tile.isVoid()){
             matrixStack.pushPose();
-            matrixStack.translate(0.969,0.031f,0.469/16D);
-            matrixStack.scale(scale, scale, scale);
+            matrixStack.mulPoseMatrix(createTransformMatrix(
+            		new Vector3f(0.969f,0.031f,0.469f/16.0f), Vector3f.ZERO, scale));
             Minecraft.getInstance().getItemRenderer().renderStatic(new ItemStack(FunctionalStorage.VOID_UPGRADE.get()), ItemTransforms.TransformType.NONE, combinedLightIn, combinedOverlayIn, matrixStack, bufferIn, 0);
             matrixStack.popPose();
         }
@@ -106,16 +99,16 @@ public class DrawerRenderer implements BlockEntityRenderer<DrawerTile> {
         BigInventoryHandler inventoryHandler = (BigInventoryHandler) tile.getStorage();
         if (!inventoryHandler.getStoredStacks().get(0).getStack().isEmpty()){
             matrixStack.pushPose();
-            matrixStack.translate(0.5, 0.27f, 0.0005f);
-            matrixStack.scale(0.5f, 0.5f, 0.5f);
+            matrixStack.mulPoseMatrix(createTransformMatrix(
+            		new Vector3f(0.5f, 0.27f, 0.0005f), Vector3f.ZERO, new Vector3f(.5f, .5f, 1.0f)));
             ItemStack stack = inventoryHandler.getStoredStacks().get(0).getStack();
             renderStack(matrixStack, bufferIn, combinedLightIn, combinedOverlayIn, stack, inventoryHandler.getStackInSlot(0).getCount(), 0.02f, tile.getDrawerOptions());
             matrixStack.popPose();
         }
         if (!inventoryHandler.getStoredStacks().get(1).getStack().isEmpty()){
             matrixStack.pushPose();
-            matrixStack.translate(0.5, 0.77f, 0.0005f);
-            matrixStack.scale(0.5f, 0.5f, 0.5f);
+            matrixStack.mulPoseMatrix(createTransformMatrix(
+            		new Vector3f(0.5f, 0.77f, 0.0005f), Vector3f.ZERO, new Vector3f(.5f, .5f, 1.0f)));
             ItemStack stack = inventoryHandler.getStoredStacks().get(1).getStack();
             renderStack(matrixStack, bufferIn, combinedLightIn, combinedOverlayIn, stack, inventoryHandler.getStackInSlot(1).getCount(), 0.02f, tile.getDrawerOptions());
             matrixStack.popPose();
@@ -125,32 +118,32 @@ public class DrawerRenderer implements BlockEntityRenderer<DrawerTile> {
         BigInventoryHandler inventoryHandler = (BigInventoryHandler) tile.getStorage();
         if (!inventoryHandler.getStoredStacks().get(0).getStack().isEmpty()){ //BOTTOM RIGHT
             matrixStack.pushPose();
-            matrixStack.translate(0.75, 0.27f, 0.0005f);
-            matrixStack.scale(0.5f, 0.5f, 0.5f);
+            matrixStack.mulPoseMatrix(createTransformMatrix(
+            		new Vector3f(.75f, .27f, .0005f), Vector3f.ZERO, new Vector3f(.5f, .5f, 1.0f)));
             ItemStack stack = inventoryHandler.getStoredStacks().get(0).getStack();
             renderStack(matrixStack, bufferIn, combinedLightIn, combinedOverlayIn, stack, inventoryHandler.getStackInSlot(0).getCount(), 0.02f, tile.getDrawerOptions());
             matrixStack.popPose();
         }
         if (!inventoryHandler.getStoredStacks().get(1).getStack().isEmpty()){ //BOTTOM LEFT
             matrixStack.pushPose();
-            matrixStack.translate(0.25, 0.27f, 0.0005f);
-            matrixStack.scale(0.5f, 0.5f, 0.5f);
+            matrixStack.mulPoseMatrix(createTransformMatrix(
+            		new Vector3f(.25f, .27f, .0005f), Vector3f.ZERO, new Vector3f(.5f, .5f, 1.0f)));
             ItemStack stack = inventoryHandler.getStoredStacks().get(1).getStack();
             renderStack(matrixStack, bufferIn, combinedLightIn, combinedOverlayIn, stack, inventoryHandler.getStackInSlot(1).getCount(), 0.02f, tile.getDrawerOptions());
             matrixStack.popPose();
         }
         if (!inventoryHandler.getStoredStacks().get(2).getStack().isEmpty()){ //TOP RIGHT
             matrixStack.pushPose();
-            matrixStack.translate(0.75, 0.77f, 0.0005f);
-            matrixStack.scale(0.5f, 0.5f, 0.5f);
+            matrixStack.mulPoseMatrix(createTransformMatrix(
+            		new Vector3f(.75f, .77f, .0005f), Vector3f.ZERO, new Vector3f(.5f, .5f, 1.0f)));
             ItemStack stack = inventoryHandler.getStoredStacks().get(2).getStack();
             renderStack(matrixStack, bufferIn, combinedLightIn, combinedOverlayIn, stack, inventoryHandler.getStackInSlot(2).getCount(), 0.02f, tile.getDrawerOptions());
             matrixStack.popPose();
         }
         if (!inventoryHandler.getStoredStacks().get(3).getStack().isEmpty()){ //TOP LEFT
             matrixStack.pushPose();
-            matrixStack.translate(0.25, 0.77f, 0.0005f);
-            matrixStack.scale(0.5f, 0.5f, 0.5f);
+            matrixStack.mulPoseMatrix(createTransformMatrix(
+            		new Vector3f(.25f, .77f, .0005f), Vector3f.ZERO, new Vector3f(.5f, .5f, 1.0f)));
             ItemStack stack = inventoryHandler.getStoredStacks().get(3).getStack();
             renderStack(matrixStack, bufferIn, combinedLightIn, combinedOverlayIn, stack, inventoryHandler.getStackInSlot(3).getCount(), 0.02f, tile.getDrawerOptions());
             matrixStack.popPose();
@@ -162,13 +155,12 @@ public class DrawerRenderer implements BlockEntityRenderer<DrawerTile> {
         BakedModel model = Minecraft.getInstance().getItemRenderer().getModel(stack, Minecraft.getInstance().level, null, 0);
         if (model.isGui3d()){
         	float thickness = (float)FunctionalStorageClientConfig.DRAWER_RENDER_THICKNESS;
-        	Matrix4f pose = new Matrix4f();
-        	// Squish display items instead of translating them backwards into drawer
-        	pose = Matrix4f.createScaleMatrix(0.75f, 0.75f, thickness);
         	// Avoid scaling normal matrix by using mulPoseMatrix() instead of scale()
-        	matrixStack.mulPoseMatrix(pose);
+        	matrixStack.mulPoseMatrix(createTransformMatrix(
+        			Vector3f.ZERO, Vector3f.ZERO, new Vector3f(.75f, .75f, thickness)));
         } else {
-            matrixStack.scale(0.4f, 0.4f, 0.4f);
+        	matrixStack.mulPoseMatrix(createTransformMatrix(
+        			Vector3f.ZERO, Vector3f.ZERO, .4f));
         }
         
         matrixStack.mulPose(Vector3f.YP.rotationDegrees(180));
@@ -177,12 +169,14 @@ public class DrawerRenderer implements BlockEntityRenderer<DrawerTile> {
         	Minecraft.getInstance().getItemRenderer().renderStatic(stack, ItemTransforms.TransformType.FIXED, combinedLightIn, combinedOverlayIn, matrixStack, bufferIn, 0);  	
         }
         
-        matrixStack.mulPose(Vector3f.YP.rotationDegrees(-180));
+    	matrixStack.mulPoseMatrix(createTransformMatrix(
+    			Vector3f.ZERO, new Vector3f(0, 180, 0), 1));
         if (!model.isGui3d()){
-            matrixStack.scale(0.5f / 0.4f, 0.5f / 0.4f, 1);
+        	matrixStack.mulPoseMatrix(createTransformMatrix(
+        			Vector3f.ZERO, Vector3f.ZERO, new Vector3f(0.5f / 0.4f, 0.5f / 0.4f, 1)));
         } else {
-            float sl = 0.665f;
-            matrixStack.scale(sl, sl, sl);
+        	matrixStack.mulPoseMatrix(createTransformMatrix(
+        			Vector3f.ZERO, Vector3f.ZERO, .665f));
         }
 
 
