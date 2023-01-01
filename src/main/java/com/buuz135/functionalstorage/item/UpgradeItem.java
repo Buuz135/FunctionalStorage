@@ -30,7 +30,8 @@ public class UpgradeItem extends BasicItem {
         if (stack.hasTag() && stack.getTag().contains("Direction")) {
             Item item = stack.getItem();
             if (item.equals(FunctionalStorage.PULLING_UPGRADE.get()) || item.equals(FunctionalStorage.PUSHING_UPGRADE.get()) || item.equals(FunctionalStorage.COLLECTOR_UPGRADE.get())) {
-                return Direction.byName(stack.getOrCreateTag().getString("Direction"));
+                var direction = Direction.byName(stack.getOrCreateTag().getString("Direction"));
+                return direction == null ? Direction.NORTH : direction;
             }
         }
         return Direction.NORTH;
