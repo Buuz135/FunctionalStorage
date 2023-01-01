@@ -25,6 +25,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
@@ -356,8 +357,9 @@ public class DrawerBlock extends RotatableBlock<DrawerTile> {
                 ItemStack stack = tile.getUtilityUpgrades().getStackInSlot(i);
                 if (stack.getItem().equals(FunctionalStorage.REDSTONE_UPGRADE.get())){
                     int redstoneSlot = stack.getOrCreateTag().getInt("Slot");
-                    if (redstoneSlot < tile.getStorage().getSlots()){
-                        return (int) ((tile.getStorage().getStackInSlot(redstoneSlot).getCount() / (double)tile.getStorage().getSlotLimit(redstoneSlot)) * 15);
+                    if (redstoneSlot < tile.getStorage().getSlots()) {
+                        var amount = (tile.getStorage().getStackInSlot(redstoneSlot).getCount() / (double) tile.getStorage().getSlotLimit(redstoneSlot)) * 14;
+                        return Mth.floor(amount * 14.0F) + (amount > 0 ? 1 : 0);
                     }
                 }
             }
