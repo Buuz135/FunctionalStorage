@@ -74,7 +74,6 @@ public abstract class CompactingInventoryHandler implements IItemHandler, INBTSe
         return false;
     }
 
-
     public boolean isSetup(){
         return !this.resultList.get(this.resultList.size() -1).getResult().isEmpty();
     }
@@ -152,7 +151,7 @@ public abstract class CompactingInventoryHandler implements IItemHandler, INBTSe
 
     @Override
     public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
-        return isSetup() && slot < 3 && !stack.isEmpty();
+        return isSetup() && !stack.isEmpty();
     }
 
     private boolean isValid(int slot, @Nonnull ItemStack stack){
