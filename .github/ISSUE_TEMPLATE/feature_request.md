@@ -1,10 +1,11 @@
 ---
 name: Feature request
-about: ''
-title: '[FEATURE REQUEST]'
+about: Create a feature request
+title: '[FEATURE REQUEST] Feature'
 labels: 'type: feature'
 assignees: ''
 
 ---
 
+**Description:**
 
