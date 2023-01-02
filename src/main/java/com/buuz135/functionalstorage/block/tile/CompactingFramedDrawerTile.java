@@ -1,6 +1,5 @@
 package com.buuz135.functionalstorage.block.tile;
 
-import com.buuz135.functionalstorage.FunctionalStorage;
 import com.buuz135.functionalstorage.client.model.FramedDrawerModelData;
 import com.hrznstudio.titanium.annotation.Save;
 import com.hrznstudio.titanium.block.BasicTileBlock;
@@ -37,4 +36,6 @@ public class CompactingFramedDrawerTile extends CompactingDrawerTile{
     public IModelData getModelData() {
         return new ModelDataMap.Builder().withInitial(FramedDrawerModelData.FRAMED_PROPERTY, framedDrawerModelData).build();
     }
+
+
 }

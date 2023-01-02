@@ -4,30 +4,30 @@
     {
       "conditions": [
         {
+          "type": "forge:and",
           "values": [
             {
-              "item": "functionalstorage:void_upgrade",
-              "type": "forge:item_exists"
+              "type": "forge:item_exists",
+              "item": "functionalstorage:void_upgrade"
             }
-          ],
-          "type": "forge:and"
+          ]
         }
       ],
       "recipe": {
         "type": "minecraft:crafting_shaped",
+        "key": {
+          "D": {
+            "tag": "functionalstorage:drawer"
+          },
+          "I": {
+            "tag": "forge:obsidian"
+          }
+        },
         "pattern": [
           "III",
           "IDI",
           "III"
         ],
-        "key": {
-          "I": {
-            "tag": "forge:obsidian"
-          },
-          "D": {
-            "tag": "functionalstorage:drawer"
-          }
-        },
         "result": {
           "item": "functionalstorage:void_upgrade"
         }

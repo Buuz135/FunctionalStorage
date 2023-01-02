@@ -4,26 +4,18 @@
     {
       "conditions": [
         {
+          "type": "forge:and",
           "values": [
             {
-              "item": "functionalstorage:diamond_upgrade",
-              "type": "forge:item_exists"
+              "type": "forge:item_exists",
+              "item": "functionalstorage:diamond_upgrade"
             }
-          ],
-          "type": "forge:and"
+          ]
         }
       ],
       "recipe": {
         "type": "minecraft:crafting_shaped",
-        "pattern": [
-          "IBI",
-          "CDC",
-          "IBI"
-        ],
         "key": {
-          "I": {
-            "tag": "forge:gems/diamond"
-          },
           "B": {
             "tag": "forge:storage_blocks/diamond"
           },
@@ -32,8 +24,16 @@
           },
           "D": {
             "item": "functionalstorage:gold_upgrade"
+          },
+          "I": {
+            "tag": "forge:gems/diamond"
           }
         },
+        "pattern": [
+          "IBI",
+          "CDC",
+          "IBI"
+        ],
         "result": {
           "item": "functionalstorage:diamond_upgrade"
         }

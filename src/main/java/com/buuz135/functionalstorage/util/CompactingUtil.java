@@ -10,6 +10,7 @@ import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.*;
 
@@ -25,9 +26,11 @@ public class CompactingUtil {
 
     private final Level level;
     private List<Result> results;
+    private final int resultAmount;
 
-    public CompactingUtil(Level level) {
+    public CompactingUtil(Level level, int resultAmount) {
         this.level = level;
+        this.resultAmount = resultAmount;
         this.results = new ArrayList<>();
     }
 
@@ -43,19 +46,19 @@ public class CompactingUtil {
             }
         }
         boolean canFind = true;
-        while (canFind && results.size() < 3){
+        while (canFind && results.size() < resultAmount) {
             result = findLowerTier(results.get(0).getResult());
-            if (!result.getResult().isEmpty()){
+            if (!result.getResult().isEmpty()) {
                 for (Result result1 : results) {
                     result1.setNeeded(result1.getNeeded() * result.getNeeded());
                 }
                 result.setNeeded(1);
                 results.add(0, result);
-            }else{
+            } else {
                 canFind = false;
             }
         }
-        while (results.size() < 3){
+        while (results.size() < resultAmount) {
             results.add(0, new Result(ItemStack.EMPTY, 1));
         }
         results.stream().filter(result1 -> result1.getResult().getCount() > 0).forEach(result1 -> result1.setNeeded(result1.getNeeded() / result1.getResult().getCount()));
@@ -149,10 +152,10 @@ public class CompactingUtil {
     }
 
     private ItemStack findSimilar(ItemStack reference, List<ItemStack> candidates) {
-        ResourceLocation referenceName = reference.getItem().getRegistryName();
+        ResourceLocation referenceName = ForgeRegistries.ITEMS.getKey(reference.getItem());
         if (referenceName != null) {
             for (ItemStack candidate : candidates) {
-                ResourceLocation matchName = candidate.getItem().getRegistryName();
+                ResourceLocation matchName = ForgeRegistries.ITEMS.getKey(candidate.getItem());
                 if (matchName != null) {
                     if (referenceName.getNamespace().equals(matchName.getNamespace()))
                         return candidate;
@@ -196,6 +199,11 @@ public class CompactingUtil {
 
     private CraftingContainer createContainerAndFill(int size, ItemStack stack){
         CraftingContainer inventoryCrafting = new CraftingContainer(new AbstractContainerMenu(null, 0) {
+            @Override
+            public ItemStack quickMoveStack(Player p_38941_, int p_38942_) {
+                return null;
+            }
+
             @Override
             public boolean stillValid(Player playerIn) {
                 return false;

@@ -64,6 +64,13 @@ public class ArmoryCabinetTile extends ActiveTile<ArmoryCabinetTile> {
         //super.onDataPacket(net, pkt);
     }
 
+    @Override
+    @Nonnull
+    public CompoundTag getUpdateTag() {
+        CompoundTag compoundTag = new CompoundTag();
+        return compoundTag;
+    }
+
     public boolean isEverythingEmpty() {
         for (int i = 0; i < getStorage().getSlots(); i++) {
             if (!getStorage().getStackInSlot(i).isEmpty()) {

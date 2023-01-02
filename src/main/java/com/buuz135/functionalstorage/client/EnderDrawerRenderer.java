@@ -2,71 +2,23 @@ package com.buuz135.functionalstorage.client;
 
 import com.buuz135.functionalstorage.FunctionalStorage;
 import com.buuz135.functionalstorage.block.tile.ControllableDrawerTile;
-import com.buuz135.functionalstorage.block.tile.DrawerTile;
 import com.buuz135.functionalstorage.block.tile.EnderDrawerTile;
-import com.buuz135.functionalstorage.inventory.BigInventoryHandler;
 import com.buuz135.functionalstorage.inventory.EnderInventoryHandler;
 import com.buuz135.functionalstorage.item.ConfigurationToolItem;
-import com.buuz135.functionalstorage.util.NumberUtils;
 import com.buuz135.functionalstorage.world.EnderSavedData;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Matrix3f;
-import com.mojang.math.Quaternion;
 import com.mojang.math.Vector3f;
-import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
-import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.Direction;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.item.ItemStack;
 
+import static com.buuz135.functionalstorage.util.MathUtils.createTransformMatrix;
+
 public class EnderDrawerRenderer implements BlockEntityRenderer<EnderDrawerTile> {
-
-    private static final Matrix3f FAKE_NORMALS;
-
-    static {
-        Vector3f NORMAL = new Vector3f(1, 1, 1);
-        NORMAL.normalize();
-        FAKE_NORMALS = new Matrix3f(new Quaternion(NORMAL, 0, true));
-    }
-
-    @Override
-    public void render(EnderDrawerTile tile, float partialTicks, PoseStack matrixStack, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
-        if (Minecraft.getInstance().player != null && !tile.getBlockPos().closerThan(Minecraft.getInstance().player.getOnPos(), FunctionalStorageClientConfig.DRAWER_RENDER_RANGE)){
-            return;
-        }
-        matrixStack.pushPose();
-
-        Direction facing = tile.getFacingDirection();
-        matrixStack.mulPose(Vector3f.YP.rotationDegrees(-180));
-        if (facing != Direction.SOUTH) matrixStack.last().normal().load(FAKE_NORMALS);
-        if (facing == Direction.NORTH) {
-            //matrixStack.translate(0, 0, 1.016 / 16D);
-            matrixStack.translate(-1, 0, 0);
-        }
-        if (facing == Direction.EAST) {
-            matrixStack.translate(-1, 0, -1);
-            matrixStack.mulPose(Vector3f.YP.rotationDegrees(-90));
-        }
-        if (facing == Direction.SOUTH) {
-            matrixStack.translate(0, 0,-1);
-            matrixStack.mulPose(Vector3f.YP.rotationDegrees(-180));
-        }
-        if (facing == Direction.WEST) {
-            matrixStack.mulPose(Vector3f.YP.rotationDegrees(90));
-        }
-        matrixStack.translate(0,0,-0.5/16D);
-        combinedLightIn = LevelRenderer.getLightColor(tile.getLevel(), tile.getBlockPos().relative(facing));
-        renderUpgrades(matrixStack, bufferIn, combinedLightIn, combinedOverlayIn, tile);
-        render1Slot(matrixStack, bufferIn, combinedLightIn, combinedOverlayIn, tile);
-        matrixStack.popPose();
-    }
 
     public static void renderUpgrades(PoseStack matrixStack, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn, ControllableDrawerTile<?> tile){
         float scale = 0.0625f;
@@ -85,13 +37,45 @@ public class EnderDrawerRenderer implements BlockEntityRenderer<EnderDrawerTile>
             }
             matrixStack.popPose();
         }
-        if (tile.isVoid()){
+        if (tile.isVoid()) {
             matrixStack.pushPose();
-            matrixStack.translate(0.969,0.031f,0.469/16D);
-            matrixStack.scale(scale, scale, scale);
+            matrixStack.mulPoseMatrix(createTransformMatrix(
+                    new Vector3f(.969f, .031f, .469f / 16.0f), Vector3f.ZERO, scale));
             Minecraft.getInstance().getItemRenderer().renderStatic(new ItemStack(FunctionalStorage.VOID_UPGRADE.get()), ItemTransforms.TransformType.NONE, combinedLightIn, combinedOverlayIn, matrixStack, bufferIn, 0);
             matrixStack.popPose();
         }
+    }
+
+    @Override
+    public void render(EnderDrawerTile tile, float partialTicks, PoseStack matrixStack, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
+        if (Minecraft.getInstance().player != null && !tile.getBlockPos().closerThan(Minecraft.getInstance().player.getOnPos(), FunctionalStorageClientConfig.DRAWER_RENDER_RANGE)) {
+            return;
+        }
+        matrixStack.pushPose();
+
+        Direction facing = tile.getFacingDirection();
+        matrixStack.mulPoseMatrix(createTransformMatrix(
+                Vector3f.ZERO, new Vector3f(0, 180, 0), 1));
+
+        if (facing == Direction.NORTH) {
+            matrixStack.mulPoseMatrix(createTransformMatrix(
+                    new Vector3f(-1, 0, 0), Vector3f.ZERO, 1));
+        } else if (facing == Direction.EAST) {
+            matrixStack.mulPoseMatrix(createTransformMatrix(
+                    new Vector3f(-1, 0, -1), new Vector3f(0, -90, 0), 1));
+        } else if (facing == Direction.SOUTH) {
+            matrixStack.mulPoseMatrix(createTransformMatrix(
+                    new Vector3f(0, 0, -1), new Vector3f(0, 180, 0), 1));
+        } else if (facing == Direction.WEST) {
+            matrixStack.mulPoseMatrix(createTransformMatrix(
+                    new Vector3f(0, 0, 0), new Vector3f(0, 90, 0), 1));
+        }
+
+        matrixStack.translate(0,0,-0.5/16D);
+        combinedLightIn = LevelRenderer.getLightColor(tile.getLevel(), tile.getBlockPos().relative(facing));
+        renderUpgrades(matrixStack, bufferIn, combinedLightIn, combinedOverlayIn, tile);
+        render1Slot(matrixStack, bufferIn, combinedLightIn, combinedOverlayIn, tile);
+        matrixStack.popPose();
     }
 
     private void render1Slot(PoseStack matrixStack, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn, EnderDrawerTile tile){

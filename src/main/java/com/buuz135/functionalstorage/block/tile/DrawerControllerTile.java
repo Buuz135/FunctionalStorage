@@ -2,6 +2,7 @@ package com.buuz135.functionalstorage.block.tile;
 
 import com.buuz135.functionalstorage.FunctionalStorage;
 import com.buuz135.functionalstorage.block.config.FunctionalStorageConfig;
+import com.buuz135.functionalstorage.fluid.ControllerFluidHandler;
 import com.buuz135.functionalstorage.inventory.ControllerInventoryHandler;
 import com.buuz135.functionalstorage.inventory.ILockable;
 import com.buuz135.functionalstorage.item.ConfigurationToolItem;
@@ -24,6 +25,8 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
+import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import org.jetbrains.annotations.NotNull;
@@ -35,25 +38,34 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
-public class DrawerControllerTile extends ControllableDrawerTile<DrawerControllerTile> {
+public class DrawerControllerTile extends ItemControllableDrawerTile<DrawerControllerTile> {
 
     private static HashMap<UUID, Long> INTERACTION_LOGGER = new HashMap<>();
 
     @Save
     private ConnectedDrawers connectedDrawers;
-    public ControllerInventoryHandler handler;
-    private LazyOptional<IItemHandler> lazyStorage;
+    public ControllerInventoryHandler inventoryHandler;
+    public ControllerFluidHandler fluidHandler;
+    private LazyOptional<IItemHandler> itemHandlerLazyOptional;
+    private LazyOptional<IFluidHandler> fluidHandlerLazyOptional;
 
     public DrawerControllerTile(BasicTileBlock<DrawerControllerTile> base, BlockEntityType<DrawerControllerTile> blockEntityType, BlockPos pos, BlockState state) {
         super(base, blockEntityType, pos, state);
         this.connectedDrawers = new ConnectedDrawers(null);
-        this.handler = new ControllerInventoryHandler() {
+        this.inventoryHandler = new ControllerInventoryHandler() {
             @Override
             public ConnectedDrawers getDrawers() {
                 return connectedDrawers;
             }
         };
-        this.lazyStorage = LazyOptional.of(() -> this.handler);
+        this.itemHandlerLazyOptional = LazyOptional.of(() -> this.inventoryHandler);
+        this.fluidHandler = new ControllerFluidHandler() {
+            @Override
+            public ConnectedDrawers getDrawers() {
+                return connectedDrawers;
+            }
+        };
+        this.fluidHandlerLazyOptional = LazyOptional.of(() -> this.fluidHandler);
     }
 
     @Override
@@ -64,7 +76,7 @@ public class DrawerControllerTile extends ControllableDrawerTile<DrawerControlle
     @Override
     public void serverTick(Level level, BlockPos pos, BlockState state, DrawerControllerTile blockEntity) {
         super.serverTick(level, pos, state, blockEntity);
-        if (this.connectedDrawers.getConnectedDrawers().size() != this.connectedDrawers.getHandlers().size()) {
+        if (this.connectedDrawers.getConnectedDrawers().size() != (this.connectedDrawers.getItemHandlers().size() + this.connectedDrawers.getFluidHandlers().size() + this.connectedDrawers.getExtensions())) {
             this.connectedDrawers.getConnectedDrawers().removeIf(aLong -> !(this.getLevel().getBlockEntity(BlockPos.of(aLong)) instanceof ControllableDrawerTile<?>));
             this.connectedDrawers.setLevel(getLevel());
             this.connectedDrawers.rebuild();
@@ -78,7 +90,7 @@ public class DrawerControllerTile extends ControllableDrawerTile<DrawerControlle
         if (stack.getItem().equals(FunctionalStorage.CONFIGURATION_TOOL.get()) || stack.getItem().equals(FunctionalStorage.LINKING_TOOL.get()))
             return InteractionResult.PASS;
         if (isServer()) {
-            for (IItemHandler iItemHandler : this.getConnectedDrawers().handlers) {
+            for (IItemHandler iItemHandler : this.getConnectedDrawers().itemHandlers) {
                 if (iItemHandler instanceof ILockable && ((ILockable) iItemHandler).isLocked()) {
                     for (int slot = 0; slot < iItemHandler.getSlots(); slot++) {
                         if (!stack.isEmpty() && iItemHandler.insertItem(slot, stack, true).getCount() != stack.getCount()) {
@@ -94,7 +106,7 @@ public class DrawerControllerTile extends ControllableDrawerTile<DrawerControlle
                     }
                 }
             }
-            for (IItemHandler iItemHandler : this.getConnectedDrawers().handlers) {
+            for (IItemHandler iItemHandler : this.getConnectedDrawers().itemHandlers) {
                 if (iItemHandler instanceof ILockable && !((ILockable) iItemHandler).isLocked()) {
                     for (int slot = 0; slot < iItemHandler.getSlots(); slot++) {
                         if (!stack.isEmpty() && !iItemHandler.getStackInSlot(slot).isEmpty() && iItemHandler.insertItem(slot, stack, true).getCount() != stack.getCount()) {
@@ -117,12 +129,12 @@ public class DrawerControllerTile extends ControllableDrawerTile<DrawerControlle
 
     @Override
     public IItemHandler getStorage() {
-        return handler;
+        return inventoryHandler;
     }
 
     @Override
     public LazyOptional<IItemHandler> getOptional() {
-        return lazyStorage;
+        return itemHandlerLazyOptional;
     }
 
     @Override
@@ -193,21 +205,35 @@ public class DrawerControllerTile extends ControllableDrawerTile<DrawerControlle
     @Override
     public <U> LazyOptional<U> getCapability(@Nonnull Capability<U> cap, @Nullable Direction side) {
         if (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
-            return lazyStorage.cast();
+            return itemHandlerLazyOptional.cast();
+        }
+        if (cap == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY) {
+            return fluidHandlerLazyOptional.cast();
         }
         return super.getCapability(cap, side);
+    }
+
+    @Override
+    public void invalidateCaps() {
+        super.invalidateCaps();
+        this.fluidHandlerLazyOptional.invalidate();
+        this.itemHandlerLazyOptional.invalidate();
     }
 
     public class ConnectedDrawers implements INBTSerializable<CompoundTag> {
 
         private List<Long> connectedDrawers;
-        private List<IItemHandler> handlers;
+        private List<IItemHandler> itemHandlers;
+        private List<IFluidHandler> fluidHandlers;
         private Level level;
+        private int extensions;
 
         public ConnectedDrawers(Level level) {
             this.connectedDrawers = new ArrayList<>();
-            this.handlers = new ArrayList<>();
+            this.itemHandlers = new ArrayList<>();
+            this.fluidHandlers = new ArrayList<>();
             this.level = level;
+            this.extensions = 0;
         }
 
         public void setLevel(Level level) {
@@ -215,18 +241,26 @@ public class DrawerControllerTile extends ControllableDrawerTile<DrawerControlle
         }
 
         public void rebuild() {
-            this.handlers = new ArrayList<>();
+            this.itemHandlers = new ArrayList<>();
+            this.fluidHandlers = new ArrayList<>();
             if (level != null && !level.isClientSide()) {
                 for (Long connectedDrawer : this.connectedDrawers) {
                     BlockPos pos = BlockPos.of(connectedDrawer);
                     BlockEntity entity = level.getBlockEntity(pos);
                     if (entity instanceof DrawerControllerTile) continue;
-                    if (entity instanceof ControllableDrawerTile) {
-                        this.handlers.add(((ControllableDrawerTile<?>) entity).getStorage());
+                    if (entity instanceof ControllerExtensionTile) {
+                        ++extensions;
+                    }
+                    if (entity instanceof ItemControllableDrawerTile<?> itemControllableDrawerTile) {
+                        this.itemHandlers.add(itemControllableDrawerTile.getStorage());
+                    }
+                    if (entity instanceof FluidDrawerTile fluidDrawerTile) {
+                        this.fluidHandlers.add(fluidDrawerTile.getFluidHandler());
                     }
                 }
             }
-            DrawerControllerTile.this.handler.invalidateSlots();
+            DrawerControllerTile.this.inventoryHandler.invalidateSlots();
+            DrawerControllerTile.this.fluidHandler.invalidateSlots();
         }
 
         @Override
@@ -251,8 +285,16 @@ public class DrawerControllerTile extends ControllableDrawerTile<DrawerControlle
             return connectedDrawers;
         }
 
-        public List<IItemHandler> getHandlers() {
-            return handlers;
+        public List<IItemHandler> getItemHandlers() {
+            return itemHandlers;
+        }
+
+        public List<IFluidHandler> getFluidHandlers() {
+            return fluidHandlers;
+        }
+
+        public int getExtensions() {
+            return extensions;
         }
     }
 

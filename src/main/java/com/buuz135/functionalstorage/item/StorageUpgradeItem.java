@@ -37,7 +37,9 @@ public class StorageUpgradeItem extends UpgradeItem{
         if (storageTier == StorageTier.IRON){
             tooltip.add(new TranslatableComponent("item.utility.downgrade").withStyle(ChatFormatting.GRAY));
         } else {
-            tooltip.add(new TranslatableComponent("storageupgrade.desc").withStyle(ChatFormatting.GRAY).append(this.storageTier.getStorageMultiplier() + ""));
+            tooltip.add(new TranslatableComponent("storageupgrade.desc.item").withStyle(ChatFormatting.GRAY).append(this.storageTier.getStorageMultiplier() + ""));
+            tooltip.add(new TranslatableComponent("storageupgrade.desc.fluid").withStyle(ChatFormatting.GRAY).append(this.storageTier.getStorageMultiplier() / 4 + ""));
+
         }
     }
 

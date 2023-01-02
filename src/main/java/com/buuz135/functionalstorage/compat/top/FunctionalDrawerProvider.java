@@ -11,7 +11,9 @@ import com.buuz135.functionalstorage.util.NumberUtils;
 import com.buuz135.functionalstorage.world.EnderSavedData;
 import mcjty.theoneprobe.api.*;
 import mcjty.theoneprobe.apiimpl.elements.ElementHorizontal;
+import mcjty.theoneprobe.apiimpl.elements.ElementTank;
 import mcjty.theoneprobe.apiimpl.elements.ElementVertical;
+import mcjty.theoneprobe.apiimpl.styles.ProgressStyle;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
@@ -52,12 +54,12 @@ public class FunctionalDrawerProvider implements IProbeInfoProvider {
     @Override
     public void addProbeInfo(ProbeMode probeMode, IProbeInfo iProbeInfo, Player player, Level level, BlockState blockState, IProbeHitData iProbeHitData) {
         BlockEntity blockEntity = level.getBlockEntity(iProbeHitData.getPos());
-        if (blockEntity instanceof ControllableDrawerTile && !(blockEntity instanceof DrawerControllerTile)) {
+        if (blockEntity instanceof ControllableDrawerTile && !(blockEntity instanceof DrawerControllerTile) && !(blockEntity instanceof ControllerExtensionTile)) {
             iProbeInfo.getElements().removeIf(iElement -> iElement instanceof ElementVertical);
             ElementVertical vertical = new ElementVertical();
             if (blockEntity instanceof DrawerTile) {
                 BigInventoryHandler handler = ((DrawerTile) blockEntity).getHandler();
-                if (handler.getSlots() == 1 || player.isShiftKeyDown() || probeMode == ProbeMode.EXTENDED){
+                if (handler.getSlots() == 1 || player.isShiftKeyDown() || probeMode == ProbeMode.EXTENDED) {
                     ElementVertical elementVertical = new ElementVertical(iProbeInfo.defaultLayoutStyle().spacing(2).leftPadding(7).rightPadding(7));
                     elementVertical.getStyle().borderColor(Color.CYAN.darker().getRGB());
                     for (int i = 0; i < handler.getStoredStacks().size(); i++) {
@@ -126,6 +128,33 @@ public class FunctionalDrawerProvider implements IProbeInfoProvider {
                 }
                 vertical.element(new ElementVertical(iProbeInfo.defaultLayoutStyle().topPadding(4)));
             }
+            if (blockEntity instanceof SimpleCompactingDrawerTile) {
+                CompactingInventoryHandler inventoryHandler = ((SimpleCompactingDrawerTile) blockEntity).getHandler();
+                if (player.isShiftKeyDown() || probeMode == ProbeMode.EXTENDED || inventoryHandler.isCreative()) {
+                    ElementVertical abstractElementPanel = new ElementVertical(iProbeInfo.defaultLayoutStyle().spacing(2).leftPadding(7).rightPadding(7));
+                    abstractElementPanel.getStyle().borderColor(Color.CYAN.darker().getRGB());
+                    abstractElementPanel.element(new CustomElementItemStack(inventoryHandler.getResultList().get(1).getResult(), NumberUtils.getFormatedBigNumber(inventoryHandler.getStackInSlot(1).getCount()) + "/" + NumberUtils.getFormatedBigNumber(inventoryHandler.getSlotLimit(1)), iProbeInfo.defaultItemStyle(), true));
+                    abstractElementPanel.element(new CustomElementItemStack(inventoryHandler.getResultList().get(0).getResult(), NumberUtils.getFormatedBigNumber(inventoryHandler.getStackInSlot(0).getCount()) + "/" + NumberUtils.getFormatedBigNumber(inventoryHandler.getSlotLimit(0)), iProbeInfo.defaultItemStyle(), true));
+                    if (abstractElementPanel.getElements().size() > 0) vertical.element(abstractElementPanel);
+                } else {
+                    ElementHorizontal abstractElementPanel = new ElementHorizontal(iProbeInfo.defaultLayoutStyle().spacing(8).leftPadding(7).rightPadding(7));
+                    abstractElementPanel.getStyle().borderColor(Color.CYAN.darker().getRGB());
+                    int amount = inventoryHandler.getAmount();
+                    abstractElementPanel.element(new CustomElementItemStack(inventoryHandler.getResultList().get(1).getResult(), NumberUtils.getFormatedBigNumber((int) Math.floor(amount / inventoryHandler.getResultList().get(1).getNeeded())), iProbeInfo.defaultItemStyle()));
+                    amount -= inventoryHandler.getResultList().get(1).getNeeded() * Math.floor(amount / inventoryHandler.getResultList().get(1).getNeeded());
+                    abstractElementPanel.element(new CustomElementItemStack(inventoryHandler.getResultList().get(0).getResult(), NumberUtils.getFormatedBigNumber((int) Math.floor(amount / inventoryHandler.getResultList().get(0).getNeeded())), iProbeInfo.defaultItemStyle()));
+                    if (abstractElementPanel.getElements().size() > 0) vertical.element(abstractElementPanel);
+                }
+                vertical.element(new ElementVertical(iProbeInfo.defaultLayoutStyle().topPadding(4)));
+            }
+            if (blockEntity instanceof FluidDrawerTile fluidDrawerTile && (player.isShiftKeyDown() || probeMode == ProbeMode.EXTENDED)) {
+                ElementVertical tanksVertical = new ElementVertical(iProbeInfo.defaultLayoutStyle().spacing(2));
+                for (int i = 0; i < fluidDrawerTile.getFluidHandler().getTanks(); i++) {
+                    var tankReference = TankReference.createTank(fluidDrawerTile.getFluidHandler().getTankList()[i]);
+                    tanksVertical.element(new ElementTank(tankReference, new ProgressStyle().numberFormat(NumberFormat.COMPACT)));
+                }
+                iProbeInfo.element(tanksVertical);
+            }
             if (player.isShiftKeyDown() || probeMode == ProbeMode.EXTENDED) {
                 ElementHorizontal abstractElementPanel = new ElementHorizontal(iProbeInfo.defaultLayoutStyle().topPadding(0).spacing(8).leftPadding(7).rightPadding(7));
                 abstractElementPanel.getStyle().borderColor(Color.CYAN.darker().getRGB());
@@ -146,5 +175,6 @@ public class FunctionalDrawerProvider implements IProbeInfoProvider {
             }
             iProbeInfo.element(vertical);
         }
+
     }
 }

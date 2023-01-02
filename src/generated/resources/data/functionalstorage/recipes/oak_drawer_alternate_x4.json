@@ -4,33 +4,33 @@
     {
       "conditions": [
         {
+          "type": "forge:and",
           "values": [
             {
-              "item": "functionalstorage:oak_4",
-              "type": "forge:item_exists"
+              "type": "forge:item_exists",
+              "item": "functionalstorage:oak_4"
             }
-          ],
-          "type": "forge:and"
+          ]
         }
       ],
       "recipe": {
         "type": "minecraft:crafting_shaped",
+        "key": {
+          "C": {
+            "tag": "forge:chests/wooden"
+          },
+          "P": {
+            "type": "functionalstorage:woodless"
+          }
+        },
         "pattern": [
           "CPC",
           "PPP",
           "CPC"
         ],
-        "key": {
-          "P": {
-            "type": "functionalstorage:woodless"
-          },
-          "C": {
-            "tag": "forge:chests/wooden"
-          }
-        },
         "result": {
-          "item": "functionalstorage:oak_4",
-          "count": 4
+          "count": 4,
+          "item": "functionalstorage:oak_4"
         }
       }
     }

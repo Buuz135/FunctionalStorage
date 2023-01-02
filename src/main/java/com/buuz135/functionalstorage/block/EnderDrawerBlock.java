@@ -4,10 +4,10 @@ import com.buuz135.functionalstorage.FunctionalStorage;
 import com.buuz135.functionalstorage.block.tile.ControllableDrawerTile;
 import com.buuz135.functionalstorage.block.tile.DrawerControllerTile;
 import com.buuz135.functionalstorage.block.tile.EnderDrawerTile;
+import com.buuz135.functionalstorage.block.tile.ItemControllableDrawerTile;
 import com.buuz135.functionalstorage.item.LinkingToolItem;
 import com.hrznstudio.titanium.block.RotatableBlock;
 import com.hrznstudio.titanium.datagenerator.loot.block.BasicBlockLootTables;
-import com.hrznstudio.titanium.module.DeferredRegistryHelper;
 import com.hrznstudio.titanium.util.RayTraceUtils;
 import com.hrznstudio.titanium.util.TileUtil;
 import net.minecraft.ChatFormatting;
@@ -16,8 +16,10 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
 import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
@@ -66,7 +68,7 @@ public class EnderDrawerBlock extends RotatableBlock<EnderDrawerTile> {
 
     public static List<ItemStack> getFrequencyDisplay(String string){
         return FREQUENCY_LOOK.computeIfAbsent(string, s -> {
-            List<Item> minecraftItems = ForgeRegistries.ITEMS.getValues().stream().filter(item -> item != Items.AIR && item.getRegistryName().getNamespace().equals("minecraft") && !(item instanceof BlockItem)).collect(Collectors.toList());
+            List<Item> minecraftItems = ForgeRegistries.ITEMS.getValues().stream().filter(item -> item != Items.AIR && ForgeRegistries.ITEMS.getKey(item).getNamespace().equals("minecraft") && !(item instanceof BlockItem)).collect(Collectors.toList());
             return Arrays.stream(string.split("-")).map(s1 -> new ItemStack(minecraftItems.get(Math.abs(s1.hashCode()) % minecraftItems.size()))).collect(Collectors.toList());
         });
     }
@@ -207,8 +209,8 @@ public class EnderDrawerBlock extends RotatableBlock<EnderDrawerTile> {
     @Override
     public void appendHoverText(ItemStack p_49816_, @Nullable BlockGetter p_49817_, List<Component> tooltip, TooltipFlag p_49819_) {
         super.appendHoverText(p_49816_, p_49817_, tooltip, p_49819_);
-        if (p_49816_.hasTag()){
-            TranslatableComponent text = new TranslatableComponent("linkingtool.ender.frequency");
+        if (p_49816_.hasTag()) {
+            MutableComponent text = new TranslatableComponent("linkingtool.ender.frequency");
             tooltip.add(text.withStyle(ChatFormatting.GRAY));
             tooltip.add(new TextComponent(""));
             tooltip.add(new TextComponent(""));
@@ -228,14 +230,15 @@ public class EnderDrawerBlock extends RotatableBlock<EnderDrawerTile> {
 
     @Override
     public int getSignal(BlockState p_60483_, BlockGetter blockGetter, BlockPos blockPos, Direction p_60486_) {
-        ControllableDrawerTile tile = TileUtil.getTileEntity(blockGetter, blockPos, ControllableDrawerTile.class).orElse(null);
+        ItemControllableDrawerTile tile = TileUtil.getTileEntity(blockGetter, blockPos, ItemControllableDrawerTile.class).orElse(null);
         if (tile != null){
             for (int i = 0; i < tile.getUtilityUpgrades().getSlots(); i++) {
                 ItemStack stack = tile.getUtilityUpgrades().getStackInSlot(i);
-                if (stack.getItem().equals(FunctionalStorage.REDSTONE_UPGRADE.get())){
+                if (stack.getItem().equals(FunctionalStorage.REDSTONE_UPGRADE.get())) {
                     int redstoneSlot = stack.getOrCreateTag().getInt("Slot");
-                    if (redstoneSlot < tile.getStorage().getSlots()){
-                        return (int) ((tile.getStorage().getStackInSlot(redstoneSlot).getCount() / (double)tile.getStorage().getSlotLimit(redstoneSlot)) * 15);
+                    if (redstoneSlot < tile.getStorage().getSlots()) {
+                        var amount = (tile.getStorage().getStackInSlot(redstoneSlot).getCount() / (double) tile.getStorage().getSlotLimit(redstoneSlot)) * 14;
+                        return Mth.floor(amount * 14.0F) + (amount > 0 ? 1 : 0);
                     }
                 }
             }

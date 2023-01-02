@@ -1,0 +1,37 @@
+{
+  "type": "forge:conditional",
+  "recipes": [
+    {
+      "conditions": [
+        {
+          "type": "forge:and",
+          "values": [
+            {
+              "type": "forge:item_exists",
+              "item": "functionalstorage:fluid_1"
+            }
+          ]
+        }
+      ],
+      "recipe": {
+        "type": "minecraft:crafting_shaped",
+        "key": {
+          "C": {
+            "item": "minecraft:bucket"
+          },
+          "P": {
+            "tag": "minecraft:planks"
+          }
+        },
+        "pattern": [
+          "PPP",
+          "PCP",
+          "PPP"
+        ],
+        "result": {
+          "item": "functionalstorage:fluid_1"
+        }
+      }
+    }
+  ]
+}

@@ -76,10 +76,10 @@ public class FramedDrawerBlock extends DrawerBlock{
     public static ItemStack fill(ItemStack first, ItemStack second, ItemStack drawer){
         drawer = ItemHandlerHelper.copyStackWithSize(drawer, 1);
         CompoundTag style = drawer.getOrCreateTagElement("Style");
-        style.putString("particle", first.getItem().getRegistryName().toString());
-        style.putString("side", first.getItem().getRegistryName().toString());
-        style.putString("front", second.getItem().getRegistryName().toString());
-        style.putString("front_divider", first.getItem().getRegistryName().toString());
+        style.putString("particle", ForgeRegistries.ITEMS.getKey(first.getItem()).toString());
+        style.putString("side", ForgeRegistries.ITEMS.getKey(first.getItem()).toString());
+        style.putString("front", ForgeRegistries.ITEMS.getKey(second.getItem()).toString());
+        style.putString("front_divider", ForgeRegistries.ITEMS.getKey(first.getItem()).toString());
         drawer.getOrCreateTag().put("Style", style);
         return drawer;
     }

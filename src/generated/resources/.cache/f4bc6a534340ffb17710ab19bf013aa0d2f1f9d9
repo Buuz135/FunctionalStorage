@@ -1,4 +1,4 @@
-// 1.19.2	2022-10-04T15:18:18.2600371	Block Models: functionalstorage
+// 1.19.2	2023-01-01T21:28:56.6940891	Block Models: functionalstorage
 6d54a3aeb1cd5d36308305bace660178e8e562d6 assets/functionalstorage/models/block/acacia_1_locked.json
 8d6752b49bcf17192815d02c04f79887e7adc30a assets/functionalstorage/models/block/acacia_2_locked.json
 11acc40b9bb8ff8a3c99c8f4251056924f686400 assets/functionalstorage/models/block/acacia_4_locked.json
@@ -13,6 +13,9 @@ cf5cedd21bc165b4f6f31a0e6a42807a81725c14 assets/functionalstorage/models/block/c
 93dc6d016e8744000316d326b75d5e080c55815a assets/functionalstorage/models/block/dark_oak_2_locked.json
 ca06f44b8efc1377efc4bdd0c80f3522a829406e assets/functionalstorage/models/block/dark_oak_4_locked.json
 a2c4563156a818264d7047bf03c2ad9436519c45 assets/functionalstorage/models/block/ender_drawer_locked.json
+18d0c1c5c116cc1478eae8a5fc9929418f98e292 assets/functionalstorage/models/block/fluid_1_locked.json
+8d67ce67098574f901f9b759b96b63d944bb73b6 assets/functionalstorage/models/block/fluid_2_locked.json
+e23e95b0e5f4ae1796fd3b48c05409d32694cd08 assets/functionalstorage/models/block/fluid_4_locked.json
 840fbdd137e187d872ec4fd61620080f5b21f456 assets/functionalstorage/models/block/jungle_1_locked.json
 1430f12c060903c753569a3c0dfed7c74a433eb7 assets/functionalstorage/models/block/jungle_2_locked.json
 d059b5d3f663e00a229fb433efce31a6e2b7f46d assets/functionalstorage/models/block/jungle_4_locked.json
@@ -22,6 +25,7 @@ d059b5d3f663e00a229fb433efce31a6e2b7f46d assets/functionalstorage/models/block/j
 9f780946e48fd6f34003ed84242483c9f706db0c assets/functionalstorage/models/block/oak_1_locked.json
 d35a517f7b6b7f3278d588d767110e1ffd4de2aa assets/functionalstorage/models/block/oak_2_locked.json
 d1645c52b03b76a8ae9b145d1af73c0a34629dff assets/functionalstorage/models/block/oak_4_locked.json
+0e6fb68e682c5ea2b6002097505b8b600e4cde4d assets/functionalstorage/models/block/simple_compacting_drawer_locked.json
 0d02c3473a2fede484a134918d73d1d67572e08a assets/functionalstorage/models/block/spruce_1_locked.json
 bd634037f8695e67dff884393526dc120f6870b0 assets/functionalstorage/models/block/spruce_2_locked.json
 2051671b7479f1a5a858a415ede795d1b91ca703 assets/functionalstorage/models/block/spruce_4_locked.json

@@ -14,7 +14,6 @@ import net.minecraftforge.common.crafting.IIngredientSerializer;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.Nullable;
 
-import java.lang.reflect.Array;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -49,7 +48,7 @@ public class DrawerlessWoodIngredient extends Ingredient {
 
     private List<Item> getWoods(){
         if (woodless == null){
-            woodless = TagUtil.getAllEntries(ForgeRegistries.ITEMS, ItemTags.PLANKS).stream().filter(item -> !item.getRegistryName().getNamespace().equalsIgnoreCase("minecraft")).collect(Collectors.toList());
+            woodless = TagUtil.getAllEntries(ForgeRegistries.ITEMS, ItemTags.PLANKS).stream().filter(item -> !ForgeRegistries.ITEMS.getKey(item).getNamespace().equalsIgnoreCase("minecraft")).collect(Collectors.toList());
             if (woodless.isEmpty()){
                 woodless.add(Items.OAK_PLANKS);
             }
