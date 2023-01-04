@@ -39,10 +39,12 @@ public class CompactingUtil {
         Result result = findUpperTier(stack);
         if (!result.getResult().isEmpty()){
             results.add(result);
-            result = findUpperTier(result.getResult());
-            if (!result.getResult().isEmpty()){
-                result.setNeeded(result.getNeeded() * this.results.get(this.results.size() - 1).getNeeded());
-                results.add(result);
+            if (results.size() < this.resultAmount) {
+                result = findUpperTier(result.getResult());
+                if (!result.getResult().isEmpty()) {
+                    result.setNeeded(result.getNeeded() * this.results.get(this.results.size() - 1).getNeeded());
+                    results.add(result);
+                }
             }
         }
         boolean canFind = true;
