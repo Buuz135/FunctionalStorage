@@ -72,7 +72,7 @@ public class FluidDrawerTile extends ControllableDrawerTile<FluidDrawerTile> {
     }
 
     private int getTankCapacity(int storageMultiplier) {
-        long maxCap = ((type.getSlotAmount() / 64)) * 1000L * (storageMultiplier == 1 ? 1 : storageMultiplier / 4);
+        long maxCap = ((type.getSlotAmount() / 64)) * 1000L * storageMultiplier;
         return (int) Math.min(Integer.MAX_VALUE, maxCap);
     }
 
@@ -107,6 +107,11 @@ public class FluidDrawerTile extends ControllableDrawerTile<FluidDrawerTile> {
             return fluidHandlerLazyOptional.cast();
         }
         return super.getCapability(cap, side);
+    }
+
+    @Override
+    public double getStorageDiv() {
+        return 2;
     }
 
     @Override
@@ -289,10 +294,11 @@ public class FluidDrawerTile extends ControllableDrawerTile<FluidDrawerTile> {
                     for (int i = 0; i < getStorageUpgrades().getSlots(); i++) {
                         if (getStorageUpgrades().getStackInSlot(i).getItem() instanceof StorageUpgradeItem) {
                             if (i == slot) continue;
+                            var calculated = ((StorageUpgradeItem) getStorageUpgrades().getStackInSlot(i).getItem()).getStorageMultiplier() / getStorageDiv();
                             if (mult == 1)
-                                mult = ((StorageUpgradeItem) getStorageUpgrades().getStackInSlot(i).getItem()).getStorageMultiplier();
+                                mult = (int) calculated;
                             else
-                                mult *= ((StorageUpgradeItem) getStorageUpgrades().getStackInSlot(i).getItem()).getStorageMultiplier();
+                                mult *= calculated;
                         }
                     }
                     for (int i = 0; i < getFluidHandler().getTanks(); i++) {
