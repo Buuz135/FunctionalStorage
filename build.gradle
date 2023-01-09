@@ -87,7 +87,7 @@ repositories {
     maven {
         url = "https://www.cursemaven.com"
     }
-    maven { url 'https://modmaven.dev/' }
+    //maven { url 'https://modmaven.dev/' }
 }
 
 dependencies {
