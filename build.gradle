@@ -87,7 +87,7 @@ repositories {
     maven {
         url = "https://www.cursemaven.com"
     }
-    maven { url 'https://modmaven.dev/' }
+    //maven { url 'https://modmaven.dev/' }
 }
 
 dependencies {
@@ -106,7 +106,7 @@ dependencies {
     //runtimeOnly fg.deobf("curse.maven:refined-pipes-370696:3816785")
     annotationProcessor "org.spongepowered:mixin:0.8.5:processor"
 
-    runtimeOnly fg.deobf("mekanism:Mekanism:${mc_version}-${mekanism_version}")// core
+    //runtimeOnly fg.deobf("mekanism:Mekanism:${mc_version}-${mekanism_version}")// core
 }
 
 // Example for how to get properties into the manifest for reading at runtime.
