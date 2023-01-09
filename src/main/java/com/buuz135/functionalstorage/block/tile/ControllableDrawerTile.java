@@ -169,8 +169,10 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
                 for (int i = 0; i < component.getSlots(); i++) {
                     if (!component.getStackInSlot(i).isEmpty() && component.getStackInSlot(i).getItem() instanceof StorageUpgradeItem instertedUpgrade && instertedUpgrade.getStorageMultiplier() < storageUpgradeItem.getStorageMultiplier()) {
                         ItemHandlerHelper.giveItemToPlayer(playerIn, component.getStackInSlot(i).copy());
-                        component.setStackInSlot(i, ItemStack.EMPTY);
-                        playerIn.setItemInHand(hand, component.insertItem(i, stack, false));
+                        ItemStack upgradeStack = stack.copy();
+                        upgradeStack.setCount(1);
+                        component.setStackInSlot(i, upgradeStack);
+                        stack.shrink(1);
                         return InteractionResult.SUCCESS;
                     }
                 }
