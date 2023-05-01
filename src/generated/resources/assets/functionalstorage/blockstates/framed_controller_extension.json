@@ -1,0 +1,23 @@
+{
+  "variants": {
+    "subfacing=east": {
+      "model": "functionalstorage:block/framed_controller_extension",
+      "uvlock": true,
+      "y": 90
+    },
+    "subfacing=north": {
+      "model": "functionalstorage:block/framed_controller_extension",
+      "uvlock": true
+    },
+    "subfacing=south": {
+      "model": "functionalstorage:block/framed_controller_extension",
+      "uvlock": true,
+      "y": 180
+    },
+    "subfacing=west": {
+      "model": "functionalstorage:block/framed_controller_extension",
+      "uvlock": true,
+      "y": 270
+    }
+  }
+}

@@ -1,6 +1,7 @@
 package com.buuz135.functionalstorage.inventory;
 
 import com.buuz135.functionalstorage.block.tile.DrawerControllerTile;
+import com.buuz135.functionalstorage.util.ConnectedDrawers;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.IItemHandler;
 import org.jetbrains.annotations.NotNull;
@@ -103,5 +104,5 @@ public abstract class ControllerInventoryHandler implements IItemHandler {
         return null != selector ? selector.isItemValid(stack) : false;
     }
 
-    public abstract DrawerControllerTile.ConnectedDrawers getDrawers();
+    public abstract ConnectedDrawers getDrawers();
 }

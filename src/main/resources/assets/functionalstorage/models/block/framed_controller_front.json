@@ -1,0 +1,13 @@
+{
+  "elements": [
+    {
+      "from": [1, 1, 0.4],
+      "to": [15, 15, 2.4],
+      "rotation": {"angle": 0, "axis": "y", "origin": [-8, 0, -8]},
+      "faces": {
+        "north": {"uv": [1, 1, 15, 15], "texture": "#front"},
+        "down": {"uv": [0, 0, 14, 2], "texture": "#front"}
+      }
+    }
+  ]
+}

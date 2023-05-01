@@ -36,6 +36,8 @@
   "block.functionalstorage.spruce_2": "Spruce Drawer (1x2)",
   "block.functionalstorage.spruce_4": "Spruce Drawer (2x2)",
   "block.functionalstorage.storage_controller": "Storage Controller",
+  "block.functionalstorage.framed_storage_controller": "Framed Storage Controller",
+  "block.functionalstorage.framed_controller_extension": "Framed Controller Extension",
   "block.functionalstorage.warped_1": "Warped Drawer (1x1)",
   "block.functionalstorage.warped_2": "Warped Drawer (1x2)",
   "block.functionalstorage.warped_4": "Warped Drawer (2x2)",

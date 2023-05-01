@@ -65,8 +65,9 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
                         .setSlotLimit(1)
                         .setOnSlotChanged((itemStack, integer) -> {
                             needsUpgradeCache = true;
-                            if (controllerPos != null && this.level.getBlockEntity(controllerPos) instanceof DrawerControllerTile controllerTile) {
-                                controllerTile.getConnectedDrawers().rebuild();
+                            if (controllerPos != null) {
+                                if(this.level.getBlockEntity(controllerPos) instanceof StorageControllerTile controllerTile)
+                                    controllerTile.getConnectedDrawers().rebuild();
                             }
                         })
                 )
@@ -123,11 +124,16 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
 
     public void setControllerPos(BlockPos controllerPos) {
         if (this.controllerPos != null) {
-            TileUtil.getTileEntity(getLevel(), this.controllerPos, DrawerControllerTile.class).ifPresent(drawerControllerTile -> {
+            TileUtil.getTileEntity(getLevel(), this.controllerPos, StorageControllerTile.class).ifPresent(drawerControllerTile -> {
                 drawerControllerTile.addConnectedDrawers(LinkingToolItem.ActionMode.REMOVE, getBlockPos());
             });
         }
         this.controllerPos = controllerPos;
+    }
+
+    public void clearControllerPos()
+    {
+        this.controllerPos = null;
     }
 
     public int getStorageMultiplier() {

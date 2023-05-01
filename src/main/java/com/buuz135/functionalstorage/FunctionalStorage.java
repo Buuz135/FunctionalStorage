@@ -42,6 +42,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraftforge.api.distmarker.Dist;
@@ -103,6 +104,9 @@ public class FunctionalStorage extends ModuleController {
     public static Pair<RegistryObject<Block>, RegistryObject<BlockEntityType<?>>> FLUID_DRAWER_4;
     public static Pair<RegistryObject<Block>, RegistryObject<BlockEntityType<?>>> CONTROLLER_EXTENSION;
     public static Pair<RegistryObject<Block>, RegistryObject<BlockEntityType<?>>> SIMPLE_COMPACTING_DRAWER;
+    public static Pair<RegistryObject<Block>, RegistryObject<BlockEntityType<?>>> FRAMED_DRAWER_CONTROLLER;
+    public static Pair<RegistryObject<Block>, RegistryObject<BlockEntityType<?>>> FRAMED_CONTROLLER_EXTENSION;
+
 
     public static RegistryObject<Item> LINKING_TOOL;
     public static HashMap<StorageUpgradeItem.StorageTier, RegistryObject<Item>> STORAGE_UPGRADES = new HashMap<>();
@@ -205,6 +209,10 @@ public class FunctionalStorage extends ModuleController {
                 return true;
             }
         });
+
+        FRAMED_DRAWER_CONTROLLER = getRegistries().registerBlockWithTile("framed_storage_controller", FramedDrawerControllerBlock::new);
+        FRAMED_CONTROLLER_EXTENSION = getRegistries().registerBlockWithTile("framed_controller_extension", FramedControllerExtensionBlock::new);
+
         getRegistries().registerGeneric(ForgeRegistries.RECIPE_SERIALIZERS.getRegistryKey(), "framed_recipe", () -> FramedDrawerRecipe.SERIALIZER);
     }
 
@@ -267,6 +275,7 @@ public class FunctionalStorage extends ModuleController {
             registerRenderers.registerBlockEntityRenderer((BlockEntityType<? extends FluidDrawerTile>) FLUID_DRAWER_4.getRight().get(), p_173571_ -> new FluidDrawerRenderer());
             registerRenderers.registerBlockEntityRenderer((BlockEntityType<? extends SimpleCompactingDrawerTile>) SIMPLE_COMPACTING_DRAWER.getRight().get(), p_173571_ -> new SimpleCompactingDrawerRenderer());
 
+            registerRenderers.registerBlockEntityRenderer((BlockEntityType<? extends FramedDrawerControllerTile>) FRAMED_DRAWER_CONTROLLER.getRight().get(), p -> new ControllerRenderer());
         }).subscribe();
         EventManager.mod(RegisterColorHandlersEvent.Item.class).process(item -> {
             item.getItemColors().register((stack, tint) -> {
@@ -308,6 +317,9 @@ public class FunctionalStorage extends ModuleController {
             ItemBlockRenderTypes.setRenderLayer(FLUID_DRAWER_2.getLeft().get(), RenderType.cutout());
             ItemBlockRenderTypes.setRenderLayer(FLUID_DRAWER_4.getLeft().get(), RenderType.cutout());
             ItemBlockRenderTypes.setRenderLayer(SIMPLE_COMPACTING_DRAWER.getLeft().get(), RenderType.cutout());
+
+            ItemBlockRenderTypes.setRenderLayer(FRAMED_DRAWER_CONTROLLER.getLeft().get(), RenderType.cutout());
+            ItemBlockRenderTypes.setRenderLayer(FRAMED_CONTROLLER_EXTENSION.getLeft().get(), RenderType.cutout());
         }).subscribe();
         EventManager.forge(RenderTooltipEvent.Pre.class).process(itemTooltipEvent -> {
             if (itemTooltipEvent.getItemStack().getItem().equals(FunctionalStorage.ENDER_DRAWER.getLeft().get().asItem()) && itemTooltipEvent.getItemStack().hasTag()) {

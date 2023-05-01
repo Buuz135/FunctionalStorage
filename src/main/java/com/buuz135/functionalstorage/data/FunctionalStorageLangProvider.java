@@ -50,6 +50,8 @@ public class FunctionalStorageLangProvider extends LanguageProvider {
         this.add("key.categories.storage", "Storage");
         this.add(FunctionalStorage.LINKING_TOOL.get(), "Linking Tool");
         this.add(FunctionalStorage.DRAWER_CONTROLLER.getLeft().get(), "Storage Controller");
+        this.add(FunctionalStorage.FRAMED_DRAWER_CONTROLLER.getLeft().get(), "Framed Storage Controller");
+        this.add(FunctionalStorage.FRAMED_CONTROLLER_EXTENSION.getLeft().get(), "Framed Controller Extension");
         this.add("storageupgrade.desc.item", "Multiplies the block item storage by ");
         this.add("storageupgrade.desc.fluid", "Multiplies the block fluid storage by ");
         for (StorageUpgradeItem.StorageTier storageTier : FunctionalStorage.STORAGE_UPGRADES.keySet()) {

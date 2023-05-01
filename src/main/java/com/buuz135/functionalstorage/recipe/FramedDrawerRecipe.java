@@ -2,7 +2,9 @@ package com.buuz135.functionalstorage.recipe;
 
 
 import com.buuz135.functionalstorage.block.CompactingDrawerBlock;
+import com.buuz135.functionalstorage.block.FramedControllerExtensionBlock;
 import com.buuz135.functionalstorage.block.FramedDrawerBlock;
+import com.buuz135.functionalstorage.block.FramedDrawerControllerBlock;
 import com.google.common.collect.Lists;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.CraftingContainer;
@@ -34,16 +36,32 @@ public class FramedDrawerRecipe extends CustomRecipe {
         return !first.isEmpty() && first.getItem() instanceof BlockItem && !second.isEmpty() && second.getItem() instanceof BlockItem && !drawer.isEmpty() && drawer.getItem() instanceof BlockItem && ((BlockItem) drawer.getItem()).getBlock() instanceof CompactingDrawerBlock;
     }
 
+    public static boolean matchesController(ItemStack first, ItemStack second, ItemStack drawer) {
+        return !first.isEmpty() && first.getItem() instanceof BlockItem && !second.isEmpty() && second.getItem() instanceof BlockItem && !drawer.isEmpty() && drawer.getItem() instanceof BlockItem && ((BlockItem) drawer.getItem()).getBlock() instanceof FramedDrawerControllerBlock;
+    }
+
+    public static boolean matchesControllerExtension(ItemStack first, ItemStack second, ItemStack drawer) {
+        return !first.isEmpty() && first.getItem() instanceof BlockItem && !second.isEmpty() && second.getItem() instanceof BlockItem && !drawer.isEmpty() && drawer.getItem() instanceof BlockItem && ((BlockItem) drawer.getItem()).getBlock() instanceof FramedControllerExtensionBlock;
+    }
+
     @Override
     public boolean matches(CraftingContainer inv, Level worldIn) {
-        return matches(inv.getItem(0), inv.getItem(1), inv.getItem(2)) || matchesCompacting(inv.getItem(0), inv.getItem(1), inv.getItem(2));
+        return matches(inv.getItem(0), inv.getItem(1), inv.getItem(2)) ||
+                matchesCompacting(inv.getItem(0), inv.getItem(1), inv.getItem(2)) ||
+                matchesController(inv.getItem(0), inv.getItem(1), inv.getItem(2)) ||
+                matchesControllerExtension(inv.getItem(0), inv.getItem(1), inv.getItem(2));
     }
 
     @Override
     public ItemStack assemble(CraftingContainer inv) {
-        if (matches(inv.getItem(0), inv.getItem(1), inv.getItem(2)) || matchesCompacting(inv.getItem(0), inv.getItem(1), inv.getItem(2))){
+        if (matches(inv.getItem(0), inv.getItem(1), inv.getItem(2)) ||
+                matchesCompacting(inv.getItem(0), inv.getItem(1), inv.getItem(2)) ||
+                matchesController(inv.getItem(0), inv.getItem(1), inv.getItem(2)) ||
+                matchesControllerExtension(inv.getItem(0), inv.getItem(1), inv.getItem(2)))
+        {
             return FramedDrawerBlock.fill(inv.getItem(0), inv.getItem(1), inv.getItem(2).copy());
         }
+
         return ItemStack.EMPTY;
     }
 

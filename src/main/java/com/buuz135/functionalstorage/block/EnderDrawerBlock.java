@@ -1,10 +1,7 @@
 package com.buuz135.functionalstorage.block;
 
 import com.buuz135.functionalstorage.FunctionalStorage;
-import com.buuz135.functionalstorage.block.tile.ControllableDrawerTile;
-import com.buuz135.functionalstorage.block.tile.DrawerControllerTile;
-import com.buuz135.functionalstorage.block.tile.EnderDrawerTile;
-import com.buuz135.functionalstorage.block.tile.ItemControllableDrawerTile;
+import com.buuz135.functionalstorage.block.tile.*;
 import com.buuz135.functionalstorage.item.LinkingToolItem;
 import com.hrznstudio.titanium.block.RotatableBlock;
 import com.hrznstudio.titanium.datagenerator.loot.block.BasicBlockLootTables;
@@ -194,7 +191,7 @@ public class EnderDrawerBlock extends RotatableBlock<EnderDrawerTile> {
         if (!state.is(newState.getBlock())){
             TileUtil.getTileEntity(worldIn, pos, EnderDrawerTile.class).ifPresent(tile -> {
                 if (tile.getControllerPos() != null) {
-                    TileUtil.getTileEntity(worldIn, tile.getControllerPos(), DrawerControllerTile.class).ifPresent(drawerControllerTile -> {
+                    TileUtil.getTileEntity(worldIn, tile.getControllerPos(), StorageControllerTile.class).ifPresent(drawerControllerTile -> {
                         drawerControllerTile.addConnectedDrawers(LinkingToolItem.ActionMode.REMOVE, pos);
                     });
                 }

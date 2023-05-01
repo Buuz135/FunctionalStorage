@@ -1,10 +1,7 @@
 package com.buuz135.functionalstorage.block;
 
 import com.buuz135.functionalstorage.FunctionalStorage;
-import com.buuz135.functionalstorage.block.tile.CompactingDrawerTile;
-import com.buuz135.functionalstorage.block.tile.ControllableDrawerTile;
-import com.buuz135.functionalstorage.block.tile.DrawerControllerTile;
-import com.buuz135.functionalstorage.block.tile.ItemControllableDrawerTile;
+import com.buuz135.functionalstorage.block.tile.*;
 import com.buuz135.functionalstorage.item.LinkingToolItem;
 import com.buuz135.functionalstorage.util.StorageTags;
 import com.google.common.collect.Multimap;
@@ -218,7 +215,7 @@ public class CompactingDrawerBlock extends RotatableBlock<CompactingDrawerTile> 
         if (!state.is(newState.getBlock())){
             TileUtil.getTileEntity(worldIn, pos, CompactingDrawerTile.class).ifPresent(tile -> {
                 if (tile.getControllerPos() != null){
-                    TileUtil.getTileEntity(worldIn, tile.getControllerPos(), DrawerControllerTile.class).ifPresent(drawerControllerTile -> {
+                    TileUtil.getTileEntity(worldIn, tile.getControllerPos(), StorageControllerTile.class).ifPresent(drawerControllerTile -> {
                         drawerControllerTile.addConnectedDrawers(LinkingToolItem.ActionMode.REMOVE, pos);
                     });
                 }
