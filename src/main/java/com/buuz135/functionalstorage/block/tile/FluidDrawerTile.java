@@ -204,7 +204,7 @@ public class FluidDrawerTile extends ControllableDrawerTile<FluidDrawerTile> {
                 return playerIn.getCapability(ForgeCapabilities.ITEM_HANDLER).map(iItemHandler -> {
                     var result = FluidUtil.tryEmptyContainerAndStow(stack, this.fluidHandler.getTankList()[slot], iItemHandler, Integer.MAX_VALUE, playerIn, true);
                     if (result.isSuccess()) {
-                        playerIn.setItemInHand(playerIn.getUsedItemHand(), result.getResult());
+                        playerIn.setItemInHand(hand, result.getResult().copy());
                         return InteractionResult.SUCCESS;
                     }
                     return InteractionResult.PASS;
@@ -219,13 +219,13 @@ public class FluidDrawerTile extends ControllableDrawerTile<FluidDrawerTile> {
 
     @Override
     public void onClicked(Player playerIn, int slot) {
-        ItemStack stack = playerIn.getItemInHand(playerIn.getUsedItemHand());
+        ItemStack stack = playerIn.getItemInHand(InteractionHand.MAIN_HAND);
         if (slot != -1 && !stack.isEmpty()) {
             stack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY).ifPresent(iFluidHandlerItem -> {
                 playerIn.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(iItemHandler -> {
                     var result = FluidUtil.tryFillContainerAndStow(stack, this.fluidHandler.getTankList()[slot], iItemHandler, Integer.MAX_VALUE, playerIn, true);
                     if (result.isSuccess()) {
-                        playerIn.setItemInHand(playerIn.getUsedItemHand(), result.getResult());
+                        playerIn.setItemInHand(InteractionHand.MAIN_HAND, result.getResult());
                     }
                 });
             });
