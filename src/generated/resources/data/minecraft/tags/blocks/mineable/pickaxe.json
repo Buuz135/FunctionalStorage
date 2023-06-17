@@ -2,6 +2,7 @@
   "values": [
     "functionalstorage:compacting_drawer",
     "functionalstorage:storage_controller",
+    "functionalstorage:framed_storage_controller",
     "functionalstorage:armory_cabinet",
     "functionalstorage:ender_drawer",
     "functionalstorage:compacting_framed_drawer",
@@ -9,6 +10,7 @@
     "functionalstorage:fluid_2",
     "functionalstorage:fluid_4",
     "functionalstorage:controller_extension",
+    "functionalstorage:framed_controller_extension",
     "functionalstorage:simple_compacting_drawer"
   ]
 }

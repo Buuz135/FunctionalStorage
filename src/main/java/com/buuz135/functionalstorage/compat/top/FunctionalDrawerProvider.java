@@ -54,7 +54,7 @@ public class FunctionalDrawerProvider implements IProbeInfoProvider {
     @Override
     public void addProbeInfo(ProbeMode probeMode, IProbeInfo iProbeInfo, Player player, Level level, BlockState blockState, IProbeHitData iProbeHitData) {
         BlockEntity blockEntity = level.getBlockEntity(iProbeHitData.getPos());
-        if (blockEntity instanceof ControllableDrawerTile && !(blockEntity instanceof DrawerControllerTile) && !(blockEntity instanceof ControllerExtensionTile)) {
+        if (blockEntity instanceof ControllableDrawerTile && !(blockEntity instanceof StorageControllerTile) && !(blockEntity instanceof StorageControllerExtensionTile)) {
             iProbeInfo.getElements().removeIf(iElement -> iElement instanceof ElementVertical);
             ElementVertical vertical = new ElementVertical();
             if (blockEntity instanceof DrawerTile) {

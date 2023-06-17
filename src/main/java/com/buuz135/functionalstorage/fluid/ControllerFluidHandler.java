@@ -2,6 +2,7 @@ package com.buuz135.functionalstorage.fluid;
 
 import com.buuz135.functionalstorage.block.tile.DrawerControllerTile;
 import com.buuz135.functionalstorage.inventory.ControllerInventoryHandler;
+import com.buuz135.functionalstorage.util.ConnectedDrawers;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import org.jetbrains.annotations.NotNull;
@@ -99,7 +100,7 @@ public abstract class ControllerFluidHandler implements IFluidHandler {
         return FluidStack.EMPTY;
     }
 
-    public abstract DrawerControllerTile.ConnectedDrawers getDrawers();
+    public abstract ConnectedDrawers getDrawers();
 }
 
 class HandlerTankSelector {

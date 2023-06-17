@@ -1,6 +1,6 @@
 package com.buuz135.functionalstorage.client;
 
-import com.buuz135.functionalstorage.block.tile.DrawerControllerTile;
+import com.buuz135.functionalstorage.block.tile.StorageControllerTile;
 import com.buuz135.functionalstorage.item.LinkingToolItem;
 import com.hrznstudio.titanium.util.RayTraceUtils;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -29,7 +29,7 @@ import java.util.OptionalDouble;
 import static com.buuz135.functionalstorage.item.LinkingToolItem.NBT_CONTROLLER;
 import static com.buuz135.functionalstorage.item.LinkingToolItem.NBT_FIRST;
 
-public class ControllerRenderer implements BlockEntityRenderer<DrawerControllerTile> {
+public class ControllerRenderer implements BlockEntityRenderer<StorageControllerTile> {
 
     public static RenderType TYPE = RenderType.create("custom_lines", DefaultVertexFormat.POSITION_COLOR_NORMAL, VertexFormat.Mode.LINES, 256, false, false,RenderType.CompositeState.builder()
             .setShaderState(new RenderStateShard.ShaderStateShard(GameRenderer::getRendertypeLinesShader))
@@ -65,7 +65,7 @@ public class ControllerRenderer implements BlockEntityRenderer<DrawerControllerT
     }
 
     @Override
-    public void render(DrawerControllerTile tile, float partialTicks, PoseStack matrixStack, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
+    public void render(StorageControllerTile tile, float partialTicks, PoseStack matrixStack, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
         ItemStack stack = Minecraft.getInstance().player.getMainHandItem();
         if (stack.isEmpty()) return;
         if (stack.getItem() instanceof LinkingToolItem) {
@@ -106,12 +106,12 @@ public class ControllerRenderer implements BlockEntityRenderer<DrawerControllerT
     }
 
     @Override
-    public boolean shouldRender(DrawerControllerTile p_173568_, Vec3 p_173569_) {
+    public boolean shouldRender(StorageControllerTile p_173568_, Vec3 p_173569_) {
         return true;
     }
 
     @Override
-    public boolean shouldRenderOffScreen(DrawerControllerTile p_112306_) {
+    public boolean shouldRenderOffScreen(StorageControllerTile p_112306_) {
         return true;
     }
 }

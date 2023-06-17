@@ -1,10 +1,7 @@
 package com.buuz135.functionalstorage.block;
 
 import com.buuz135.functionalstorage.FunctionalStorage;
-import com.buuz135.functionalstorage.block.tile.ControllableDrawerTile;
-import com.buuz135.functionalstorage.block.tile.DrawerControllerTile;
-import com.buuz135.functionalstorage.block.tile.DrawerTile;
-import com.buuz135.functionalstorage.block.tile.ItemControllableDrawerTile;
+import com.buuz135.functionalstorage.block.tile.*;
 import com.buuz135.functionalstorage.inventory.item.DrawerCapabilityProvider;
 import com.buuz135.functionalstorage.item.LinkingToolItem;
 import com.buuz135.functionalstorage.recipe.DrawerlessWoodIngredient;
@@ -319,7 +316,7 @@ public class DrawerBlock extends RotatableBlock<DrawerTile> {
         if (!state.is(newState.getBlock())){
             TileUtil.getTileEntity(worldIn, pos, DrawerTile.class).ifPresent(tile -> {
                 if (tile.getControllerPos() != null) {
-                    TileUtil.getTileEntity(worldIn, tile.getControllerPos(), DrawerControllerTile.class).ifPresent(drawerControllerTile -> {
+                    TileUtil.getTileEntity(worldIn, tile.getControllerPos(), StorageControllerTile.class).ifPresent(drawerControllerTile -> {
                         drawerControllerTile.addConnectedDrawers(LinkingToolItem.ActionMode.REMOVE, pos);
                     });
                 }
