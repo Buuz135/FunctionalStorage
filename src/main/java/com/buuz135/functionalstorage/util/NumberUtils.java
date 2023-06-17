@@ -26,11 +26,11 @@ public class NumberUtils {
         if (number < 1000) return String.valueOf(number) + " mB";
         if (number >= 1000000000) { //BILLION
             float numb = number / 1000000000F;
-            return formatterWithUnits.format(numb) + "B B";
+            return formatterWithUnits.format(numb) + "M B";
         } else if (number >= 1000000) { //MILLION
             float numb = number / 1000000F;
             if (number > 100000000) numb = Math.round(numb);
-            return formatterWithUnits.format(numb) + "M B";
+            return formatterWithUnits.format(numb) + "K B";
         } else if (number >= 1000) { //THOUSANDS
             float numb = number / 1000F;
             if (number > 100000) numb = Math.round(numb);

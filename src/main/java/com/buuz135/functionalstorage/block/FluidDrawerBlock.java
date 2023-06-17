@@ -1,7 +1,9 @@
 package com.buuz135.functionalstorage.block;
 
 import com.buuz135.functionalstorage.FunctionalStorage;
-import com.buuz135.functionalstorage.block.tile.*;
+import com.buuz135.functionalstorage.block.tile.ControllableDrawerTile;
+import com.buuz135.functionalstorage.block.tile.FluidDrawerTile;
+import com.buuz135.functionalstorage.block.tile.StorageControllerTile;
 import com.buuz135.functionalstorage.inventory.item.DrawerCapabilityProvider;
 import com.buuz135.functionalstorage.item.LinkingToolItem;
 import com.buuz135.functionalstorage.util.NumberUtils;
@@ -279,7 +281,7 @@ public class FluidDrawerBlock extends RotatableBlock<FluidDrawerTile> {
                 if (stack.getItem().equals(FunctionalStorage.REDSTONE_UPGRADE.get())) {
                     int redstoneSlot = stack.getOrCreateTag().getInt("Slot");
                     if (redstoneSlot < tile.getFluidHandler().getTanks()) {
-                        retirm tile.getFluidHandler().getFluidInTank(redstoneSlot).getAmount() * 15 / tile.getFluidHandler().getTankCapacity(redstoneSlot);
+                        return tile.getFluidHandler().getFluidInTank(redstoneSlot).getAmount() * 15 / tile.getFluidHandler().getTankCapacity(redstoneSlot);
                     }
                 }
             }
