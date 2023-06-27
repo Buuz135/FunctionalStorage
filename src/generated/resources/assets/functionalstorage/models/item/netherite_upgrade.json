@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "functionalstorage:items/netherite_upgrade"
+    "layer0": "functionalstorage:item/netherite_upgrade"
   }
 }

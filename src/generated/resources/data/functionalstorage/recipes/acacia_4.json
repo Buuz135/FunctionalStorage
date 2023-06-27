@@ -15,6 +15,7 @@
       ],
       "recipe": {
         "type": "minecraft:crafting_shaped",
+        "category": "misc",
         "key": {
           "C": {
             "tag": "forge:chests/wooden"
@@ -31,7 +32,8 @@
         "result": {
           "count": 4,
           "item": "functionalstorage:acacia_4"
-        }
+        },
+        "show_notification": true
       }
     }
   ]

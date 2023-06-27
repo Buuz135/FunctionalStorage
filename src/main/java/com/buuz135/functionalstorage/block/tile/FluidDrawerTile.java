@@ -88,7 +88,7 @@ public class FluidDrawerTile extends ControllableDrawerTile<FluidDrawerTile> {
         }
         String finalSlotName = slotName;
         addGuiAddonFactory(() -> new FluidDrawerInfoGuiAddon(64, 16,
-                new ResourceLocation(FunctionalStorage.MOD_ID, "textures/blocks/fluid_front" + finalSlotName + ".png"),
+                new ResourceLocation(FunctionalStorage.MOD_ID, "textures/block/fluid_front" + finalSlotName + ".png"),
                 type.getSlots(),
                 type.getSlotPosition(),
                 this::getFluidHandler,

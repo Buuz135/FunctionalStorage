@@ -8,13 +8,14 @@
           "values": [
             {
               "type": "forge:item_exists",
-              "item": "functionalstorage:storage_controller"
+              "item": "functionalstorage:framed_storage_controller"
             }
           ]
         }
       ],
       "recipe": {
         "type": "minecraft:crafting_shaped",
+        "category": "misc",
         "key": {
           "B": {
             "tag": "forge:storage_blocks/quartz"
@@ -36,7 +37,8 @@
         ],
         "result": {
           "item": "functionalstorage:framed_storage_controller"
-        }
+        },
+        "show_notification": true
       }
     }
   ]

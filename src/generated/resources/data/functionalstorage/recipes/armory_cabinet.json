@@ -15,6 +15,7 @@
       ],
       "recipe": {
         "type": "minecraft:crafting_shaped",
+        "category": "misc",
         "key": {
           "B": {
             "tag": "forge:ingots/netherite"
@@ -36,7 +37,8 @@
         ],
         "result": {
           "item": "functionalstorage:armory_cabinet"
-        }
+        },
+        "show_notification": true
       }
     }
   ]

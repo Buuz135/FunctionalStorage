@@ -1,6 +1,6 @@
 {
   "parent": "functionalstorage:block/jungle_1",
   "textures": {
-    "lock_icon": "functionalstorage:blocks/lock"
+    "lock_icon": "functionalstorage:block/lock"
   }
 }

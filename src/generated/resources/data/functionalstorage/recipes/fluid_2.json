@@ -15,6 +15,7 @@
       ],
       "recipe": {
         "type": "minecraft:crafting_shaped",
+        "category": "misc",
         "key": {
           "C": {
             "item": "minecraft:bucket"
@@ -31,7 +32,8 @@
         "result": {
           "count": 2,
           "item": "functionalstorage:fluid_2"
-        }
+        },
+        "show_notification": true
       }
     }
   ]

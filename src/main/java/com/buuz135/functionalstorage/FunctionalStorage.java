@@ -6,6 +6,7 @@ import com.buuz135.functionalstorage.client.*;
 import com.buuz135.functionalstorage.client.loader.FramedModel;
 import com.buuz135.functionalstorage.data.FunctionalStorageBlockTagsProvider;
 import com.buuz135.functionalstorage.data.FunctionalStorageBlockstateProvider;
+import com.buuz135.functionalstorage.data.FunctionalStorageItemTagsProvider;
 import com.buuz135.functionalstorage.data.FunctionalStorageLangProvider;
 import com.buuz135.functionalstorage.inventory.BigInventoryHandler;
 import com.buuz135.functionalstorage.inventory.item.DrawerStackItemHandler;
@@ -360,8 +361,8 @@ public class FunctionalStorage extends ModuleController {
             event.getGenerator().addProvider(true, new TitaniumLootTableProvider(event.getGenerator(), blocksToProcess));
 
             var blockTags = new FunctionalStorageBlockTagsProvider(event.getGenerator(), event.getLookupProvider(), MOD_ID, event.getExistingFileHelper());
-            event.getGenerator().addProvider(true, new FunctionalStorageBlockTagsProvider(event.getGenerator(), event.getLookupProvider(), MOD_ID, event.getExistingFileHelper()));
-            //event.getGenerator().addProvider(true, new FunctionalStorageItemTagsProvider(event.getGenerator().getPackOutput(), event.getLookupProvider(), blockTags.contentsGetter(), MOD_ID, event.getExistingFileHelper()));
+            event.getGenerator().addProvider(true, blockTags);
+            event.getGenerator().addProvider(true, new FunctionalStorageItemTagsProvider(event.getGenerator().getPackOutput(), event.getLookupProvider(), blockTags.contentsGetter(), MOD_ID, event.getExistingFileHelper()));
             event.getGenerator().addProvider(true, new FunctionalStorageLangProvider(event.getGenerator(), MOD_ID, "en_us"));
 
             event.getGenerator().addProvider(true, new ItemModelProvider(event.getGenerator().getPackOutput(), MOD_ID, event.getExistingFileHelper()) {
@@ -396,23 +397,23 @@ public class FunctionalStorage extends ModuleController {
                                 continue;
                             }
                             withExistingParent(ForgeRegistries.BLOCKS.getKey(blockRegistryObject.get()).getPath() + "_locked", modLoc(ForgeRegistries.BLOCKS.getKey(blockRegistryObject.get()).getPath()))
-                                    .texture("lock_icon", modLoc("blocks/lock"));
+                                    .texture("lock_icon", modLoc("block/lock"));
                         }
                     }
                     withExistingParent(ForgeRegistries.BLOCKS.getKey(COMPACTING_DRAWER.getLeft().get()).getPath() + "_locked", modLoc(ForgeRegistries.BLOCKS.getKey(COMPACTING_DRAWER.getLeft().get()).getPath()))
-                            .texture("lock_icon", modLoc("blocks/lock"));
+                            .texture("lock_icon", modLoc("block/lock"));
                     withExistingParent(ForgeRegistries.BLOCKS.getKey(ENDER_DRAWER.getLeft().get()).getPath() + "_locked", modLoc(ForgeRegistries.BLOCKS.getKey(ENDER_DRAWER.getLeft().get()).getPath()))
-                            .texture("lock_icon", modLoc("blocks/lock"));
+                            .texture("lock_icon", modLoc("block/lock"));
                     withExistingParent(ForgeRegistries.BLOCKS.getKey(FLUID_DRAWER_1.getLeft().get()).getPath() + "_locked", modLoc(ForgeRegistries.BLOCKS.getKey(FLUID_DRAWER_1.getLeft().get()).getPath()))
-                            .texture("lock_icon", modLoc("blocks/lock"));
+                            .texture("lock_icon", modLoc("block/lock"));
                     withExistingParent(ForgeRegistries.BLOCKS.getKey(FLUID_DRAWER_2.getLeft().get()).getPath() + "_locked", modLoc(ForgeRegistries.BLOCKS.getKey(FLUID_DRAWER_2.getLeft().get()).getPath()))
-                            .texture("lock_icon", modLoc("blocks/lock"));
+                            .texture("lock_icon", modLoc("block/lock"));
                     withExistingParent(ForgeRegistries.BLOCKS.getKey(FLUID_DRAWER_4.getLeft().get()).getPath() + "_locked", modLoc(ForgeRegistries.BLOCKS.getKey(FLUID_DRAWER_4.getLeft().get()).getPath()))
-                            .texture("lock_icon", modLoc("blocks/lock"));
+                            .texture("lock_icon", modLoc("block/lock"));
                     withExistingParent(ForgeRegistries.BLOCKS.getKey(SIMPLE_COMPACTING_DRAWER.getLeft().get()).getPath() + "_locked", modLoc(ForgeRegistries.BLOCKS.getKey(SIMPLE_COMPACTING_DRAWER.getLeft().get()).getPath()))
-                            .texture("lock_icon", modLoc("blocks/lock"));
+                            .texture("lock_icon", modLoc("block/lock"));
 //                    withExistingParent(ForgeRegistries.BLOCKS.getKey(FRAMED_COMPACTING_DRAWER.getLeft().get()).getPath() + "_locked", modLoc(ForgeRegistries.BLOCKS.getKey(FRAMED_COMPACTING_DRAWER.getLeft().get()).getPath()))
-//                            .texture("lock_icon", modLoc("blocks/lock"));
+//                            .texture("lock_icon", modLoc("block/lock"));
                 }
             });
         }

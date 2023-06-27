@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "functionalstorage:items/void_upgrade"
+    "layer0": "functionalstorage:item/void_upgrade"
   }
 }

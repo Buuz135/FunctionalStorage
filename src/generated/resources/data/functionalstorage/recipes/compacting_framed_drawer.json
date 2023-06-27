@@ -15,6 +15,7 @@
       ],
       "recipe": {
         "type": "minecraft:crafting_shaped",
+        "category": "misc",
         "key": {
           "D": [
             {
@@ -44,7 +45,8 @@
         ],
         "result": {
           "item": "functionalstorage:compacting_framed_drawer"
-        }
+        },
+        "show_notification": true
       }
     }
   ]

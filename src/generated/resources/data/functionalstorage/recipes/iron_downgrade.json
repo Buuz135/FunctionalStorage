@@ -15,6 +15,7 @@
       ],
       "recipe": {
         "type": "minecraft:crafting_shaped",
+        "category": "misc",
         "key": {
           "D": {
             "tag": "functionalstorage:drawer"
@@ -30,7 +31,8 @@
         ],
         "result": {
           "item": "functionalstorage:iron_downgrade"
-        }
+        },
+        "show_notification": true
       }
     }
   ]

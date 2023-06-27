@@ -1,12 +1,13 @@
 {
-  "type": "minecraft:smithing",
-  "addition": {
-    "item": "minecraft:netherite_ingot"
-  },
+  "type": "minecraft:smithing_transform",
+  "addition": [],
   "base": {
-    "item": "functionalstorage:diamond_upgrade"
+    "item": "minecraft:netherite_ingot"
   },
   "result": {
     "item": "functionalstorage:netherite_upgrade"
+  },
+  "template": {
+    "item": "functionalstorage:diamond_upgrade"
   }
 }

@@ -55,7 +55,7 @@ public class EnderDrawerTile extends ItemControllableDrawerTile<EnderDrawerTile>
     public void initClient() {
         super.initClient();
         addGuiAddonFactory(() -> new DrawerInfoGuiAddon(64, 16,
-                new ResourceLocation(FunctionalStorage.MOD_ID, "textures/blocks/ender_front.png"),
+                new ResourceLocation(FunctionalStorage.MOD_ID, "textures/block/ender_front.png"),
                 1,
                 FunctionalStorage.DrawerType.X_1.getSlotPosition(),
                 integer -> getStorage().getStackInSlot(integer),

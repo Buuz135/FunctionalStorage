@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "functionalstorage:items/creative_vending_upgrade"
+    "layer0": "functionalstorage:item/creative_vending_upgrade"
   }
 }

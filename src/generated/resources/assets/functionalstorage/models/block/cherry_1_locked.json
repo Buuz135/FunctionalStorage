@@ -1,0 +1,6 @@
+{
+  "parent": "functionalstorage:block/cherry_1",
+  "textures": {
+    "lock_icon": "functionalstorage:block/lock"
+  }
+}

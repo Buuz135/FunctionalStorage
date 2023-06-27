@@ -79,7 +79,7 @@ public class DrawerTile extends ItemControllableDrawerTile<DrawerTile> {
     public void initClient() {
         super.initClient();
         addGuiAddonFactory(() -> new DrawerInfoGuiAddon(64, 16,
-                new ResourceLocation(FunctionalStorage.MOD_ID, "textures/blocks/" + woodType.getName() + "_front_" + type.getSlots() + ".png"),
+                new ResourceLocation(FunctionalStorage.MOD_ID, "textures/block/" + woodType.getName() + "_front_" + type.getSlots() + ".png"),
                 type.getSlots(),
                 type.getSlotPosition(),
                 integer -> getHandler().getStackInSlot(integer),

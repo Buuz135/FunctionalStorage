@@ -27,12 +27,14 @@ jobs:
         uses: Kir-Antipov/mc-publish@v3.2
         with:
           curseforge-id: 556861
+          modrinth-id: cO40ZIg3
           curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
+          modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
           files-primary: build/libs/!(*-@(dev|sources)).jar
           files-secondary: build/libs/*-@(dev|sources).jar
           version-type: beta
           loaders: forge
-          game-versions: 1.19.2
+          game-versions: 1.20.1
           java: 17
           name: ""
           changelog: "https://github.com/Buuz135/FunctionalStorage/commits/main"
