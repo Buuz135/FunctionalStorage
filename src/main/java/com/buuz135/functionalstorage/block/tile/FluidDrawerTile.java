@@ -28,11 +28,9 @@ import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fluids.IFluidBlock;
-import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.wrappers.BucketPickupHandlerWrapper;
 import net.minecraftforge.fluids.capability.wrappers.FluidBlockWrapper;
-import net.minecraftforge.items.CapabilityItemHandler;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
@@ -101,10 +99,10 @@ public class FluidDrawerTile extends ControllableDrawerTile<FluidDrawerTile> {
     @Nonnull
     @Override
     public <U> LazyOptional<U> getCapability(@Nonnull Capability<U> cap, @Nullable Direction side) {
-        if (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
+        if (cap == ForgeCapabilities.ITEM_HANDLER) {
             return LazyOptional.empty();
         }
-        if (cap == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY) {
+        if (cap == ForgeCapabilities.FLUID_HANDLER) {
             return fluidHandlerLazyOptional.cast();
         }
         return super.getCapability(cap, side);
@@ -200,7 +198,7 @@ public class FluidDrawerTile extends ControllableDrawerTile<FluidDrawerTile> {
         if (stack.getItem().equals(FunctionalStorage.CONFIGURATION_TOOL.get()) || stack.getItem().equals(FunctionalStorage.LINKING_TOOL.get()))
             return InteractionResult.PASS;
         if (slot != -1 && !playerIn.getItemInHand(hand).isEmpty()) {
-            var interactionResult = stack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY).map(iFluidHandlerItem -> {
+            var interactionResult = stack.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).map(iFluidHandlerItem -> {
                 return playerIn.getCapability(ForgeCapabilities.ITEM_HANDLER).map(iItemHandler -> {
                     var result = FluidUtil.tryEmptyContainerAndStow(stack, this.fluidHandler.getTankList()[slot], iItemHandler, Integer.MAX_VALUE, playerIn, true);
                     if (result.isSuccess()) {
@@ -221,7 +219,7 @@ public class FluidDrawerTile extends ControllableDrawerTile<FluidDrawerTile> {
     public void onClicked(Player playerIn, int slot) {
         ItemStack stack = playerIn.getItemInHand(InteractionHand.MAIN_HAND);
         if (slot != -1 && !stack.isEmpty()) {
-            stack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY).ifPresent(iFluidHandlerItem -> {
+            stack.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).ifPresent(iFluidHandlerItem -> {
                 playerIn.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(iItemHandler -> {
                     var result = FluidUtil.tryFillContainerAndStow(stack, this.fluidHandler.getTankList()[slot], iItemHandler, Integer.MAX_VALUE, playerIn, true);
                     if (result.isSuccess()) {

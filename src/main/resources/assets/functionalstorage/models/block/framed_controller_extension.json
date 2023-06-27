@@ -7,13 +7,13 @@
     "front": {
       "parent": "functionalstorage:block/framed_controller_front",
       "textures": {
-        "front": "functionalstorage:blocks/framed_side"
+        "front": "functionalstorage:block/framed_side"
       }
     },
     "side": {
       "parent": "functionalstorage:block/framed_controller_side",
       "textures": {
-        "side": "functionalstorage:blocks/framed_side"
+        "side": "functionalstorage:block/framed_side"
       }
     },
     "front_divider" : {
@@ -21,7 +21,7 @@
     "display": {
       "parent": "functionalstorage:block/framed_controller_front",
       "textures": {
-        "front": "functionalstorage:blocks/framed_controller_extension"
+        "front": "functionalstorage:block/framed_controller_extension"
       }
     }
   },
@@ -30,7 +30,7 @@
     "side"
   ],
   "textures": {
-    "particle": "functionalstorage:blocks/framed_side"
+    "particle": "functionalstorage:block/framed_side"
   },
   "display": {
     "thirdperson_righthand": {

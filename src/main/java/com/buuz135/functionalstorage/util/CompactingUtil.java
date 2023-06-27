@@ -5,6 +5,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.CraftingContainer;
+import net.minecraft.world.inventory.TransientCraftingContainer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -89,7 +90,7 @@ public class CompactingUtil {
                 container = createContainerAndFill(1, output);
                 List<ItemStack> reversed = findAllMatchingRecipes(container);
                 for (ItemStack reversedStack : reversed) {
-                    if (reversedStack.getCount() != sizeCheck || !ItemStack.isSame(reversedStack, stack)){
+                    if (reversedStack.getCount() != sizeCheck || !ItemStack.matches(reversedStack, stack)){
                         continue;
                     }
                     realOutputs.add(output);
@@ -111,8 +112,8 @@ public class CompactingUtil {
         List<ItemStack> candidates = new ArrayList<>();
         Map<ItemStack, Integer> candidatesRate = new HashMap<>();
         for (CraftingRecipe craftingRecipe : level.getRecipeManager().getAllRecipesFor(RecipeType.CRAFTING)) {
-            ItemStack output = craftingRecipe.getResultItem();
-            if (!ItemStack.isSame(stack, output)) continue;
+            ItemStack output = craftingRecipe.getResultItem(this.level.registryAccess());
+            if (!ItemStack.matches(stack, output)) continue;
             ItemStack match = tryMatch(stack, craftingRecipe.getIngredients());
             if (!match.isEmpty()){
                 int recipeSize = craftingRecipe.getIngredients().size();
@@ -123,7 +124,7 @@ public class CompactingUtil {
                 CraftingContainer container = createContainerAndFill(1, output);
                 List<ItemStack> matchStacks = findAllMatchingRecipes(container);
                 for (ItemStack matchStack : matchStacks) {
-                    if (ItemStack.isSame(match, matchStack) && matchStack.getCount() == recipeSize){
+                    if (ItemStack.matches(match, matchStack) && matchStack.getCount() == recipeSize){
                         candidates.add(match);
                         candidatesRate.put(match, recipeSize);
                         break;
@@ -145,7 +146,7 @@ public class CompactingUtil {
         List<ItemStack> candidates = new ArrayList<>();
         for (CraftingRecipe recipe : level.getRecipeManager().getRecipesFor(RecipeType.CRAFTING, crafting, level)) {
             if (recipe.matches(crafting, level)) {
-                ItemStack result = recipe.assemble(crafting);
+                ItemStack result = recipe.assemble(crafting, this.level.registryAccess());
                 if (!result.isEmpty())
                     candidates.add(result);
             }
@@ -200,7 +201,7 @@ public class CompactingUtil {
     }
 
     private CraftingContainer createContainerAndFill(int size, ItemStack stack){
-        CraftingContainer inventoryCrafting = new CraftingContainer(new AbstractContainerMenu(null, 0) {
+        CraftingContainer inventoryCrafting = new TransientCraftingContainer(new AbstractContainerMenu(null, 0) {
             @Override
             public ItemStack quickMoveStack(Player p_38941_, int p_38942_) {
                 return null;

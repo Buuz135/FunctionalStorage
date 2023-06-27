@@ -5,24 +5,25 @@ import com.buuz135.functionalstorage.block.CompactingDrawerBlock;
 import com.buuz135.functionalstorage.block.FramedControllerExtensionBlock;
 import com.buuz135.functionalstorage.block.FramedDrawerBlock;
 import com.buuz135.functionalstorage.block.FramedDrawerControllerBlock;
-import com.google.common.collect.Lists;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.CustomRecipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
-import net.minecraft.world.item.crafting.SimpleRecipeSerializer;
+import net.minecraft.world.item.crafting.SimpleCraftingRecipeSerializer;
 import net.minecraft.world.level.Level;
 
 import java.util.List;
 
 public class FramedDrawerRecipe extends CustomRecipe {
 
-    public static RecipeSerializer<FramedDrawerRecipe> SERIALIZER = new SimpleRecipeSerializer<>(FramedDrawerRecipe::new);
+    public static RecipeSerializer<FramedDrawerRecipe> SERIALIZER = new SimpleCraftingRecipeSerializer<>((p_250892_, p_249920_) -> new FramedDrawerRecipe(p_250892_));
 
     public FramedDrawerRecipe(ResourceLocation idIn) {
-        super(idIn);
+        super(idIn, CraftingBookCategory.MISC);
     }
 
 
@@ -53,7 +54,7 @@ public class FramedDrawerRecipe extends CustomRecipe {
     }
 
     @Override
-    public ItemStack assemble(CraftingContainer inv) {
+    public ItemStack assemble(CraftingContainer inv, RegistryAccess registryAccess) {
         if (matches(inv.getItem(0), inv.getItem(1), inv.getItem(2)) ||
                 matchesCompacting(inv.getItem(0), inv.getItem(1), inv.getItem(2)) ||
                 matchesController(inv.getItem(0), inv.getItem(1), inv.getItem(2)) ||

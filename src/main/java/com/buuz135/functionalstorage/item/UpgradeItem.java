@@ -40,7 +40,8 @@ public class UpgradeItem extends BasicItem {
     private final Type type;
 
     public UpgradeItem(Properties properties, Type type) {
-        super(properties.tab(FunctionalStorage.TAB));
+        super(properties);
+        setItemGroup(FunctionalStorage.TAB);
         this.type = type;
     }
 
@@ -61,13 +62,6 @@ public class UpgradeItem extends BasicItem {
         return stack;
     }
 
-    @Override
-    public void fillItemCategory(CreativeModeTab group, NonNullList<ItemStack> items) {
-        if (this.allowedIn(group)) {
-            items.add(initNbt(new ItemStack(this)));
-        }
-    }
-
     public Type getType() {
         return type;
     }
@@ -81,13 +75,13 @@ public class UpgradeItem extends BasicItem {
                 Direction direction = getDirection(first);
                 Direction next = Direction.values()[(Arrays.asList(Direction.values()).indexOf(direction) + 1 ) % Direction.values().length];
                 first.getOrCreateTag().putString("Direction", next.getName());
-                p_150896_.playSound(SoundEvents.UI_BUTTON_CLICK, 0.5f, 1);
+                p_150896_.playSound(SoundEvents.UI_BUTTON_CLICK.get(), 0.5f, 1);
                 return true;
             }
             if (item.equals(FunctionalStorage.REDSTONE_UPGRADE.get())){
                 int slot = first.getOrCreateTag().getInt("Slot");
                 first.getOrCreateTag().putInt("Slot", (slot + 1) % MAX_SLOT);
-                p_150896_.playSound(SoundEvents.UI_BUTTON_CLICK, 0.5f, 1);
+                p_150896_.playSound(SoundEvents.UI_BUTTON_CLICK.get(), 0.5f, 1);
                 return true;
             }
         }

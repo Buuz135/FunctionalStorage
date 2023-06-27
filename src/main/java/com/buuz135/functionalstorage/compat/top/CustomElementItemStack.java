@@ -10,6 +10,7 @@ import mcjty.theoneprobe.network.NetworkTools;
 import mcjty.theoneprobe.rendering.RenderHelper;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
@@ -48,7 +49,7 @@ public class CustomElementItemStack implements IElement {
         this.displayName = buf.readBoolean();
     }
 
-    public void render(PoseStack matrixStack, int x, int y) {
+    public void render(GuiGraphics matrixStack, int x, int y) {
         ItemRenderer itemRender = Minecraft.getInstance().getItemRenderer();
         if (!itemStack.isEmpty()) {
             int size = itemStack.getCount();

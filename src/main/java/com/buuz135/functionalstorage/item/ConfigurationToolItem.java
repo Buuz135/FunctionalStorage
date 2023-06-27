@@ -38,7 +38,8 @@ public class ConfigurationToolItem extends BasicItem {
     }
 
     public ConfigurationToolItem() {
-        super(new Properties().tab(FunctionalStorage.TAB).stacksTo(1));
+        super(new Properties().stacksTo(1));
+        setItemGroup(FunctionalStorage.TAB);
     }
 
     @Override
@@ -50,13 +51,6 @@ public class ConfigurationToolItem extends BasicItem {
     private ItemStack initNbt(ItemStack stack) {
         stack.getOrCreateTag().putString(NBT_MODE, ConfigurationAction.LOCKING.name());
         return stack;
-    }
-
-    @Override
-    public void fillItemCategory(CreativeModeTab group, NonNullList<ItemStack> items) {
-        if (this.allowedIn(group)) {
-            items.add(initNbt(new ItemStack(this)));
-        }
     }
 
     @Override

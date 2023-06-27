@@ -123,7 +123,7 @@ public class DrawerStackItemHandler implements IItemHandler, INBTSerializable<Co
         if (slot < type.getSlots()) {
             BigStack bigStack = this.storedStacks.get(slot);
             ItemStack fl = bigStack.getStack();
-            return fl.isEmpty() || (fl.sameItem(stack) && ItemStack.tagMatches(fl, stack));
+            return fl.isEmpty() || ItemStack.isSameItemSameTags(fl, stack);
         }
         return false;
     }

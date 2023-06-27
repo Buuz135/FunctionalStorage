@@ -76,7 +76,7 @@ public abstract class CompactingInventoryHandler implements IItemHandler, INBTSe
 
     private boolean isVoidValid(ItemStack stack) {
         for (CompactingUtil.Result result : this.resultList) {
-            if (result.getResult().sameItem(stack) && ItemStack.tagMatches(result.getResult(), stack)) return true;
+            if (ItemStack.isSameItemSameTags(result.getResult(), stack)) return true;
         }
         return false;
     }
@@ -165,7 +165,7 @@ public abstract class CompactingInventoryHandler implements IItemHandler, INBTSe
         if (slot < this.slots) {
             CompactingUtil.Result bigStack = this.resultList.get(slot);
             ItemStack fl = bigStack.getResult();
-            return !fl.isEmpty() && fl.sameItem(stack) && ItemStack.tagMatches(fl, stack);
+            return !fl.isEmpty() && ItemStack.isSameItemSameTags(fl, stack);
         }
         return false;
     }

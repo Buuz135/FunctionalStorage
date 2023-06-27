@@ -14,6 +14,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.loot.LootContext;
+import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import org.jetbrains.annotations.NotNull;
@@ -26,7 +27,7 @@ public class ArmoryCabinetBlock extends RotatableBlock<ArmoryCabinetTile> {
 
     public ArmoryCabinetBlock() {
         super("armory_cabinet", Properties.copy(Blocks.IRON_BLOCK), ArmoryCabinetTile.class);
-        setItemGroup(FunctionalStorage.TAB);
+        //setItemGroup(FunctionalStorage.TAB);
     }
 
     @Override
@@ -50,9 +51,8 @@ public class ArmoryCabinetBlock extends RotatableBlock<ArmoryCabinetTile> {
         return blockLootTables.droppingNothing();
     }
 
-
     @Override
-    public List<ItemStack> getDrops(BlockState p_60537_, LootContext.Builder builder) {
+    public List<ItemStack> getDrops(BlockState p_60537_, LootParams.Builder builder) {
         NonNullList<ItemStack> stacks = NonNullList.create();
         ItemStack stack = new ItemStack(this);
         BlockEntity drawerTile = builder.getOptionalParameter(LootContextParams.BLOCK_ENTITY);

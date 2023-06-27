@@ -71,7 +71,8 @@ public class LinkingToolItem extends BasicItem {
     }
 
     public LinkingToolItem() {
-        super(new Properties().tab(FunctionalStorage.TAB).stacksTo(1));
+        super(new Properties().stacksTo(1));
+        setItemGroup(FunctionalStorage.TAB);
     }
 
     @Override
@@ -84,13 +85,6 @@ public class LinkingToolItem extends BasicItem {
         stack.getOrCreateTag().putString(NBT_MODE, LinkingMode.SINGLE.name());
         stack.getOrCreateTag().putString(NBT_ACTION, ActionMode.ADD.name());
         return stack;
-    }
-
-    @Override
-    public void fillItemCategory(CreativeModeTab group, NonNullList<ItemStack> items) {
-        if (this.allowedIn(group)) {
-            items.add(initNbt(new ItemStack(this)));
-        }
     }
 
     @Override
@@ -255,7 +249,7 @@ public class LinkingToolItem extends BasicItem {
         for (double y = axisAlignedBB.minY; y < axisAlignedBB.maxY; ++y) {
             for (double x = axisAlignedBB.minX; x < axisAlignedBB.maxX; ++x) {
                 for (double z = axisAlignedBB.minZ; z < axisAlignedBB.maxZ; ++z) {
-                    blocks.add(new BlockPos(x, y, z));
+                    blocks.add(new BlockPos((int) x, (int) y, (int) z));
                 }
             }
         }

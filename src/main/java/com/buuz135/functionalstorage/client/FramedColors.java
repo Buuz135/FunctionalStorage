@@ -24,6 +24,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RegisterColorHandlersEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
@@ -88,20 +89,20 @@ public class FramedColors implements BlockColor, ItemColor {
 
     @SubscribeEvent
     public static void blockColors(RegisterColorHandlersEvent.Block event) {
-        Block block1 = Registry.BLOCK.get(new ResourceLocation(FunctionalStorage.MOD_ID, "framed_1"));
+        Block block1 = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(FunctionalStorage.MOD_ID, "framed_1"));
         event.register(new FramedColors(), block1);
-        Block block2 = Registry.BLOCK.get(new ResourceLocation(FunctionalStorage.MOD_ID, "framed_2"));
+        Block block2 = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(FunctionalStorage.MOD_ID, "framed_2"));
         event.register(new FramedColors(), block2);
-        Block block4 = Registry.BLOCK.get(new ResourceLocation(FunctionalStorage.MOD_ID, "framed_4"));
+        Block block4 = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(FunctionalStorage.MOD_ID, "framed_4"));
         event.register(new FramedColors(), block4);
 
-        Block block5 = Registry.BLOCK.get(new ResourceLocation(FunctionalStorage.MOD_ID, "compacting_framed_drawer"));
+        Block block5 = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(FunctionalStorage.MOD_ID, "compacting_framed_drawer"));
         event.register(new FramedColors(), block5);
 
-        Block controller = Registry.BLOCK.get(new ResourceLocation(FunctionalStorage.MOD_ID, "framed_storage_controller"));
+        Block controller = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(FunctionalStorage.MOD_ID, "framed_storage_controller"));
         event.register(new FramedColors(), controller);
 
-        Block controllerExtension = Registry.BLOCK.get(new ResourceLocation(FunctionalStorage.MOD_ID, "framed_controller_extension"));
+        Block controllerExtension = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(FunctionalStorage.MOD_ID, "framed_controller_extension"));
         event.register(new FramedColors(), controllerExtension);
     }
 }

@@ -1,9 +1,9 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-	"layer0": "functionalstorage:items/linking_tool_base",
-	"layer1": "functionalstorage:items/linking_tool_mode",
-	"layer2": "functionalstorage:items/linking_tool_action",
-	"layer3": "functionalstorage:items/linking_tool_controller"
+	"layer0": "functionalstorage:item/linking_tool_base",
+	"layer1": "functionalstorage:item/linking_tool_mode",
+	"layer2": "functionalstorage:item/linking_tool_action",
+	"layer3": "functionalstorage:item/linking_tool_controller"
   }
 }

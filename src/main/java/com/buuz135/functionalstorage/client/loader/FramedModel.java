@@ -1,8 +1,6 @@
 package com.buuz135.functionalstorage.client.loader;
 
-import com.buuz135.functionalstorage.FunctionalStorage;
 import com.buuz135.functionalstorage.block.FramedDrawerBlock;
-import com.buuz135.functionalstorage.block.FramedDrawerControllerBlock;
 import com.buuz135.functionalstorage.client.model.FramedDrawerModelData;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -11,7 +9,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.mojang.datafixers.util.Pair;
-import com.mojang.math.Vector3f;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.RenderType;
@@ -21,11 +18,7 @@ import net.minecraft.client.renderer.block.model.ItemOverrides;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.resources.model.BakedModel;
-import net.minecraft.client.resources.model.Material;
-import net.minecraft.client.resources.model.ModelBakery;
-import net.minecraft.client.resources.model.ModelState;
-import net.minecraft.client.resources.model.UnbakedModel;
+import net.minecraft.client.resources.model.*;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
@@ -53,6 +46,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Vector3f;
 
 import java.util.*;
 import java.util.List;
@@ -84,9 +78,19 @@ public class FramedModel implements IUnbakedGeometry<FramedModel> {
         this.logWarning = logWarning;
     }
 
-    @Override
-    public BakedModel bake(IGeometryBakingContext context, ModelBakery bakery, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelState, ItemOverrides overrides, ResourceLocation modelLocation)
+    /*@Override
+    public Collection<Material> getMaterials(IGeometryBakingContext context, Function<ResourceLocation, UnbakedModel> modelGetter, Set<Pair<String, String>> missingTextureErrors)
     {
+        Set<Material> textures = new HashSet<>();
+        if (context.hasMaterial("particle"))
+            textures.add(context.getMaterial("particle"));
+        for (BlockModel part : children.values())
+            textures.addAll(part.getMaterials(modelGetter, missingTextureErrors));
+        return textures;
+    }*/
+
+    @Override
+    public BakedModel bake(IGeometryBakingContext context, ModelBaker bakery, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelState, ItemOverrides overrides, ResourceLocation modelLocation) {
         if (logWarning)
             LOGGER.warn("Model \"" + modelLocation + "\" is using the deprecated \"parts\" field in its composite model instead of \"children\". This field will be removed in 1.20.");
 
@@ -118,17 +122,6 @@ public class FramedModel implements IUnbakedGeometry<FramedModel> {
         }
 
         return new FramedModel.Baked(context.isGui3d(), context.useBlockLight(), context.useAmbientOcclusion(), particle, context.getTransforms(), overrides, bakedParts, itemPassesBuilder.build());
-    }
-
-    @Override
-    public Collection<Material> getMaterials(IGeometryBakingContext context, Function<ResourceLocation, UnbakedModel> modelGetter, Set<Pair<String, String>> missingTextureErrors)
-    {
-        Set<Material> textures = new HashSet<>();
-        if (context.hasMaterial("particle"))
-            textures.add(context.getMaterial("particle"));
-        for (BlockModel part : children.values())
-            textures.addAll(part.getMaterials(modelGetter, missingTextureErrors));
-        return textures;
     }
 
     @Override
@@ -272,8 +265,8 @@ public class FramedModel implements IUnbakedGeometry<FramedModel> {
 
                 for (int i = 0; i < 4; i++) {
                     float[] uv0 = unpackVertices(copied.getVertices(), i, IQuadTransformer.UV0, 2);
-                    uv0[0] = (uv0[0] - toCopy.getSprite().getU0()) * modelData.get(j).getLeft().getWidth() / toCopy.getSprite().getWidth() + modelData.get(j).getLeft().getU0();
-                    uv0[1] = (uv0[1] - toCopy.getSprite().getV0()) * modelData.get(j).getLeft().getHeight() / toCopy.getSprite().getHeight() + modelData.get(j).getLeft().getV0();
+                    uv0[0] = (uv0[0] - toCopy.getSprite().getU0()) * modelData.get(j).getLeft().getX() / toCopy.getSprite().getX() + modelData.get(j).getLeft().getU0();
+                    uv0[1] = (uv0[1] - toCopy.getSprite().getV0()) * modelData.get(j).getLeft().getY() / toCopy.getSprite().getY() + modelData.get(j).getLeft().getV0();
                     int[] packedTextureData = packUV(uv0[0], uv0[1]);
                     copied.getVertices()[IQuadTransformer.UV0 + i * IQuadTransformer.STRIDE] = packedTextureData[0];
                     copied.getVertices()[IQuadTransformer.UV0 + 1 + i * IQuadTransformer.STRIDE] = packedTextureData[1];

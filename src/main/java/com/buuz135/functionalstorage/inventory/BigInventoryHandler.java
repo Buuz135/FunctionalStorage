@@ -114,14 +114,14 @@ public abstract class BigInventoryHandler implements IItemHandler, INBTSerializa
             BigStack bigStack = this.storedStacks.get(slot);
             ItemStack fl = bigStack.getStack();
             if (isLocked() && fl.isEmpty()) return false;
-            return fl.isEmpty() || (fl.sameItem(stack) && ItemStack.tagMatches(fl, stack));
+            return fl.isEmpty() || (ItemStack.isSameItemSameTags(fl, stack));
         }
         return false;
     }
 
     private boolean isVoidValid(ItemStack stack){
         for (BigStack storedStack : this.storedStacks) {
-            if (storedStack.getStack().sameItem(stack) && ItemStack.tagMatches(storedStack.getStack(), stack)) return true;
+            if (ItemStack.isSameItemSameTags(storedStack.getStack(), stack)) return true;
         }
         return false;
     }

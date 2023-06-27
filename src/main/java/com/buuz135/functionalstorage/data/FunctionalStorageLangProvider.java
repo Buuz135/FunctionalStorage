@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 public class FunctionalStorageLangProvider extends LanguageProvider {
 
     public FunctionalStorageLangProvider(DataGenerator gen, String modid, String locale) {
-        super(gen, modid, locale);
+        super(gen.getPackOutput(), modid, locale);
     }
 
     @Override

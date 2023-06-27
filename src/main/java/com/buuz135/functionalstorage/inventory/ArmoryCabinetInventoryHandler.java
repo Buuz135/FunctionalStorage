@@ -5,8 +5,8 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.HorseArmorItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.RecordItem;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.INBTSerializable;
-import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import org.jetbrains.annotations.NotNull;
 
@@ -76,7 +76,7 @@ public abstract class ArmoryCabinetInventoryHandler implements IItemHandler, INB
     }
 
     private boolean isCertifiedStack(ItemStack stack){
-        if (stack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null).isPresent()) return false;
+        if (stack.getCapability(ForgeCapabilities.ITEM_HANDLER, null).isPresent()) return false;
         if (stack.getMaxStackSize() > 1) return false;
         return stack.hasTag() || stack.isDamageableItem() || stack.isEnchantable() || stack.getItem() instanceof RecordItem || stack.getItem() instanceof HorseArmorItem;
     }

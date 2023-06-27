@@ -6,7 +6,6 @@ import com.buuz135.functionalstorage.client.*;
 import com.buuz135.functionalstorage.client.loader.FramedModel;
 import com.buuz135.functionalstorage.data.FunctionalStorageBlockTagsProvider;
 import com.buuz135.functionalstorage.data.FunctionalStorageBlockstateProvider;
-import com.buuz135.functionalstorage.data.FunctionalStorageItemTagsProvider;
 import com.buuz135.functionalstorage.data.FunctionalStorageLangProvider;
 import com.buuz135.functionalstorage.inventory.BigInventoryHandler;
 import com.buuz135.functionalstorage.inventory.item.DrawerStackItemHandler;
@@ -31,8 +30,8 @@ import com.hrznstudio.titanium.tab.AdvancedTitaniumTab;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.data.recipes.FinishedRecipe;
-import net.minecraft.data.recipes.UpgradeRecipeBuilder;
-import net.minecraft.data.tags.BlockTagsProvider;
+import net.minecraft.data.recipes.RecipeCategory;
+import net.minecraft.data.recipes.SmithingTransformRecipeBuilder;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
@@ -42,7 +41,6 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraftforge.api.distmarker.Dist;
@@ -52,7 +50,9 @@ import net.minecraftforge.client.event.ModelEvent;
 import net.minecraftforge.client.event.RegisterColorHandlersEvent;
 import net.minecraftforge.client.event.RenderTooltipEvent;
 import net.minecraftforge.client.model.generators.BlockModelProvider;
+import net.minecraftforge.client.model.generators.ItemModelBuilder;
 import net.minecraftforge.client.model.generators.ItemModelProvider;
+import net.minecraftforge.client.model.generators.ModelFile;
 import net.minecraftforge.common.ForgeMod;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
@@ -126,31 +126,31 @@ public class FunctionalStorage extends ModuleController {
         EventManager.forge(BlockEvent.BreakEvent.class).process(breakEvent -> {
             if (breakEvent.getPlayer().isCreative()) {
                 if (breakEvent.getState().getBlock() instanceof DrawerBlock) {
-                    int hit = ((DrawerBlock) breakEvent.getState().getBlock()).getHit(breakEvent.getState(), breakEvent.getPlayer().getLevel(), breakEvent.getPos(), breakEvent.getPlayer());
+                    int hit = ((DrawerBlock) breakEvent.getState().getBlock()).getHit(breakEvent.getState(), breakEvent.getPlayer().getCommandSenderWorld(), breakEvent.getPos(), breakEvent.getPlayer());
                     if (hit != -1) {
                         breakEvent.setCanceled(true);
-                        ((DrawerBlock) breakEvent.getState().getBlock()).attack(breakEvent.getState(), breakEvent.getPlayer().getLevel(), breakEvent.getPos(), breakEvent.getPlayer());
+                        ((DrawerBlock) breakEvent.getState().getBlock()).attack(breakEvent.getState(), breakEvent.getPlayer().getCommandSenderWorld(), breakEvent.getPos(), breakEvent.getPlayer());
                     }
                 }
                 if (breakEvent.getState().getBlock() instanceof CompactingDrawerBlock) {
-                    int hit = ((CompactingDrawerBlock) breakEvent.getState().getBlock()).getHit(breakEvent.getState(), breakEvent.getPlayer().getLevel(), breakEvent.getPos(), breakEvent.getPlayer());
+                    int hit = ((CompactingDrawerBlock) breakEvent.getState().getBlock()).getHit(breakEvent.getState(), breakEvent.getPlayer().getCommandSenderWorld(), breakEvent.getPos(), breakEvent.getPlayer());
                     if (hit != -1) {
                         breakEvent.setCanceled(true);
-                        ((CompactingDrawerBlock) breakEvent.getState().getBlock()).attack(breakEvent.getState(), breakEvent.getPlayer().getLevel(), breakEvent.getPos(), breakEvent.getPlayer());
+                        ((CompactingDrawerBlock) breakEvent.getState().getBlock()).attack(breakEvent.getState(), breakEvent.getPlayer().getCommandSenderWorld(), breakEvent.getPos(), breakEvent.getPlayer());
                     }
                 }
                 if (breakEvent.getState().getBlock() instanceof EnderDrawerBlock) {
-                    int hit = ((EnderDrawerBlock) breakEvent.getState().getBlock()).getHit(breakEvent.getState(), breakEvent.getPlayer().getLevel(), breakEvent.getPos(), breakEvent.getPlayer());
+                    int hit = ((EnderDrawerBlock) breakEvent.getState().getBlock()).getHit(breakEvent.getState(), breakEvent.getPlayer().getCommandSenderWorld(), breakEvent.getPos(), breakEvent.getPlayer());
                     if (hit != -1) {
                         breakEvent.setCanceled(true);
-                        ((EnderDrawerBlock) breakEvent.getState().getBlock()).attack(breakEvent.getState(), breakEvent.getPlayer().getLevel(), breakEvent.getPos(), breakEvent.getPlayer());
+                        ((EnderDrawerBlock) breakEvent.getState().getBlock()).attack(breakEvent.getState(), breakEvent.getPlayer().getCommandSenderWorld(), breakEvent.getPos(), breakEvent.getPlayer());
                     }
                 }
                 if (breakEvent.getState().getBlock() instanceof FluidDrawerBlock) {
-                    int hit = ((FluidDrawerBlock) breakEvent.getState().getBlock()).getHit(breakEvent.getState(), breakEvent.getPlayer().getLevel(), breakEvent.getPos(), breakEvent.getPlayer());
+                    int hit = ((FluidDrawerBlock) breakEvent.getState().getBlock()).getHit(breakEvent.getState(), breakEvent.getPlayer().getCommandSenderWorld(), breakEvent.getPos(), breakEvent.getPlayer());
                     if (hit != -1) {
                         breakEvent.setCanceled(true);
-                        ((FluidDrawerBlock) breakEvent.getState().getBlock()).attack(breakEvent.getState(), breakEvent.getPlayer().getLevel(), breakEvent.getPos(), breakEvent.getPlayer());
+                        ((FluidDrawerBlock) breakEvent.getState().getBlock()).attack(breakEvent.getState(), breakEvent.getPlayer().getCommandSenderWorld(), breakEvent.getPos(), breakEvent.getPlayer());
                     }
                 }
             }
@@ -173,12 +173,12 @@ public class FunctionalStorage extends ModuleController {
                 var name = woodType.getName() + "_" + value.getSlots();
                 if (woodType == DrawerWoodType.FRAMED){
                     var pair = getRegistries().registerBlockWithTileItem(name, () -> new FramedDrawerBlock(value), blockRegistryObject -> () ->
-                            new DrawerBlock.DrawerItem((DrawerBlock) blockRegistryObject.get(), new Item.Properties().tab(TAB)));
+                            new DrawerBlock.DrawerItem((DrawerBlock) blockRegistryObject.get(), new Item.Properties()));
                     DRAWER_TYPES.computeIfAbsent(value, drawerType -> new ArrayList<>()).add(pair);
                     CompactingFramedDrawerBlock.FRAMED.add(pair.getLeft());
                 } else {
                     DRAWER_TYPES.computeIfAbsent(value, drawerType -> new ArrayList<>()).add(getRegistries().registerBlockWithTileItem(name, () -> new DrawerBlock(woodType, value, BlockBehaviour.Properties.copy(woodType.getPlanks())), blockRegistryObject -> () ->
-                            new DrawerBlock.DrawerItem((DrawerBlock) blockRegistryObject.get(), new Item.Properties().tab(TAB))));
+                            new DrawerBlock.DrawerItem((DrawerBlock) blockRegistryObject.get(), new Item.Properties())));
                 }
             }
             DRAWER_TYPES.get(value).forEach(blockRegistryObject -> TAB.addIconStacks(() -> new ItemStack(blockRegistryObject.getLeft().get())));
@@ -323,16 +323,16 @@ public class FunctionalStorage extends ModuleController {
         }).subscribe();
         EventManager.forge(RenderTooltipEvent.Pre.class).process(itemTooltipEvent -> {
             if (itemTooltipEvent.getItemStack().getItem().equals(FunctionalStorage.ENDER_DRAWER.getLeft().get().asItem()) && itemTooltipEvent.getItemStack().hasTag()) {
-                TooltipUtil.renderItems(itemTooltipEvent.getPoseStack(), EnderDrawerBlock.getFrequencyDisplay(itemTooltipEvent.getItemStack().getTag().getCompound("Tile").getString("frequency")), itemTooltipEvent.getX() + 14, itemTooltipEvent.getY() + 11);
+                TooltipUtil.renderItems(itemTooltipEvent.getGraphics(), EnderDrawerBlock.getFrequencyDisplay(itemTooltipEvent.getItemStack().getTag().getCompound("Tile").getString("frequency")), itemTooltipEvent.getX() + 14, itemTooltipEvent.getY() + 11);
             }
             if (itemTooltipEvent.getItemStack().is(FunctionalStorage.LINKING_TOOL.get()) && itemTooltipEvent.getItemStack().getOrCreateTag().contains(LinkingToolItem.NBT_ENDER)) {
-                TooltipUtil.renderItems(itemTooltipEvent.getPoseStack(), EnderDrawerBlock.getFrequencyDisplay(itemTooltipEvent.getItemStack().getOrCreateTag().getString(LinkingToolItem.NBT_ENDER)), itemTooltipEvent.getX() + 14, itemTooltipEvent.getY() + 11);
+                TooltipUtil.renderItems(itemTooltipEvent.getGraphics(), EnderDrawerBlock.getFrequencyDisplay(itemTooltipEvent.getItemStack().getOrCreateTag().getString(LinkingToolItem.NBT_ENDER)), itemTooltipEvent.getX() + 14, itemTooltipEvent.getY() + 11);
             }
             itemTooltipEvent.getItemStack().getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(iItemHandler -> {
                 if (iItemHandler instanceof DrawerStackItemHandler) {
                     int i = 0;
                     for (BigInventoryHandler.BigStack storedStack : ((DrawerStackItemHandler) iItemHandler).getStoredStacks()) {
-                        TooltipUtil.renderItemAdvanced(itemTooltipEvent.getPoseStack(), storedStack.getStack(), itemTooltipEvent.getX() + 20 + 26 * i, itemTooltipEvent.getY() + 11, 512, NumberUtils.getFormatedBigNumber(storedStack.getAmount()) + "/" + NumberUtils.getFormatedBigNumber(iItemHandler.getSlotLimit(i)));
+                        TooltipUtil.renderItemAdvanced(itemTooltipEvent.getGraphics(), storedStack.getStack(), itemTooltipEvent.getX() + 20 + 26 * i, itemTooltipEvent.getY() + 11, 512, NumberUtils.getFormatedBigNumber(storedStack.getAmount()) + "/" + NumberUtils.getFormatedBigNumber(iItemHandler.getSlotLimit(i)));
                         ++i;
                     }
                 }
@@ -359,13 +359,15 @@ public class FunctionalStorage extends ModuleController {
             event.getGenerator().addProvider(true, new FunctionalStorageBlockstateProvider(event.getGenerator(), event.getExistingFileHelper(), blocksToProcess));
             event.getGenerator().addProvider(true, new TitaniumLootTableProvider(event.getGenerator(), blocksToProcess));
 
-            event.getGenerator().addProvider(true, new FunctionalStorageItemTagsProvider(event.getGenerator(), new BlockTagsProvider(event.getGenerator()), MOD_ID, event.getExistingFileHelper()));
+            var blockTags = new FunctionalStorageBlockTagsProvider(event.getGenerator(), event.getLookupProvider(), MOD_ID, event.getExistingFileHelper());
+            event.getGenerator().addProvider(true, new FunctionalStorageBlockTagsProvider(event.getGenerator(), event.getLookupProvider(), MOD_ID, event.getExistingFileHelper()));
+            //event.getGenerator().addProvider(true, new FunctionalStorageItemTagsProvider(event.getGenerator().getPackOutput(), event.getLookupProvider(), blockTags.contentsGetter(), MOD_ID, event.getExistingFileHelper()));
             event.getGenerator().addProvider(true, new FunctionalStorageLangProvider(event.getGenerator(), MOD_ID, "en_us"));
-            event.getGenerator().addProvider(true, new FunctionalStorageBlockTagsProvider(event.getGenerator(), MOD_ID, event.getExistingFileHelper()));
-            event.getGenerator().addProvider(true, new ItemModelProvider(event.getGenerator(), MOD_ID, event.getExistingFileHelper()) {
+
+            event.getGenerator().addProvider(true, new ItemModelProvider(event.getGenerator().getPackOutput(), MOD_ID, event.getExistingFileHelper()) {
                 @Override
                 protected void registerModels() {
-                    blocksToProcess.get().forEach(block -> withExistingParent(ForgeRegistries.BLOCKS.getKey(block).getPath(), new ResourceLocation(FunctionalStorage.MOD_ID, "block/" + ForgeRegistries.BLOCKS.getKey(block).getPath())));
+                    blocksToProcess.get().forEach(block -> withUnchecked(ForgeRegistries.BLOCKS.getKey(block).getPath(), new ResourceLocation(FunctionalStorage.MOD_ID, "block/" + ForgeRegistries.BLOCKS.getKey(block).getPath())));
                     for (StorageUpgradeItem.StorageTier storageTier : STORAGE_UPGRADES.keySet()) {
                         item(STORAGE_UPGRADES.get(storageTier).get());
                     }
@@ -378,10 +380,14 @@ public class FunctionalStorage extends ModuleController {
                 }
 
                 private void item(Item item) {
-                    singleTexture(ForgeRegistries.ITEMS.getKey(item).getPath(), new ResourceLocation("minecraft:item/generated"), "layer0", new ResourceLocation(MOD_ID, "items/" + ForgeRegistries.ITEMS.getKey(item).getPath()));
+                    withUnchecked(ForgeRegistries.ITEMS.getKey(item).getPath(), new ResourceLocation("minecraft:item/generated")).texture( "layer0", new ResourceLocation(MOD_ID, "item/" + ForgeRegistries.ITEMS.getKey(item).getPath()));
+                }
+
+                private ItemModelBuilder withUnchecked(String name, ResourceLocation parent){
+                    return getBuilder(name).parent(new ModelFile.UncheckedModelFile(parent));
                 }
             });
-            event.getGenerator().addProvider(true, new BlockModelProvider(event.getGenerator(), MOD_ID, event.getExistingFileHelper()) {
+            event.getGenerator().addProvider(true, new BlockModelProvider(event.getGenerator().getPackOutput(), MOD_ID, event.getExistingFileHelper()) {
                 @Override
                 protected void registerModels() {
                     for (DrawerType value : DrawerType.values()) {
@@ -466,7 +472,7 @@ public class FunctionalStorage extends ModuleController {
                         .define('C', Items.COMPARATOR)
                         .define('D', StorageTags.DRAWER)
                         .save(consumer);
-                UpgradeRecipeBuilder.smithing(Ingredient.of(STORAGE_UPGRADES.get(StorageUpgradeItem.StorageTier.DIAMOND).get()), Ingredient.of(Items.NETHERITE_INGOT), STORAGE_UPGRADES.get(StorageUpgradeItem.StorageTier.NETHERITE).get())
+                SmithingTransformRecipeBuilder.smithing(Ingredient.of(STORAGE_UPGRADES.get(StorageUpgradeItem.StorageTier.DIAMOND).get()), Ingredient.of(Items.NETHERITE_INGOT), Ingredient.of(), RecipeCategory.MISC, STORAGE_UPGRADES.get(StorageUpgradeItem.StorageTier.NETHERITE).get())
                         .unlocks("has_netherite_ingot", has(Items.NETHERITE_INGOT))
                         .save(consumer, ForgeRegistries.ITEMS.getKey(STORAGE_UPGRADES.get(StorageUpgradeItem.StorageTier.NETHERITE).get()));
                 TitaniumShapedRecipeBuilder.shapedRecipe(ARMORY_CABINET.getLeft().get())

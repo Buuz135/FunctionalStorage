@@ -23,7 +23,7 @@ public class FunctionalStorageBlockstateProvider extends BlockStateProvider {
     private final NonNullLazy<List<Block>> blocks;
 
     public FunctionalStorageBlockstateProvider(DataGenerator gen, ExistingFileHelper exFileHelper, NonNullLazy<List<Block>> blocks) {
-        super(gen, FunctionalStorage.MOD_ID, exFileHelper);
+        super(gen.getPackOutput(), FunctionalStorage.MOD_ID, exFileHelper);
         this.helper = exFileHelper;
         this.blocks = blocks;
     }

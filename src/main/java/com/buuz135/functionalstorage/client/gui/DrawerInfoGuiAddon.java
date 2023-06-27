@@ -7,7 +7,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -46,38 +46,37 @@ public class DrawerInfoGuiAddon extends BasicScreenAddon {
     }
 
     @Override
-    public void drawBackgroundLayer(PoseStack stack, Screen screen, IAssetProvider provider, int guiX, int guiY, int mouseX, int mouseY, float partialTicks) {
-        RenderSystem.setShaderTexture(0, gui);
+    public void drawBackgroundLayer(GuiGraphics guiGraphics, Screen screen, IAssetProvider provider, int guiX, int guiY, int mouseX, int mouseY, float partialTicks) {
         var size = 16 * 2 + 16;
-        Screen.blit(stack, guiX + getPosX(), guiY + getPosY(), 0, 0, size, size, size, size);
+        guiGraphics.blit(gui, guiX + getPosX(), guiY + getPosY(), 0, 0, size, size, size, size);
         for (var i = 0; i < slotAmount; i++) {
             var itemStack = slotStack.apply(i);
             if (!itemStack.isEmpty()) {
                 var x = guiX + slotPosition.apply(i).getLeft() + getPosX();
                 var y = guiY + slotPosition.apply(i).getRight() + getPosY();
-                Minecraft.getInstance().getItemRenderer().renderGuiItem(slotStack.apply(i), x, y);
+                guiGraphics.renderItem(slotStack.apply(i), x, y);
                 var amount = NumberUtils.getFormatedBigNumber(itemStack.getCount()) + "/" + NumberUtils.getFormatedBigNumber(slotMaxAmount.apply(i));
                 var scale = 0.5f;
-                stack.translate(0, 0, 200);
-                stack.scale(scale, scale, scale);
-                Minecraft.getInstance().font.drawShadow(stack, amount, (x + 17 - Minecraft.getInstance().font.width(amount) / 2) * (1 / scale), (y + 12) * (1 / scale), 0xFFFFFF);
-                stack.scale(1 / scale, 1 / scale, 1 / scale);
-                stack.translate(0, 0, -200);
+                //guiGraphics.translate(0, 0, 200);
+                //guiGraphics.scale(scale, scale, scale);
+                guiGraphics.drawString(Minecraft.getInstance().font, amount, (x + 17 - Minecraft.getInstance().font.width(amount) / 2) * (1 / scale), (y + 12) * (1 / scale), 0xFFFFFF, true);
+                //guiGraphics.scale(1 / scale, 1 / scale, 1 / scale);
+                //guiGraphics.translate(0, 0, -200);
             }
         }
     }
 
     @Override
-    public void drawForegroundLayer(PoseStack stack, Screen screen, IAssetProvider provider, int guiX, int guiY, int mouseX, int mouseY, float partialTicks) {
+    public void drawForegroundLayer(GuiGraphics guiGraphics, Screen screen, IAssetProvider provider, int guiX, int guiY, int mouseX, int mouseY, float partialTicks) {
         for (var i = 0; i < slotAmount; i++) {
             var x = slotPosition.apply(i).getLeft() + getPosX() + guiX;
             var y = slotPosition.apply(i).getRight() + getPosY() + guiY;
             if (mouseX > x && mouseX < x + 18 && mouseY > y && mouseY < y + 18) {
                 x = slotPosition.apply(i).getLeft() + getPosX();
                 y = slotPosition.apply(i).getRight() + getPosY();
-                stack.translate(0, 0, 200);
-                GuiComponent.fill(stack, x - 1, y - 1, x + 17, y + 17, -2130706433);
-                stack.translate(0, 0, -200);
+                //guiGraphics.translate(0, 0, 200);
+                guiGraphics.fill( x - 1, y - 1, x + 17, y + 17, -2130706433);
+                //guiGraphics.translate(0, 0, -200);
                 var componentList = new ArrayList<Component>();
                 var over = slotStack.apply(i);
                 if (over.isEmpty()) {
@@ -88,7 +87,7 @@ public class DrawerInfoGuiAddon extends BasicScreenAddon {
                     componentList.add(Component.translatable("gui.functionalstorage.amount").withStyle(ChatFormatting.GOLD).append(Component.literal(amount).withStyle(ChatFormatting.WHITE)));
                 }
                 componentList.add(Component.translatable("gui.functionalstorage.slot").withStyle(ChatFormatting.GOLD).append(Component.literal(i + "").withStyle(ChatFormatting.WHITE)));
-                screen.renderTooltip(stack, componentList, Optional.empty(), mouseX - guiX, mouseY - guiY);
+                guiGraphics.renderTooltip(Minecraft.getInstance().font, componentList, Optional.empty(), mouseX - guiX, mouseY - guiY);
             }
         }
     }

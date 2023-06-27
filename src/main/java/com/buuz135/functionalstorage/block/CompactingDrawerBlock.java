@@ -30,6 +30,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.storage.loot.LootContext;
+import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.BlockHitResult;
@@ -158,7 +159,7 @@ public class CompactingDrawerBlock extends RotatableBlock<CompactingDrawerTile> 
 
 
     @Override
-    public List<ItemStack> getDrops(BlockState p_60537_, LootContext.Builder builder) {
+    public List<ItemStack> getDrops(BlockState p_60537_, LootParams.Builder builder) {
         NonNullList<ItemStack> stacks = NonNullList.create();
         ItemStack stack = new ItemStack(this);
         BlockEntity drawerTile = builder.getOptionalParameter(LootContextParams.BLOCK_ENTITY);

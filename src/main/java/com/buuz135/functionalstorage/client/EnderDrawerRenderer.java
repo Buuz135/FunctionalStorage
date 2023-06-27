@@ -9,14 +9,14 @@ import com.buuz135.functionalstorage.inventory.EnderInventoryHandler;
 import com.buuz135.functionalstorage.item.ConfigurationToolItem;
 import com.buuz135.functionalstorage.world.EnderSavedData;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Vector3f;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.core.Direction;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
+import org.joml.Vector3f;
 
 public class EnderDrawerRenderer implements BlockEntityRenderer<EnderDrawerTile> {
 
@@ -29,11 +29,11 @@ public class EnderDrawerRenderer implements BlockEntityRenderer<EnderDrawerTile>
         
         Direction facing = tile.getFacingDirection();
         matrixStack.mulPoseMatrix(createTransformMatrix(
-        		Vector3f.ZERO, new Vector3f(0, 180, 0), 1));
+        		new Vector3f(0), new Vector3f(0, 180, 0), 1));
         
         if (facing == Direction.NORTH) {
         	matrixStack.mulPoseMatrix(createTransformMatrix(
-        			new Vector3f(-1, 0, 0), Vector3f.ZERO, 1));
+        			new Vector3f(-1, 0, 0), new Vector3f(0), 1));
         }
         else if (facing == Direction.EAST) {
         	matrixStack.mulPoseMatrix(createTransformMatrix(
@@ -65,7 +65,7 @@ public class EnderDrawerRenderer implements BlockEntityRenderer<EnderDrawerTile>
                 if (!stack.isEmpty()){
                     matrixStack.pushPose();
                     matrixStack.scale(scale, scale, scale);
-                    Minecraft.getInstance().getItemRenderer().renderStatic(stack, ItemTransforms.TransformType.NONE, combinedLightIn, combinedOverlayIn, matrixStack, bufferIn, 0);
+                    Minecraft.getInstance().getItemRenderer().renderStatic(stack, ItemDisplayContext.NONE, combinedLightIn, combinedOverlayIn, matrixStack, bufferIn, tile.getLevel(), 0);
                     matrixStack.popPose();
                     matrixStack.translate(scale,0,0);
                 }
@@ -75,8 +75,8 @@ public class EnderDrawerRenderer implements BlockEntityRenderer<EnderDrawerTile>
         if (tile.isVoid()){
             matrixStack.pushPose();            
             matrixStack.mulPoseMatrix(createTransformMatrix(
-            		new Vector3f(.969f, .031f, .469f/16.0f), Vector3f.ZERO, scale));
-            Minecraft.getInstance().getItemRenderer().renderStatic(new ItemStack(FunctionalStorage.VOID_UPGRADE.get()), ItemTransforms.TransformType.NONE, combinedLightIn, combinedOverlayIn, matrixStack, bufferIn, 0);
+            		new Vector3f(.969f, .031f, .469f/16.0f), new Vector3f(0), scale));
+            Minecraft.getInstance().getItemRenderer().renderStatic(new ItemStack(FunctionalStorage.VOID_UPGRADE.get()), ItemDisplayContext.NONE, combinedLightIn, combinedOverlayIn, matrixStack, bufferIn, tile.getLevel(), 0);
             matrixStack.popPose();
         }
     }
@@ -86,7 +86,7 @@ public class EnderDrawerRenderer implements BlockEntityRenderer<EnderDrawerTile>
         if (!inventoryHandler.getStoredStacks().get(0).getStack().isEmpty()){
             matrixStack.translate(0.5, 0.5, 0.0005f);
             ItemStack stack = inventoryHandler.getStoredStacks().get(0).getStack();
-            DrawerRenderer.renderStack(matrixStack,  bufferIn, combinedLightIn, combinedOverlayIn, stack, inventoryHandler.getStoredStacks().get(0).getAmount(), 0.015f, tile.getDrawerOptions());
+            DrawerRenderer.renderStack(matrixStack,  bufferIn, combinedLightIn, combinedOverlayIn, stack, inventoryHandler.getStoredStacks().get(0).getAmount(), 0.015f, tile.getDrawerOptions(), tile.getLevel());
         }
     }
 

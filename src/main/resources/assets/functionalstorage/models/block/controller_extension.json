@@ -1,11 +1,11 @@
 {
 	"credit": "Made with Blockbench",
 	"textures": {
-		"bottom": "functionalstorage:blocks/compacting_drawer_bottom",
-		"front": "functionalstorage:blocks/controller_extension",
-		"particle": "functionalstorage:blocks/compacting_drawer_side",
-		"side": "functionalstorage:blocks/compacting_drawer_side",
-		"top": "functionalstorage:blocks/compacting_drawer_top"
+		"bottom": "functionalstorage:block/compacting_drawer_bottom",
+		"front": "functionalstorage:block/controller_extension",
+		"particle": "functionalstorage:block/compacting_drawer_side",
+		"side": "functionalstorage:block/compacting_drawer_side",
+		"top": "functionalstorage:block/compacting_drawer_top"
 	},
 	"elements": [
 		{
