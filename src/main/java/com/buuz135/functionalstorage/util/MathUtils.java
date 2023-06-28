@@ -8,8 +8,7 @@ import org.joml.Vector3f;
 public class MathUtils
 {
 	public static Matrix4f createTransformMatrix(Vector3f translation, Vector3f eulerDegrees, Vector3f scale) {
-		var q = new Quaternionf();
-		q = q.fromAxisAngleDeg(eulerDegrees, 0);
+		var q = new Quaternionf().rotationXYZ((float) (eulerDegrees.x * (Math.PI / 180f)), (float) (eulerDegrees.y * (Math.PI / 180f)), (float) (eulerDegrees.z * (Math.PI / 180f)));
 		return createTransformMatrix(translation, q, scale);
 	}
 	
@@ -18,15 +17,9 @@ public class MathUtils
 	}
 	
 	public static Matrix4f createTransformMatrix(Vector3f translation, Quaternionf rotation, Vector3f scale) {
-		new Matrix4f();
-		/*
-		Matrix4f transform = Matrix4f.createTranslateMatrix(translation.x(), translation.y(), translation.z());
-		transform.multiply(rotation);
-		Matrix4f scaleMat = Matrix4f.createScaleMatrix(scale.x(), scale.y(), scale.z());
-		transform.multiply(scaleMat);
-		*/
-
-		return new Matrix4f();
+		Matrix4f transform = new Matrix4f();
+		transform.translation(translation).scale(scale).rotate(rotation);
+		return transform;
 	}
 	
 	public static Matrix4f createTransformMatrix(Vector3f translation, Quaternionf rotation, float scale) {

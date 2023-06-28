@@ -8,7 +8,6 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
-import com.mojang.datafixers.util.Pair;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.RenderType;
@@ -32,7 +31,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.client.ChunkRenderTypeSet;
 import net.minecraftforge.client.model.IDynamicBakedModel;
 import net.minecraftforge.client.model.IQuadTransformer;
-import net.minecraftforge.client.model.QuadTransformers;
 import net.minecraftforge.client.model.SimpleModelState;
 import net.minecraftforge.client.model.data.ModelData;
 import net.minecraftforge.client.model.data.ModelProperty;
@@ -49,7 +47,6 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 
 import java.util.*;
-import java.util.List;
 import java.util.function.Function;
 
 import static com.buuz135.functionalstorage.client.loader.FramedModel.Baked.getQuadsUsingShape;
@@ -71,23 +68,16 @@ public class FramedModel implements IUnbakedGeometry<FramedModel> {
         this(children, itemPasses, false);
     }
 
-    private FramedModel(ImmutableMap<String, BlockModel> children, ImmutableList<String> itemPasses, boolean logWarning)
-    {
+    private FramedModel(ImmutableMap<String, BlockModel> children, ImmutableList<String> itemPasses, boolean logWarning) {
         this.children = children;
         this.itemPasses = itemPasses;
         this.logWarning = logWarning;
     }
 
-    /*@Override
-    public Collection<Material> getMaterials(IGeometryBakingContext context, Function<ResourceLocation, UnbakedModel> modelGetter, Set<Pair<String, String>> missingTextureErrors)
-    {
-        Set<Material> textures = new HashSet<>();
-        if (context.hasMaterial("particle"))
-            textures.add(context.getMaterial("particle"));
-        for (BlockModel part : children.values())
-            textures.addAll(part.getMaterials(modelGetter, missingTextureErrors));
-        return textures;
-    }*/
+    @Override
+    public void resolveParents(Function<ResourceLocation, UnbakedModel> modelGetter, IGeometryBakingContext context) {
+        children.values().forEach(child -> child.resolveParents(modelGetter));
+    }
 
     @Override
     public BakedModel bake(IGeometryBakingContext context, ModelBaker bakery, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelState, ItemOverrides overrides, ResourceLocation modelLocation) {
@@ -102,8 +92,7 @@ public class FramedModel implements IUnbakedGeometry<FramedModel> {
             modelState = new SimpleModelState(modelState.getRotation().compose(rootTransform), modelState.isUvLocked());
 
         var bakedPartsBuilder = ImmutableMap.<String, BakedModel>builder();
-        for (var entry : children.entrySet())
-        {
+        for (var entry : children.entrySet()) {
             var name = entry.getKey();
             if (!context.isComponentVisible(name, true))
                 continue;
@@ -113,8 +102,7 @@ public class FramedModel implements IUnbakedGeometry<FramedModel> {
         var bakedParts = bakedPartsBuilder.build();
 
         var itemPassesBuilder = ImmutableList.<BakedModel>builder();
-        for (String name : this.itemPasses)
-        {
+        for (String name : this.itemPasses) {
             var model = bakedParts.get(name);
             if (model == null)
                 throw new IllegalStateException("Specified \"" + name + "\" in \"item_render_order\", but that is not a child of this model.");
@@ -265,8 +253,8 @@ public class FramedModel implements IUnbakedGeometry<FramedModel> {
 
                 for (int i = 0; i < 4; i++) {
                     float[] uv0 = unpackVertices(copied.getVertices(), i, IQuadTransformer.UV0, 2);
-                    uv0[0] = (uv0[0] - toCopy.getSprite().getU0()) * modelData.get(j).getLeft().getX() / toCopy.getSprite().getX() + modelData.get(j).getLeft().getU0();
-                    uv0[1] = (uv0[1] - toCopy.getSprite().getV0()) * modelData.get(j).getLeft().getY() / toCopy.getSprite().getY() + modelData.get(j).getLeft().getV0();
+                    uv0[0] = (uv0[0] - toCopy.getSprite().getU0()) * toCopy.getSprite().contents().width() / toCopy.getSprite().contents().width() + modelData.get(j).getLeft().getU0();
+                    uv0[1] = (uv0[1] - toCopy.getSprite().getV0()) * toCopy.getSprite().contents().height() / toCopy.getSprite().contents().height() + modelData.get(j).getLeft().getV0();
                     int[] packedTextureData = packUV(uv0[0], uv0[1]);
                     copied.getVertices()[IQuadTransformer.UV0 + i * IQuadTransformer.STRIDE] = packedTextureData[0];
                     copied.getVertices()[IQuadTransformer.UV0 + 1 + i * IQuadTransformer.STRIDE] = packedTextureData[1];

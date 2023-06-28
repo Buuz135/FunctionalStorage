@@ -3,8 +3,6 @@ package com.buuz135.functionalstorage.client.gui;
 import com.buuz135.functionalstorage.util.NumberUtils;
 import com.hrznstudio.titanium.client.screen.addon.BasicScreenAddon;
 import com.hrznstudio.titanium.client.screen.asset.IAssetProvider;
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -57,11 +55,11 @@ public class DrawerInfoGuiAddon extends BasicScreenAddon {
                 guiGraphics.renderItem(slotStack.apply(i), x, y);
                 var amount = NumberUtils.getFormatedBigNumber(itemStack.getCount()) + "/" + NumberUtils.getFormatedBigNumber(slotMaxAmount.apply(i));
                 var scale = 0.5f;
-                //guiGraphics.translate(0, 0, 200);
-                //guiGraphics.scale(scale, scale, scale);
+                guiGraphics.pose().translate(0, 0, 200);
+                guiGraphics.pose().scale(scale, scale, scale);
                 guiGraphics.drawString(Minecraft.getInstance().font, amount, (x + 17 - Minecraft.getInstance().font.width(amount) / 2) * (1 / scale), (y + 12) * (1 / scale), 0xFFFFFF, true);
-                //guiGraphics.scale(1 / scale, 1 / scale, 1 / scale);
-                //guiGraphics.translate(0, 0, -200);
+                guiGraphics.pose().scale(1 / scale, 1 / scale, 1 / scale);
+                guiGraphics.pose().translate(0, 0, -200);
             }
         }
     }
@@ -74,9 +72,9 @@ public class DrawerInfoGuiAddon extends BasicScreenAddon {
             if (mouseX > x && mouseX < x + 18 && mouseY > y && mouseY < y + 18) {
                 x = slotPosition.apply(i).getLeft() + getPosX();
                 y = slotPosition.apply(i).getRight() + getPosY();
-                //guiGraphics.translate(0, 0, 200);
-                guiGraphics.fill( x - 1, y - 1, x + 17, y + 17, -2130706433);
-                //guiGraphics.translate(0, 0, -200);
+                guiGraphics.pose().translate(0, 0, 200);
+                guiGraphics.fill(x - 1, y - 1, x + 17, y + 17, -2130706433);
+                guiGraphics.pose().translate(0, 0, -200);
                 var componentList = new ArrayList<Component>();
                 var over = slotStack.apply(i);
                 if (over.isEmpty()) {
