@@ -113,7 +113,7 @@ public class CompactingDrawerTile extends ItemControllableDrawerTile<CompactingD
             compactingUtil.setup(stack);
             handler.setup(compactingUtil);
             for (int i = 0; i < handler.getResultList().size(); i++) {
-                if (ItemStack.matches(handler.getResultList().get(i).getResult(), stack)){
+                if (ItemStack.isSameItem(handler.getResultList().get(i).getResult(), stack)) {
                     slot = i;
                     break;
                 }

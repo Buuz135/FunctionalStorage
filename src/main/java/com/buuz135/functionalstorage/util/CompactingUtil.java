@@ -90,7 +90,7 @@ public class CompactingUtil {
                 container = createContainerAndFill(1, output);
                 List<ItemStack> reversed = findAllMatchingRecipes(container);
                 for (ItemStack reversedStack : reversed) {
-                    if (reversedStack.getCount() != sizeCheck || !ItemStack.matches(reversedStack, stack)){
+                    if (reversedStack.getCount() != sizeCheck || !ItemStack.isSameItem(reversedStack, stack)) {
                         continue;
                     }
                     realOutputs.add(output);
@@ -113,7 +113,7 @@ public class CompactingUtil {
         Map<ItemStack, Integer> candidatesRate = new HashMap<>();
         for (CraftingRecipe craftingRecipe : level.getRecipeManager().getAllRecipesFor(RecipeType.CRAFTING)) {
             ItemStack output = craftingRecipe.getResultItem(this.level.registryAccess());
-            if (!ItemStack.matches(stack, output)) continue;
+            if (!ItemStack.isSameItem(stack, output)) continue;
             ItemStack match = tryMatch(stack, craftingRecipe.getIngredients());
             if (!match.isEmpty()){
                 int recipeSize = craftingRecipe.getIngredients().size();
@@ -124,7 +124,7 @@ public class CompactingUtil {
                 CraftingContainer container = createContainerAndFill(1, output);
                 List<ItemStack> matchStacks = findAllMatchingRecipes(container);
                 for (ItemStack matchStack : matchStacks) {
-                    if (ItemStack.matches(match, matchStack) && matchStack.getCount() == recipeSize){
+                    if (ItemStack.isSameItem(match, matchStack) && matchStack.getCount() == recipeSize) {
                         candidates.add(match);
                         candidatesRate.put(match, recipeSize);
                         break;
@@ -204,7 +204,7 @@ public class CompactingUtil {
         CraftingContainer inventoryCrafting = new TransientCraftingContainer(new AbstractContainerMenu(null, 0) {
             @Override
             public ItemStack quickMoveStack(Player p_38941_, int p_38942_) {
-                return null;
+                return ItemStack.EMPTY;
             }
 
             @Override
