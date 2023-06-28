@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "bonus_rolls": 0.0,
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
+      ],
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "functionalstorage:framed_controller_extension"
+        }
+      ],
+      "rolls": 1.0
+    }
+  ],
+  "random_sequence": "functionalstorage:blocks/framed_controller_extension"
+}
