@@ -1,4 +1,4 @@
-// 1.20.1	2023-06-27T22:41:46.5054952	Recipes
+// 1.20.1	2023-06-28T14:47:10.8736611	Recipes
 c4487c2009b27c499e810f3097d3213212dcacfd data/functionalstorage/advancements/recipes/misc/netherite_upgrade.json
 69b434b12c87949feb9ef15335611c6dd83089c6 data/functionalstorage/recipes/acacia_1.json
 c3f04e49ddf3b0bb66802b78df289758a6a7e100 data/functionalstorage/recipes/acacia_2.json
@@ -41,7 +41,7 @@ ad874a5d12d64a12e88d57b02193178341de722c data/functionalstorage/recipes/jungle_1
 de695200bf3892214c18d8c8dcce6b1203837b13 data/functionalstorage/recipes/mangrove_1.json
 81ba6073ed47d6659b0d7c6152ca89939119a090 data/functionalstorage/recipes/mangrove_2.json
 75c4958854b7b739017a753094e096b733afb6b0 data/functionalstorage/recipes/mangrove_4.json
-871ce0cb28e6a852fbf13074ecf7ffb1b9435bd3 data/functionalstorage/recipes/netherite_upgrade.json
+263afed3953c17b4a3940302e788b36b9fbe76eb data/functionalstorage/recipes/netherite_upgrade.json
 56a4bb31e934fa7ad3aa60bdded1144743959a02 data/functionalstorage/recipes/oak_1.json
 a685ca7980412cefff9e0d6219857b56210bed10 data/functionalstorage/recipes/oak_2.json
 67aa8ac1ba957a5f62c70daabaa4bec8f9e6f612 data/functionalstorage/recipes/oak_4.json

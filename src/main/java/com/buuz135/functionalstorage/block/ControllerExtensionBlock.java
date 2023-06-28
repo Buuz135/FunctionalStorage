@@ -3,12 +3,15 @@ package com.buuz135.functionalstorage.block;
 import com.buuz135.functionalstorage.FunctionalStorage;
 import com.buuz135.functionalstorage.block.tile.ControllerExtensionTile;
 import com.buuz135.functionalstorage.util.StorageTags;
+import com.hrznstudio.titanium.datagenerator.loot.block.BasicBlockLootTables;
 import com.hrznstudio.titanium.recipe.generator.TitaniumShapedRecipeBuilder;
 import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraftforge.common.Tags;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Consumer;
 
@@ -33,4 +36,10 @@ public class ControllerExtensionBlock extends StorageControllerExtensionBlock<Co
                 .define('D', Items.REPEATER)
                 .save(consumer);
     }
+
+    @Override
+    public LootTable.Builder getLootTable(@NotNull BasicBlockLootTables blockLootTables) {
+        return blockLootTables.droppingSelf(this);
+    }
+
 }
