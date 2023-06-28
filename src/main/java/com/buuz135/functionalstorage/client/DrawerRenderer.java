@@ -13,7 +13,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.Direction;
@@ -23,7 +22,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import org.joml.Vector3f;
 
-import static com.buuz135.functionalstorage.util.MathUtils.*;
+import static com.buuz135.functionalstorage.util.MathUtils.createTransformMatrix;
 
 public class DrawerRenderer implements BlockEntityRenderer<DrawerTile> {
 	
@@ -102,8 +101,7 @@ public class DrawerRenderer implements BlockEntityRenderer<DrawerTile> {
         BigInventoryHandler inventoryHandler = (BigInventoryHandler) tile.getStorage();
         if (!inventoryHandler.getStoredStacks().get(0).getStack().isEmpty()){
             matrixStack.pushPose();
-            matrixStack.mulPoseMatrix(createTransformMatrix(
-            		new Vector3f(0.5f, 0.27f, 0.0005f), new Vector3f(0), new Vector3f(.5f, .5f, 1.0f)));
+            matrixStack.mulPoseMatrix(createTransformMatrix(new Vector3f(0.5f, 0.27f, 0.0005f), new Vector3f(0), new Vector3f(.5f, .5f, 1.0f)));
             ItemStack stack = inventoryHandler.getStoredStacks().get(0).getStack();
             renderStack(matrixStack, bufferIn, combinedLightIn, combinedOverlayIn, stack, inventoryHandler.getStackInSlot(0).getCount(), 0.02f, tile.getDrawerOptions(), tile.getLevel());
             matrixStack.popPose();

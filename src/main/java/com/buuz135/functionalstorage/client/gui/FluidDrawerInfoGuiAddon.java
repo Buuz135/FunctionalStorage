@@ -107,11 +107,11 @@ public class FluidDrawerInfoGuiAddon extends BasicScreenAddon {
                 var y = guiY + slotPosition.apply(i).getRight() + getPosY();
                 var amount = NumberUtils.getFormatedFluidBigNumber(fluidStack.getAmount()) + "/" + NumberUtils.getFormatedFluidBigNumber(slotMaxAmount.apply(i));
                 var scale = 0.5f;
-                //guiGraphics.translate(0, 0, 200);
-                //guiGraphics.scale(scale, scale, scale);
+                guiGraphics.pose().translate(0, 0, 200);
+                guiGraphics.pose().scale(scale, scale, scale);
                 guiGraphics.drawString(Minecraft.getInstance().font, amount, (x + 17 - Minecraft.getInstance().font.width(amount) / 2) * (1 / scale), (y + 12) * (1 / scale), 0xFFFFFF, true);
-                //guiGraphics.scale(1 / scale, 1 / scale, 1 / scale);
-                //guiGraphics.translate(0, 0, -200);
+                guiGraphics.pose().scale(1 / scale, 1 / scale, 1 / scale);
+                guiGraphics.pose().translate(0, 0, -200);
             }
         }
     }
@@ -125,9 +125,9 @@ public class FluidDrawerInfoGuiAddon extends BasicScreenAddon {
             if (mouseX > x && mouseX < x + rect.getWidth() && mouseY > y && mouseY < y + rect.getHeight()) {
                 x = getPosX() + rect.getX();
                 y = getPosY() + rect.getY();
-                //stack.translate(0, 0, 200);
+                guiGraphics.pose().translate(0, 0, 200);
                 guiGraphics.fill(x, y, x + rect.getWidth(), y + rect.getHeight(), -2130706433);
-                //stack.translate(0, 0, -200);
+                guiGraphics.pose().translate(0, 0, -200);
                 var componentList = new ArrayList<Component>();
                 var over = fluidHandlerSupplier.get().getFluidInTank(i);
                 if (over.isEmpty()) {
