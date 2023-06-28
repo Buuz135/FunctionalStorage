@@ -98,7 +98,7 @@ dependencies {
     compileOnly fg.deobf("mezz.jei:jei-1.20.1-forge-api:15.1.0.19")
     // at runtime, use the full JEI jar for Forge
     runtimeOnly fg.deobf("mezz.jei:jei-1.20.1-forge:15.1.0.19")
-    implementation fg.deobf("curse.maven:the-one-probe-245211:4579432")
+    implementation fg.deobf("curse.maven:the-one-probe-245211:4613250")
     //-runtimeOnly fg.deobf("curse.maven:refined-storage-243076:3712882")
     //-implementation fg.deobf("curse.maven:the-one-probe-245211:3671753")
     //implementation fg.deobf("curse.maven:allthecompressed-514045:3723881")

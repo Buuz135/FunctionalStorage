@@ -27,7 +27,7 @@ import com.hrznstudio.titanium.nbthandler.NBTManager;
 import com.hrznstudio.titanium.network.NetworkHandler;
 import com.hrznstudio.titanium.recipe.generator.TitaniumRecipeProvider;
 import com.hrznstudio.titanium.recipe.generator.TitaniumShapedRecipeBuilder;
-import com.hrznstudio.titanium.tab.AdvancedTitaniumTab;
+import com.hrznstudio.titanium.tab.TitaniumTab;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.data.recipes.FinishedRecipe;
@@ -119,7 +119,7 @@ public class FunctionalStorage extends ModuleController {
     public static RegistryObject<Item> REDSTONE_UPGRADE;
     public static RegistryObject<Item> CREATIVE_UPGRADE;
 
-    public static AdvancedTitaniumTab TAB = new AdvancedTitaniumTab("functionalstorage", true);
+    public static TitaniumTab TAB = new TitaniumTab(new ResourceLocation(MOD_ID, "main"));
 
     public FunctionalStorage() {
         ForgeMod.enableMilkFluid();
@@ -174,35 +174,36 @@ public class FunctionalStorage extends ModuleController {
                 var name = woodType.getName() + "_" + value.getSlots();
                 if (woodType == DrawerWoodType.FRAMED){
                     var pair = getRegistries().registerBlockWithTileItem(name, () -> new FramedDrawerBlock(value), blockRegistryObject -> () ->
-                            new DrawerBlock.DrawerItem((DrawerBlock) blockRegistryObject.get(), new Item.Properties()));
+                            new DrawerBlock.DrawerItem((DrawerBlock) blockRegistryObject.get(), new Item.Properties(), TAB));
                     DRAWER_TYPES.computeIfAbsent(value, drawerType -> new ArrayList<>()).add(pair);
                     CompactingFramedDrawerBlock.FRAMED.add(pair.getLeft());
                 } else {
                     DRAWER_TYPES.computeIfAbsent(value, drawerType -> new ArrayList<>()).add(getRegistries().registerBlockWithTileItem(name, () -> new DrawerBlock(woodType, value, BlockBehaviour.Properties.copy(woodType.getPlanks())), blockRegistryObject -> () ->
-                            new DrawerBlock.DrawerItem((DrawerBlock) blockRegistryObject.get(), new Item.Properties())));
+                            new DrawerBlock.DrawerItem((DrawerBlock) blockRegistryObject.get(), new Item.Properties(), TAB)));
                 }
             }
-            DRAWER_TYPES.get(value).forEach(blockRegistryObject -> TAB.addIconStacks(() -> new ItemStack(blockRegistryObject.getLeft().get())));
         }
-        COMPACTING_DRAWER = getRegistries().registerBlockWithTile("compacting_drawer", () -> new CompactingDrawerBlock("compacting_drawer", BlockBehaviour.Properties.copy(Blocks.STONE_BRICKS)));
-        FRAMED_COMPACTING_DRAWER = getRegistries().registerBlockWithTile("compacting_framed_drawer", () -> new CompactingFramedDrawerBlock("compacting_framed_drawer"));
-        FLUID_DRAWER_1 = getRegistries().registerBlockWithTile("fluid_1", () -> new FluidDrawerBlock(DrawerType.X_1, BlockBehaviour.Properties.copy(Blocks.STONE_BRICKS)));
-        FLUID_DRAWER_2 = getRegistries().registerBlockWithTile("fluid_2", () -> new FluidDrawerBlock(DrawerType.X_2, BlockBehaviour.Properties.copy(Blocks.STONE_BRICKS)));
-        FLUID_DRAWER_4 = getRegistries().registerBlockWithTile("fluid_4", () -> new FluidDrawerBlock(DrawerType.X_4, BlockBehaviour.Properties.copy(Blocks.STONE_BRICKS)));
-        DRAWER_CONTROLLER = getRegistries().registerBlockWithTile("storage_controller", DrawerControllerBlock::new);
-        CONTROLLER_EXTENSION = getRegistries().registerBlockWithTile("controller_extension", ControllerExtensionBlock::new);
+        FLUID_DRAWER_1 = getRegistries().registerBlockWithTile("fluid_1", () -> new FluidDrawerBlock(DrawerType.X_1, BlockBehaviour.Properties.copy(Blocks.STONE_BRICKS)), TAB);
+        FLUID_DRAWER_2 = getRegistries().registerBlockWithTile("fluid_2", () -> new FluidDrawerBlock(DrawerType.X_2, BlockBehaviour.Properties.copy(Blocks.STONE_BRICKS)), TAB);
+        FLUID_DRAWER_4 = getRegistries().registerBlockWithTile("fluid_4", () -> new FluidDrawerBlock(DrawerType.X_4, BlockBehaviour.Properties.copy(Blocks.STONE_BRICKS)), TAB);
+        COMPACTING_DRAWER = getRegistries().registerBlockWithTile("compacting_drawer", () -> new CompactingDrawerBlock("compacting_drawer", BlockBehaviour.Properties.copy(Blocks.STONE_BRICKS)), TAB);
+        FRAMED_COMPACTING_DRAWER = getRegistries().registerBlockWithTile("compacting_framed_drawer", () -> new CompactingFramedDrawerBlock("compacting_framed_drawer"), TAB);
+        SIMPLE_COMPACTING_DRAWER = getRegistries().registerBlockWithTile("simple_compacting_drawer", () -> new SimpleCompactingDrawerBlock("simple_compacting_drawer", BlockBehaviour.Properties.copy(Blocks.STONE_BRICKS)), TAB);
+        DRAWER_CONTROLLER = getRegistries().registerBlockWithTile("storage_controller", DrawerControllerBlock::new, TAB);
+        FRAMED_DRAWER_CONTROLLER = getRegistries().registerBlockWithTile("framed_storage_controller", FramedDrawerControllerBlock::new, TAB);
+        CONTROLLER_EXTENSION = getRegistries().registerBlockWithTile("controller_extension", ControllerExtensionBlock::new, TAB);
+        FRAMED_CONTROLLER_EXTENSION = getRegistries().registerBlockWithTile("framed_controller_extension", FramedControllerExtensionBlock::new, TAB);
         LINKING_TOOL = getRegistries().registerGeneric(ForgeRegistries.ITEMS.getRegistryKey(), "linking_tool", LinkingToolItem::new);
+        CONFIGURATION_TOOL = getRegistries().registerGeneric(ForgeRegistries.ITEMS.getRegistryKey(), "configuration_tool", ConfigurationToolItem::new);
         for (StorageUpgradeItem.StorageTier value : StorageUpgradeItem.StorageTier.values()) {
             STORAGE_UPGRADES.put(value, getRegistries().registerGeneric(ForgeRegistries.ITEMS.getRegistryKey(), value.name().toLowerCase(Locale.ROOT) + (value == StorageUpgradeItem.StorageTier.IRON ? "_downgrade" : "_upgrade"), () -> new StorageUpgradeItem(value)));
         }
-        SIMPLE_COMPACTING_DRAWER = getRegistries().registerBlockWithTile("simple_compacting_drawer", () -> new SimpleCompactingDrawerBlock("simple_compacting_drawer", BlockBehaviour.Properties.copy(Blocks.STONE_BRICKS)));
         COLLECTOR_UPGRADE = getRegistries().registerGeneric(ForgeRegistries.ITEMS.getRegistryKey(), "collector_upgrade", () -> new UpgradeItem(new Item.Properties(), UpgradeItem.Type.UTILITY));
         PULLING_UPGRADE = getRegistries().registerGeneric(ForgeRegistries.ITEMS.getRegistryKey(), "puller_upgrade", () -> new UpgradeItem(new Item.Properties(), UpgradeItem.Type.UTILITY));
         PUSHING_UPGRADE = getRegistries().registerGeneric(ForgeRegistries.ITEMS.getRegistryKey(), "pusher_upgrade", () -> new UpgradeItem(new Item.Properties(), UpgradeItem.Type.UTILITY));
         VOID_UPGRADE = getRegistries().registerGeneric(ForgeRegistries.ITEMS.getRegistryKey(), "void_upgrade", () -> new UpgradeItem(new Item.Properties(), UpgradeItem.Type.UTILITY));
-        ARMORY_CABINET = getRegistries().registerBlockWithTile("armory_cabinet", ArmoryCabinetBlock::new);
-        CONFIGURATION_TOOL = getRegistries().registerGeneric(ForgeRegistries.ITEMS.getRegistryKey(), "configuration_tool", ConfigurationToolItem::new);
-        ENDER_DRAWER = getRegistries().registerBlockWithTile("ender_drawer", EnderDrawerBlock::new);
+        ARMORY_CABINET = getRegistries().registerBlockWithTile("armory_cabinet", ArmoryCabinetBlock::new, TAB);
+        ENDER_DRAWER = getRegistries().registerBlockWithTile("ender_drawer", EnderDrawerBlock::new, TAB);
         REDSTONE_UPGRADE = getRegistries().registerGeneric(ForgeRegistries.ITEMS.getRegistryKey(), "redstone_upgrade", () -> new UpgradeItem(new Item.Properties(), UpgradeItem.Type.UTILITY));
         CREATIVE_UPGRADE = getRegistries().registerGeneric(ForgeRegistries.ITEMS.getRegistryKey(), "creative_vending_upgrade", () -> new UpgradeItem(new Item.Properties(), UpgradeItem.Type.STORAGE) {
             @Override
@@ -211,10 +212,10 @@ public class FunctionalStorage extends ModuleController {
             }
         });
 
-        FRAMED_DRAWER_CONTROLLER = getRegistries().registerBlockWithTile("framed_storage_controller", FramedDrawerControllerBlock::new);
-        FRAMED_CONTROLLER_EXTENSION = getRegistries().registerBlockWithTile("framed_controller_extension", FramedControllerExtensionBlock::new);
 
         getRegistries().registerGeneric(ForgeRegistries.RECIPE_SERIALIZERS.getRegistryKey(), "framed_recipe", () -> FramedDrawerRecipe.SERIALIZER);
+
+        this.addCreativeTab("main", () -> new ItemStack(DRAWER_CONTROLLER.getLeft().get()), MOD_ID, TAB);
     }
 
     public enum DrawerType {

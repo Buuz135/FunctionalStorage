@@ -11,6 +11,7 @@ import com.google.common.collect.MultimapBuilder;
 import com.hrznstudio.titanium.block.RotatableBlock;
 import com.hrznstudio.titanium.datagenerator.loot.block.BasicBlockLootTables;
 import com.hrznstudio.titanium.recipe.generator.TitaniumShapedRecipeBuilder;
+import com.hrznstudio.titanium.tab.TitaniumTab;
 import com.hrznstudio.titanium.util.RayTraceUtils;
 import com.hrznstudio.titanium.util.TileUtil;
 import net.minecraft.ChatFormatting;
@@ -368,9 +369,10 @@ public class DrawerBlock extends RotatableBlock<DrawerTile> {
     public static class DrawerItem extends BlockItem{
 
         private DrawerBlock drawerBlock;
-        public DrawerItem(DrawerBlock p_40565_, Properties p_40566_) {
+        public DrawerItem(DrawerBlock p_40565_, Properties p_40566_, TitaniumTab tab) {
             super(p_40565_, p_40566_);
             this.drawerBlock = p_40565_;
+            tab.getTabList().add(this);
         }
 
         @Override
