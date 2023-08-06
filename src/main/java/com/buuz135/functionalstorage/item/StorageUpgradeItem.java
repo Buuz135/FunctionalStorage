@@ -59,11 +59,11 @@ public class StorageUpgradeItem extends UpgradeItem{
     }
 
     public static enum StorageTier {
-        COPPER(8, Mth.color(204, 109, 81)),
-        GOLD(16, Mth.color(233, 177, 21)),
-        DIAMOND(24, Mth.color(32, 197, 181)),
+        COPPER(8, Mth.color(204/255f, 109/255f, 81/255f)),
+        GOLD(16, Mth.color(233/255f, 177/255f, 21/255f)),
+        DIAMOND(24, Mth.color(32/255f, 197/255f, 181/255f)),
         NETHERITE(32, Mth.color(49, 41, 42)),
-        IRON(1, Mth.color(130, 130, 130));
+        IRON(1, Mth.color(130/255f, 130/255f, 130/255f));
 
         private final int storageMultiplier;
         private final int color;
