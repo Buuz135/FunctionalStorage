@@ -1,6 +1,7 @@
 package com.buuz135.functionalstorage.block.tile;
 
 import com.buuz135.functionalstorage.FunctionalStorage;
+import com.buuz135.functionalstorage.block.config.FunctionalStorageConfig;
 import com.buuz135.functionalstorage.item.StorageUpgradeItem;
 import com.buuz135.functionalstorage.item.UpgradeItem;
 import com.hrznstudio.titanium.block.BasicTileBlock;
@@ -50,7 +51,7 @@ public abstract class ItemControllableDrawerTile<T extends ItemControllableDrawe
     @Override
     public void serverTick(Level level, BlockPos pos, BlockState state, T blockEntity) {
         super.serverTick(level, pos, state, blockEntity);
-        if (level.getGameTime() % 4 == 0) {
+        if (level.getGameTime() % FunctionalStorageConfig.UPGRADE_TICK == 0) {
             for (int i = 0; i < this.getUtilityUpgrades().getSlots(); i++) {
                 ItemStack stack = this.getUtilityUpgrades().getStackInSlot(i);
                 if (!stack.isEmpty()) {
@@ -60,7 +61,7 @@ public abstract class ItemControllableDrawerTile<T extends ItemControllableDrawe
                         TileUtil.getTileEntity(level, pos.relative(direction)).ifPresent(blockEntity1 -> {
                             blockEntity1.getCapability(ForgeCapabilities.ITEM_HANDLER, direction.getOpposite()).ifPresent(iItemHandler -> {
                                 for (int otherSlot = 0; otherSlot < iItemHandler.getSlots(); otherSlot++) {
-                                    ItemStack pulledStack = iItemHandler.extractItem(otherSlot, 2, true);
+                                    ItemStack pulledStack = iItemHandler.extractItem(otherSlot, FunctionalStorageConfig.UPGRADE_PULL_ITEMS, true);
                                     if (pulledStack.isEmpty()) continue;
                                     boolean hasWorked = false;
                                     for (int ourSlot = 0; ourSlot < this.getStorage().getSlots(); ourSlot++) {
@@ -82,7 +83,7 @@ public abstract class ItemControllableDrawerTile<T extends ItemControllableDrawe
                         TileUtil.getTileEntity(level, pos.relative(direction)).ifPresent(blockEntity1 -> {
                             blockEntity1.getCapability(ForgeCapabilities.ITEM_HANDLER, direction.getOpposite()).ifPresent(otherHandler -> {
                                 for (int otherSlot = 0; otherSlot < getStorage().getSlots(); otherSlot++) {
-                                    ItemStack pulledStack = getStorage().extractItem(otherSlot, 2, true);
+                                    ItemStack pulledStack = getStorage().extractItem(otherSlot, FunctionalStorageConfig.UPGRADE_PUSH_ITEMS, true);
                                     if (pulledStack.isEmpty()) continue;
                                     boolean hasWorked = false;
                                     for (int ourSlot = 0; ourSlot < otherHandler.getSlots(); ourSlot++) {
@@ -102,7 +103,7 @@ public abstract class ItemControllableDrawerTile<T extends ItemControllableDrawe
                         Direction direction = UpgradeItem.getDirection(stack);
                         AABB box = new AABB(pos.relative(direction));
                         for (ItemEntity entitiesOfClass : level.getEntitiesOfClass(ItemEntity.class, box)) {
-                            ItemStack pulledStack = ItemHandlerHelper.copyStackWithSize(entitiesOfClass.getItem(), Math.min(entitiesOfClass.getItem().getCount(), 4));
+                            ItemStack pulledStack = ItemHandlerHelper.copyStackWithSize(entitiesOfClass.getItem(), Math.min(entitiesOfClass.getItem().getCount(), FunctionalStorageConfig.UPGRADE_COLLECTOR_ITEMS));
                             if (pulledStack.isEmpty()) continue;
                             boolean hasWorked = false;
                             for (int ourSlot = 0; ourSlot < this.getStorage().getSlots(); ourSlot++) {

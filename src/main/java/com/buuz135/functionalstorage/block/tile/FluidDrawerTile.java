@@ -1,6 +1,7 @@
 package com.buuz135.functionalstorage.block.tile;
 
 import com.buuz135.functionalstorage.FunctionalStorage;
+import com.buuz135.functionalstorage.block.config.FunctionalStorageConfig;
 import com.buuz135.functionalstorage.client.gui.FluidDrawerInfoGuiAddon;
 import com.buuz135.functionalstorage.fluid.BigFluidHandler;
 import com.buuz135.functionalstorage.item.StorageUpgradeItem;
@@ -118,7 +119,7 @@ public class FluidDrawerTile extends ControllableDrawerTile<FluidDrawerTile> {
     @Override
     public void serverTick(Level level, BlockPos pos, BlockState stateOwn, FluidDrawerTile blockEntity) {
         super.serverTick(level, pos, stateOwn, blockEntity);
-        if (level.getGameTime() % 4 == 0) {
+        if (level.getGameTime() % FunctionalStorageConfig.UPGRADE_TICK == 0) {
             for (int i = 0; i < this.getUtilityUpgrades().getSlots(); i++) {
                 var stack = this.getUtilityUpgrades().getStackInSlot(i);
                 if (!stack.isEmpty()) {
@@ -130,7 +131,7 @@ public class FluidDrawerTile extends ControllableDrawerTile<FluidDrawerTile> {
                                 for (int tankId = 0; tankId < this.getFluidHandler().getTanks(); tankId++) {
                                     var fluidTank = this.fluidHandler.getTankList()[tankId];
                                     if (fluidTank.getFluid().isEmpty()) continue;
-                                    var extracted = fluidTank.drain(500, IFluidHandler.FluidAction.SIMULATE);
+                                    var extracted = fluidTank.drain(FunctionalStorageConfig.UPGRADE_PUSH_FLUID, IFluidHandler.FluidAction.SIMULATE);
                                     if (extracted.isEmpty()) continue;
                                     var insertedAmount = otherFluidHandler.fill(extracted, IFluidHandler.FluidAction.EXECUTE);
                                     if (insertedAmount > 0) {
@@ -148,7 +149,7 @@ public class FluidDrawerTile extends ControllableDrawerTile<FluidDrawerTile> {
                             blockEntity1.getCapability(ForgeCapabilities.FLUID_HANDLER, direction.getOpposite()).ifPresent(otherFluidHandler -> {
                                 for (int tankId = 0; tankId < this.getFluidHandler().getTanks(); tankId++) {
                                     var fluidTank = this.fluidHandler.getTankList()[tankId];
-                                    var extracted = otherFluidHandler.drain(500, IFluidHandler.FluidAction.SIMULATE);
+                                    var extracted = otherFluidHandler.drain(FunctionalStorageConfig.UPGRADE_PULL_FLUID, IFluidHandler.FluidAction.SIMULATE);
                                     if (extracted.isEmpty()) continue;
                                     var insertedAmount = fluidTank.fill(extracted, IFluidHandler.FluidAction.EXECUTE);
                                     if (insertedAmount > 0) {
@@ -160,7 +161,7 @@ public class FluidDrawerTile extends ControllableDrawerTile<FluidDrawerTile> {
                             });
                         });
                     }
-                    if (item.equals(FunctionalStorage.COLLECTOR_UPGRADE.get()) && level.getGameTime() % 20 == 0) {
+                    if (item.equals(FunctionalStorage.COLLECTOR_UPGRADE.get()) && level.getGameTime() % (FunctionalStorageConfig.UPGRADE_TICK * 3) == 0) {
                         var direction = UpgradeItem.getDirection(stack);
                         var fluidstate = this.level.getFluidState(this.getBlockPos().relative(direction));
                         if (!fluidstate.isEmpty() && fluidstate.isSource()) {
