@@ -9,7 +9,10 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.*;
+import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderStateShard;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -19,7 +22,6 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
@@ -84,9 +86,11 @@ public class ControllerRenderer implements BlockEntityRenderer<StorageController
                     return;
                 }
             }
-            VoxelShape shape = Shapes.create(new AABB(tile.getBlockPos()));
-            for (Long connectedDrawer : tile.getConnectedDrawers().getConnectedDrawers()) {
-                shape = Shapes.join(shape, Shapes.create(new AABB(BlockPos.of(connectedDrawer))), BooleanOp.OR);
+            VoxelShape shape = tile.getConnectedDrawers().getCachedVoxelShape();
+            if (shape == null || tile.getLevel().getGameTime() % 400 == 0) {
+                tile.getConnectedDrawers().rebuildShapes();
+                ;
+                shape = tile.getConnectedDrawers().getCachedVoxelShape();
             }
             //LevelRenderer.renderVoxelShape(matrixStack, bufferIn.getBuffer(TYPE), shape, -tile.getBlockPos().getX(), -tile.getBlockPos().getY(), -tile.getBlockPos().getZ(), 1f, 1f, 1f, 1f);
             List<AABB> list = shape.toAabbs();

@@ -1,10 +1,17 @@
 package com.buuz135.functionalstorage.util;
 
-import com.buuz135.functionalstorage.block.tile.*;
+import com.buuz135.functionalstorage.block.tile.FluidDrawerTile;
+import com.buuz135.functionalstorage.block.tile.ItemControllableDrawerTile;
+import com.buuz135.functionalstorage.block.tile.StorageControllerExtensionTile;
+import com.buuz135.functionalstorage.block.tile.StorageControllerTile;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.shapes.BooleanOp;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.items.IItemHandler;
@@ -21,6 +28,7 @@ public class ConnectedDrawers implements INBTSerializable<CompoundTag> {
     private List<IFluidHandler> fluidHandlers;
     private Level level;
     private int extensions;
+    private VoxelShape cachedVoxelShape;
 
     public ConnectedDrawers(Level level, StorageControllerTile controllerTile) {
         this.controllerTile = controllerTile;
@@ -30,6 +38,8 @@ public class ConnectedDrawers implements INBTSerializable<CompoundTag> {
         this.fluidHandlers = new ArrayList<>();
         this.level = level;
         this.extensions = 0;
+
+        this.cachedVoxelShape = null;
     }
 
     public void setLevel(Level level) {
@@ -62,6 +72,13 @@ public class ConnectedDrawers implements INBTSerializable<CompoundTag> {
         this.controllerTile.fluidHandler.invalidateSlots();
     }
 
+    public void rebuildShapes() {
+        this.cachedVoxelShape = Shapes.create(new AABB(controllerTile.getBlockPos()));
+        for (Long connectedDrawer : this.connectedDrawers) {
+            this.cachedVoxelShape = Shapes.join(this.cachedVoxelShape, Shapes.create(new AABB(BlockPos.of(connectedDrawer))), BooleanOp.OR);
+        }
+    }
+
     @Override
     public CompoundTag serializeNBT() {
         CompoundTag compoundTag = new CompoundTag();
@@ -78,6 +95,9 @@ public class ConnectedDrawers implements INBTSerializable<CompoundTag> {
             connectedDrawers.add(nbt.getLong(allKey));
         }
         rebuild();
+        if (controllerTile.isClient()) {
+            rebuildShapes();
+        }
     }
 
     public List<Long> getConnectedDrawers() {
@@ -94,5 +114,9 @@ public class ConnectedDrawers implements INBTSerializable<CompoundTag> {
 
     public int getExtensions() {
         return extensions;
+    }
+
+    public VoxelShape getCachedVoxelShape() {
+        return cachedVoxelShape;
     }
 }
