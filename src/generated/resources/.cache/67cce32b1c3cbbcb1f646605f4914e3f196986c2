@@ -1,4 +1,4 @@
-// 1.19.2	2023-01-01T21:28:56.6950886	LootTables
+// 1.19.2	2023-09-10T22:36:52.1173431	LootTables
 1d4929d7d6176f60e5ea991a577527ed251ef375 data/functionalstorage/loot_tables/blocks/acacia_1.json
 1d4929d7d6176f60e5ea991a577527ed251ef375 data/functionalstorage/loot_tables/blocks/acacia_2.json
 1d4929d7d6176f60e5ea991a577527ed251ef375 data/functionalstorage/loot_tables/blocks/acacia_4.json
@@ -22,6 +22,8 @@
 1d4929d7d6176f60e5ea991a577527ed251ef375 data/functionalstorage/loot_tables/blocks/framed_1.json
 1d4929d7d6176f60e5ea991a577527ed251ef375 data/functionalstorage/loot_tables/blocks/framed_2.json
 1d4929d7d6176f60e5ea991a577527ed251ef375 data/functionalstorage/loot_tables/blocks/framed_4.json
+f1ce3c857319bf5d7c814c8fe11cd5fbc2badd8d data/functionalstorage/loot_tables/blocks/framed_controller_extension.json
+ff6d65fc25f37fe4fcacfdb3d5fb15c4965ab22c data/functionalstorage/loot_tables/blocks/framed_storage_controller.json
 1d4929d7d6176f60e5ea991a577527ed251ef375 data/functionalstorage/loot_tables/blocks/jungle_1.json
 1d4929d7d6176f60e5ea991a577527ed251ef375 data/functionalstorage/loot_tables/blocks/jungle_2.json
 1d4929d7d6176f60e5ea991a577527ed251ef375 data/functionalstorage/loot_tables/blocks/jungle_4.json

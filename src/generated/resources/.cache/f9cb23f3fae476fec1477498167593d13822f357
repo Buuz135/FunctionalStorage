@@ -1,4 +1,4 @@
-// 1.19.2	2023-01-01T21:28:56.6971068	Titanium Recipe
+// 1.19.2	2023-09-10T22:36:52.1183428	Titanium Recipe
 f1f858c5c729d3265eca96a08ccc173c60e68cf0 data/functionalstorage/advancements/recipes/functionalstorage/netherite_upgrade.json
 b05cf8697ddf7bd71f6ca3d498da0426928c7744 data/functionalstorage/recipes/acacia_1.json
 918f07592884a21aeb8ee99d7f6df3f50e89766f data/functionalstorage/recipes/acacia_2.json
@@ -27,6 +27,8 @@ db5eb614b6454d6d7909f982b545a3ee1c109a4f data/functionalstorage/recipes/fluid_2.
 559d3ce38de9db21b4efc149df540d5994e54ef6 data/functionalstorage/recipes/framed_1.json
 2a3031c093185599c255f3eebc44826227175c20 data/functionalstorage/recipes/framed_2.json
 84bbe14ee7ac9fc3b99e6983dcdb85e1edca02d8 data/functionalstorage/recipes/framed_4.json
+6afd4ff11dce6448521941303eec1f25096889cd data/functionalstorage/recipes/framed_controller_extension.json
+aceedb148a0c505f0c9fee3215b2710c71196479 data/functionalstorage/recipes/framed_storage_controller.json
 2e32282452f9eb21781b5826fbc069cdcf024e8c data/functionalstorage/recipes/gold_upgrade.json
 2f4045d1a674e9db42e3f9062a7aa955fb2a3670 data/functionalstorage/recipes/iron_downgrade.json
 583772a4b82747eb81f03ac177eae39ebe06f85f data/functionalstorage/recipes/jungle_1.json

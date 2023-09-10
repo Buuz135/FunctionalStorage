@@ -1,4 +1,4 @@
-// 1.19.2	2023-01-01T21:28:56.6971068	Item Models: functionalstorage
+// 1.19.2	2023-09-10T22:36:52.1208436	Item Models: functionalstorage
 05946c7f40bf42b62f86e70d637524afd795cad2 assets/functionalstorage/models/item/acacia_1.json
 9e4990cfbaa0ce0612d18b497169377fe24ee704 assets/functionalstorage/models/item/acacia_2.json
 648c9170a8c4c6068d0fdcf1ff7f6bf387902f3c assets/functionalstorage/models/item/acacia_4.json
@@ -26,6 +26,8 @@ bba3316482f0dd30047a7e9c8bbb08c44f870384 assets/functionalstorage/models/item/fl
 9738e07cee8d5bedcf48316dfcf31f6b0707a3b7 assets/functionalstorage/models/item/framed_1.json
 62dfcf3bf7e57c537aea4de7ff9a668b3139abc1 assets/functionalstorage/models/item/framed_2.json
 32c5b556220102e2364d0305f122201115490377 assets/functionalstorage/models/item/framed_4.json
+bffd40ac50ca20c358e2c93b57104a9858242e52 assets/functionalstorage/models/item/framed_controller_extension.json
+c6248c7ce7bb9aa88c7e75b2545a40f346f112e1 assets/functionalstorage/models/item/framed_storage_controller.json
 a198e6f98105cd16ac71a242daffcc8a0150e2ba assets/functionalstorage/models/item/gold_upgrade.json
 7c9e07a88447529640caaacc5f65aad2d40d1b81 assets/functionalstorage/models/item/iron_downgrade.json
 be463c39ed5a88017a44e3bfe294ca317495d4f0 assets/functionalstorage/models/item/jungle_1.json

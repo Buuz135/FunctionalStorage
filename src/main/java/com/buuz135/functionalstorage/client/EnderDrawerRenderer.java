@@ -1,7 +1,5 @@
 package com.buuz135.functionalstorage.client;
 
-import static com.buuz135.functionalstorage.util.MathUtils.createTransformMatrix;
-
 import com.buuz135.functionalstorage.FunctionalStorage;
 import com.buuz135.functionalstorage.block.tile.ControllableDrawerTile;
 import com.buuz135.functionalstorage.block.tile.EnderDrawerTile;
@@ -17,6 +15,8 @@ import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.ItemStack;
+
+import static com.buuz135.functionalstorage.util.MathUtils.createTransformMatrix;
 
 public class EnderDrawerRenderer implements BlockEntityRenderer<EnderDrawerTile> {
 
@@ -86,7 +86,7 @@ public class EnderDrawerRenderer implements BlockEntityRenderer<EnderDrawerTile>
         if (!inventoryHandler.getStoredStacks().get(0).getStack().isEmpty()){
             matrixStack.translate(0.5, 0.5, 0.0005f);
             ItemStack stack = inventoryHandler.getStoredStacks().get(0).getStack();
-            DrawerRenderer.renderStack(matrixStack,  bufferIn, combinedLightIn, combinedOverlayIn, stack, inventoryHandler.getStoredStacks().get(0).getAmount(), 0.015f, tile.getDrawerOptions());
+            DrawerRenderer.renderStack(matrixStack, bufferIn, combinedLightIn, combinedOverlayIn, stack, inventoryHandler.getStoredStacks().get(0).getAmount(), inventoryHandler.getSlotLimit(0), 0.015f, tile.getDrawerOptions());
         }
     }
 

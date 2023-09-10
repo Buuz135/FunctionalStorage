@@ -1,4 +1,4 @@
-// 1.19.2	2023-01-01T21:28:56.6960912	Block States: functionalstorage
+// 1.19.2	2023-09-10T22:36:52.1193429	Block States: functionalstorage
 b1f76f1b67016350af532beb6de3ffdc4d9a07be assets/functionalstorage/blockstates/acacia_1.json
 a4e462d9775fd4aefa673952d4d69f9d90b2e823 assets/functionalstorage/blockstates/acacia_2.json
 ecd77b58fb3d746ab8e2109adf686ea01cf5d96a assets/functionalstorage/blockstates/acacia_4.json
@@ -22,6 +22,8 @@ e7cad5481c2b9b809adf1f670eb4a08dd19b7d38 assets/functionalstorage/blockstates/fl
 b66e872170929f7d24af6720167749014a9cd16f assets/functionalstorage/blockstates/framed_1.json
 ea5c1b0de1f8102d561e1669a42b4ae9145d4b8c assets/functionalstorage/blockstates/framed_2.json
 251a4112ccff54b28ef878d0f31b320c7cf12c11 assets/functionalstorage/blockstates/framed_4.json
+1dff325fb33d3ffbbba975e022b219fad229d15f assets/functionalstorage/blockstates/framed_controller_extension.json
+27bc9e9477a0287cdc0c5bec8830c8012e6302c8 assets/functionalstorage/blockstates/framed_storage_controller.json
 ae3be1b76f15453d6905a0ac71d240df0ce3d868 assets/functionalstorage/blockstates/jungle_1.json
 cbdc987476f1ce53a615b66ec645235d506d4cca assets/functionalstorage/blockstates/jungle_2.json
 6b8180e22e6d2a12803e2577dc53d186cdc95103 assets/functionalstorage/blockstates/jungle_4.json

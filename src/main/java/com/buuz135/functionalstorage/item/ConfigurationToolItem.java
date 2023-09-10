@@ -71,6 +71,10 @@ public class ConfigurationToolItem extends BasicItem {
                 ((ControllableDrawerTile<?>) blockEntity).toggleLocking();
             } else {
                 ((ControllableDrawerTile<?>) blockEntity).toggleOption(configuractionAction);
+                if (configuractionAction.getMax() > 1) {
+                    context.getPlayer().displayClientMessage(
+                            Component.translatable("configurationtool.configmode.indicator.mode_" + ((ControllableDrawerTile<?>) blockEntity).getDrawerOptions().getAdvancedValue(configuractionAction)).setStyle(Style.EMPTY.withColor(configuractionAction.getColor())), true);
+                }
             }
             return InteractionResult.SUCCESS;
         }
@@ -112,19 +116,27 @@ public class ConfigurationToolItem extends BasicItem {
     }
 
     public enum ConfigurationAction {
-        LOCKING(TextColor.fromRgb(new Color(40, 131, 250).getRGB())),
-        TOGGLE_NUMBERS(TextColor.fromRgb(new Color(250, 145, 40).getRGB())),
-        TOGGLE_RENDER(TextColor.fromRgb(new Color(100, 250, 40).getRGB())),
-        TOGGLE_UPGRADES(TextColor.fromRgb(new Color(166, 40, 250).getRGB()));
+        LOCKING(TextColor.fromRgb(new Color(40, 131, 250).getRGB()), 1),
+        TOGGLE_NUMBERS(TextColor.fromRgb(new Color(250, 145, 40).getRGB()), 1),
+        TOGGLE_RENDER(TextColor.fromRgb(new Color(100, 250, 40).getRGB()), 1),
+        TOGGLE_UPGRADES(TextColor.fromRgb(new Color(166, 40, 250).getRGB()), 1),
+        INDICATOR(TextColor.fromRgb(new Color(255, 40, 40).getRGB()), 3); //0 NO , 1 - PROGRESS, 2 - ONLY FULL, 3 - ONLY FULL WITHOUT BG
+
 
         private final TextColor color;
+        private final int max;
 
-        ConfigurationAction(TextColor color) {
+        ConfigurationAction(TextColor color, int max) {
             this.color = color;
+            this.max = max;
         }
 
         public TextColor getColor() {
             return color;
+        }
+
+        public int getMax() {
+            return max;
         }
     }
 }

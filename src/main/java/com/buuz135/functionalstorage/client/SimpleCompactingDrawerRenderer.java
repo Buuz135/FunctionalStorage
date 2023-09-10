@@ -47,7 +47,7 @@ public class SimpleCompactingDrawerRenderer implements BlockEntityRenderer<Simpl
             matrixStack.pushPose();
             matrixStack.mulPoseMatrix(createTransformMatrix(
                     new Vector3f(0.5f, 0.27f, 0.0005f), Vector3f.ZERO, new Vector3f(.5f, .5f, 1.0f)));
-            DrawerRenderer.renderStack(matrixStack, bufferIn, combinedLightIn, combinedOverlayIn, stack, tile.getHandler().getStackInSlot(0).getCount(), 0.02f, tile.getDrawerOptions());
+            DrawerRenderer.renderStack(matrixStack, bufferIn, combinedLightIn, combinedOverlayIn, stack, tile.getHandler().getStackInSlot(0).getCount(), tile.getHandler().getSlotLimit(0), 0.02f, tile.getDrawerOptions());
             matrixStack.popPose();
         }
         stack = tile.getHandler().getResultList().get(1).getResult();
@@ -55,7 +55,7 @@ public class SimpleCompactingDrawerRenderer implements BlockEntityRenderer<Simpl
             matrixStack.pushPose();
             matrixStack.mulPoseMatrix(createTransformMatrix(
                     new Vector3f(0.5f, 0.77f, 0.0005f), Vector3f.ZERO, new Vector3f(.5f, .5f, 1.0f)));
-            DrawerRenderer.renderStack(matrixStack, bufferIn, combinedLightIn, combinedOverlayIn, stack, tile.getHandler().getStackInSlot(1).getCount(), 0.02f, tile.getDrawerOptions());
+            DrawerRenderer.renderStack(matrixStack, bufferIn, combinedLightIn, combinedOverlayIn, stack, tile.getHandler().getStackInSlot(1).getCount(), tile.getHandler().getSlotLimit(1), 0.02f, tile.getDrawerOptions());
             matrixStack.popPose();
         }
         matrixStack.popPose();
