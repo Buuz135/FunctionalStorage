@@ -96,7 +96,6 @@ public class EnderDrawerTile extends ItemControllableDrawerTile<EnderDrawerTile>
         }
     }
 
-    @Override
     public InteractionResult onSlotActivated(Player playerIn, InteractionHand hand, Direction facing, double hitX, double hitY, double hitZ, int slot) {
         InteractionResult result = super.onSlotActivated(playerIn, hand, facing, hitX, hitY, hitZ, slot);
         if (slot != -1){

@@ -95,7 +95,7 @@ public class ConnectedDrawers implements INBTSerializable<CompoundTag> {
             connectedDrawers.add(nbt.getLong(allKey));
         }
         rebuild();
-        if (controllerTile.isClient()) {
+        if (controllerTile.getLevel() != null && controllerTile.isClient()) {
             rebuildShapes();
         }
     }

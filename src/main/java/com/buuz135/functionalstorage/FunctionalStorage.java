@@ -36,6 +36,7 @@ import net.minecraft.data.recipes.SmithingTransformRecipeBuilder;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
+import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -46,10 +47,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.event.EntityRenderersEvent;
-import net.minecraftforge.client.event.ModelEvent;
-import net.minecraftforge.client.event.RegisterColorHandlersEvent;
-import net.minecraftforge.client.event.RenderTooltipEvent;
+import net.minecraftforge.client.event.*;
 import net.minecraftforge.client.model.generators.BlockModelProvider;
 import net.minecraftforge.client.model.generators.ItemModelBuilder;
 import net.minecraftforge.client.model.generators.ItemModelProvider;
@@ -343,6 +341,10 @@ public class FunctionalStorage extends ModuleController {
         EventManager.mod(ModelEvent.RegisterGeometryLoaders.class).process(modelRegistryEvent -> {
             modelRegistryEvent.register("framedblock", FramedModel.Loader.INSTANCE);
         }).subscribe();
+        /*EventManager.mod(TextureStitchEvent.Pre.class).process(pre -> {
+            if (pre.getAtlas().location().equals(InventoryMenu.BLOCK_ATLAS))
+                pre.addSprite(new ResourceLocation(MOD_ID, "gui/indicator"));
+        }).subscribe();*/
     }
 
     @Override

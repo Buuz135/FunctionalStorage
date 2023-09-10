@@ -257,7 +257,11 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
     }
 
     public void toggleOption(ConfigurationToolItem.ConfigurationAction action) {
-        this.drawerOptions.setActive(action, !this.drawerOptions.isActive(action));
+        if (action.getMax() == 1) {
+            this.drawerOptions.setActive(action, !this.drawerOptions.isActive(action));
+        } else {
+            this.drawerOptions.setAdvancedValue(action, (this.drawerOptions.getAdvancedValue(action) + 1) % (action.getMax() + 1));
+        }
         markForUpdate();
     }
 
@@ -303,12 +307,15 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
     public static class DrawerOptions implements INBTSerializable<CompoundTag> {
 
         public HashMap<ConfigurationToolItem.ConfigurationAction, Boolean> options;
+        public HashMap<ConfigurationToolItem.ConfigurationAction, Integer> advancedOptions;
 
         public DrawerOptions() {
             this.options = new HashMap<>();
             this.options.put(ConfigurationToolItem.ConfigurationAction.TOGGLE_NUMBERS, true);
             this.options.put(ConfigurationToolItem.ConfigurationAction.TOGGLE_RENDER, true);
             this.options.put(ConfigurationToolItem.ConfigurationAction.TOGGLE_UPGRADES, true);
+            this.advancedOptions = new HashMap<>();
+            this.advancedOptions.put(ConfigurationToolItem.ConfigurationAction.INDICATOR, 0);
         }
 
         public boolean isActive(ConfigurationToolItem.ConfigurationAction configurationAction) {
@@ -319,11 +326,22 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
             this.options.put(configurationAction, active);
         }
 
+        public int getAdvancedValue(ConfigurationToolItem.ConfigurationAction configurationAction) {
+            return advancedOptions.getOrDefault(configurationAction, 0);
+        }
+
+        public void setAdvancedValue(ConfigurationToolItem.ConfigurationAction configurationAction, int value) {
+            this.advancedOptions.put(configurationAction, value);
+        }
+
         @Override
         public CompoundTag serializeNBT() {
             CompoundTag compoundTag = new CompoundTag();
             for (ConfigurationToolItem.ConfigurationAction action : this.options.keySet()) {
                 compoundTag.putBoolean(action.name(), this.options.get(action));
+            }
+            for (ConfigurationToolItem.ConfigurationAction action : this.advancedOptions.keySet()) {
+                compoundTag.putInt("Advanced: " + action.name(), this.advancedOptions.get(action));
             }
             return compoundTag;
         }
@@ -331,7 +349,11 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
         @Override
         public void deserializeNBT(CompoundTag nbt) {
             for (String allKey : nbt.getAllKeys()) {
-                this.options.put(ConfigurationToolItem.ConfigurationAction.valueOf(allKey), nbt.getBoolean(allKey));
+                if (allKey.startsWith("Advanced: ")) {
+                    this.advancedOptions.put(ConfigurationToolItem.ConfigurationAction.valueOf(allKey.replace("Advanced: ", "")), nbt.getInt(allKey));
+                } else {
+                    this.options.put(ConfigurationToolItem.ConfigurationAction.valueOf(allKey), nbt.getBoolean(allKey));
+                }
             }
         }
     }
