@@ -1,5 +1,8 @@
 package com.buuz135.functionalstorage.util;
 
+import com.buuz135.functionalstorage.FunctionalStorage;
+import com.buuz135.functionalstorage.recipe.CustomCompactingRecipe;
+import com.hrznstudio.titanium.util.RecipeUtil;
 import net.minecraft.core.NonNullList;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
@@ -10,6 +13,7 @@ import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.*;
@@ -27,11 +31,13 @@ public class CompactingUtil {
     private final Level level;
     private List<Result> results;
     private final int resultAmount;
+    private final List<CustomCompactingRecipe> recipes;
 
     public CompactingUtil(Level level, int resultAmount) {
         this.level = level;
         this.resultAmount = resultAmount;
         this.results = new ArrayList<>();
+        this.recipes = (List<CustomCompactingRecipe>) RecipeUtil.getRecipes(level, FunctionalStorage.CUSTOM_COMPACTING_RECIPE_TYPE.get());
     }
 
     public void setup(ItemStack stack){
@@ -71,6 +77,11 @@ public class CompactingUtil {
     }
 
     private Result findUpperTier(ItemStack stack){
+        for (CustomCompactingRecipe recipe : this.recipes) {
+            if (ItemStack.isSame(recipe.lower_input, stack)) {
+                return new Result(ItemHandlerHelper.copyStackWithSize(recipe.higher_input, 1), recipe.lower_input.getCount());
+            }
+        }
         //Checking 3x3
         int sizeCheck = 9;
         CraftingContainer container = createContainerAndFill(3, stack);
@@ -108,6 +119,11 @@ public class CompactingUtil {
     }
 
     private Result findLowerTier(ItemStack stack){
+        for (CustomCompactingRecipe recipe : this.recipes) {
+            if (ItemStack.isSame(recipe.higher_input, stack)) {
+                return new Result(ItemHandlerHelper.copyStackWithSize(recipe.lower_input, 1), recipe.lower_input.getCount());
+            }
+        }
         List<ItemStack> candidates = new ArrayList<>();
         Map<ItemStack, Integer> candidatesRate = new HashMap<>();
         for (CraftingRecipe craftingRecipe : level.getRecipeManager().getAllRecipesFor(RecipeType.CRAFTING)) {
@@ -131,12 +147,13 @@ public class CompactingUtil {
                 }
             }
         }
+
         ItemStack similar = findSimilar(stack, candidates);
         if (!similar.isEmpty()){
             return new Result(similar, candidatesRate.get(similar));
         }
-        if (candidates.size() > 0){
-            return new Result(candidates.get(0), candidatesRate.get(candidates.get(0)));
+        if (!candidates.isEmpty()) {
+            return new Result(candidates.get(0).copy(), candidatesRate.get(candidates.get(0)));
         }
         return new Result(ItemStack.EMPTY, 0);
     }

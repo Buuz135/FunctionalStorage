@@ -15,3 +15,4 @@
 * Now having the configuration tool in the offhand it will toggle the selected action when placing a drawer, closes #156
 * Fixed pushing upgrade only pushing to the first slot, closes #164
 * Added Framed Simple Compacting Drawer, closes #179
+* Added custom compacting recipes, changed recipes that used the tag to use the custom recipe, closes #150

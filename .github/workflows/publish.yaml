@@ -35,6 +35,6 @@ jobs:
           game-versions: 1.19.2
           java: 17
           name: ""
-          changelog: "https://github.com/Buuz135/FunctionalStorage/commits/1.19/CHANGELOG.md"
+          changelog: "https://github.com/Buuz135/FunctionalStorage/blob/1.19/CHANGELOG.md"
           dependencies: |
             titanium | depends
