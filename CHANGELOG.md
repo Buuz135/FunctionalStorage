@@ -8,3 +8,4 @@
 * Changed the downgrade upgrade to change the base value of a drawer to 64 so it can function with the other storage
   upgrades, closes #117
 * Check if an upgrade can go inside a drawer to validate if proper storage numbers, closes #197
+* Force the Creative Vending upgrade to go to the proper slot when right clicked into a drawer, closes #184
