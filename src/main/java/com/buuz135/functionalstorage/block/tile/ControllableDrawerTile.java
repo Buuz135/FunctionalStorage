@@ -167,13 +167,13 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
             if (upgradeItem instanceof StorageUpgradeItem storageUpgradeItem) {
                 InventoryComponent component = storageUpgrades;
                 for (int i = 0; i < component.getSlots(); i++) {
-                    if (component.getStackInSlot(i).isEmpty()) {
+                    if (component.getStackInSlot(i).isEmpty() && component.isItemValid(i, stack)) {
                         playerIn.setItemInHand(hand, component.insertItem(i, stack, false));
                         return InteractionResult.SUCCESS;
                     }
                 }
                 for (int i = 0; i < component.getSlots(); i++) {
-                    if (!component.getStackInSlot(i).isEmpty() && component.getStackInSlot(i).getItem() instanceof StorageUpgradeItem instertedUpgrade && instertedUpgrade.getStorageMultiplier() < storageUpgradeItem.getStorageMultiplier()) {
+                    if (!component.getStackInSlot(i).isEmpty() && component.isItemValid(i, stack) && component.getStackInSlot(i).getItem() instanceof StorageUpgradeItem instertedUpgrade && instertedUpgrade.getStorageMultiplier() < storageUpgradeItem.getStorageMultiplier()) {
                         ItemHandlerHelper.giveItemToPlayer(playerIn, component.getStackInSlot(i).copy());
                         ItemStack upgradeStack = stack.copy();
                         upgradeStack.setCount(1);
@@ -185,7 +185,7 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
             } else {
                 InventoryComponent component = utilityUpgrades;
                 for (int i = 0; i < component.getSlots(); i++) {
-                    if (component.getStackInSlot(i).isEmpty()) {
+                    if (component.getStackInSlot(i).isEmpty() && component.isItemValid(i, stack)) {
                         playerIn.setItemInHand(hand, component.insertItem(i, stack, false));
                         return InteractionResult.SUCCESS;
                     }
