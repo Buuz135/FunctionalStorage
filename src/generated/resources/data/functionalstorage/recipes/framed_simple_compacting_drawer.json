@@ -8,14 +8,13 @@
           "values": [
             {
               "type": "forge:item_exists",
-              "item": "functionalstorage:compacting_framed_drawer"
+              "item": "functionalstorage:framed_simple_compacting_drawer"
             }
           ]
         }
       ],
       "recipe": {
         "type": "minecraft:crafting_shaped",
-        "category": "misc",
         "key": {
           "D": {
             "tag": "functionalstorage:drawer"
@@ -32,13 +31,12 @@
         },
         "pattern": [
           "SSS",
-          "PDP",
+          "SDP",
           "SIS"
         ],
         "result": {
-          "item": "functionalstorage:compacting_framed_drawer"
-        },
-        "show_notification": true
+          "item": "functionalstorage:framed_simple_compacting_drawer"
+        }
       }
     }
   ]

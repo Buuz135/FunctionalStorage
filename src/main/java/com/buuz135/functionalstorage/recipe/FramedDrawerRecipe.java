@@ -1,10 +1,7 @@
 package com.buuz135.functionalstorage.recipe;
 
 
-import com.buuz135.functionalstorage.block.CompactingDrawerBlock;
-import com.buuz135.functionalstorage.block.FramedControllerExtensionBlock;
-import com.buuz135.functionalstorage.block.FramedDrawerBlock;
-import com.buuz135.functionalstorage.block.FramedDrawerControllerBlock;
+import com.buuz135.functionalstorage.block.*;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.CraftingContainer;
@@ -34,7 +31,7 @@ public class FramedDrawerRecipe extends CustomRecipe {
 
     public static boolean matchesCompacting(ItemStack first, ItemStack second, ItemStack drawer) {
         //System.out.println(((BlockItem) drawer.getItem()).getBlock().getClass());
-        return !first.isEmpty() && first.getItem() instanceof BlockItem && !second.isEmpty() && second.getItem() instanceof BlockItem && !drawer.isEmpty() && drawer.getItem() instanceof BlockItem && ((BlockItem) drawer.getItem()).getBlock() instanceof CompactingDrawerBlock;
+        return !first.isEmpty() && first.getItem() instanceof BlockItem && !second.isEmpty() && second.getItem() instanceof BlockItem && !drawer.isEmpty() && drawer.getItem() instanceof BlockItem && ((BlockItem) drawer.getItem()).getBlock() instanceof CompactingFramedDrawerBlock;
     }
 
     public static boolean matchesController(ItemStack first, ItemStack second, ItemStack drawer) {
@@ -45,10 +42,16 @@ public class FramedDrawerRecipe extends CustomRecipe {
         return !first.isEmpty() && first.getItem() instanceof BlockItem && !second.isEmpty() && second.getItem() instanceof BlockItem && !drawer.isEmpty() && drawer.getItem() instanceof BlockItem && ((BlockItem) drawer.getItem()).getBlock() instanceof FramedControllerExtensionBlock;
     }
 
+    public static boolean matchesSimpleCompacting(ItemStack first, ItemStack second, ItemStack drawer) {
+        //System.out.println(((BlockItem) drawer.getItem()).getBlock().getClass());
+        return !first.isEmpty() && first.getItem() instanceof BlockItem && !second.isEmpty() && second.getItem() instanceof BlockItem && !drawer.isEmpty() && drawer.getItem() instanceof BlockItem && ((BlockItem) drawer.getItem()).getBlock() instanceof FramedSimpleCompactingDrawerBlock;
+    }
+
     @Override
     public boolean matches(CraftingContainer inv, Level worldIn) {
         return matches(inv.getItem(0), inv.getItem(1), inv.getItem(2)) ||
                 matchesCompacting(inv.getItem(0), inv.getItem(1), inv.getItem(2)) ||
+                matchesSimpleCompacting(inv.getItem(0), inv.getItem(1), inv.getItem(2)) ||
                 matchesController(inv.getItem(0), inv.getItem(1), inv.getItem(2)) ||
                 matchesControllerExtension(inv.getItem(0), inv.getItem(1), inv.getItem(2));
     }
@@ -57,6 +60,7 @@ public class FramedDrawerRecipe extends CustomRecipe {
     public ItemStack assemble(CraftingContainer inv, RegistryAccess registryAccess) {
         if (matches(inv.getItem(0), inv.getItem(1), inv.getItem(2)) ||
                 matchesCompacting(inv.getItem(0), inv.getItem(1), inv.getItem(2)) ||
+                matchesSimpleCompacting(inv.getItem(0), inv.getItem(1), inv.getItem(2)) ||
                 matchesController(inv.getItem(0), inv.getItem(1), inv.getItem(2)) ||
                 matchesControllerExtension(inv.getItem(0), inv.getItem(1), inv.getItem(2)))
         {

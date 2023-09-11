@@ -14,3 +14,4 @@
 * Prevent infinite loop when drawers check for their parent stuff, closes #73
 * Now having the configuration tool in the offhand it will toggle the selected action when placing a drawer, closes #156
 * Fixed pushing upgrade only pushing to the first slot, closes #164
+* Added Framed Simple Compacting Drawer, closes #179

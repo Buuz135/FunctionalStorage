@@ -106,6 +106,7 @@ public class FunctionalStorage extends ModuleController {
     public static Pair<RegistryObject<Block>, RegistryObject<BlockEntityType<?>>> SIMPLE_COMPACTING_DRAWER;
     public static Pair<RegistryObject<Block>, RegistryObject<BlockEntityType<?>>> FRAMED_DRAWER_CONTROLLER;
     public static Pair<RegistryObject<Block>, RegistryObject<BlockEntityType<?>>> FRAMED_CONTROLLER_EXTENSION;
+    public static Pair<RegistryObject<Block>, RegistryObject<BlockEntityType<?>>> FRAMED_SIMPLE_COMPACTING_DRAWER;
 
 
     public static RegistryObject<Item> LINKING_TOOL;
@@ -154,10 +155,10 @@ public class FunctionalStorage extends ModuleController {
                     }
                 }
                 if (breakEvent.getState().getBlock() instanceof SimpleCompactingDrawerBlock) {
-                    int hit = ((SimpleCompactingDrawerBlock) breakEvent.getState().getBlock()).getHit(breakEvent.getState(), breakEvent.getPlayer().getLevel(), breakEvent.getPos(), breakEvent.getPlayer());
+                    int hit = ((SimpleCompactingDrawerBlock) breakEvent.getState().getBlock()).getHit(breakEvent.getState(), breakEvent.getPlayer().level(), breakEvent.getPos(), breakEvent.getPlayer());
                     if (hit != -1) {
                         breakEvent.setCanceled(true);
-                        ((SimpleCompactingDrawerBlock) breakEvent.getState().getBlock()).attack(breakEvent.getState(), breakEvent.getPlayer().getLevel(), breakEvent.getPos(), breakEvent.getPlayer());
+                        ((SimpleCompactingDrawerBlock) breakEvent.getState().getBlock()).attack(breakEvent.getState(), breakEvent.getPlayer().level(), breakEvent.getPos(), breakEvent.getPlayer());
                     }
                 }
             }
@@ -169,6 +170,7 @@ public class FunctionalStorage extends ModuleController {
         NBTManager.getInstance().scanTileClassForAnnotations(CompactingFramedDrawerTile.class);
         NBTManager.getInstance().scanTileClassForAnnotations(FluidDrawerTile.class);
         NBTManager.getInstance().scanTileClassForAnnotations(SimpleCompactingDrawerTile.class);
+        NBTManager.getInstance().scanTileClassForAnnotations(FramedSimpleCompactingDrawerTile.class);
     }
 
 
@@ -182,7 +184,6 @@ public class FunctionalStorage extends ModuleController {
                     var pair = getRegistries().registerBlockWithTileItem(name, () -> new FramedDrawerBlock(value), blockRegistryObject -> () ->
                             new DrawerBlock.DrawerItem((DrawerBlock) blockRegistryObject.get(), new Item.Properties(), TAB),TAB);
                     DRAWER_TYPES.computeIfAbsent(value, drawerType -> new ArrayList<>()).add(pair);
-                    CompactingFramedDrawerBlock.FRAMED.add(pair.getLeft());
                 } else {
                     DRAWER_TYPES.computeIfAbsent(value, drawerType -> new ArrayList<>()).add(getRegistries().registerBlockWithTileItem(name, () -> new DrawerBlock(woodType, value, BlockBehaviour.Properties.copy(woodType.getPlanks())), blockRegistryObject -> () ->
                             new DrawerBlock.DrawerItem((DrawerBlock) blockRegistryObject.get(), new Item.Properties(), TAB),TAB));
@@ -209,7 +210,10 @@ public class FunctionalStorage extends ModuleController {
         }
         SIMPLE_COMPACTING_DRAWER = getRegistries().registerBlockWithTileItem("simple_compacting_drawer", () -> new SimpleCompactingDrawerBlock("simple_compacting_drawer", BlockBehaviour.Properties.copy(Blocks.STONE_BRICKS)),
                 blockRegistryObject -> () ->
-                        new CompactingDrawerBlock.CompactingDrawerItem(blockRegistryObject.get(), new Item.Properties(), 3), TAB);
+                        new CompactingDrawerBlock.CompactingDrawerItem(blockRegistryObject.get(), new Item.Properties(), 2), TAB);
+        FRAMED_SIMPLE_COMPACTING_DRAWER = getRegistries().registerBlockWithTileItem("framed_simple_compacting_drawer", () -> new FramedSimpleCompactingDrawerBlock("framed_simple_compacting_drawer"),
+                blockRegistryObject -> () ->
+                        new CompactingDrawerBlock.CompactingDrawerItem(blockRegistryObject.get(), new Item.Properties(), 2), TAB);
         COLLECTOR_UPGRADE = getRegistries().registerGeneric(ForgeRegistries.ITEMS.getRegistryKey(), "collector_upgrade", () -> new UpgradeItem(new Item.Properties(), UpgradeItem.Type.UTILITY));
         PULLING_UPGRADE = getRegistries().registerGeneric(ForgeRegistries.ITEMS.getRegistryKey(), "puller_upgrade", () -> new UpgradeItem(new Item.Properties(), UpgradeItem.Type.UTILITY));
         PUSHING_UPGRADE = getRegistries().registerGeneric(ForgeRegistries.ITEMS.getRegistryKey(), "pusher_upgrade", () -> new UpgradeItem(new Item.Properties(), UpgradeItem.Type.UTILITY));
@@ -290,6 +294,8 @@ public class FunctionalStorage extends ModuleController {
             registerRenderers.registerBlockEntityRenderer((BlockEntityType<? extends SimpleCompactingDrawerTile>) SIMPLE_COMPACTING_DRAWER.getRight().get(), p_173571_ -> new SimpleCompactingDrawerRenderer());
 
             registerRenderers.registerBlockEntityRenderer((BlockEntityType<? extends FramedDrawerControllerTile>) FRAMED_DRAWER_CONTROLLER.getRight().get(), p -> new ControllerRenderer());
+            registerRenderers.registerBlockEntityRenderer((BlockEntityType<? extends SimpleCompactingDrawerTile>) FRAMED_SIMPLE_COMPACTING_DRAWER.getRight().get(), p_173571_ -> new SimpleCompactingDrawerRenderer());
+
         }).subscribe();
         EventManager.mod(RegisterColorHandlersEvent.Item.class).process(item -> {
             item.getItemColors().register((stack, tint) -> {
@@ -334,6 +340,7 @@ public class FunctionalStorage extends ModuleController {
 
             ItemBlockRenderTypes.setRenderLayer(FRAMED_DRAWER_CONTROLLER.getLeft().get(), RenderType.cutout());
             ItemBlockRenderTypes.setRenderLayer(FRAMED_CONTROLLER_EXTENSION.getLeft().get(), RenderType.cutout());
+            ItemBlockRenderTypes.setRenderLayer(FRAMED_SIMPLE_COMPACTING_DRAWER.getLeft().get(), RenderType.cutout());
         }).subscribe();
         EventManager.forge(RenderTooltipEvent.Pre.class).process(itemTooltipEvent -> {
             if (itemTooltipEvent.getItemStack().getItem().equals(FunctionalStorage.ENDER_DRAWER.getLeft().get().asItem()) && itemTooltipEvent.getItemStack().hasTag()) {

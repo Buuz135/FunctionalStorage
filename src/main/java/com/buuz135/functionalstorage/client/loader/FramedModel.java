@@ -1,5 +1,6 @@
 package com.buuz135.functionalstorage.client.loader;
 
+import com.buuz135.functionalstorage.FunctionalStorage;
 import com.buuz135.functionalstorage.block.FramedDrawerBlock;
 import com.buuz135.functionalstorage.client.model.FramedDrawerModelData;
 import com.google.common.collect.ImmutableList;
