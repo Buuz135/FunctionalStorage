@@ -2,7 +2,6 @@ package com.buuz135.functionalstorage.client.loader;
 
 import com.buuz135.functionalstorage.FunctionalStorage;
 import com.buuz135.functionalstorage.block.FramedDrawerBlock;
-import com.buuz135.functionalstorage.block.FramedDrawerControllerBlock;
 import com.buuz135.functionalstorage.client.model.FramedDrawerModelData;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -21,11 +20,7 @@ import net.minecraft.client.renderer.block.model.ItemOverrides;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.resources.model.BakedModel;
-import net.minecraft.client.resources.model.Material;
-import net.minecraft.client.resources.model.ModelBakery;
-import net.minecraft.client.resources.model.ModelState;
-import net.minecraft.client.resources.model.UnbakedModel;
+import net.minecraft.client.resources.model.*;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
@@ -39,7 +34,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.client.ChunkRenderTypeSet;
 import net.minecraftforge.client.model.IDynamicBakedModel;
 import net.minecraftforge.client.model.IQuadTransformer;
-import net.minecraftforge.client.model.QuadTransformers;
 import net.minecraftforge.client.model.SimpleModelState;
 import net.minecraftforge.client.model.data.ModelData;
 import net.minecraftforge.client.model.data.ModelProperty;
@@ -47,6 +41,7 @@ import net.minecraftforge.client.model.geometry.IGeometryBakingContext;
 import net.minecraftforge.client.model.geometry.IGeometryLoader;
 import net.minecraftforge.client.model.geometry.IUnbakedGeometry;
 import net.minecraftforge.common.util.ConcatenatedListView;
+import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.commons.lang3.tuple.ImmutableTriple;
 import org.apache.commons.lang3.tuple.Triple;
 import org.apache.logging.log4j.LogManager;
@@ -55,7 +50,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
-import java.util.List;
 import java.util.function.Function;
 
 import static com.buuz135.functionalstorage.client.loader.FramedModel.Baked.getQuadsUsingShape;
@@ -381,7 +375,7 @@ public class FramedModel implements IUnbakedGeometry<FramedModel> {
         public TextureAtlasSprite getParticleIcon(@NotNull ModelData data) {
             FramedDrawerModelData framedDrawerModelData = data.get(FramedDrawerModelData.FRAMED_PROPERTY);
             if (framedDrawerModelData != null && framedDrawerModelData.getDesign().containsKey("particle")) {
-                if (framedDrawerModelData.getDesign().get("particle") instanceof BlockItem blockItem) {
+                if (framedDrawerModelData.getDesign().get("particle") instanceof BlockItem blockItem && !ForgeRegistries.ITEMS.getKey(blockItem).getNamespace().equals(FunctionalStorage.MOD_ID)) {
                     return Minecraft.getInstance().getBlockRenderer().getBlockModel(blockItem.getBlock().defaultBlockState()).getParticleIcon(data);
                 }
             }
