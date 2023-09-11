@@ -4,10 +4,7 @@ import com.buuz135.functionalstorage.block.*;
 import com.buuz135.functionalstorage.block.tile.*;
 import com.buuz135.functionalstorage.client.*;
 import com.buuz135.functionalstorage.client.loader.FramedModel;
-import com.buuz135.functionalstorage.data.FunctionalStorageBlockTagsProvider;
-import com.buuz135.functionalstorage.data.FunctionalStorageBlockstateProvider;
-import com.buuz135.functionalstorage.data.FunctionalStorageItemTagsProvider;
-import com.buuz135.functionalstorage.data.FunctionalStorageLangProvider;
+import com.buuz135.functionalstorage.data.*;
 import com.buuz135.functionalstorage.inventory.BigInventoryHandler;
 import com.buuz135.functionalstorage.inventory.item.CompactingStackItemHandler;
 import com.buuz135.functionalstorage.inventory.item.DrawerStackItemHandler;
@@ -16,6 +13,7 @@ import com.buuz135.functionalstorage.item.LinkingToolItem;
 import com.buuz135.functionalstorage.item.StorageUpgradeItem;
 import com.buuz135.functionalstorage.item.UpgradeItem;
 import com.buuz135.functionalstorage.network.EnderDrawerSyncMessage;
+import com.buuz135.functionalstorage.recipe.CustomCompactingRecipe;
 import com.buuz135.functionalstorage.recipe.DrawerlessWoodIngredient;
 import com.buuz135.functionalstorage.recipe.FramedDrawerRecipe;
 import com.buuz135.functionalstorage.util.*;
@@ -29,6 +27,10 @@ import com.hrznstudio.titanium.network.NetworkHandler;
 import com.hrznstudio.titanium.recipe.generator.TitaniumRecipeProvider;
 import com.hrznstudio.titanium.recipe.generator.TitaniumShapedRecipeBuilder;
 import com.hrznstudio.titanium.tab.TitaniumTab;
+import com.hrznstudio.titanium.recipe.generator.IJSONGenerator;
+import com.hrznstudio.titanium.recipe.generator.IJsonFile;
+import com.hrznstudio.titanium.recipe.generator.TitaniumSerializableProvider;
+import com.hrznstudio.titanium.recipe.serializer.GenericSerializer;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.data.recipes.FinishedRecipe;
@@ -41,7 +43,8 @@ import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -120,6 +123,9 @@ public class FunctionalStorage extends ModuleController {
     public static RegistryObject<Item> CREATIVE_UPGRADE;
 
     public static TitaniumTab TAB = new TitaniumTab(new ResourceLocation(MOD_ID, "main"));
+    public static RegistryObject<RecipeSerializer<?>> CUSTOM_COMPACTING_RECIPE_SERIALIZER;
+    public static RegistryObject<RecipeType<?>> CUSTOM_COMPACTING_RECIPE_TYPE;
+
 
     public FunctionalStorage() {
         ForgeMod.enableMilkFluid();
@@ -232,6 +238,10 @@ public class FunctionalStorage extends ModuleController {
         getRegistries().registerGeneric(ForgeRegistries.RECIPE_SERIALIZERS.getRegistryKey(), "framed_recipe", () -> FramedDrawerRecipe.SERIALIZER);
 
         this.addCreativeTab("main", () -> new ItemStack(DRAWER_CONTROLLER.getLeft().get()), MOD_ID, TAB);
+
+        CUSTOM_COMPACTING_RECIPE_TYPE = getRegistries().registerGeneric(ForgeRegistries.RECIPE_TYPES.getRegistryKey(), "custom_compacting", () -> RecipeType.simple(new ResourceLocation(MOD_ID, "custom_compacting")));
+
+        CUSTOM_COMPACTING_RECIPE_SERIALIZER = getRegistries().registerGeneric(ForgeRegistries.RECIPE_SERIALIZERS.getRegistryKey(), "custom_compacting", () -> new GenericSerializer<>(CustomCompactingRecipe.class, CUSTOM_COMPACTING_RECIPE_TYPE));
     }
 
     public enum DrawerType {
@@ -448,99 +458,19 @@ public class FunctionalStorage extends ModuleController {
                 }
             });
         }
-        event.getGenerator().addProvider(true, new TitaniumRecipeProvider(event.getGenerator()) {
-            @Override
-            public void register(Consumer<FinishedRecipe> consumer) {
-                blocksToProcess.get().stream().map(block -> (BasicBlock) block).forEach(basicBlock -> basicBlock.registerRecipe(consumer));
-                TitaniumShapedRecipeBuilder.shapedRecipe(STORAGE_UPGRADES.get(StorageUpgradeItem.StorageTier.IRON).get())
-                        .pattern("III").pattern("IDI").pattern("III")
-                        .define('I', Tags.Items.INGOTS_IRON)
-                        .define('D', StorageTags.DRAWER)
-                        .save(consumer);
-                TitaniumShapedRecipeBuilder.shapedRecipe(VOID_UPGRADE.get())
-                        .pattern("III").pattern("IDI").pattern("III")
-                        .define('I', Tags.Items.OBSIDIAN)
-                        .define('D', StorageTags.DRAWER)
-                        .save(consumer);
-                TitaniumShapedRecipeBuilder.shapedRecipe(CONFIGURATION_TOOL.get())
-                        .pattern("PPG").pattern("PDG").pattern("PEP")
-                        .define('P', Items.PAPER)
-                        .define('G', Tags.Items.INGOTS_GOLD)
-                        .define('D', StorageTags.DRAWER)
-                        .define('E', Items.EMERALD)
-                        .save(consumer);
-                TitaniumShapedRecipeBuilder.shapedRecipe(LINKING_TOOL.get())
-                        .pattern("PPG").pattern("PDG").pattern("PEP")
-                        .define('P', Items.PAPER)
-                        .define('G', Tags.Items.INGOTS_GOLD)
-                        .define('D', StorageTags.DRAWER)
-                        .define('E', Items.DIAMOND)
-                        .save(consumer);
-                TitaniumShapedRecipeBuilder.shapedRecipe(STORAGE_UPGRADES.get(StorageUpgradeItem.StorageTier.COPPER).get())
-                        .pattern("IBI").pattern("CDC").pattern("IBI")
-                        .define('I', Items.COPPER_INGOT)
-                        .define('B', Items.COPPER_BLOCK)
-                        .define('C', Tags.Items.CHESTS_WOODEN)
-                        .define('D', StorageTags.DRAWER)
-                        .save(consumer);
-                TitaniumShapedRecipeBuilder.shapedRecipe(STORAGE_UPGRADES.get(StorageUpgradeItem.StorageTier.GOLD).get())
-                        .pattern("IBI").pattern("CDC").pattern("BIB")
-                        .define('I', Tags.Items.INGOTS_GOLD)
-                        .define('B', Tags.Items.STORAGE_BLOCKS_GOLD)
-                        .define('C', Tags.Items.CHESTS_WOODEN)
-                        .define('D', STORAGE_UPGRADES.get(StorageUpgradeItem.StorageTier.COPPER).get())
-                        .save(consumer);
-                TitaniumShapedRecipeBuilder.shapedRecipe(STORAGE_UPGRADES.get(StorageUpgradeItem.StorageTier.DIAMOND).get())
-                        .pattern("IBI").pattern("CDC").pattern("IBI")
-                        .define('I', Tags.Items.GEMS_DIAMOND)
-                        .define('B', Tags.Items.STORAGE_BLOCKS_DIAMOND)
-                        .define('C', Tags.Items.CHESTS_WOODEN)
-                        .define('D', STORAGE_UPGRADES.get(StorageUpgradeItem.StorageTier.GOLD).get())
-                        .save(consumer);
-                TitaniumShapedRecipeBuilder.shapedRecipe(REDSTONE_UPGRADE.get())
-                        .pattern("IBI").pattern("CDC").pattern("IBI")
-                        .define('I', Items.REDSTONE)
-                        .define('B', Items.REDSTONE_BLOCK)
-                        .define('C', Items.COMPARATOR)
-                        .define('D', StorageTags.DRAWER)
-                        .save(consumer);
-                SmithingTransformRecipeBuilder.smithing(Ingredient.of(Items.NETHERITE_UPGRADE_SMITHING_TEMPLATE), Ingredient.of(STORAGE_UPGRADES.get(StorageUpgradeItem.StorageTier.DIAMOND).get()), Ingredient.of(Items.NETHERITE_INGOT), RecipeCategory.MISC, STORAGE_UPGRADES.get(StorageUpgradeItem.StorageTier.NETHERITE).get())
-                        .unlocks("has_netherite_ingot", has(Items.NETHERITE_INGOT))
-                        .save(consumer, ForgeRegistries.ITEMS.getKey(STORAGE_UPGRADES.get(StorageUpgradeItem.StorageTier.NETHERITE).get()));
-                TitaniumShapedRecipeBuilder.shapedRecipe(ARMORY_CABINET.getLeft().get())
-                        .pattern("ICI").pattern("CDC").pattern("IBI")
-                        .define('I', Tags.Items.STONE)
-                        .define('B', Tags.Items.INGOTS_NETHERITE)
-                        .define('C', StorageTags.DRAWER)
-                        .define('D', Items.COMPARATOR)
-                        .save(consumer);
-                TitaniumShapedRecipeBuilder.shapedRecipe(PULLING_UPGRADE.get())
-                        .pattern("ICI").pattern("IDI").pattern("IBI")
-                        .define('I', Tags.Items.STONE)
-                        .define('B', Tags.Items.DUSTS_REDSTONE)
-                        .define('C', Items.HOPPER)
-                        .define('D', StorageTags.DRAWER)
-                        .save(consumer);
-                TitaniumShapedRecipeBuilder.shapedRecipe(PUSHING_UPGRADE.get())
-                        .pattern("IBI").pattern("IDI").pattern("IRI")
-                        .define('I', Tags.Items.STONE)
-                        .define('B', Tags.Items.DUSTS_REDSTONE)
-                        .define('R', Items.HOPPER)
-                        .define('D', StorageTags.DRAWER)
-                        .save(consumer);
-                TitaniumShapedRecipeBuilder.shapedRecipe(COLLECTOR_UPGRADE.get())
-                        .pattern("IBI").pattern("RDR").pattern("IBI")
-                        .define('I', Tags.Items.STONE)
-                        .define('B', Items.HOPPER)
-                        .define('R', Tags.Items.DUSTS_REDSTONE)
-                        .define('D', StorageTags.DRAWER)
-                        .save(consumer);
-                TitaniumShapedRecipeBuilder.shapedRecipe(ENDER_DRAWER.getLeft().get())
-                        .pattern("PPP").pattern("LCL").pattern("PPP")
-                        .define('P', ItemTags.PLANKS)
-                        .define('C', Tags.Items.CHESTS_ENDER)
-                        .define('L', StorageTags.DRAWER)
-                        .save(consumer);
+        event.getGenerator().addProvider(true, new FunctionalStorageRecipesProvider(event.getGenerator(), blocksToProcess));
+        event.getGenerator().addProvider(true, new TitaniumSerializableProvider(event.getGenerator(), MOD_ID) {
+
+            public void add(Map<IJsonFile, IJSONGenerator> serializables) {
+                new CustomCompactingRecipe(new ResourceLocation("clay"), new ItemStack(Items.CLAY_BALL, 4), new ItemStack(Items.CLAY));
+                new CustomCompactingRecipe(new ResourceLocation("glowstone"), new ItemStack(Items.GLOWSTONE_DUST, 4), new ItemStack(Items.GLOWSTONE));
+                new CustomCompactingRecipe(new ResourceLocation("melon"), new ItemStack(Items.MELON_SLICE, 9), new ItemStack(Items.MELON));
+                new CustomCompactingRecipe(new ResourceLocation("quartz"), new ItemStack(Items.QUARTZ, 4), new ItemStack(Items.QUARTZ_BLOCK));
+                new CustomCompactingRecipe(new ResourceLocation("ice"), new ItemStack(Items.ICE, 9), new ItemStack(Items.BLUE_ICE));
+                new CustomCompactingRecipe(new ResourceLocation("blue_ice"), new ItemStack(Items.BLUE_ICE, 9), new ItemStack(Items.PACKED_ICE));
+                new CustomCompactingRecipe(new ResourceLocation("amethyst"), new ItemStack(Items.AMETHYST_SHARD, 9), new ItemStack(Items.AMETHYST_BLOCK));
+
+                CustomCompactingRecipe.RECIPES.forEach(customCompactingRecipe -> serializables.put(customCompactingRecipe, customCompactingRecipe));
             }
         });
     }

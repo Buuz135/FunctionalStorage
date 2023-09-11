@@ -34,13 +34,6 @@ public class FunctionalStorageItemTagsProvider extends ItemTagsProvider {
                 tTagAppender.add(blockRegistryObject.get().asItem());
             }
         }
-        this.tag(StorageTags.IGNORE_CRAFTING_CHECK)
-                .add(Items.CLAY, Items.CLAY_BALL)
-                .add(Items.GLOWSTONE, Items.GLOWSTONE_DUST)
-                .add(Items.MELON, Items.MELON_SLICE)
-                .add(Items.QUARTZ, Items.QUARTZ_BLOCK)
-                .add(Items.ICE, Items.BLUE_ICE, Items.PACKED_ICE)
-                .add(Items.AMETHYST_BLOCK, Items.AMETHYST_SHARD);
     }
 
     @Override
