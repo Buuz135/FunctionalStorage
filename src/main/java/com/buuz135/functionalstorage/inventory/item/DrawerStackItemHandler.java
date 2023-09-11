@@ -162,8 +162,9 @@ public class DrawerStackItemHandler implements IItemHandler, INBTSerializable<Co
 
     @Override
     public int getSlotLimit(int slot) {
-        if (hasDowngrade()) return 64;
-        return (int) Math.min(Integer.MAX_VALUE, type.getSlotAmount() * (long) getMultiplier());
+        var slotAmount = type.getSlotAmount();
+        if (hasDowngrade()) slotAmount = 64;
+        return (int) Math.min(Integer.MAX_VALUE, slotAmount * (long) getMultiplier());
     }
 
     private long getMultiplier() {

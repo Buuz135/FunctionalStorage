@@ -1,7 +1,11 @@
 package com.buuz135.functionalstorage.block;
 
 import com.buuz135.functionalstorage.FunctionalStorage;
-import com.buuz135.functionalstorage.block.tile.*;
+import com.buuz135.functionalstorage.block.tile.CompactingDrawerTile;
+import com.buuz135.functionalstorage.block.tile.ControllableDrawerTile;
+import com.buuz135.functionalstorage.block.tile.ItemControllableDrawerTile;
+import com.buuz135.functionalstorage.block.tile.StorageControllerTile;
+import com.buuz135.functionalstorage.inventory.item.CompactingDrawerCapabilityProvider;
 import com.buuz135.functionalstorage.item.LinkingToolItem;
 import com.buuz135.functionalstorage.util.StorageTags;
 import com.google.common.collect.Multimap;
@@ -11,16 +15,22 @@ import com.hrznstudio.titanium.datagenerator.loot.block.BasicBlockLootTables;
 import com.hrznstudio.titanium.recipe.generator.TitaniumShapedRecipeBuilder;
 import com.hrznstudio.titanium.util.RayTraceUtils;
 import com.hrznstudio.titanium.util.TileUtil;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
 import net.minecraft.data.recipes.FinishedRecipe;
-import net.minecraft.util.Mth;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.tooltip.TooltipComponent;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -39,12 +49,14 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.common.Tags;
+import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 public class CompactingDrawerBlock extends RotatableBlock<CompactingDrawerTile> {
@@ -251,5 +263,39 @@ public class CompactingDrawerBlock extends RotatableBlock<CompactingDrawerTile> 
             }
         }
         return 0;
+    }
+
+    @Override
+    public void appendHoverText(ItemStack p_49816_, @Nullable BlockGetter p_49817_, List<net.minecraft.network.chat.Component> tooltip, TooltipFlag p_49819_) {
+        super.appendHoverText(p_49816_, p_49817_, tooltip, p_49819_);
+        if (p_49816_.hasTag() && p_49816_.getTag().contains("Tile")) {
+            MutableComponent text = Component.translatable("drawer.block.contents");
+            tooltip.add(text.withStyle(ChatFormatting.GRAY));
+            tooltip.add(Component.literal(""));
+            tooltip.add(Component.literal(""));
+        }
+    }
+
+    public static class CompactingDrawerItem extends BlockItem {
+
+        private final int slots;
+        private Block drawerBlock;
+
+        public CompactingDrawerItem(Block p_40565_, Properties p_40566_, int slots) {
+            super(p_40565_, p_40566_);
+            this.drawerBlock = p_40565_;
+            this.slots = slots;
+        }
+
+        @Override
+        public Optional<TooltipComponent> getTooltipImage(ItemStack stack) {
+            return super.getTooltipImage(stack);
+        }
+
+        @Nullable
+        @Override
+        public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundTag nbt) {
+            return new CompactingDrawerCapabilityProvider(stack, slots);
+        }
     }
 }

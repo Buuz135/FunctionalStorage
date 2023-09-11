@@ -9,6 +9,7 @@ import com.buuz135.functionalstorage.data.FunctionalStorageBlockstateProvider;
 import com.buuz135.functionalstorage.data.FunctionalStorageItemTagsProvider;
 import com.buuz135.functionalstorage.data.FunctionalStorageLangProvider;
 import com.buuz135.functionalstorage.inventory.BigInventoryHandler;
+import com.buuz135.functionalstorage.inventory.item.CompactingStackItemHandler;
 import com.buuz135.functionalstorage.inventory.item.DrawerStackItemHandler;
 import com.buuz135.functionalstorage.item.ConfigurationToolItem;
 import com.buuz135.functionalstorage.item.LinkingToolItem;
@@ -180,8 +181,12 @@ public class FunctionalStorage extends ModuleController {
             }
             DRAWER_TYPES.get(value).forEach(blockRegistryObject -> TAB.addIconStacks(() -> new ItemStack(blockRegistryObject.getLeft().get())));
         }
-        COMPACTING_DRAWER = getRegistries().registerBlockWithTile("compacting_drawer", () -> new CompactingDrawerBlock("compacting_drawer", BlockBehaviour.Properties.copy(Blocks.STONE_BRICKS)));
-        FRAMED_COMPACTING_DRAWER = getRegistries().registerBlockWithTile("compacting_framed_drawer", () -> new CompactingFramedDrawerBlock("compacting_framed_drawer"));
+        COMPACTING_DRAWER = getRegistries().registerBlockWithTileItem("compacting_drawer", () -> new CompactingDrawerBlock("compacting_drawer", BlockBehaviour.Properties.copy(Blocks.STONE_BRICKS)),
+                blockRegistryObject -> () ->
+                        new CompactingDrawerBlock.CompactingDrawerItem(blockRegistryObject.get(), new Item.Properties().tab(TAB), 3));
+        FRAMED_COMPACTING_DRAWER = getRegistries().registerBlockWithTileItem("compacting_framed_drawer", () -> new CompactingFramedDrawerBlock("compacting_framed_drawer"),
+                blockRegistryObject -> () ->
+                        new CompactingDrawerBlock.CompactingDrawerItem(blockRegistryObject.get(), new Item.Properties().tab(TAB), 3));
         FLUID_DRAWER_1 = getRegistries().registerBlockWithTile("fluid_1", () -> new FluidDrawerBlock(DrawerType.X_1, BlockBehaviour.Properties.copy(Blocks.STONE_BRICKS)));
         FLUID_DRAWER_2 = getRegistries().registerBlockWithTile("fluid_2", () -> new FluidDrawerBlock(DrawerType.X_2, BlockBehaviour.Properties.copy(Blocks.STONE_BRICKS)));
         FLUID_DRAWER_4 = getRegistries().registerBlockWithTile("fluid_4", () -> new FluidDrawerBlock(DrawerType.X_4, BlockBehaviour.Properties.copy(Blocks.STONE_BRICKS)));
@@ -191,7 +196,9 @@ public class FunctionalStorage extends ModuleController {
         for (StorageUpgradeItem.StorageTier value : StorageUpgradeItem.StorageTier.values()) {
             STORAGE_UPGRADES.put(value, getRegistries().registerGeneric(ForgeRegistries.ITEMS.getRegistryKey(), value.name().toLowerCase(Locale.ROOT) + (value == StorageUpgradeItem.StorageTier.IRON ? "_downgrade" : "_upgrade"), () -> new StorageUpgradeItem(value)));
         }
-        SIMPLE_COMPACTING_DRAWER = getRegistries().registerBlockWithTile("simple_compacting_drawer", () -> new SimpleCompactingDrawerBlock("simple_compacting_drawer", BlockBehaviour.Properties.copy(Blocks.STONE_BRICKS)));
+        SIMPLE_COMPACTING_DRAWER = getRegistries().registerBlockWithTileItem("simple_compacting_drawer", () -> new SimpleCompactingDrawerBlock("simple_compacting_drawer", BlockBehaviour.Properties.copy(Blocks.STONE_BRICKS)),
+                blockRegistryObject -> () ->
+                        new CompactingDrawerBlock.CompactingDrawerItem(blockRegistryObject.get(), new Item.Properties().tab(TAB), 3));
         COLLECTOR_UPGRADE = getRegistries().registerGeneric(ForgeRegistries.ITEMS.getRegistryKey(), "collector_upgrade", () -> new UpgradeItem(new Item.Properties(), UpgradeItem.Type.UTILITY));
         PULLING_UPGRADE = getRegistries().registerGeneric(ForgeRegistries.ITEMS.getRegistryKey(), "puller_upgrade", () -> new UpgradeItem(new Item.Properties(), UpgradeItem.Type.UTILITY));
         PUSHING_UPGRADE = getRegistries().registerGeneric(ForgeRegistries.ITEMS.getRegistryKey(), "pusher_upgrade", () -> new UpgradeItem(new Item.Properties(), UpgradeItem.Type.UTILITY));
@@ -331,6 +338,17 @@ public class FunctionalStorage extends ModuleController {
                     for (BigInventoryHandler.BigStack storedStack : ((DrawerStackItemHandler) iItemHandler).getStoredStacks()) {
                         TooltipUtil.renderItemAdvanced(itemTooltipEvent.getPoseStack(), storedStack.getStack(), itemTooltipEvent.getX() + 20 + 26 * i, itemTooltipEvent.getY() + 11, 512, NumberUtils.getFormatedBigNumber(storedStack.getAmount()) + "/" + NumberUtils.getFormatedBigNumber(iItemHandler.getSlotLimit(i)));
                         ++i;
+                    }
+                }
+                if (iItemHandler instanceof CompactingStackItemHandler compactingStackItemHandler) {
+                    int pos = 0;
+
+                    for (int i = compactingStackItemHandler.getSlots(); i >= 0; i--) {
+                        var stack = compactingStackItemHandler.getStackInSlot(i);
+                        if (!stack.isEmpty()) {
+                            TooltipUtil.renderItemAdvanced(itemTooltipEvent.getPoseStack(), stack, itemTooltipEvent.getX() + 20 + 32 * pos, itemTooltipEvent.getY() + 11, 512, NumberUtils.getFormatedBigNumber(stack.getCount()) + "/" + NumberUtils.getFormatedBigNumber(iItemHandler.getSlotLimit(i)));
+                            ++pos;
+                        }
                     }
                 }
             });
