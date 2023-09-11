@@ -82,14 +82,16 @@ public abstract class ItemControllableDrawerTile<T extends ItemControllableDrawe
                         Direction direction = UpgradeItem.getDirection(stack);
                         TileUtil.getTileEntity(level, pos.relative(direction)).ifPresent(blockEntity1 -> {
                             blockEntity1.getCapability(ForgeCapabilities.ITEM_HANDLER, direction.getOpposite()).ifPresent(otherHandler -> {
-                                for (int otherSlot = 0; otherSlot < getStorage().getSlots(); otherSlot++) {
-                                    ItemStack pulledStack = getStorage().extractItem(otherSlot, FunctionalStorageConfig.UPGRADE_PUSH_ITEMS, true);
+                                for (int drawerSlot = 0; drawerSlot < getStorage().getSlots(); drawerSlot++) {
+                                    ItemStack pulledStack = getStorage().extractItem(drawerSlot, FunctionalStorageConfig.UPGRADE_PUSH_ITEMS, true);
                                     if (pulledStack.isEmpty()) continue;
                                     boolean hasWorked = false;
-                                    for (int ourSlot = 0; ourSlot < otherHandler.getSlots(); ourSlot++) {
-                                        ItemStack simulated = otherHandler.insertItem(ourSlot, pulledStack, true);
+                                    for (int destinationSlot = 0; destinationSlot < otherHandler.getSlots(); destinationSlot++) {
+                                        if (otherHandler.getStackInSlot(destinationSlot).getCount() >= otherHandler.getSlotLimit(destinationSlot))
+                                            continue;
+                                        ItemStack simulated = otherHandler.insertItem(destinationSlot, pulledStack, true);
                                         if (simulated.getCount() <= pulledStack.getCount()) {
-                                            otherHandler.insertItem(ourSlot, getStorage().extractItem(otherSlot, pulledStack.getCount() - simulated.getCount(), false), false);
+                                            otherHandler.insertItem(destinationSlot, getStorage().extractItem(drawerSlot, pulledStack.getCount() - simulated.getCount(), false), false);
                                             hasWorked = true;
                                             break;
                                         }
