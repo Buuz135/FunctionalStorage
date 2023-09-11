@@ -10,3 +10,4 @@
 * Check if an upgrade can go inside a drawer to validate if proper storage numbers, closes #197
 * Force the Creative Vending upgrade to go to the proper slot when right clicked into a drawer, closes #184
 * Added item tooltip display to compacting drawers and a proper capability, closes #48
+* Fixed Simple Compacting Drawers being breakable in creative when interacting with them, closes #187
