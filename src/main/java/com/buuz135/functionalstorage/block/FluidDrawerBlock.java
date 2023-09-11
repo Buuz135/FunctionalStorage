@@ -5,6 +5,7 @@ import com.buuz135.functionalstorage.block.tile.ControllableDrawerTile;
 import com.buuz135.functionalstorage.block.tile.FluidDrawerTile;
 import com.buuz135.functionalstorage.block.tile.StorageControllerTile;
 import com.buuz135.functionalstorage.inventory.item.DrawerCapabilityProvider;
+import com.buuz135.functionalstorage.item.ConfigurationToolItem;
 import com.buuz135.functionalstorage.item.LinkingToolItem;
 import com.buuz135.functionalstorage.util.NumberUtils;
 import com.hrznstudio.titanium.block.RotatableBlock;
@@ -201,6 +202,20 @@ public class FluidDrawerBlock extends RotatableBlock<FluidDrawerTile> {
             }
             if (stack.getTag().contains("Locked")) {
                 level.setBlock(pos, p_49849_.setValue(DrawerBlock.LOCKED, true), 3);
+            }
+        }
+        BlockEntity entity = level.getBlockEntity(pos);
+        var offhand = p_49850_.getOffhandItem();
+        if (offhand.is(FunctionalStorage.CONFIGURATION_TOOL.get())) {
+            var action = ConfigurationToolItem.getAction(offhand);
+            if (entity instanceof ControllableDrawerTile tile) {
+                if (action == ConfigurationToolItem.ConfigurationAction.LOCKING) {
+                    tile.setLocked(true);
+                } else if (action.getMax() == 1) {
+                    tile.getDrawerOptions().setActive(action, false);
+                } else {
+                    tile.getDrawerOptions().setAdvancedValue(action, 1);
+                }
             }
         }
     }

@@ -6,6 +6,7 @@ import com.buuz135.functionalstorage.block.tile.DrawerTile;
 import com.buuz135.functionalstorage.block.tile.ItemControllableDrawerTile;
 import com.buuz135.functionalstorage.block.tile.StorageControllerTile;
 import com.buuz135.functionalstorage.inventory.item.DrawerCapabilityProvider;
+import com.buuz135.functionalstorage.item.ConfigurationToolItem;
 import com.buuz135.functionalstorage.item.LinkingToolItem;
 import com.buuz135.functionalstorage.recipe.DrawerlessWoodIngredient;
 import com.buuz135.functionalstorage.util.IWoodType;
@@ -239,18 +240,30 @@ public class DrawerBlock extends RotatableBlock<DrawerTile> {
     @Override
     public void setPlacedBy(Level level, BlockPos pos, BlockState p_49849_, @Nullable LivingEntity p_49850_, ItemStack stack) {
         super.setPlacedBy(level, pos, p_49849_, p_49850_, stack);
+        BlockEntity entity = level.getBlockEntity(pos);
         if (stack.hasTag()) {
             if (stack.getTag().contains("Tile")){
-                BlockEntity entity = level.getBlockEntity(pos);
                 if (entity instanceof ControllableDrawerTile tile) {
                     entity.load(stack.getTag().getCompound("Tile"));
                     tile.markForUpdate();
                 }
             }
             if (stack.getTag().contains("Locked")){
-                BlockEntity entity = level.getBlockEntity(pos);
                 if (entity instanceof ControllableDrawerTile tile) {
                     tile.setLocked(stack.getTag().getBoolean("Locked"));
+                }
+            }
+        }
+        var offhand = p_49850_.getOffhandItem();
+        if (offhand.is(FunctionalStorage.CONFIGURATION_TOOL.get())) {
+            var action = ConfigurationToolItem.getAction(offhand);
+            if (entity instanceof ControllableDrawerTile tile) {
+                if (action == ConfigurationToolItem.ConfigurationAction.LOCKING) {
+                    tile.setLocked(true);
+                } else if (action.getMax() == 1) {
+                    tile.getDrawerOptions().setActive(action, false);
+                } else {
+                    tile.getDrawerOptions().setAdvancedValue(action, 1);
                 }
             }
         }
