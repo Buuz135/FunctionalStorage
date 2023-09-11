@@ -104,6 +104,7 @@ public class FunctionalStorage extends ModuleController {
     public static Pair<RegistryObject<Block>, RegistryObject<BlockEntityType<?>>> SIMPLE_COMPACTING_DRAWER;
     public static Pair<RegistryObject<Block>, RegistryObject<BlockEntityType<?>>> FRAMED_DRAWER_CONTROLLER;
     public static Pair<RegistryObject<Block>, RegistryObject<BlockEntityType<?>>> FRAMED_CONTROLLER_EXTENSION;
+    public static Pair<RegistryObject<Block>, RegistryObject<BlockEntityType<?>>> FRAMED_SIMPLE_COMPACTING_DRAWER;
 
 
     public static RegistryObject<Item> LINKING_TOOL;
@@ -167,6 +168,7 @@ public class FunctionalStorage extends ModuleController {
         NBTManager.getInstance().scanTileClassForAnnotations(CompactingFramedDrawerTile.class);
         NBTManager.getInstance().scanTileClassForAnnotations(FluidDrawerTile.class);
         NBTManager.getInstance().scanTileClassForAnnotations(SimpleCompactingDrawerTile.class);
+        NBTManager.getInstance().scanTileClassForAnnotations(FramedSimpleCompactingDrawerTile.class);
     }
 
 
@@ -180,7 +182,6 @@ public class FunctionalStorage extends ModuleController {
                     var pair = getRegistries().registerBlockWithTileItem(name, () -> new FramedDrawerBlock(value), blockRegistryObject -> () ->
                             new DrawerBlock.DrawerItem((DrawerBlock) blockRegistryObject.get(), new Item.Properties().tab(TAB)));
                     DRAWER_TYPES.computeIfAbsent(value, drawerType -> new ArrayList<>()).add(pair);
-                    CompactingFramedDrawerBlock.FRAMED.add(pair.getLeft());
                 } else {
                     DRAWER_TYPES.computeIfAbsent(value, drawerType -> new ArrayList<>()).add(getRegistries().registerBlockWithTileItem(name, () -> new DrawerBlock(woodType, value, BlockBehaviour.Properties.copy(woodType.getPlanks())), blockRegistryObject -> () ->
                             new DrawerBlock.DrawerItem((DrawerBlock) blockRegistryObject.get(), new Item.Properties().tab(TAB))));
@@ -205,7 +206,10 @@ public class FunctionalStorage extends ModuleController {
         }
         SIMPLE_COMPACTING_DRAWER = getRegistries().registerBlockWithTileItem("simple_compacting_drawer", () -> new SimpleCompactingDrawerBlock("simple_compacting_drawer", BlockBehaviour.Properties.copy(Blocks.STONE_BRICKS)),
                 blockRegistryObject -> () ->
-                        new CompactingDrawerBlock.CompactingDrawerItem(blockRegistryObject.get(), new Item.Properties().tab(TAB), 3));
+                        new CompactingDrawerBlock.CompactingDrawerItem(blockRegistryObject.get(), new Item.Properties().tab(TAB), 2));
+        FRAMED_SIMPLE_COMPACTING_DRAWER = getRegistries().registerBlockWithTileItem("framed_simple_compacting_drawer", () -> new FramedSimpleCompactingDrawerBlock("framed_simple_compacting_drawer"),
+                blockRegistryObject -> () ->
+                        new CompactingDrawerBlock.CompactingDrawerItem(blockRegistryObject.get(), new Item.Properties().tab(TAB), 2));
         COLLECTOR_UPGRADE = getRegistries().registerGeneric(ForgeRegistries.ITEMS.getRegistryKey(), "collector_upgrade", () -> new UpgradeItem(new Item.Properties(), UpgradeItem.Type.UTILITY));
         PULLING_UPGRADE = getRegistries().registerGeneric(ForgeRegistries.ITEMS.getRegistryKey(), "puller_upgrade", () -> new UpgradeItem(new Item.Properties(), UpgradeItem.Type.UTILITY));
         PUSHING_UPGRADE = getRegistries().registerGeneric(ForgeRegistries.ITEMS.getRegistryKey(), "pusher_upgrade", () -> new UpgradeItem(new Item.Properties(), UpgradeItem.Type.UTILITY));
@@ -285,6 +289,7 @@ public class FunctionalStorage extends ModuleController {
             registerRenderers.registerBlockEntityRenderer((BlockEntityType<? extends FluidDrawerTile>) FLUID_DRAWER_2.getRight().get(), p_173571_ -> new FluidDrawerRenderer());
             registerRenderers.registerBlockEntityRenderer((BlockEntityType<? extends FluidDrawerTile>) FLUID_DRAWER_4.getRight().get(), p_173571_ -> new FluidDrawerRenderer());
             registerRenderers.registerBlockEntityRenderer((BlockEntityType<? extends SimpleCompactingDrawerTile>) SIMPLE_COMPACTING_DRAWER.getRight().get(), p_173571_ -> new SimpleCompactingDrawerRenderer());
+            registerRenderers.registerBlockEntityRenderer((BlockEntityType<? extends FramedSimpleCompactingDrawerTile>) FRAMED_SIMPLE_COMPACTING_DRAWER.getRight().get(), p_173571_ -> new SimpleCompactingDrawerRenderer());
 
             registerRenderers.registerBlockEntityRenderer((BlockEntityType<? extends FramedDrawerControllerTile>) FRAMED_DRAWER_CONTROLLER.getRight().get(), p -> new ControllerRenderer());
         }).subscribe();
@@ -328,6 +333,7 @@ public class FunctionalStorage extends ModuleController {
             ItemBlockRenderTypes.setRenderLayer(FLUID_DRAWER_2.getLeft().get(), RenderType.cutout());
             ItemBlockRenderTypes.setRenderLayer(FLUID_DRAWER_4.getLeft().get(), RenderType.cutout());
             ItemBlockRenderTypes.setRenderLayer(SIMPLE_COMPACTING_DRAWER.getLeft().get(), RenderType.cutout());
+            ItemBlockRenderTypes.setRenderLayer(FRAMED_SIMPLE_COMPACTING_DRAWER.getLeft().get(), RenderType.cutout());
 
             ItemBlockRenderTypes.setRenderLayer(FRAMED_DRAWER_CONTROLLER.getLeft().get(), RenderType.cutout());
             ItemBlockRenderTypes.setRenderLayer(FRAMED_CONTROLLER_EXTENSION.getLeft().get(), RenderType.cutout());

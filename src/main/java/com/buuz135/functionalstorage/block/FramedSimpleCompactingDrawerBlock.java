@@ -1,9 +1,8 @@
 package com.buuz135.functionalstorage.block;
 
 import com.buuz135.functionalstorage.FunctionalStorage;
-import com.buuz135.functionalstorage.block.tile.CompactingDrawerTile;
-import com.buuz135.functionalstorage.block.tile.CompactingFramedDrawerTile;
-import com.buuz135.functionalstorage.block.tile.FramedDrawerTile;
+import com.buuz135.functionalstorage.block.tile.FramedSimpleCompactingDrawerTile;
+import com.buuz135.functionalstorage.block.tile.SimpleCompactingDrawerTile;
 import com.buuz135.functionalstorage.util.StorageTags;
 import com.hrznstudio.titanium.recipe.generator.TitaniumShapedRecipeBuilder;
 import com.hrznstudio.titanium.util.TileUtil;
@@ -32,20 +31,20 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.function.Consumer;
 
-public class CompactingFramedDrawerBlock extends CompactingDrawerBlock{
-    public CompactingFramedDrawerBlock(String name) {
+public class FramedSimpleCompactingDrawerBlock extends SimpleCompactingDrawerBlock {
+    public FramedSimpleCompactingDrawerBlock(String name) {
         super(name, Properties.copy(Blocks.STONE).noOcclusion().isViewBlocking((p_61036_, p_61037_, p_61038_) -> false));
     }
 
     @Override
-    public BlockEntityType.BlockEntitySupplier<CompactingDrawerTile> getTileEntityFactory() {
-        return (blockPos, state) -> new CompactingFramedDrawerTile(this,  (BlockEntityType<CompactingDrawerTile>) FunctionalStorage.FRAMED_COMPACTING_DRAWER.getValue().get(), blockPos, state);
+    public BlockEntityType.BlockEntitySupplier<SimpleCompactingDrawerTile> getTileEntityFactory() {
+        return (blockPos, state) -> new FramedSimpleCompactingDrawerTile(this, (BlockEntityType<SimpleCompactingDrawerTile>) FunctionalStorage.FRAMED_SIMPLE_COMPACTING_DRAWER.getValue().get(), blockPos, state);
     }
 
     @Override
     public void setPlacedBy(Level level, BlockPos pos, BlockState p_49849_, @Nullable LivingEntity p_49850_, ItemStack stack) {
         super.setPlacedBy(level, pos, p_49849_, p_49850_, stack);
-        TileUtil.getTileEntity(level, pos, CompactingFramedDrawerTile.class).ifPresent(framedDrawerTile -> {
+        TileUtil.getTileEntity(level, pos, FramedSimpleCompactingDrawerTile.class).ifPresent(framedDrawerTile -> {
             framedDrawerTile.setFramedDrawerModelData(FramedDrawerBlock.getDrawerModelData(stack));
         });
     }
@@ -56,14 +55,14 @@ public class CompactingFramedDrawerBlock extends CompactingDrawerBlock{
         NonNullList<ItemStack> stacks = NonNullList.create();
         ItemStack stack = new ItemStack(this);
         BlockEntity drawerTile = builder.getOptionalParameter(LootContextParams.BLOCK_ENTITY);
-        if (drawerTile instanceof CompactingFramedDrawerTile framedDrawerTile) {
+        if (drawerTile instanceof FramedSimpleCompactingDrawerTile framedDrawerTile) {
             if (!framedDrawerTile.isEverythingEmpty()) {
                 stack.getOrCreateTag().put("Tile", drawerTile.saveWithoutMetadata());
             }
             if (framedDrawerTile.getFramedDrawerModelData() != null) {
                 stack.getOrCreateTag().put("Style", framedDrawerTile.getFramedDrawerModelData().serializeNBT());
             }
-            if (framedDrawerTile.isLocked()){
+            if (framedDrawerTile.isLocked()) {
                 stack.getOrCreateTag().putBoolean("Locked", framedDrawerTile.isLocked());
             }
         }
@@ -74,7 +73,7 @@ public class CompactingFramedDrawerBlock extends CompactingDrawerBlock{
     @Override
     public ItemStack getCloneItemStack(BlockState state, HitResult target, BlockGetter level, BlockPos pos, Player player) {
         BlockEntity entity = level.getBlockEntity(pos);
-        if (entity instanceof FramedDrawerTile framedDrawerTile && framedDrawerTile.getFramedDrawerModelData() != null && !framedDrawerTile.getFramedDrawerModelData().getDesign().isEmpty()){
+        if (entity instanceof FramedSimpleCompactingDrawerTile framedDrawerTile && framedDrawerTile.getFramedDrawerModelData() != null && !framedDrawerTile.getFramedDrawerModelData().getDesign().isEmpty()) {
             ItemStack stack = new ItemStack(this);
             stack.getOrCreateTag().put("Style", framedDrawerTile.getFramedDrawerModelData().serializeNBT());
             return stack;
@@ -85,13 +84,14 @@ public class CompactingFramedDrawerBlock extends CompactingDrawerBlock{
     @Override
     public void registerRecipe(Consumer<FinishedRecipe> consumer) {
         TitaniumShapedRecipeBuilder.shapedRecipe(this)
-                .pattern("SSS").pattern("PDP").pattern("SIS")
+                .pattern("SSS").pattern("SDP").pattern("SIS")
                 .define('S', Items.IRON_NUGGET)
                 .define('P', Blocks.PISTON)
                 .define('D', StorageTags.DRAWER)
                 .define('I', Tags.Items.INGOTS_IRON)
                 .save(consumer);
     }
+
     @Override
     public void appendHoverText(ItemStack p_49816_, @Nullable BlockGetter p_49817_, List<Component> components, TooltipFlag p_49819_) {
         components.add(Component.translatable("frameddrawer.use").withStyle(ChatFormatting.GRAY));

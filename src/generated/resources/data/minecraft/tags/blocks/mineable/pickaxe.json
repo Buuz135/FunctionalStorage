@@ -11,6 +11,7 @@
     "functionalstorage:controller_extension",
     "functionalstorage:simple_compacting_drawer",
     "functionalstorage:framed_storage_controller",
-    "functionalstorage:framed_controller_extension"
+    "functionalstorage:framed_controller_extension",
+    "functionalstorage:framed_simple_compacting_drawer"
   ]
 }
