@@ -164,7 +164,7 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
         if (stack.getItem().equals(FunctionalStorage.CONFIGURATION_TOOL.get()) || stack.getItem().equals(FunctionalStorage.LINKING_TOOL.get()))
             return InteractionResult.PASS;
         if (!stack.isEmpty() && stack.getItem() instanceof UpgradeItem upgradeItem) {
-            if (upgradeItem instanceof StorageUpgradeItem storageUpgradeItem) {
+            if (upgradeItem instanceof StorageUpgradeItem || upgradeItem.equals(FunctionalStorage.CREATIVE_UPGRADE.get())) {
                 InventoryComponent component = storageUpgrades;
                 for (int i = 0; i < component.getSlots(); i++) {
                     if (component.getStackInSlot(i).isEmpty() && component.isItemValid(i, stack)) {
@@ -172,14 +172,16 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
                         return InteractionResult.SUCCESS;
                     }
                 }
-                for (int i = 0; i < component.getSlots(); i++) {
-                    if (!component.getStackInSlot(i).isEmpty() && component.isItemValid(i, stack) && component.getStackInSlot(i).getItem() instanceof StorageUpgradeItem instertedUpgrade && instertedUpgrade.getStorageMultiplier() < storageUpgradeItem.getStorageMultiplier()) {
-                        ItemHandlerHelper.giveItemToPlayer(playerIn, component.getStackInSlot(i).copy());
-                        ItemStack upgradeStack = stack.copy();
-                        upgradeStack.setCount(1);
-                        component.setStackInSlot(i, upgradeStack);
-                        stack.shrink(1);
-                        return InteractionResult.SUCCESS;
+                if (upgradeItem instanceof StorageUpgradeItem storageUpgradeItem) {
+                    for (int i = 0; i < component.getSlots(); i++) {
+                        if (!component.getStackInSlot(i).isEmpty() && component.isItemValid(i, stack) && component.getStackInSlot(i).getItem() instanceof StorageUpgradeItem instertedUpgrade && instertedUpgrade.getStorageMultiplier() < storageUpgradeItem.getStorageMultiplier()) {
+                            ItemHandlerHelper.giveItemToPlayer(playerIn, component.getStackInSlot(i).copy());
+                            ItemStack upgradeStack = stack.copy();
+                            upgradeStack.setCount(1);
+                            component.setStackInSlot(i, upgradeStack);
+                            stack.shrink(1);
+                            return InteractionResult.SUCCESS;
+                        }
                     }
                 }
             } else {
