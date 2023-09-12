@@ -233,7 +233,7 @@ public class FunctionalStorage extends ModuleController {
 
         CUSTOM_COMPACTING_RECIPE_TYPE = getRegistries().registerGeneric(ForgeRegistries.RECIPE_TYPES.getRegistryKey(), "custom_compacting", () -> RecipeType.simple(new ResourceLocation(MOD_ID, "custom_compacting")));
 
-        CUSTOM_COMPACTING_RECIPE_SERIALIZER = getRegistries().registerGeneric(ForgeRegistries.RECIPE_SERIALIZERS.getRegistryKey(), "custom_compacting", () -> new GenericSerializer<CustomCompactingRecipe>((RecipeType<CustomCompactingRecipe>) CUSTOM_COMPACTING_RECIPE_TYPE.get(), CustomCompactingRecipe.class));
+        CUSTOM_COMPACTING_RECIPE_SERIALIZER = getRegistries().registerGeneric(ForgeRegistries.RECIPE_SERIALIZERS.getRegistryKey(), "custom_compacting", () -> new GenericSerializer<>(CustomCompactingRecipe.class, CUSTOM_COMPACTING_RECIPE_TYPE));
     }
 
     public enum DrawerType {

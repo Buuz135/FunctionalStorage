@@ -27,10 +27,13 @@ jobs:
         uses: Kir-Antipov/mc-publish@v3.2
         with:
           curseforge-id: 556861
+          modrinth-id: cO40ZIg3
           curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
+          modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
           files-primary: build/libs/!(*-@(dev|sources)).jar
           files-secondary: build/libs/*-@(dev|sources).jar
           version-type: beta
+          version: ${{ github.ref_name }}
           loaders: forge
           game-versions: 1.19.2
           java: 17

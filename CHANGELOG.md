@@ -1,3 +1,7 @@
+# VERSION: 1.1.6
+
+* Fixed titanium compat, closes #205
+
 # VERSION: 1.1.5
 
 * Properly added a changelog file
