@@ -1,3 +1,4 @@
 {
-  "type": "minecraft:block"
+  "type": "minecraft:block",
+  "random_sequence": "functionalstorage:blocks/framed_simple_compacting_drawer"
 }
