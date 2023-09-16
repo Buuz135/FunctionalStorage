@@ -9,6 +9,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.client.model.data.ModelData;
 
 import javax.annotation.Nonnull;
+import java.util.HashMap;
 
 public class FramedSimpleCompactingDrawerTile extends SimpleCompactingDrawerTile {
 
@@ -17,6 +18,7 @@ public class FramedSimpleCompactingDrawerTile extends SimpleCompactingDrawerTile
 
     public FramedSimpleCompactingDrawerTile(BasicTileBlock<SimpleCompactingDrawerTile> base, BlockEntityType<SimpleCompactingDrawerTile> blockEntityType, BlockPos pos, BlockState state) {
         super(base, blockEntityType, pos, state);
+        this.framedDrawerModelData = new FramedDrawerModelData(new HashMap<>());
     }
 
     public FramedDrawerModelData getFramedDrawerModelData() {

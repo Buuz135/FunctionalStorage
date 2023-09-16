@@ -1,3 +1,7 @@
+# VERSION: 1.1.7
+
+* Fixed Framed Simple Drawer loosing the design, closes #209
+
 # VERSION: 1.1.6
 
 * Fixed titanium compat, closes #205
