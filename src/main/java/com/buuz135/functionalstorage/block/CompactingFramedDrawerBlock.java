@@ -4,6 +4,7 @@ import com.buuz135.functionalstorage.FunctionalStorage;
 import com.buuz135.functionalstorage.block.tile.CompactingDrawerTile;
 import com.buuz135.functionalstorage.block.tile.CompactingFramedDrawerTile;
 import com.buuz135.functionalstorage.block.tile.FramedDrawerTile;
+import com.buuz135.functionalstorage.util.StorageTags;
 import com.hrznstudio.titanium.recipe.generator.TitaniumShapedRecipeBuilder;
 import com.hrznstudio.titanium.util.TileUtil;
 import net.minecraft.ChatFormatting;
@@ -16,10 +17,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -29,17 +28,12 @@ import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.HitResult;
 import net.minecraftforge.common.Tags;
-import net.minecraftforge.registries.RegistryObject;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
 public class CompactingFramedDrawerBlock extends CompactingDrawerBlock{
-
-    public static List<RegistryObject<Block>> FRAMED = new ArrayList<>();
-
     public CompactingFramedDrawerBlock(String name) {
         super(name, Properties.copy(Blocks.STONE).noOcclusion().isViewBlocking((p_61036_, p_61037_, p_61038_) -> false));
     }
@@ -95,7 +89,7 @@ public class CompactingFramedDrawerBlock extends CompactingDrawerBlock{
                 .pattern("SSS").pattern("PDP").pattern("SIS")
                 .define('S', Items.IRON_NUGGET)
                 .define('P', Blocks.PISTON)
-                .define('D', Ingredient.of(FRAMED.stream().map(itemSupplier -> new ItemStack(itemSupplier.get()))))
+                .define('D', StorageTags.DRAWER)
                 .define('I', Tags.Items.INGOTS_IRON)
                 .save(consumer);
     }

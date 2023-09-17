@@ -18,6 +18,8 @@ import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import org.joml.Vector3f;
 
+import static com.buuz135.functionalstorage.util.MathUtils.createTransformMatrix;
+
 public class EnderDrawerRenderer implements BlockEntityRenderer<EnderDrawerTile> {
 
     @Override
@@ -86,7 +88,7 @@ public class EnderDrawerRenderer implements BlockEntityRenderer<EnderDrawerTile>
         if (!inventoryHandler.getStoredStacks().get(0).getStack().isEmpty()){
             matrixStack.translate(0.5, 0.5, 0.0005f);
             ItemStack stack = inventoryHandler.getStoredStacks().get(0).getStack();
-            DrawerRenderer.renderStack(matrixStack,  bufferIn, combinedLightIn, combinedOverlayIn, stack, inventoryHandler.getStoredStacks().get(0).getAmount(), 0.015f, tile.getDrawerOptions(), tile.getLevel());
+            DrawerRenderer.renderStack(matrixStack,  bufferIn, combinedLightIn, combinedOverlayIn, stack, inventoryHandler.getStoredStacks().get(0).getAmount(), inventoryHandler.getSlotLimit(0), 0.015f, tile.getDrawerOptions(), tile.getLevel());
         }
     }
 

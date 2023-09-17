@@ -32,6 +32,7 @@ public class FunctionalStorageLangProvider extends LanguageProvider {
         this.add(FunctionalStorage.FLUID_DRAWER_2.getLeft().get(), "Fluid Drawer (" + FunctionalStorage.DrawerType.X_2.getDisplayName() + ")");
         this.add(FunctionalStorage.FLUID_DRAWER_4.getLeft().get(), "Fluid Drawer (" + FunctionalStorage.DrawerType.X_4.getDisplayName() + ")");
         this.add(FunctionalStorage.SIMPLE_COMPACTING_DRAWER.getLeft().get(), "Simple Compacting Drawer");
+        this.add(FunctionalStorage.FRAMED_SIMPLE_COMPACTING_DRAWER.getLeft().get(), "Framed Simple Compacting Drawer");
         this.add(FunctionalStorage.COMPACTING_DRAWER.getLeft().get(), "Compacting Drawer");
         this.add(FunctionalStorage.FRAMED_COMPACTING_DRAWER.getLeft().get(), "Framed Compacting Drawer");
         this.add(FunctionalStorage.ENDER_DRAWER.getLeft().get(), "Ender Drawer");
@@ -73,6 +74,11 @@ public class FunctionalStorageLangProvider extends LanguageProvider {
         this.add("configurationtool.configmode.toggle_numbers", "Hide/Show Amounts");
         this.add("configurationtool.configmode.toggle_render", "Hide/Show Item Renders");
         this.add("configurationtool.configmode.toggle_upgrades", "Hide/Show Upgrade Renders");
+        this.add("configurationtool.configmode.indicator", "Swap indicator modes");
+        this.add("configurationtool.configmode.indicator.mode_0", "Hidden");
+        this.add("configurationtool.configmode.indicator.mode_1", "Show progress bar");
+        this.add("configurationtool.configmode.indicator.mode_2", "Show progress bar only when full");
+        this.add("configurationtool.configmode.indicator.mode_3", "Show progress bar only when full without background");
         this.add("configurationtool.use", "Sneak + Right Click in the air to change modes. Right click a drawer to toggle the option.");
         this.add("upgrade.type", "Type: ");
         this.add("upgrade.type.storage", "Storage");

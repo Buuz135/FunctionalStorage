@@ -17,17 +17,9 @@
         "type": "minecraft:crafting_shaped",
         "category": "misc",
         "key": {
-          "D": [
-            {
-              "item": "functionalstorage:framed_1"
-            },
-            {
-              "item": "functionalstorage:framed_2"
-            },
-            {
-              "item": "functionalstorage:framed_4"
-            }
-          ],
+          "D": {
+            "tag": "functionalstorage:drawer"
+          },
           "I": {
             "tag": "forge:ingots/iron"
           },

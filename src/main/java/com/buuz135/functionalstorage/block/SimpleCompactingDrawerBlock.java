@@ -1,7 +1,11 @@
 package com.buuz135.functionalstorage.block;
 
 import com.buuz135.functionalstorage.FunctionalStorage;
-import com.buuz135.functionalstorage.block.tile.*;
+import com.buuz135.functionalstorage.block.tile.ControllableDrawerTile;
+import com.buuz135.functionalstorage.block.tile.ItemControllableDrawerTile;
+import com.buuz135.functionalstorage.block.tile.SimpleCompactingDrawerTile;
+import com.buuz135.functionalstorage.block.tile.StorageControllerTile;
+import com.buuz135.functionalstorage.item.ConfigurationToolItem;
 import com.buuz135.functionalstorage.item.LinkingToolItem;
 import com.buuz135.functionalstorage.util.StorageTags;
 import com.hrznstudio.titanium.block.RotatableBlock;
@@ -9,16 +13,19 @@ import com.hrznstudio.titanium.datagenerator.loot.block.BasicBlockLootTables;
 import com.hrznstudio.titanium.recipe.generator.TitaniumShapedRecipeBuilder;
 import com.hrznstudio.titanium.util.RayTraceUtils;
 import com.hrznstudio.titanium.util.TileUtil;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
 import net.minecraft.data.recipes.FinishedRecipe;
-import net.minecraft.util.Mth;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -164,18 +171,30 @@ public class SimpleCompactingDrawerBlock extends RotatableBlock<SimpleCompacting
     @Override
     public void setPlacedBy(Level level, BlockPos pos, BlockState p_49849_, @Nullable LivingEntity p_49850_, ItemStack stack) {
         super.setPlacedBy(level, pos, p_49849_, p_49850_, stack);
+        BlockEntity entity = level.getBlockEntity(pos);
         if (stack.hasTag()) {
             if (stack.getTag().contains("Tile")) {
-                BlockEntity entity = level.getBlockEntity(pos);
                 if (entity instanceof ControllableDrawerTile tile) {
                     entity.load(stack.getTag().getCompound("Tile"));
                     tile.markForUpdate();
                 }
             }
             if (stack.getTag().contains("Locked")) {
-                BlockEntity entity = level.getBlockEntity(pos);
                 if (entity instanceof ControllableDrawerTile tile) {
                     tile.setLocked(stack.getTag().getBoolean("Locked"));
+                }
+            }
+        }
+        var offhand = p_49850_.getOffhandItem();
+        if (offhand.is(FunctionalStorage.CONFIGURATION_TOOL.get())) {
+            var action = ConfigurationToolItem.getAction(offhand);
+            if (entity instanceof ControllableDrawerTile tile) {
+                if (action == ConfigurationToolItem.ConfigurationAction.LOCKING) {
+                    tile.setLocked(true);
+                } else if (action.getMax() == 1) {
+                    tile.getDrawerOptions().setActive(action, false);
+                } else {
+                    tile.getDrawerOptions().setAdvancedValue(action, 1);
                 }
             }
         }
@@ -233,5 +252,16 @@ public class SimpleCompactingDrawerBlock extends RotatableBlock<SimpleCompacting
             }
         }
         return 0;
+    }
+
+    @Override
+    public void appendHoverText(ItemStack p_49816_, @Nullable BlockGetter p_49817_, List<net.minecraft.network.chat.Component> tooltip, TooltipFlag p_49819_) {
+        super.appendHoverText(p_49816_, p_49817_, tooltip, p_49819_);
+        if (p_49816_.hasTag() && p_49816_.getTag().contains("Tile")) {
+            MutableComponent text = Component.translatable("drawer.block.contents");
+            tooltip.add(text.withStyle(ChatFormatting.GRAY));
+            tooltip.add(Component.literal(""));
+            tooltip.add(Component.literal(""));
+        }
     }
 }

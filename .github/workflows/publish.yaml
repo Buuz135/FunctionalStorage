@@ -38,6 +38,6 @@ jobs:
           game-versions: 1.20.1
           java: 17
           name: ""
-          changelog: "https://github.com/Buuz135/FunctionalStorage/commits/main"
+          changelog: "https://github.com/Buuz135/FunctionalStorage/blob/main/CHANGELOG.md"
           dependencies: |
             titanium | depends

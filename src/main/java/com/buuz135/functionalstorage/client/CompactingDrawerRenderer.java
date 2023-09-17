@@ -12,6 +12,8 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.item.ItemStack;
 import org.joml.Vector3f;
 
+import static com.buuz135.functionalstorage.util.MathUtils.createTransformMatrix;
+
 public class CompactingDrawerRenderer implements BlockEntityRenderer<CompactingDrawerTile> {
 
     @Override
@@ -50,7 +52,7 @@ public class CompactingDrawerRenderer implements BlockEntityRenderer<CompactingD
             matrixStack.pushPose();
             matrixStack.mulPoseMatrix(createTransformMatrix(
             		new Vector3f(.75f, .27f, .0005f), new Vector3f(0), new Vector3f(.5f, .5f, 1.0f)));
-            DrawerRenderer.renderStack(matrixStack,  bufferIn, combinedLightIn, combinedOverlayIn, stack, tile.getHandler().getStackInSlot(0).getCount(), 0.02f, tile.getDrawerOptions(), tile.getLevel());
+            DrawerRenderer.renderStack(matrixStack,  bufferIn, combinedLightIn, combinedOverlayIn, stack, tile.getHandler().getStackInSlot(0).getCount(),tile.getHandler().getSlotLimit(0), 0.02f, tile.getDrawerOptions(), tile.getLevel());
             matrixStack.popPose();
         }
         stack = tile.getHandler().getResultList().get(1).getResult();
@@ -58,7 +60,7 @@ public class CompactingDrawerRenderer implements BlockEntityRenderer<CompactingD
             matrixStack.pushPose();
             matrixStack.mulPoseMatrix(createTransformMatrix(
             		new Vector3f(.25f, .27f, .0005f), new Vector3f(0), new Vector3f(.5f, .5f, 1.0f)));
-            DrawerRenderer.renderStack(matrixStack,  bufferIn, combinedLightIn, combinedOverlayIn, stack, tile.getHandler().getStackInSlot(1).getCount(), 0.02f, tile.getDrawerOptions(), tile.getLevel());
+            DrawerRenderer.renderStack(matrixStack,  bufferIn, combinedLightIn, combinedOverlayIn, stack, tile.getHandler().getStackInSlot(1).getCount(), tile.getHandler().getSlotLimit(1), 0.02f, tile.getDrawerOptions(), tile.getLevel());
             matrixStack.popPose();
         }
         stack = tile.getHandler().getResultList().get(2).getResult();
@@ -66,7 +68,7 @@ public class CompactingDrawerRenderer implements BlockEntityRenderer<CompactingD
             matrixStack.pushPose();
             matrixStack.mulPoseMatrix(createTransformMatrix(
             		new Vector3f(.5f, .77f, .0005f),new Vector3f(0), new Vector3f(.5f, .5f, 1.0f)));
-            DrawerRenderer.renderStack(matrixStack,  bufferIn, combinedLightIn, combinedOverlayIn, stack, tile.getHandler().getStackInSlot(2).getCount(), 0.02f, tile.getDrawerOptions(), tile.getLevel());
+            DrawerRenderer.renderStack(matrixStack,  bufferIn, combinedLightIn, combinedOverlayIn, stack, tile.getHandler().getStackInSlot(2).getCount(), tile.getHandler().getSlotLimit(2), 0.02f, tile.getDrawerOptions(), tile.getLevel());
             matrixStack.popPose();
         }
         matrixStack.popPose();

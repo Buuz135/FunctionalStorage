@@ -162,7 +162,11 @@ public abstract class StorageControllerTile<T extends StorageControllerTile<T>> 
                 BlockEntity blockEntity = this.level.getBlockEntity(BlockPos.of(connectedDrawer));
                 if (blockEntity instanceof StorageControllerTile) continue;
                 if (blockEntity instanceof ControllableDrawerTile) {
-                    ((ControllableDrawerTile<?>) blockEntity).getDrawerOptions().setActive(action, this.getDrawerOptions().isActive(action));
+                    if (action.getMax() == 1) {
+                        ((ControllableDrawerTile<?>) blockEntity).getDrawerOptions().setActive(action, this.getDrawerOptions().isActive(action));
+                    } else {
+                        ((ControllableDrawerTile<?>) blockEntity).getDrawerOptions().setAdvancedValue(action, this.getDrawerOptions().getAdvancedValue(action));
+                    }
                     ((ControllableDrawerTile<?>) blockEntity).markForUpdate();
                 }
             }

@@ -4,6 +4,7 @@ import com.buuz135.functionalstorage.FunctionalStorage;
 import com.buuz135.functionalstorage.block.CompactingFramedDrawerBlock;
 import com.buuz135.functionalstorage.block.FramedDrawerBlock;
 import com.buuz135.functionalstorage.block.FramedDrawerControllerBlock;
+import com.buuz135.functionalstorage.block.tile.FramedControllerExtensionTile;
 import com.buuz135.functionalstorage.block.tile.FramedDrawerControllerTile;
 import com.buuz135.functionalstorage.block.tile.FramedDrawerTile;
 import com.buuz135.functionalstorage.client.model.FramedDrawerModelData;
@@ -41,6 +42,8 @@ public class FramedColors implements BlockColor, ItemColor {
                 if (framedDrawerModelData != null) {
                     for (Map.Entry<String, Item> entry: framedDrawerModelData.getDesign().entrySet()) {
                         if (entry.getValue() instanceof BlockItem blockItem) {
+                            if (ForgeRegistries.ITEMS.getKey(blockItem).getNamespace().equals(FunctionalStorage.MOD_ID))
+                                continue;
                             BlockState state1 = blockItem.getBlock().defaultBlockState();
                             int color = Minecraft.getInstance().getBlockColors().getColor(state1, level, pos, tintIndex);
                             if (color != -1)
@@ -49,12 +52,13 @@ public class FramedColors implements BlockColor, ItemColor {
                     }
                 }
             }
-            /** EDIT **/
             if (entity instanceof FramedDrawerControllerTile tile) {
                 FramedDrawerModelData framedDrawerModelData = tile.getFramedDrawerModelData();
                 if (framedDrawerModelData != null) {
                     for (Map.Entry<String, Item> entry: framedDrawerModelData.getDesign().entrySet()) {
                         if (entry.getValue() instanceof BlockItem blockItem) {
+                            if (ForgeRegistries.ITEMS.getKey(blockItem).getNamespace().equals(FunctionalStorage.MOD_ID))
+                                continue;
                             BlockState state1 = blockItem.getBlock().defaultBlockState();
                             int color = Minecraft.getInstance().getBlockColors().getColor(state1, level, pos, tintIndex);
                             if (color != -1)
@@ -63,7 +67,21 @@ public class FramedColors implements BlockColor, ItemColor {
                     }
                 }
             }
-            /** **/
+            if (entity instanceof FramedControllerExtensionTile tile) {
+                FramedDrawerModelData framedDrawerModelData = tile.getFramedDrawerModelData();
+                if (framedDrawerModelData != null) {
+                    for (Map.Entry<String, Item> entry : framedDrawerModelData.getDesign().entrySet()) {
+                        if (entry.getValue() instanceof BlockItem blockItem) {
+                            if (ForgeRegistries.ITEMS.getKey(blockItem).getNamespace().equals(FunctionalStorage.MOD_ID))
+                                continue;
+                            BlockState state1 = blockItem.getBlock().defaultBlockState();
+                            int color = Minecraft.getInstance().getBlockColors().getColor(state1, level, pos, tintIndex);
+                            if (color != -1)
+                                return color;
+                        }
+                    }
+                }
+            }
         }
         return 0xFFFFFF;
     }

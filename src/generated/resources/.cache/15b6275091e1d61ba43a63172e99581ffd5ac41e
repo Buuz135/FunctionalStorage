@@ -1,4 +1,4 @@
-// 1.20.1	2023-06-27T22:41:46.5070177	Item Models: functionalstorage
+// 1.20.1	2023-09-13T21:39:23.8474114	Item Models: functionalstorage
 05946c7f40bf42b62f86e70d637524afd795cad2 assets/functionalstorage/models/item/acacia_1.json
 9e4990cfbaa0ce0612d18b497169377fe24ee704 assets/functionalstorage/models/item/acacia_2.json
 648c9170a8c4c6068d0fdcf1ff7f6bf387902f3c assets/functionalstorage/models/item/acacia_4.json
@@ -30,6 +30,7 @@ bba3316482f0dd30047a7e9c8bbb08c44f870384 assets/functionalstorage/models/item/fl
 62dfcf3bf7e57c537aea4de7ff9a668b3139abc1 assets/functionalstorage/models/item/framed_2.json
 32c5b556220102e2364d0305f122201115490377 assets/functionalstorage/models/item/framed_4.json
 bffd40ac50ca20c358e2c93b57104a9858242e52 assets/functionalstorage/models/item/framed_controller_extension.json
+3455a2ea651e3ab99c028aa1050c58fb6cc3538f assets/functionalstorage/models/item/framed_simple_compacting_drawer.json
 c6248c7ce7bb9aa88c7e75b2545a40f346f112e1 assets/functionalstorage/models/item/framed_storage_controller.json
 1f165509c733e747c26d4c6a60306988b130dbee assets/functionalstorage/models/item/gold_upgrade.json
 7724a980b242f7412e5b569bf00049bab963800c assets/functionalstorage/models/item/iron_downgrade.json
