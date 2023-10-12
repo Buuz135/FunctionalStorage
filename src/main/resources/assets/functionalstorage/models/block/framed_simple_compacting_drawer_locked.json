@@ -5,25 +5,25 @@
     "lock": {
       "parent": "functionalstorage:block/lock",
       "textures": {
-        "lock_icon": "functionalstorage:blocks/lock"
+        "lock_icon": "functionalstorage:block/lock"
       }
     },
     "front": {
       "parent": "functionalstorage:block/front",
       "textures": {
-        "front": "functionalstorage:blocks/framed_front_1"
+        "front": "functionalstorage:block/framed_front_1"
       }
     },
     "side": {
       "parent": "functionalstorage:block/side",
       "textures": {
-        "side": "functionalstorage:blocks/framed_side"
+        "side": "functionalstorage:block/framed_side"
       }
     },
     "front_divider": {
       "parent": "functionalstorage:block/divider_2",
       "textures": {
-        "front_divider": "functionalstorage:blocks/framed_side"
+        "front_divider": "functionalstorage:block/framed_side"
       }
     }
   },
@@ -34,7 +34,7 @@
     "side"
   ],
   "textures": {
-    "particle": "functionalstorage:blocks/framed_front_1"
+    "particle": "functionalstorage:block/framed_front_1"
   },
   "display": {
     "thirdperson_righthand": {
