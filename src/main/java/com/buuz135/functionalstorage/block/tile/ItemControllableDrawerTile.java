@@ -37,6 +37,7 @@ import java.util.UUID;
 public abstract class ItemControllableDrawerTile<T extends ItemControllableDrawerTile<T>> extends ControllableDrawerTile<T> {
 
     private static HashMap<UUID, Long> INTERACTION_LOGGER = new HashMap<>();
+    private int removeTicks = 0;
 
     public ItemControllableDrawerTile(BasicTileBlock<T> base, BlockEntityType<T> entityType, BlockPos pos, BlockState state) {
         super(base, entityType, pos, state);
@@ -51,6 +52,7 @@ public abstract class ItemControllableDrawerTile<T extends ItemControllableDrawe
     @Override
     public void serverTick(Level level, BlockPos pos, BlockState state, T blockEntity) {
         super.serverTick(level, pos, state, blockEntity);
+        this.removeTicks = Math.max(this.removeTicks - 1, 0);
         if (level.getGameTime() % FunctionalStorageConfig.UPGRADE_TICK == 0) {
             for (int i = 0; i < this.getUtilityUpgrades().getSlots(); i++) {
                 ItemStack stack = this.getUtilityUpgrades().getStackInSlot(i);
@@ -153,7 +155,8 @@ public abstract class ItemControllableDrawerTile<T extends ItemControllableDrawe
     public abstract int getStorageSlotAmount();
 
     public void onClicked(Player playerIn, int slot) {
-        if (isServer() && slot != -1) {
+        if (isServer() && slot != -1 && this.removeTicks == 0) {
+            this.removeTicks = 3;
             HitResult rayTraceResult = RayTraceUtils.rayTraceSimple(this.level, playerIn, 16, 0);
             if (rayTraceResult.getType() == HitResult.Type.BLOCK) {
                 BlockHitResult blockResult = (BlockHitResult) rayTraceResult;
