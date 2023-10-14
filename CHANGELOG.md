@@ -1,4 +1,4 @@
-# DEV
+# VERSION: 1.1.8
 
 * Changed the wood types list to a concurrent list, closes #214
 * Improved compacting slot checking, closes #210
