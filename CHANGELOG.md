@@ -1,3 +1,7 @@
+# DEV
+
+* Changed the wood types list to a concurrent list, closes #214
+
 # VERSION: 1.2.3
 
 * Properly added a changelog file
