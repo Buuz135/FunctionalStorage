@@ -1,7 +1,10 @@
-# DEV
+# VERSION: 1.2.4
 
 * Changed the wood types list to a concurrent list, closes #214
 * Improved compacting slot checking, closes #210
+* Add timer for before next block removal to prevent double-clicking by ChampionAsh5357
+* Check fluid stack isn't empty before setting amount by ChampionAsh5357
+* Change texture directory from blocks to block by ChampionAsh5357
 
 # VERSION: 1.2.3
 
