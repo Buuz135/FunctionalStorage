@@ -47,7 +47,7 @@ public abstract class CompactingInventoryHandler implements IItemHandler, INBTSe
     @Nonnull
     @Override
     public ItemStack getStackInSlot(int slot) {
-        if (slot == this.slots) return ItemStack.EMPTY;
+        if (slot >= this.slots) return ItemStack.EMPTY;
         CompactingUtil.Result bigStack = this.resultList.get(slot);
         ItemStack copied = bigStack.getResult().copy();
         copied.setCount(isCreative() ? Integer.MAX_VALUE : this.amount / bigStack.getNeeded());
