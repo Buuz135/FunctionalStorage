@@ -179,7 +179,7 @@ public abstract class BigFluidHandler implements IFluidHandler, INBTSerializable
         @Override
         public @NotNull FluidStack getFluidInTank(int tank) {
             FluidStack stack = super.getFluidInTank(tank);
-            if (isDrawerCreative()) stack.setAmount(Integer.MAX_VALUE);
+            if (!stack.isEmpty() && isDrawerCreative()) stack.setAmount(Integer.MAX_VALUE);
             return stack;
         }
 
@@ -209,7 +209,7 @@ public abstract class BigFluidHandler implements IFluidHandler, INBTSerializable
         @Override
         public @NotNull FluidStack getFluid() {
             FluidStack stack = super.getFluid();
-            if (isDrawerCreative()) stack.setAmount(Integer.MAX_VALUE);
+            if (!stack.isEmpty() && isDrawerCreative()) stack.setAmount(Integer.MAX_VALUE);
             return stack;
         }
 
