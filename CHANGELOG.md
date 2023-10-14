@@ -1,3 +1,7 @@
+# DEV
+
+* Changed the wood types list to a concurrent list, closes #214
+
 # VERSION: 1.1.7
 
 * Fixed Framed Simple Drawer loosing the design, closes #209
