@@ -82,7 +82,7 @@ public class CompactingStackItemHandler implements IItemHandler, INBTSerializabl
     @Nonnull
     @Override
     public ItemStack getStackInSlot(int slot) {
-        if (slot == this.slots) return ItemStack.EMPTY;
+        if (slot >= this.slots) return ItemStack.EMPTY;
         CompactingUtil.Result bigStack = this.resultList.get(slot);
         ItemStack copied = bigStack.getResult().copy();
         copied.setCount(isCreative() ? Integer.MAX_VALUE : this.amount / bigStack.getNeeded());
@@ -104,7 +104,6 @@ public class CompactingStackItemHandler implements IItemHandler, INBTSerializabl
             }
             if (inserted == stack.getCount() * result.getNeeded() || isVoid()) return ItemStack.EMPTY;
             return ItemHandlerHelper.copyStackWithSize(stack, stack.getCount() - inserted / result.getNeeded());
-
         }
         return stack;
     }
