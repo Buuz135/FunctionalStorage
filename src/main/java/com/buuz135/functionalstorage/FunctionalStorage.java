@@ -76,6 +76,7 @@ import org.apache.logging.log4j.Logger;
 import java.awt.*;
 import java.util.List;
 import java.util.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -94,7 +95,7 @@ public class FunctionalStorage extends ModuleController {
     // Directly reference a log4j logger.
     public static final Logger LOGGER = LogManager.getLogger();
 
-    public static List<IWoodType> WOOD_TYPES = new ArrayList<>();
+    public static ConcurrentLinkedQueue<IWoodType> WOOD_TYPES = new ConcurrentLinkedQueue<>();
 
     public static HashMap<DrawerType, List<Pair<RegistryObject<Block>, RegistryObject<BlockEntityType<?>>>>> DRAWER_TYPES = new HashMap<>();
     public static Pair<RegistryObject<Block>, RegistryObject<BlockEntityType<?>>> COMPACTING_DRAWER;
@@ -466,8 +467,8 @@ public class FunctionalStorage extends ModuleController {
                 new CustomCompactingRecipe(new ResourceLocation("glowstone"), new ItemStack(Items.GLOWSTONE_DUST, 4), new ItemStack(Items.GLOWSTONE));
                 new CustomCompactingRecipe(new ResourceLocation("melon"), new ItemStack(Items.MELON_SLICE, 9), new ItemStack(Items.MELON));
                 new CustomCompactingRecipe(new ResourceLocation("quartz"), new ItemStack(Items.QUARTZ, 4), new ItemStack(Items.QUARTZ_BLOCK));
-                new CustomCompactingRecipe(new ResourceLocation("ice"), new ItemStack(Items.ICE, 9), new ItemStack(Items.BLUE_ICE));
-                new CustomCompactingRecipe(new ResourceLocation("blue_ice"), new ItemStack(Items.BLUE_ICE, 9), new ItemStack(Items.PACKED_ICE));
+                new CustomCompactingRecipe(new ResourceLocation("ice"), new ItemStack(Items.ICE, 9), new ItemStack(Items.PACKED_ICE));
+                new CustomCompactingRecipe(new ResourceLocation("packed_ice"), new ItemStack(Items.PACKED_ICE, 9), new ItemStack(Items.BLUE_ICE));
                 new CustomCompactingRecipe(new ResourceLocation("amethyst"), new ItemStack(Items.AMETHYST_SHARD, 9), new ItemStack(Items.AMETHYST_BLOCK));
 
                 CustomCompactingRecipe.RECIPES.forEach(customCompactingRecipe -> serializables.put(customCompactingRecipe, customCompactingRecipe));
