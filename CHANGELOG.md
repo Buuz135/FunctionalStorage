@@ -1,3 +1,6 @@
+# VERSION 1.2.5
+* Fixed ice compacting, closes #223
+
 # VERSION: 1.2.4
 
 * Changed the wood types list to a concurrent list, closes #214
