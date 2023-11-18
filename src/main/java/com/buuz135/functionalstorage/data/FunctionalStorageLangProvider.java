@@ -52,9 +52,10 @@ public class FunctionalStorageLangProvider extends LanguageProvider {
         this.add(FunctionalStorage.LINKING_TOOL.get(), "Linking Tool");
         this.add(FunctionalStorage.DRAWER_CONTROLLER.getLeft().get(), "Storage Controller");
         this.add(FunctionalStorage.FRAMED_DRAWER_CONTROLLER.getLeft().get(), "Framed Storage Controller");
-        this.add(FunctionalStorage.FRAMED_CONTROLLER_EXTENSION.getLeft().get(), "Framed Controller Extension");
+        this.add(FunctionalStorage.FRAMED_CONTROLLER_EXTENSION.getLeft().get(), "Framed Controller Access Point");
         this.add("storageupgrade.desc.item", "Multiplies the block item storage by ");
         this.add("storageupgrade.desc.fluid", "Multiplies the block fluid storage by ");
+        this.add("storageupgrade.desc.range", "Increases controller radius by %s blocks");
         for (StorageUpgradeItem.StorageTier storageTier : FunctionalStorage.STORAGE_UPGRADES.keySet()) {
             this.add(FunctionalStorage.STORAGE_UPGRADES.get(storageTier).get(), WordUtils.capitalize(storageTier.name().toLowerCase()) + (storageTier == StorageUpgradeItem.StorageTier.IRON ? " Downgrade" : " Upgrade"));
         }
@@ -93,5 +94,9 @@ public class FunctionalStorageLangProvider extends LanguageProvider {
         this.add("gui.functionalstorage.amount", "Amount: ");
         this.add("gui.functionalstorage.slot", "Slot: ");
         this.add("gui.functionalstorage.fluid", "Fluid: ");
+        this.add("gui.functionalstorage.open_gui", "Right Click while Crouching to open the GUI");
+        this.add("gui.functionalstorage.storage", "Storage");
+        this.add("gui.functionalstorage.utility", "Utility");
+        this.add("gui.functionalstorage.storage_range", "Range");
     }
 }

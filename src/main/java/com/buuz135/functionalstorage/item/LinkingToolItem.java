@@ -137,30 +137,31 @@ public class LinkingToolItem extends BasicItem {
             context.getPlayer().displayClientMessage(Component.literal("Controller configured to the tool").withStyle(ChatFormatting.GREEN), true);
             stack.getOrCreateTag().remove(NBT_ENDER);
             return InteractionResult.SUCCESS;
-        }
-        else if (blockEntity instanceof ControllableDrawerTile && stack.getOrCreateTag().contains(NBT_CONTROLLER)) {
+        } else if (blockEntity instanceof ControllableDrawerTile && stack.getOrCreateTag().contains(NBT_CONTROLLER)) {
             CompoundTag controllerNBT = stack.getOrCreateTag().getCompound(NBT_CONTROLLER);
             BlockEntity controller = level.getBlockEntity(new BlockPos(controllerNBT.getInt("X"), controllerNBT.getInt("Y"), controllerNBT.getInt("Z")));
             if (controller instanceof StorageControllerTile) {
                 if (linkingMode == LinkingMode.SINGLE) {
-                    ((StorageControllerTile) controller).addConnectedDrawers(linkingAction, pos);
-                    if (linkingAction == ActionMode.ADD){
-                        context.getPlayer().displayClientMessage(Component.literal("Linked drawer to the controller").setStyle(Style.EMPTY.withColor(linkingMode.color)), true);
-                    }else {
-                        context.getPlayer().displayClientMessage(Component.literal("Removed drawer from the controller").setStyle(Style.EMPTY.withColor(linkingMode.color)), true);
+                    if (((StorageControllerTile) controller).addConnectedDrawers(linkingAction, pos)){
+                        if (linkingAction == ActionMode.ADD){
+                            context.getPlayer().displayClientMessage(Component.literal("Linked drawer to the controller").setStyle(Style.EMPTY.withColor(linkingMode.color)), true);
+                        }else {
+                            context.getPlayer().displayClientMessage(Component.literal("Removed drawer from the controller").setStyle(Style.EMPTY.withColor(linkingMode.color)), true);
+                        }
                     }
                 } else {
                     if (stack.getOrCreateTag().contains(NBT_FIRST)) {
                         CompoundTag firstpos = stack.getOrCreateTag().getCompound(NBT_FIRST);
                         BlockPos firstPos = new BlockPos(firstpos.getInt("X"), firstpos.getInt("Y"), firstpos.getInt("Z"));
                         AABB aabb = new AABB(Math.min(firstPos.getX(), pos.getX()), Math.min(firstPos.getY(), pos.getY()), Math.min(firstPos.getZ(), pos.getZ()), Math.max(firstPos.getX(), pos.getX()) + 1, Math.max(firstPos.getY(), pos.getY()) + 1, Math.max(firstPos.getZ(), pos.getZ()) + 1);
-                        ((StorageControllerTile) controller).addConnectedDrawers(linkingAction, getBlockPosInAABB(aabb).toArray(BlockPos[]::new));
-                        stack.getOrCreateTag().remove(NBT_FIRST);
-                        if (linkingAction == ActionMode.ADD){
-                            context.getPlayer().displayClientMessage(Component.literal("Linked drawers to the controller").setStyle(Style.EMPTY.withColor(linkingMode.color)), true);
-                        }else {
-                            context.getPlayer().displayClientMessage(Component.literal("Removed drawers from the controller").setStyle(Style.EMPTY.withColor(linkingMode.color)), true);
+                        if (((StorageControllerTile) controller).addConnectedDrawers(linkingAction, getBlockPosInAABB(aabb).toArray(BlockPos[]::new))){
+                            if (linkingAction == ActionMode.ADD){
+                                context.getPlayer().displayClientMessage(Component.literal("Linked drawers to the controller").setStyle(Style.EMPTY.withColor(linkingMode.color)), true);
+                            }else {
+                                context.getPlayer().displayClientMessage(Component.literal("Removed drawers from the controller").setStyle(Style.EMPTY.withColor(linkingMode.color)), true);
+                            }
                         }
+                        stack.getOrCreateTag().remove(NBT_FIRST);
                     } else {
                         CompoundTag firstPos = new CompoundTag();
                         firstPos.putInt("X", pos.getX());

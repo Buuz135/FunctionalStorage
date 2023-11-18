@@ -1,5 +1,6 @@
 package com.buuz135.functionalstorage.util;
 
+import com.buuz135.functionalstorage.block.config.FunctionalStorageConfig;
 import com.buuz135.functionalstorage.block.tile.FluidDrawerTile;
 import com.buuz135.functionalstorage.block.tile.ItemControllableDrawerTile;
 import com.buuz135.functionalstorage.block.tile.StorageControllerExtensionTile;
@@ -9,6 +10,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -51,6 +53,12 @@ public class ConnectedDrawers implements INBTSerializable<CompoundTag> {
         this.fluidHandlers = new ArrayList<>();
         this.extensions = 0;
         if (level != null && !level.isClientSide()) {
+            var extraRange = controllerTile.getStorageMultiplier();
+            if (extraRange == 1){
+                extraRange = 0;
+            }
+            var area = new AABB(controllerTile.getBlockPos()).inflate(FunctionalStorageConfig.DRAWER_CONTROLLER_LINKING_RANGE + extraRange);
+            this.connectedDrawers.removeIf(aLong -> !area.contains(Vec3.atCenterOf(BlockPos.of(aLong))));
             for (Long connectedDrawer : this.connectedDrawers) {
                 BlockPos pos = BlockPos.of(connectedDrawer);
                 BlockEntity entity = level.getBlockEntity(pos);

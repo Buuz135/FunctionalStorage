@@ -11,7 +11,7 @@ public class FunctionalStorageConfig {
     public static int ARMORY_CABINET_SIZE = 4096;
 
     @ConfigVal(comment = "Linking range radius")
-    public static int DRAWER_CONTROLLER_LINKING_RANGE = 12;
+    public static int DRAWER_CONTROLLER_LINKING_RANGE = 8;
 
     @ConfigVal(comment = "Every how many ticks the drawer upgrades will work")
     public static int UPGRADE_TICK = 4;

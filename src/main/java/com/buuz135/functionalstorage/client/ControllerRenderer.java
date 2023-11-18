@@ -1,8 +1,10 @@
 package com.buuz135.functionalstorage.client;
 
+import com.buuz135.functionalstorage.block.config.FunctionalStorageConfig;
 import com.buuz135.functionalstorage.block.tile.StorageControllerTile;
 import com.buuz135.functionalstorage.item.LinkingToolItem;
 import com.hrznstudio.titanium.util.RayTraceUtils;
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -24,6 +26,8 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import org.joml.Matrix4f;
+import org.lwjgl.opengl.GL11;
 
 import java.util.List;
 import java.util.OptionalDouble;
@@ -86,10 +90,11 @@ public class ControllerRenderer implements BlockEntityRenderer<StorageController
                     return;
                 }
             }
+
+
             VoxelShape shape = tile.getConnectedDrawers().getCachedVoxelShape();
             if (shape == null || tile.getLevel().getGameTime() % 400 == 0) {
                 tile.getConnectedDrawers().rebuildShapes();
-                ;
                 shape = tile.getConnectedDrawers().getCachedVoxelShape();
             }
             //LevelRenderer.renderVoxelShape(matrixStack, bufferIn.getBuffer(TYPE), shape, -tile.getBlockPos().getX(), -tile.getBlockPos().getY(), -tile.getBlockPos().getZ(), 1f, 1f, 1f, 1f);
@@ -105,6 +110,14 @@ public class ControllerRenderer implements BlockEntityRenderer<StorageController
                 float f4 = 1;
                 renderShape(matrixStack, bufferIn.getBuffer(TYPE), Shapes.create(aabb.move(0.0D, 0.0D, 0.0D)), -tile.getBlockPos().getX(), -tile.getBlockPos().getY(), -tile.getBlockPos().getZ(), f2, f3, f4, 1.0F);
             }
+            var extraRange = tile.getStorageMultiplier();
+            if (extraRange == 1){
+                extraRange = 0;
+            }
+            var area = new AABB(tile.getBlockPos())
+                    .inflate(FunctionalStorageConfig.DRAWER_CONTROLLER_LINKING_RANGE + extraRange);
+            renderShape(matrixStack, bufferIn.getBuffer(TYPE), Shapes.create(area), -tile.getBlockPos().getX(), -tile.getBlockPos().getY(), -tile.getBlockPos().getZ(), 0.5f, 1, 0.5f, 1.0F);
+            renderFaces(matrixStack, bufferIn, area , -tile.getBlockPos().getX(), -tile.getBlockPos().getY(), -tile.getBlockPos().getZ(), 0.5f, 1, 0.5f , 0.25f);
         }
 
     }
@@ -117,5 +130,102 @@ public class ControllerRenderer implements BlockEntityRenderer<StorageController
     @Override
     public boolean shouldRenderOffScreen(StorageControllerTile p_112306_) {
         return true;
+    }
+
+    private static RenderType AREA_TYPE = createRenderType();
+
+    public static RenderType createRenderType() {
+        RenderType.CompositeState state = RenderType.CompositeState.builder()
+                .setShaderState(new RenderStateShard.ShaderStateShard(GameRenderer::getPositionColorShader))
+                .setTransparencyState(new RenderStateShard.TransparencyStateShard("translucent_transparency", () -> {
+                    RenderSystem.enableBlend();
+                    RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+                }, () -> {
+                    RenderSystem.disableBlend();
+                    RenderSystem.defaultBlendFunc();
+                }))
+                .setDepthTestState(new RenderStateShard.DepthTestStateShard("<=", 515)).createCompositeState(true);
+        return RenderType.create("controller_area", DefaultVertexFormat.POSITION_COLOR, VertexFormat.Mode.QUADS, 256, false, true, state);
+    }
+
+    private void renderFaces(PoseStack stack, MultiBufferSource renderTypeBuffer, AABB pos, double x, double y, double z, float red, float green, float blue, float alpha) {
+
+        float x1 = (float) (pos.minX + x);
+        float x2 = (float) (pos.maxX + x);
+        float y1 = (float) (pos.minY + y);
+        float y2 = (float) (pos.maxY + y);
+        float z1 = (float) (pos.minZ + z);
+        float z2 = (float) (pos.maxZ + z);
+
+        Matrix4f matrix = stack.last().pose();
+        VertexConsumer buffer;
+
+        buffer = renderTypeBuffer.getBuffer(AREA_TYPE);
+
+        buffer.vertex(matrix, x1, y1, z1).color(red, green, blue, alpha).endVertex();
+        buffer.vertex(matrix, x1, y2, z1).color(red, green, blue, alpha).endVertex();
+        buffer.vertex(matrix, x2, y2, z1).color(red, green, blue, alpha).endVertex();
+        buffer.vertex(matrix, x2, y1, z1).color(red, green, blue, alpha).endVertex();
+
+        buffer.vertex(matrix, x1, y1, z1).color(red, green, blue, alpha).endVertex();
+        buffer.vertex(matrix, x2, y1, z1).color(red, green, blue, alpha).endVertex();
+        buffer.vertex(matrix, x2, y2, z1).color(red, green, blue, alpha).endVertex();
+        buffer.vertex(matrix, x1, y2, z1).color(red, green, blue, alpha).endVertex();
+
+
+        buffer.vertex(matrix, x1, y1, z2).color(red, green, blue, alpha).endVertex();
+        buffer.vertex(matrix, x2, y1, z2).color(red, green, blue, alpha).endVertex();
+        buffer.vertex(matrix, x2, y2, z2).color(red, green, blue, alpha).endVertex();
+        buffer.vertex(matrix, x1, y2, z2).color(red, green, blue, alpha).endVertex();
+
+        buffer.vertex(matrix, x1, y1, z2).color(red, green, blue, alpha).endVertex();
+        buffer.vertex(matrix, x1, y2, z2).color(red, green, blue, alpha).endVertex();
+        buffer.vertex(matrix, x2, y2, z2).color(red, green, blue, alpha).endVertex();
+        buffer.vertex(matrix, x2, y1, z2).color(red, green, blue, alpha).endVertex();
+
+
+        buffer.vertex(matrix, x1, y1, z1).color(red, green, blue, alpha).endVertex();
+        buffer.vertex(matrix, x2, y1, z1).color(red, green, blue, alpha).endVertex();
+        buffer.vertex(matrix, x2, y1, z2).color(red, green, blue, alpha).endVertex();
+        buffer.vertex(matrix, x1, y1, z2).color(red, green, blue, alpha).endVertex();
+
+        buffer.vertex(matrix, x1, y1, z1).color(red, green, blue, alpha).endVertex();
+        buffer.vertex(matrix, x1, y1, z2).color(red, green, blue, alpha).endVertex();
+        buffer.vertex(matrix, x2, y1, z2).color(red, green, blue, alpha).endVertex();
+        buffer.vertex(matrix, x2, y1, z1).color(red, green, blue, alpha).endVertex();
+
+
+        buffer.vertex(matrix, x1, y2, z1).color(red, green, blue, alpha).endVertex();
+        buffer.vertex(matrix, x1, y2, z2).color(red, green, blue, alpha).endVertex();
+        buffer.vertex(matrix, x2, y2, z2).color(red, green, blue, alpha).endVertex();
+        buffer.vertex(matrix, x2, y2, z1).color(red, green, blue, alpha).endVertex();
+
+        buffer.vertex(matrix, x1, y2, z1).color(red, green, blue, alpha).endVertex();
+        buffer.vertex(matrix, x2, y2, z1).color(red, green, blue, alpha).endVertex();
+        buffer.vertex(matrix, x2, y2, z2).color(red, green, blue, alpha).endVertex();
+        buffer.vertex(matrix, x1, y2, z2).color(red, green, blue, alpha).endVertex();
+
+
+        buffer.vertex(matrix, x1, y1, z1).color(red, green, blue, alpha).endVertex();
+        buffer.vertex(matrix, x1, y1, z2).color(red, green, blue, alpha).endVertex();
+        buffer.vertex(matrix, x1, y2, z2).color(red, green, blue, alpha).endVertex();
+        buffer.vertex(matrix, x1, y2, z1).color(red, green, blue, alpha).endVertex();
+
+        buffer.vertex(matrix, x1, y1, z1).color(red, green, blue, alpha).endVertex();
+        buffer.vertex(matrix, x1, y2, z1).color(red, green, blue, alpha).endVertex();
+        buffer.vertex(matrix, x1, y2, z2).color(red, green, blue, alpha).endVertex();
+        buffer.vertex(matrix, x1, y1, z2).color(red, green, blue, alpha).endVertex();
+
+
+        buffer.vertex(matrix, x2, y1, z1).color(red, green, blue, alpha).endVertex();
+        buffer.vertex(matrix, x2, y2, z1).color(red, green, blue, alpha).endVertex();
+        buffer.vertex(matrix, x2, y2, z2).color(red, green, blue, alpha).endVertex();
+        buffer.vertex(matrix, x2, y1, z2).color(red, green, blue, alpha).endVertex();
+
+        buffer.vertex(matrix, x2, y1, z1).color(red, green, blue, alpha).endVertex();
+        buffer.vertex(matrix, x2, y1, z2).color(red, green, blue, alpha).endVertex();
+        buffer.vertex(matrix, x2, y2, z2).color(red, green, blue, alpha).endVertex();
+        buffer.vertex(matrix, x2, y2, z1).color(red, green, blue, alpha).endVertex();
+
     }
 }
