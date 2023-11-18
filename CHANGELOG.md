@@ -1,3 +1,8 @@
+# VERSION 1.2.6
+* Renamed Controller Extension to Controller Access Point
+* Added a way to increase the Controller range by using upgrades
+* Fixed Amethyst compacting recipe, closes #230 
+
 # VERSION 1.2.5
 * Fixed ice compacting, closes #223
 
