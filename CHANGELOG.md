@@ -2,6 +2,7 @@
 * Renamed Controller Extension to Controller Access Point
 * Added a way to increase the Controller range by using upgrades
 * Fixed Amethyst compacting recipe, closes #230 
+* Added JEI compat for Custom Compacting Recipes
 
 # VERSION 1.2.5
 * Fixed ice compacting, closes #223
