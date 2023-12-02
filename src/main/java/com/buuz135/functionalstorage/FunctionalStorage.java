@@ -458,7 +458,7 @@ public class FunctionalStorage extends ModuleController {
                 new CustomCompactingRecipe(new ResourceLocation("quartz"), new ItemStack(Items.QUARTZ, 4), new ItemStack(Items.QUARTZ_BLOCK));
                 new CustomCompactingRecipe(new ResourceLocation("ice"), new ItemStack(Items.ICE, 9), new ItemStack(Items.PACKED_ICE));
                 new CustomCompactingRecipe(new ResourceLocation("packed_ice"), new ItemStack(Items.PACKED_ICE, 9), new ItemStack(Items.BLUE_ICE));
-                new CustomCompactingRecipe(new ResourceLocation("amethyst"), new ItemStack(Items.AMETHYST_SHARD, 9), new ItemStack(Items.AMETHYST_BLOCK));
+                new CustomCompactingRecipe(new ResourceLocation("amethyst"), new ItemStack(Items.AMETHYST_SHARD, 4), new ItemStack(Items.AMETHYST_BLOCK));
 
                 CustomCompactingRecipe.RECIPES.forEach(customCompactingRecipe -> serializables.put(customCompactingRecipe, customCompactingRecipe));
             }
