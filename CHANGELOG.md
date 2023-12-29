@@ -1,3 +1,7 @@
+# VERSION 1.1.10
+* Fixed cascading loading issues, closes #243
+* Fixed Amethyst compacting dupe by Kanzaji
+
 # VERSION 1.1.9
 * Fixed ice compacting, closes #223
 
