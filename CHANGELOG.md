@@ -1,3 +1,6 @@
+# VERSION 1.2.7
+* Fixed cascading loading issues, closes #243
+
 # VERSION 1.2.6
 * Renamed Controller Extension to Controller Access Point
 * Added a way to increase the Controller range by using upgrades

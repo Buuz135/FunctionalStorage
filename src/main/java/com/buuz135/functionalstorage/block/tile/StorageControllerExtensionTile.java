@@ -80,6 +80,7 @@ public abstract class StorageControllerExtensionTile<T extends StorageController
 
     private Optional<StorageControllerTile> getControllerInstance() {
         if (getControllerPos() == null) return Optional.empty();
+        if (level == null || !level.isLoaded(getControllerPos())) return Optional.empty();
         return TileUtil.getTileEntity(this.level, getControllerPos(), StorageControllerTile.class);
     }
 
