@@ -1,3 +1,6 @@
+# VERSION 1.2.8
+* Sort drawers insertion from closest to furthest to the drawer controller, closes #103
+
 # VERSION 1.2.7
 * Fixed cascading loading issues, closes #243
 

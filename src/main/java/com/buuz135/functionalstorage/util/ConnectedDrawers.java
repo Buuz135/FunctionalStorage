@@ -19,6 +19,7 @@ import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.items.IItemHandler;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class ConnectedDrawers implements INBTSerializable<CompoundTag> {
@@ -59,6 +60,7 @@ public class ConnectedDrawers implements INBTSerializable<CompoundTag> {
             }
             var area = new AABB(controllerTile.getBlockPos()).inflate(FunctionalStorageConfig.DRAWER_CONTROLLER_LINKING_RANGE + extraRange);
             this.connectedDrawers.removeIf(aLong -> !area.contains(Vec3.atCenterOf(BlockPos.of(aLong))));
+            this.connectedDrawers.sort(Comparator.comparingDouble(value -> BlockPos.of(value).distSqr(controllerTile.getBlockPos())));
             for (Long connectedDrawer : this.connectedDrawers) {
                 BlockPos pos = BlockPos.of(connectedDrawer);
                 BlockEntity entity = level.getBlockEntity(pos);
