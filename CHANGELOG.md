@@ -1,3 +1,7 @@
+# VERSION 1.2.9
+
+* Fixed creative vending upgrades using the base stack, closes #239
+
 # VERSION 1.2.8
 * Sort drawers insertion from closest to furthest to the drawer controller, closes #103
 
