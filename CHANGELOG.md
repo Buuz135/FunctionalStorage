@@ -1,3 +1,15 @@
+# VERSION 1.2.8
+* Sort drawers insertion from closest to furthest to the drawer controller, closes #103
+
+# VERSION 1.2.7
+* Fixed cascading loading issues, closes #243
+
+# VERSION 1.2.6
+* Renamed Controller Extension to Controller Access Point
+* Added a way to increase the Controller range by using upgrades
+* Fixed Amethyst compacting recipe, closes #230 
+* Added JEI compat for Custom Compacting Recipes
+
 # VERSION 1.2.5
 * Fixed ice compacting, closes #223
 

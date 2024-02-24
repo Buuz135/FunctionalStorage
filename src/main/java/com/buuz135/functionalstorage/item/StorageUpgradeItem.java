@@ -39,6 +39,7 @@ public class StorageUpgradeItem extends UpgradeItem{
         } else {
             tooltip.add(Component.translatable("storageupgrade.desc.item").withStyle(ChatFormatting.GRAY).append(this.storageTier.getStorageMultiplier() + ""));
             tooltip.add(Component.translatable("storageupgrade.desc.fluid").withStyle(ChatFormatting.GRAY).append(this.storageTier.getStorageMultiplier() / 2 + ""));
+            tooltip.add(Component.translatable("storageupgrade.desc.range", this.storageTier.getStorageMultiplier() / 4 + "").withStyle(ChatFormatting.GRAY));
         }
     }
 

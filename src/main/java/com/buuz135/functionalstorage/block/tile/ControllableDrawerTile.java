@@ -60,18 +60,20 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
         if (getStorageSlotAmount() > 0) {
             this.addInventory((InventoryComponent<T>) this.storageUpgrades);
         }
-        this.addInventory((InventoryComponent<T>) (this.utilityUpgrades = new InventoryComponent<ControllableDrawerTile<T>>("utility_upgrades", 114, 70, 3)
-                        .setInputFilter((stack, integer) -> stack.getItem() instanceof UpgradeItem && ((UpgradeItem) stack.getItem()).getType() == UpgradeItem.Type.UTILITY)
-                        .setSlotLimit(1)
-                        .setOnSlotChanged((itemStack, integer) -> {
-                            needsUpgradeCache = true;
-                            if (controllerPos != null) {
-                                if(this.level.getBlockEntity(controllerPos) instanceof StorageControllerTile controllerTile)
-                                    controllerTile.getConnectedDrawers().rebuild();
-                            }
-                        })
-                )
-        );
+        if (getUtilitySlotAmount() > 0){
+            this.addInventory((InventoryComponent<T>) (this.utilityUpgrades = new InventoryComponent<ControllableDrawerTile<T>>("utility_upgrades", 114, 70, getUtilitySlotAmount())
+                            .setInputFilter((stack, integer) -> stack.getItem() instanceof UpgradeItem && ((UpgradeItem) stack.getItem()).getType() == UpgradeItem.Type.UTILITY)
+                            .setSlotLimit(1)
+                            .setOnSlotChanged((itemStack, integer) -> {
+                                needsUpgradeCache = true;
+                                if (controllerPos != null) {
+                                    if(this.level.getBlockEntity(controllerPos) instanceof StorageControllerTile controllerTile)
+                                        controllerTile.getConnectedDrawers().rebuild();
+                                }
+                            })
+                    )
+            );
+        }
 
     }
 
@@ -80,19 +82,21 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
     public void initClient() {
         super.initClient();
         if (getStorageSlotAmount() > 0) {
-            addGuiAddonFactory(() -> new TextScreenAddon("Storage", 10, 59, false, ChatFormatting.DARK_GRAY.getColor()) {
+            addGuiAddonFactory(() -> new TextScreenAddon("gui.functionalstorage.storage", 10, 59, false, ChatFormatting.DARK_GRAY.getColor()) {
                 @Override
                 public String getText() {
                     return Component.translatable("key.categories.storage").getString();
                 }
             });
         }
-        addGuiAddonFactory(() -> new TextScreenAddon("Utility", 114, 59, false, ChatFormatting.DARK_GRAY.getColor()) {
-            @Override
-            public String getText() {
-                return Component.translatable("key.categories.utility").getString();
-            }
-        });
+        if (getUtilitySlotAmount() > 0){
+            addGuiAddonFactory(() -> new TextScreenAddon("gui.functionalstorage.utility", 114, 59, false, ChatFormatting.DARK_GRAY.getColor()) {
+                @Override
+                public String getText() {
+                    return Component.translatable("key.categories.utility").getString();
+                }
+            });
+        }
         addGuiAddonFactory(() -> new TextScreenAddon("key.categories.inventory", 8, 92, false, ChatFormatting.DARK_GRAY.getColor()) {
             @Override
             public String getText() {
@@ -105,13 +109,15 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
     public void serverTick(Level level, BlockPos pos, BlockState state, T blockEntity) {
         super.serverTick(level, pos, state, blockEntity);
         if (level.getGameTime() % 20 == 0) {
-            for (int i = 0; i < this.utilityUpgrades.getSlots(); i++) {
-                ItemStack stack = this.utilityUpgrades.getStackInSlot(i);
-                if (!stack.isEmpty()) {
-                    Item item = stack.getItem();
-                    if (item.equals(FunctionalStorage.REDSTONE_UPGRADE.get())) {
-                        level.updateNeighborsAt(this.getBlockPos(), this.getBasicTileBlock());
-                        break;
+            if (getUtilitySlotAmount() > 0){
+                for (int i = 0; i < this.utilityUpgrades.getSlots(); i++) {
+                    ItemStack stack = this.utilityUpgrades.getStackInSlot(i);
+                    if (!stack.isEmpty()) {
+                        Item item = stack.getItem();
+                        if (item.equals(FunctionalStorage.REDSTONE_UPGRADE.get())) {
+                            level.updateNeighborsAt(this.getBlockPos(), this.getBasicTileBlock());
+                            break;
+                        }
                     }
                 }
             }
@@ -205,6 +211,10 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
 
     public abstract int getStorageSlotAmount();
 
+    public int getUtilitySlotAmount(){
+        return 3;
+    }
+
     public void onClicked(Player playerIn, int slot) {
 
     }
@@ -226,13 +236,21 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
                 }
                 if (upgrade instanceof StorageUpgradeItem) {
                     var calculated = ((StorageUpgradeItem) upgrade).getStorageMultiplier() / getStorageDiv();
-                    mult *= calculated;
+                    if (this instanceof StorageControllerTile<?>){
+                        if (mult == 1) mult = 0;
+                        mult += calculated;
+                    } else {
+                        mult *= calculated;
+                    }
+
                 }
             }
             isVoid = false;
-            for (int i = 0; i < utilityUpgrades.getSlots(); i++) {
-                if (utilityUpgrades.getStackInSlot(i).getItem().equals(FunctionalStorage.VOID_UPGRADE.get())) {
-                    isVoid = true;
+            if (getUtilitySlotAmount() > 0){
+                for (int i = 0; i < utilityUpgrades.getSlots(); i++) {
+                    if (utilityUpgrades.getStackInSlot(i).getItem().equals(FunctionalStorage.VOID_UPGRADE.get())) {
+                        isVoid = true;
+                    }
                 }
             }
             needsUpgradeCache = false;
