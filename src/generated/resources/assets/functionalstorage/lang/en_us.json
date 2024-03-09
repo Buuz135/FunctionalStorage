@@ -57,7 +57,7 @@
   "configurationtool.configmode.toggle_upgrades": "Hide/Show Upgrade Renders",
   "configurationtool.use": "Sneak + Right Click in the air to change modes. Right click a drawer to toggle the option.",
   "drawer.block.contents": "Contents: ",
-  "frameddrawer.use": "How 2 Change Texture: \nInside a crafting window place the block you want use the texture of for the outside of the drawer in the first slot of the crafting window, on the second slot put the block that will be used for the texture on the inside of the framed drawer and on the third slot put a framed drawer. \n",
+  "frameddrawer.use": "How 2 Change Texture: \nInside a crafting window place the block you want use the texture of for the outside of the drawer in the first slot of the crafting window, on the second slot put the block that will be used for the texture on the inside of the framed drawer and on the third slot put a framed drawer. You can change the drawer divider texture by adding a block into the 4th slot\n",
   "gui.functionalstorage.amount": "Amount: ",
   "gui.functionalstorage.fluid": "Fluid: ",
   "gui.functionalstorage.item": "Item: ",

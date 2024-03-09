@@ -64,7 +64,7 @@ public class FramedDrawerRecipe extends CustomRecipe {
                 matchesController(inv.getItem(0), inv.getItem(1), inv.getItem(2)) ||
                 matchesControllerExtension(inv.getItem(0), inv.getItem(1), inv.getItem(2)))
         {
-            return FramedDrawerBlock.fill(inv.getItem(0), inv.getItem(1), inv.getItem(2).copy());
+            return FramedDrawerBlock.fill(inv.getItem(0), inv.getItem(1), inv.getItem(2).copy(), inv.getItem(3));
         }
 
         return ItemStack.EMPTY;

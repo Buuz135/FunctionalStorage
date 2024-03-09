@@ -87,7 +87,7 @@ public class FunctionalStorageLangProvider extends LanguageProvider {
         this.add("linkingtool.ender.frequency", "Frequency: ");
         this.add("linkingtool.ender.clear", "Sneak + Right Click in the air to clear frequency.");
         this.add("drawer.block.contents", "Contents: ");
-        this.add("frameddrawer.use", "How 2 Change Texture: \nInside a crafting window place the block you want use the texture of for the outside of the drawer in the first slot of the crafting window, on the second slot put the block that will be used for the texture on the inside of the framed drawer and on the third slot put a framed drawer. \n");
+        this.add("frameddrawer.use", "How 2 Change Texture: \nInside a crafting window place the block you want use the texture of for the outside of the drawer in the first slot of the crafting window, on the second slot put the block that will be used for the texture on the inside of the framed drawer and on the third slot put a framed drawer. You can change the drawer divider texture by adding a block into the 4th slot\n");
         this.add("item.utility.slot", "Slot: ");
         this.add("item.utility.slot.desc", "Right click in a GUI to change slot");
         this.add("gui.functionalstorage.item", "Item: ");
