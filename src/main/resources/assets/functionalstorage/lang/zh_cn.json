@@ -78,5 +78,15 @@
   "storageupgrade.desc": "存储上限×",
   "upgrade.type": "种类：",
   "upgrade.type.storage": "存储",
-  "upgrade.type.utility": "功能"
+  "upgrade.type.utility": "功能",
+  "block.functionalstorage.framed_controller_extension":"镶框扩展控制器",
+  "block.functionalstorage.framed_storage_controller":"镶框存储控制器",
+  "block.functionalstorage.framed_simple_compacting_drawer":"镶框简易压缩抽屉",
+  "block.functionalstorage.simple_compacting_drawer":"简易压缩抽屉",
+  "block.functionalstorage.controller_extension":"扩展控制器",
+  "block.functionalstorage.fluid_4":"流体抽屉(2x2)",
+  "block.functionalstorage.fluid_2":"流体抽屉(1x2)",
+  "block.functionalstorage.fluid_1":"流体抽屉(1x1)",
+  "storageupgrade.desc.fluid": "使此抽屉可以存储的流体x",
+  "storageupgrade.desc.item": "使此抽屉可以存储的物品x"
   }
