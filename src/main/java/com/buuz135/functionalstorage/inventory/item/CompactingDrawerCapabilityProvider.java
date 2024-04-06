@@ -2,11 +2,11 @@ package com.buuz135.functionalstorage.inventory.item;
 
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.IItemHandler;
+import net.neoforged.neoforge.common.capabilities.Capabilities;
+import net.neoforged.neoforge.common.capabilities.Capability;
+import net.neoforged.neoforge.common.capabilities.ICapabilityProvider;
+import net.neoforged.neoforge.common.util.LazyOptional;
+import net.neoforged.neoforge.items.IItemHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -25,14 +25,14 @@ public class CompactingDrawerCapabilityProvider implements ICapabilityProvider {
     @NotNull
     @Override
     public <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-        if (cap.equals(ForgeCapabilities.ITEM_HANDLER)) return this.itemHandler.cast();
+        if (cap.equals(Capabilities.ITEM_HANDLER)) return this.itemHandler.cast();
         return LazyOptional.empty();
     }
 
     @NotNull
     @Override
     public <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap) {
-        if (cap.equals(ForgeCapabilities.ITEM_HANDLER)) return this.itemHandler.cast();
+        if (cap.equals(Capabilities.ITEM_HANDLER)) return this.itemHandler.cast();
         return LazyOptional.empty();
     }
 }

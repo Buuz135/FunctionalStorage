@@ -23,12 +23,12 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemHandlerHelper;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.common.capabilities.Capabilities;
+import net.neoforged.neoforge.common.util.LazyOptional;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.ItemHandlerHelper;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
@@ -62,7 +62,7 @@ public abstract class ItemControllableDrawerTile<T extends ItemControllableDrawe
                         if (item.equals(FunctionalStorage.PULLING_UPGRADE.get())) {
                             Direction direction = UpgradeItem.getDirection(stack);
                             TileUtil.getTileEntity(level, pos.relative(direction)).ifPresent(blockEntity1 -> {
-                                blockEntity1.getCapability(ForgeCapabilities.ITEM_HANDLER, direction.getOpposite()).ifPresent(iItemHandler -> {
+                                blockEntity1.getCapability(Capabilities.ITEM_HANDLER, direction.getOpposite()).ifPresent(iItemHandler -> {
                                     for (int otherSlot = 0; otherSlot < iItemHandler.getSlots(); otherSlot++) {
                                         ItemStack pulledStack = iItemHandler.extractItem(otherSlot, FunctionalStorageConfig.UPGRADE_PULL_ITEMS, true);
                                         if (pulledStack.isEmpty()) continue;
@@ -84,7 +84,7 @@ public abstract class ItemControllableDrawerTile<T extends ItemControllableDrawe
                         if (item.equals(FunctionalStorage.PUSHING_UPGRADE.get())) {
                             Direction direction = UpgradeItem.getDirection(stack);
                             TileUtil.getTileEntity(level, pos.relative(direction)).ifPresent(blockEntity1 -> {
-                                blockEntity1.getCapability(ForgeCapabilities.ITEM_HANDLER, direction.getOpposite()).ifPresent(otherHandler -> {
+                                blockEntity1.getCapability(Capabilities.ITEM_HANDLER, direction.getOpposite()).ifPresent(otherHandler -> {
                                     for (int drawerSlot = 0; drawerSlot < getStorage().getSlots(); drawerSlot++) {
                                         ItemStack pulledStack = getStorage().extractItem(drawerSlot, FunctionalStorageConfig.UPGRADE_PUSH_ITEMS, true);
                                         if (pulledStack.isEmpty()) continue;

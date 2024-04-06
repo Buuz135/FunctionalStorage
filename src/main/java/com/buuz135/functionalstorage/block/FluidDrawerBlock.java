@@ -47,11 +47,11 @@ import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
-import net.minecraftforge.fluids.FluidStack;
+import net.neoforged.neoforge.common.capabilities.ICapabilityProvider;
+import net.neoforged.neoforge.fluids.FluidStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
+import var;
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
@@ -309,7 +309,7 @@ public class FluidDrawerBlock extends RotatableBlock<FluidDrawerTile> {
 
         private FluidDrawerBlock drawerBlock;
 
-        public DrawerItem(FluidDrawerBlock p_40565_, Properties p_40566_) {
+        public DrawerItem(FluidDrawerBlock p_40565_, net.minecraft.world.item.Item.Properties p_40566_) {
             super(p_40565_, p_40566_);
             this.drawerBlock = p_40565_;
         }

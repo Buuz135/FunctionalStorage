@@ -22,18 +22,18 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.BucketPickup;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.fluids.FluidUtil;
-import net.minecraftforge.fluids.IFluidBlock;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.fluids.capability.wrappers.BucketPickupHandlerWrapper;
-import net.minecraftforge.fluids.capability.wrappers.FluidBlockWrapper;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.common.capabilities.Capabilities;
+import net.neoforged.neoforge.common.capabilities.Capability;
+import net.neoforged.neoforge.common.util.LazyOptional;
+import net.neoforged.neoforge.fluids.FluidUtil;
+import net.neoforged.neoforge.fluids.IFluidBlock;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.fluids.capability.wrappers.BucketPickupHandlerWrapper;
+import net.neoforged.neoforge.fluids.capability.wrappers.FluidBlockWrapper;
 import org.jetbrains.annotations.NotNull;
-
+import var;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -100,10 +100,10 @@ public class FluidDrawerTile extends ControllableDrawerTile<FluidDrawerTile> {
     @Nonnull
     @Override
     public <U> LazyOptional<U> getCapability(@Nonnull Capability<U> cap, @Nullable Direction side) {
-        if (cap == ForgeCapabilities.ITEM_HANDLER) {
+        if (cap == Capabilities.ITEM_HANDLER) {
             return LazyOptional.empty();
         }
-        if (cap == ForgeCapabilities.FLUID_HANDLER) {
+        if (cap == Capabilities.FLUID_HANDLER) {
             return fluidHandlerLazyOptional.cast();
         }
         return super.getCapability(cap, side);
@@ -199,8 +199,8 @@ public class FluidDrawerTile extends ControllableDrawerTile<FluidDrawerTile> {
         if (stack.getItem().equals(FunctionalStorage.CONFIGURATION_TOOL.get()) || stack.getItem().equals(FunctionalStorage.LINKING_TOOL.get()))
             return InteractionResult.PASS;
         if (slot != -1 && !playerIn.getItemInHand(hand).isEmpty()) {
-            var interactionResult = stack.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).map(iFluidHandlerItem -> {
-                return playerIn.getCapability(ForgeCapabilities.ITEM_HANDLER).map(iItemHandler -> {
+            var interactionResult = stack.getCapability(Capabilities.FLUID_HANDLER_ITEM).map(iFluidHandlerItem -> {
+                return playerIn.getCapability(Capabilities.ITEM_HANDLER).map(iItemHandler -> {
                     var result = FluidUtil.tryEmptyContainerAndStow(stack, this.fluidHandler.getTankList()[slot], iItemHandler, Integer.MAX_VALUE, playerIn, true);
                     if (result.isSuccess()) {
                         playerIn.setItemInHand(hand, result.getResult().copy());
@@ -220,8 +220,8 @@ public class FluidDrawerTile extends ControllableDrawerTile<FluidDrawerTile> {
     public void onClicked(Player playerIn, int slot) {
         ItemStack stack = playerIn.getItemInHand(InteractionHand.MAIN_HAND);
         if (slot != -1 && !stack.isEmpty()) {
-            stack.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).ifPresent(iFluidHandlerItem -> {
-                playerIn.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(iItemHandler -> {
+            stack.getCapability(Capabilities.FLUID_HANDLER_ITEM).ifPresent(iFluidHandlerItem -> {
+                playerIn.getCapability(Capabilities.ITEM_HANDLER).ifPresent(iItemHandler -> {
                     var result = FluidUtil.tryFillContainerAndStow(stack, this.fluidHandler.getTankList()[slot], iItemHandler, Integer.MAX_VALUE, playerIn, true);
                     if (result.isSuccess()) {
                         playerIn.setItemInHand(InteractionHand.MAIN_HAND, result.getResult());

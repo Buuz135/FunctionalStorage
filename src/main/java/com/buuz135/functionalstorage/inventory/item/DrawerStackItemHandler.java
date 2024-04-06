@@ -2,14 +2,15 @@ package com.buuz135.functionalstorage.inventory.item;
 
 import com.buuz135.functionalstorage.FunctionalStorage;
 import com.buuz135.functionalstorage.inventory.BigInventoryHandler;
+import com.buuz135.functionalstorage.inventory.BigInventoryHandler.BigStack;
 import com.buuz135.functionalstorage.item.StorageUpgradeItem;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.common.util.INBTSerializable;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemHandlerHelper;
-
+import net.neoforged.neoforge.common.util.INBTSerializable;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.ItemHandlerHelper;
+import var;
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;

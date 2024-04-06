@@ -29,17 +29,17 @@ import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.client.ChunkRenderTypeSet;
-import net.minecraftforge.client.model.IDynamicBakedModel;
-import net.minecraftforge.client.model.IQuadTransformer;
-import net.minecraftforge.client.model.SimpleModelState;
-import net.minecraftforge.client.model.data.ModelData;
-import net.minecraftforge.client.model.data.ModelProperty;
-import net.minecraftforge.client.model.geometry.IGeometryBakingContext;
-import net.minecraftforge.client.model.geometry.IGeometryLoader;
-import net.minecraftforge.client.model.geometry.IUnbakedGeometry;
-import net.minecraftforge.common.util.ConcatenatedListView;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.client.ChunkRenderTypeSet;
+import net.neoforged.neoforge.client.model.IDynamicBakedModel;
+import net.neoforged.neoforge.client.model.IQuadTransformer;
+import net.neoforged.neoforge.client.model.SimpleModelState;
+import net.neoforged.neoforge.client.model.data.ModelData;
+import net.neoforged.neoforge.client.model.data.ModelProperty;
+import net.neoforged.neoforge.client.model.geometry.IGeometryBakingContext;
+import net.neoforged.neoforge.client.model.geometry.IGeometryLoader;
+import net.neoforged.neoforge.client.model.geometry.IUnbakedGeometry;
+import net.neoforged.neoforge.common.util.ConcatenatedListView;
+import net.neoforged.neoforge.registries.ForgeRegistries;
 import org.apache.commons.lang3.tuple.ImmutableTriple;
 import org.apache.commons.lang3.tuple.Triple;
 import org.apache.logging.log4j.LogManager;
@@ -47,7 +47,7 @@ import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
-
+import var;
 import java.util.*;
 import java.util.function.Function;
 
@@ -55,7 +55,7 @@ import static com.buuz135.functionalstorage.client.loader.FramedModel.Baked.getQ
 
 /**
  * A Custom Model for Framed Drawers. <br>
- * Based on {@link net.minecraftforge.client.model.CompositeModel} from Forge. <br>
+ * Based on {@link net.neoforged.neoforge.client.model.CompositeModel} from Forge. <br>
  * Using parts of <a href="https://github.com/SleepyTrousers/EnderIO-Rewrite/blob/dev/1.19.x/src/decor/java/com/enderio/decoration/client/model/painted/PaintedBlockModel.java"> Painted Block Model</a> from Ender IO.
  */
 public class FramedModel implements IUnbakedGeometry<FramedModel> {

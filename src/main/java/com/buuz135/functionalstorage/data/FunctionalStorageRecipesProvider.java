@@ -13,10 +13,9 @@ import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.block.Block;
-import net.minecraftforge.common.Tags;
-import net.minecraftforge.common.util.NonNullLazy;
-import net.minecraftforge.registries.ForgeRegistries;
-
+import net.neoforged.neoforge.common.Tags;
+import net.neoforged.neoforge.common.util.NonNullLazy;
+import net.neoforged.neoforge.registries.ForgeRegistries;
 import java.util.List;
 import java.util.function.Consumer;
 

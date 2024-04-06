@@ -55,12 +55,12 @@ import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.common.Tags;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
+import net.neoforged.neoforge.common.Tags;
+import net.neoforged.neoforge.common.capabilities.ICapabilityProvider;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
+import var;
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -384,7 +384,7 @@ public class DrawerBlock extends RotatableBlock<DrawerTile> {
     public static class DrawerItem extends BlockItem{
 
         private DrawerBlock drawerBlock;
-        public DrawerItem(DrawerBlock p_40565_, Properties p_40566_, TitaniumTab tab) {
+        public DrawerItem(DrawerBlock p_40565_, net.minecraft.world.item.Item.Properties p_40566_, TitaniumTab tab) {
             super(p_40565_, p_40566_);
             this.drawerBlock = p_40565_;
             tab.getTabList().add(this);

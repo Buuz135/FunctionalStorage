@@ -5,8 +5,8 @@ import com.hrznstudio.titanium.annotation.plugin.FeaturePlugin;
 import com.hrznstudio.titanium.event.handler.EventManager;
 import com.hrznstudio.titanium.plugin.FeaturePluginInstance;
 import com.hrznstudio.titanium.plugin.PluginPhase;
-import net.minecraftforge.fml.InterModComms;
-import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
+import net.neoforged.fml.InterModComms;
+import net.neoforged.fml.event.lifecycle.InterModEnqueueEvent;
 
 @FeaturePlugin(value = "theoneprobe", type = FeaturePlugin.FeaturePluginType.MOD)
 public class TOPPlugin implements FeaturePluginInstance {
