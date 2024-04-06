@@ -1,45 +1,32 @@
 {
-  "type": "forge:conditional",
-  "recipes": [
+  "neoforge:conditions": [
     {
-      "conditions": [
-        {
-          "type": "forge:and",
-          "values": [
-            {
-              "type": "forge:item_exists",
-              "item": "functionalstorage:storage_controller"
-            }
-          ]
-        }
-      ],
-      "recipe": {
-        "type": "minecraft:crafting_shaped",
-        "category": "misc",
-        "key": {
-          "B": {
-            "tag": "forge:storage_blocks/quartz"
-          },
-          "C": {
-            "tag": "functionalstorage:drawer"
-          },
-          "D": {
-            "item": "minecraft:comparator"
-          },
-          "I": {
-            "tag": "forge:stone"
-          }
-        },
-        "pattern": [
-          "IBI",
-          "CDC",
-          "IBI"
-        ],
-        "result": {
-          "item": "functionalstorage:storage_controller"
-        },
-        "show_notification": true
-      }
+      "type": "neoforge:item_exists",
+      "item": "functionalstorage:storage_controller"
     }
-  ]
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "B": {
+      "tag": "forge:storage_blocks/quartz"
+    },
+    "C": {
+      "tag": "functionalstorage:drawer"
+    },
+    "D": {
+      "item": "minecraft:comparator"
+    },
+    "I": {
+      "tag": "forge:stone"
+    }
+  },
+  "pattern": [
+    "IBI",
+    "CDC",
+    "IBI"
+  ],
+  "result": {
+    "item": "functionalstorage:storage_controller"
+  }
 }

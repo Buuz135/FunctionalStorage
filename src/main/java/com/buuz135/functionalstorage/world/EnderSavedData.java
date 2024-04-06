@@ -28,7 +28,8 @@ public class EnderSavedData extends SavedData {
     public static EnderSavedData getInstance(LevelAccessor accessor){
         if (accessor instanceof ServerLevel){
             ServerLevel serverWorld = ((ServerLevel) accessor).getServer().getLevel(Level.OVERWORLD);
-            EnderSavedData data = serverWorld.getDataStorage().computeIfAbsent(tag -> EnderSavedData.load(tag, (ServerLevel) accessor), () -> new EnderSavedData((ServerLevel)accessor), NAME);
+            EnderSavedData data = serverWorld.getDataStorage().computeIfAbsent(
+                    new Factory<EnderSavedData>(() -> new EnderSavedData((ServerLevel)accessor), tag -> EnderSavedData.load(tag, (ServerLevel) accessor)), NAME);
             return data;
         } else if (accessor instanceof ClientLevel){
             return CLIENT;

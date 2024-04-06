@@ -12,7 +12,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.color.block.BlockColor;
 import net.minecraft.client.color.item.ItemColor;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
@@ -25,7 +25,6 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
-import net.neoforged.neoforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
@@ -42,7 +41,7 @@ public class FramedColors implements BlockColor, ItemColor {
                 if (framedDrawerModelData != null) {
                     for (Map.Entry<String, Item> entry: framedDrawerModelData.getDesign().entrySet()) {
                         if (entry.getValue() instanceof BlockItem blockItem) {
-                            if (ForgeRegistries.ITEMS.getKey(blockItem).getNamespace().equals(FunctionalStorage.MOD_ID))
+                            if (BuiltInRegistries.ITEM.getKey(blockItem).getNamespace().equals(FunctionalStorage.MOD_ID))
                                 continue;
                             BlockState state1 = blockItem.getBlock().defaultBlockState();
                             int color = Minecraft.getInstance().getBlockColors().getColor(state1, level, pos, tintIndex);
@@ -57,7 +56,7 @@ public class FramedColors implements BlockColor, ItemColor {
                 if (framedDrawerModelData != null) {
                     for (Map.Entry<String, Item> entry: framedDrawerModelData.getDesign().entrySet()) {
                         if (entry.getValue() instanceof BlockItem blockItem) {
-                            if (ForgeRegistries.ITEMS.getKey(blockItem).getNamespace().equals(FunctionalStorage.MOD_ID))
+                            if (BuiltInRegistries.ITEM.getKey(blockItem).getNamespace().equals(FunctionalStorage.MOD_ID))
                                 continue;
                             BlockState state1 = blockItem.getBlock().defaultBlockState();
                             int color = Minecraft.getInstance().getBlockColors().getColor(state1, level, pos, tintIndex);
@@ -72,7 +71,7 @@ public class FramedColors implements BlockColor, ItemColor {
                 if (framedDrawerModelData != null) {
                     for (Map.Entry<String, Item> entry : framedDrawerModelData.getDesign().entrySet()) {
                         if (entry.getValue() instanceof BlockItem blockItem) {
-                            if (ForgeRegistries.ITEMS.getKey(blockItem).getNamespace().equals(FunctionalStorage.MOD_ID))
+                            if (BuiltInRegistries.ITEM.getKey(blockItem).getNamespace().equals(FunctionalStorage.MOD_ID))
                                 continue;
                             BlockState state1 = blockItem.getBlock().defaultBlockState();
                             int color = Minecraft.getInstance().getBlockColors().getColor(state1, level, pos, tintIndex);
@@ -107,20 +106,20 @@ public class FramedColors implements BlockColor, ItemColor {
 
     @SubscribeEvent
     public static void blockColors(RegisterColorHandlersEvent.Block event) {
-        Block block1 = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(FunctionalStorage.MOD_ID, "framed_1"));
+        Block block1 = BuiltInRegistries.BLOCK.get(new ResourceLocation(FunctionalStorage.MOD_ID, "framed_1"));
         event.register(new FramedColors(), block1);
-        Block block2 = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(FunctionalStorage.MOD_ID, "framed_2"));
+        Block block2 = BuiltInRegistries.BLOCK.get(new ResourceLocation(FunctionalStorage.MOD_ID, "framed_2"));
         event.register(new FramedColors(), block2);
-        Block block4 = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(FunctionalStorage.MOD_ID, "framed_4"));
+        Block block4 = BuiltInRegistries.BLOCK.get(new ResourceLocation(FunctionalStorage.MOD_ID, "framed_4"));
         event.register(new FramedColors(), block4);
 
-        Block block5 = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(FunctionalStorage.MOD_ID, "compacting_framed_drawer"));
+        Block block5 = BuiltInRegistries.BLOCK.get(new ResourceLocation(FunctionalStorage.MOD_ID, "compacting_framed_drawer"));
         event.register(new FramedColors(), block5);
 
-        Block controller = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(FunctionalStorage.MOD_ID, "framed_storage_controller"));
+        Block controller = BuiltInRegistries.BLOCK.get(new ResourceLocation(FunctionalStorage.MOD_ID, "framed_storage_controller"));
         event.register(new FramedColors(), controller);
 
-        Block controllerExtension = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(FunctionalStorage.MOD_ID, "framed_controller_extension"));
+        Block controllerExtension = BuiltInRegistries.BLOCK.get(new ResourceLocation(FunctionalStorage.MOD_ID, "framed_controller_extension"));
         event.register(new FramedColors(), controllerExtension);
     }
 }

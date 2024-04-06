@@ -1,11 +1,10 @@
 {
   "type": "functionalstorage:custom_compacting",
   "higher_input": {
-    "count": 1,
-    "item": "minecraft:melon"
+    "item": "minecraft:glowstone"
   },
   "lower_input": {
-    "count": 9,
-    "item": "minecraft:melon_slice"
+    "count": 4,
+    "item": "minecraft:glowstone_dust"
   }
 }

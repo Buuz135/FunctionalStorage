@@ -5,12 +5,14 @@ import com.buuz135.functionalstorage.block.tile.DrawerTile;
 import com.buuz135.functionalstorage.block.tile.FramedDrawerTile;
 import com.buuz135.functionalstorage.client.model.FramedDrawerModelData;
 import com.buuz135.functionalstorage.util.DrawerWoodType;
+import com.hrznstudio.titanium.module.BlockWithTile;
 import com.hrznstudio.titanium.recipe.generator.TitaniumShapedRecipeBuilder;
 import com.hrznstudio.titanium.util.TileUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
-import net.minecraft.data.recipes.FinishedRecipe;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -22,33 +24,30 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.HitResult;
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
-import net.neoforged.neoforge.registries.ForgeRegistries;
-import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.function.Consumer;
 
 public class FramedDrawerBlock extends DrawerBlock{
 
     public FramedDrawerBlock(FunctionalStorage.DrawerType type) {
-        super(DrawerWoodType.FRAMED, type, Properties.copy(Blocks.OAK_PLANKS).noOcclusion().isViewBlocking((p_61036_, p_61037_, p_61038_) -> false));
+        super(DrawerWoodType.FRAMED, type, Properties.ofFullCopy(Blocks.OAK_PLANKS).noOcclusion().isViewBlocking((p_61036_, p_61037_, p_61038_) -> false));
     }
 
     @Override
     public BlockEntityType.BlockEntitySupplier<DrawerTile> getTileEntityFactory() {
-        return (blockPos, state) -> new FramedDrawerTile(this, (BlockEntityType<DrawerTile>) FunctionalStorage.DRAWER_TYPES.get(this.getType()).stream().filter(registryObjectRegistryObjectPair -> registryObjectRegistryObjectPair.getLeft().get().equals(this)).map(Pair::getRight).findFirst().get().get(), blockPos, state, this.getType());
+        return (blockPos, state) -> new FramedDrawerTile(this, (BlockEntityType<DrawerTile>) FunctionalStorage.DRAWER_TYPES.get(this.getType()).stream().filter(registryObjectRegistryObjectPair -> registryObjectRegistryObjectPair.getBlock() == this).map(BlockWithTile::type).findFirst().get().get(), blockPos, state, this.getType());
     }
 
     @Override
@@ -64,10 +63,10 @@ public class FramedDrawerBlock extends DrawerBlock{
             CompoundTag tag = stack.getTag().getCompound("Style");
             if (tag.isEmpty()) return null;
             HashMap<String, Item> data = new HashMap<>();
-            data.put("particle", ForgeRegistries.ITEMS.getValue(new ResourceLocation(tag.getString("particle"))));
-            data.put("front", ForgeRegistries.ITEMS.getValue(new ResourceLocation(tag.getString("front"))));
-            data.put("side", ForgeRegistries.ITEMS.getValue(new ResourceLocation(tag.getString("side"))));
-            data.put("front_divider", ForgeRegistries.ITEMS.getValue(new ResourceLocation(tag.getString("front_divider"))));
+            data.put("particle", BuiltInRegistries.ITEM.get(new ResourceLocation(tag.getString("particle"))));
+            data.put("front", BuiltInRegistries.ITEM.get(new ResourceLocation(tag.getString("front"))));
+            data.put("side", BuiltInRegistries.ITEM.get(new ResourceLocation(tag.getString("side"))));
+            data.put("front_divider", BuiltInRegistries.ITEM.get(new ResourceLocation(tag.getString("front_divider"))));
             return new FramedDrawerModelData(data);
         }
         return null;
@@ -76,13 +75,13 @@ public class FramedDrawerBlock extends DrawerBlock{
     public static ItemStack fill(ItemStack first, ItemStack second, ItemStack drawer, ItemStack divider){
         drawer = ItemHandlerHelper.copyStackWithSize(drawer, 1);
         CompoundTag style = drawer.getOrCreateTagElement("Style");
-        style.putString("particle", ForgeRegistries.ITEMS.getKey(first.getItem()).toString());
-        style.putString("side", ForgeRegistries.ITEMS.getKey(first.getItem()).toString());
-        style.putString("front", ForgeRegistries.ITEMS.getKey(second.getItem()).toString());
+        style.putString("particle", BuiltInRegistries.ITEM.getKey(first.getItem()).toString());
+        style.putString("side", BuiltInRegistries.ITEM.getKey(first.getItem()).toString());
+        style.putString("front", BuiltInRegistries.ITEM.getKey(second.getItem()).toString());
         if (divider.isEmpty()){
-            style.putString("front_divider", ForgeRegistries.ITEMS.getKey(first.getItem()).toString());
+            style.putString("front_divider", BuiltInRegistries.ITEM.getKey(first.getItem()).toString());
         } else {
-            style.putString("front_divider", ForgeRegistries.ITEMS.getKey(divider.getItem()).toString());
+            style.putString("front_divider", BuiltInRegistries.ITEM.getKey(divider.getItem()).toString());
         }
         drawer.getOrCreateTag().put("Style", style);
         return drawer;
@@ -109,7 +108,7 @@ public class FramedDrawerBlock extends DrawerBlock{
     }
 
     @Override
-    public ItemStack getCloneItemStack(BlockState state, HitResult target, BlockGetter level, BlockPos pos, Player player) {
+    public ItemStack getCloneItemStack(BlockState state, HitResult target, LevelReader level, BlockPos pos, Player player) {
         BlockEntity entity = level.getBlockEntity(pos);
         if (entity instanceof FramedDrawerTile framedDrawerTile && framedDrawerTile.getFramedDrawerModelData() != null && !framedDrawerTile.getFramedDrawerModelData().getDesign().isEmpty()){
             ItemStack stack = new ItemStack(this);
@@ -120,7 +119,7 @@ public class FramedDrawerBlock extends DrawerBlock{
     }
 
     @Override
-    public void registerRecipe(Consumer<FinishedRecipe> consumer) {
+    public void registerRecipe(RecipeOutput consumer) {
         if (this.getType() == FunctionalStorage.DrawerType.X_1) {
             TitaniumShapedRecipeBuilder.shapedRecipe(this)
                     .pattern("PPP").pattern("PCP").pattern("PPP")

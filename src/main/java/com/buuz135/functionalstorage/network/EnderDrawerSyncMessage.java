@@ -5,7 +5,7 @@ import com.buuz135.functionalstorage.world.EnderSavedData;
 import com.hrznstudio.titanium.network.CompoundSerializableDataHandler;
 import com.hrznstudio.titanium.network.Message;
 import net.minecraft.client.Minecraft;
-import net.neoforged.neoforge.network.NetworkEvent;
+import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 
 public class EnderDrawerSyncMessage extends Message {
 
@@ -33,8 +33,8 @@ public class EnderDrawerSyncMessage extends Message {
     }
 
     @Override
-    protected void handleMessage(NetworkEvent.Context context) {
-        context.enqueueWork(() -> {
+    protected void handleMessage(PlayPayloadContext context) {
+        context.workHandler().execute(() -> {
             EnderSavedData.getInstance(Minecraft.getInstance().level).setFrenquency(frequency, handler);
         });
     }

@@ -18,19 +18,12 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.common.capabilities.Capabilities;
-import net.neoforged.neoforge.common.capabilities.Capability;
-import net.neoforged.neoforge.common.util.LazyOptional;
 import net.neoforged.neoforge.items.IItemHandler;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 public class SimpleCompactingDrawerTile extends ItemControllableDrawerTile<SimpleCompactingDrawerTile> {
 
-    private final LazyOptional<IItemHandler> lazyStorage;
     @Save
     public CompactingInventoryHandler handler;
     private boolean hasCheckedRecipes;
@@ -69,7 +62,6 @@ public class SimpleCompactingDrawerTile extends ItemControllableDrawerTile<Simpl
             }
 
         };
-        lazyStorage = LazyOptional.of(() -> this.handler);
         this.hasCheckedRecipes = false;
     }
 
@@ -133,23 +125,10 @@ public class SimpleCompactingDrawerTile extends ItemControllableDrawerTile<Simpl
         return handler;
     }
 
-    @Override
-    public LazyOptional<IItemHandler> getOptional() {
-        return lazyStorage;
-    }
 
     @Override
     public int getBaseSize(int slot) {
         return handler.getSlotLimitBase(slot);
-    }
-
-    @Nonnull
-    @Override
-    public <U> LazyOptional<U> getCapability(@Nonnull Capability<U> cap, @Nullable Direction side) {
-        if (cap == Capabilities.ITEM_HANDLER) {
-            return lazyStorage.cast();
-        }
-        return super.getCapability(cap, side);
     }
 
     @NotNull

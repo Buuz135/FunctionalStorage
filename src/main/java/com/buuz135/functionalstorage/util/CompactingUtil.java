@@ -4,19 +4,23 @@ import com.buuz135.functionalstorage.FunctionalStorage;
 import com.buuz135.functionalstorage.recipe.CustomCompactingRecipe;
 import com.hrznstudio.titanium.util.RecipeUtil;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.inventory.TransientCraftingContainer;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
-import net.neoforged.neoforge.registries.ForgeRegistries;
-import java.util.*;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -37,7 +41,7 @@ public class CompactingUtil {
         this.level = level;
         this.resultAmount = resultAmount;
         this.results = new ArrayList<>();
-        this.recipes = (List<CustomCompactingRecipe>) RecipeUtil.getRecipes(level, FunctionalStorage.CUSTOM_COMPACTING_RECIPE_TYPE.get());
+        this.recipes = (List<CustomCompactingRecipe>) RecipeUtil.getRecipes(level, FunctionalStorage.CUSTOM_COMPACTING_RECIPE_TYPE.value());
     }
 
     public void setup(ItemStack stack){
@@ -126,7 +130,8 @@ public class CompactingUtil {
         }
         List<ItemStack> candidates = new ArrayList<>();
         Map<ItemStack, Integer> candidatesRate = new HashMap<>();
-        for (CraftingRecipe craftingRecipe : level.getRecipeManager().getAllRecipesFor(RecipeType.CRAFTING)) {
+        for (var rcp : level.getRecipeManager().getAllRecipesFor(RecipeType.CRAFTING)) {
+            var craftingRecipe = rcp.value();
             ItemStack output = craftingRecipe.getResultItem(this.level.registryAccess());
             if (!ItemStack.isSameItem(stack, output)) continue;
             ItemStack match = tryMatch(stack, craftingRecipe.getIngredients());
@@ -160,7 +165,8 @@ public class CompactingUtil {
 
     private List<ItemStack> findAllMatchingRecipes(CraftingContainer crafting) {
         List<ItemStack> candidates = new ArrayList<>();
-        for (CraftingRecipe recipe : level.getRecipeManager().getRecipesFor(RecipeType.CRAFTING, crafting, level)) {
+        for (var rcp : level.getRecipeManager().getRecipesFor(RecipeType.CRAFTING, crafting, level)) {
+            var recipe = rcp.value();
             if (recipe.matches(crafting, level)) {
                 ItemStack result = recipe.assemble(crafting, this.level.registryAccess());
                 if (!result.isEmpty())
@@ -171,17 +177,13 @@ public class CompactingUtil {
     }
 
     private ItemStack findSimilar(ItemStack reference, List<ItemStack> candidates) {
-        ResourceLocation referenceName = ForgeRegistries.ITEMS.getKey(reference.getItem());
-        if (referenceName != null) {
-            for (ItemStack candidate : candidates) {
-                ResourceLocation matchName = ForgeRegistries.ITEMS.getKey(candidate.getItem());
-                if (matchName != null) {
-                    if (referenceName.getNamespace().equals(matchName.getNamespace()))
-                        return candidate;
-                }
-            }
+        ResourceLocation referenceName = BuiltInRegistries.ITEM.getKey(reference.getItem());
+        for (ItemStack candidate : candidates) {
+            ResourceLocation matchName = BuiltInRegistries.ITEM.getKey(candidate.getItem());
+            if (referenceName.getNamespace().equals(matchName.getNamespace()))
+                return candidate;
         }
-        return candidates.size() > 0 ? candidates.get(0) : ItemStack.EMPTY;
+        return !candidates.isEmpty() ? candidates.get(0) : ItemStack.EMPTY;
     }
 
 

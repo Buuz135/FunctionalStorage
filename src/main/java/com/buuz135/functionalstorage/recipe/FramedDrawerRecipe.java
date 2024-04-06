@@ -1,9 +1,12 @@
 package com.buuz135.functionalstorage.recipe;
 
 
-import com.buuz135.functionalstorage.block.*;
+import com.buuz135.functionalstorage.block.CompactingFramedDrawerBlock;
+import com.buuz135.functionalstorage.block.FramedControllerExtensionBlock;
+import com.buuz135.functionalstorage.block.FramedDrawerBlock;
+import com.buuz135.functionalstorage.block.FramedDrawerControllerBlock;
+import com.buuz135.functionalstorage.block.FramedSimpleCompactingDrawerBlock;
 import net.minecraft.core.RegistryAccess;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
@@ -13,14 +16,12 @@ import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.SimpleCraftingRecipeSerializer;
 import net.minecraft.world.level.Level;
 
-import java.util.List;
-
 public class FramedDrawerRecipe extends CustomRecipe {
 
-    public static RecipeSerializer<FramedDrawerRecipe> SERIALIZER = new SimpleCraftingRecipeSerializer<>((p_250892_, p_249920_) -> new FramedDrawerRecipe(p_250892_));
+    public static RecipeSerializer<FramedDrawerRecipe> SERIALIZER = new SimpleCraftingRecipeSerializer<>((c) -> new FramedDrawerRecipe());
 
-    public FramedDrawerRecipe(ResourceLocation idIn) {
-        super(idIn, CraftingBookCategory.MISC);
+    public FramedDrawerRecipe() {
+        super(CraftingBookCategory.MISC);
     }
 
 

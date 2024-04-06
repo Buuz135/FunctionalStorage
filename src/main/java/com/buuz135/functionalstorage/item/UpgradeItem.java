@@ -17,7 +17,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import org.apache.commons.lang3.text.WordUtils;
 import org.jetbrains.annotations.Nullable;
-import var;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
@@ -75,13 +75,13 @@ public class UpgradeItem extends BasicItem {
                 Direction direction = getDirection(first);
                 Direction next = Direction.values()[(Arrays.asList(Direction.values()).indexOf(direction) + 1 ) % Direction.values().length];
                 first.getOrCreateTag().putString("Direction", next.getName());
-                p_150896_.playSound(SoundEvents.UI_BUTTON_CLICK.get(), 0.5f, 1);
+                p_150896_.playSound(SoundEvents.UI_BUTTON_CLICK.value(), 0.5f, 1);
                 return true;
             }
             if (item.equals(FunctionalStorage.REDSTONE_UPGRADE.get())){
                 int slot = first.getOrCreateTag().getInt("Slot");
                 first.getOrCreateTag().putInt("Slot", (slot + 1) % MAX_SLOT);
-                p_150896_.playSound(SoundEvents.UI_BUTTON_CLICK.get(), 0.5f, 1);
+                p_150896_.playSound(SoundEvents.UI_BUTTON_CLICK.value(), 0.5f, 1);
                 return true;
             }
         }

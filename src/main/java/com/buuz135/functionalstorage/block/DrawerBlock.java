@@ -5,7 +5,7 @@ import com.buuz135.functionalstorage.block.tile.ControllableDrawerTile;
 import com.buuz135.functionalstorage.block.tile.DrawerTile;
 import com.buuz135.functionalstorage.block.tile.ItemControllableDrawerTile;
 import com.buuz135.functionalstorage.block.tile.StorageControllerTile;
-import com.buuz135.functionalstorage.inventory.item.DrawerCapabilityProvider;
+import com.buuz135.functionalstorage.inventory.item.DrawerStackItemHandler;
 import com.buuz135.functionalstorage.item.ConfigurationToolItem;
 import com.buuz135.functionalstorage.item.LinkingToolItem;
 import com.buuz135.functionalstorage.recipe.DrawerlessWoodIngredient;
@@ -14,6 +14,7 @@ import com.google.common.collect.Multimap;
 import com.google.common.collect.MultimapBuilder;
 import com.hrznstudio.titanium.block.RotatableBlock;
 import com.hrznstudio.titanium.datagenerator.loot.block.BasicBlockLootTables;
+import com.hrznstudio.titanium.module.BlockWithTile;
 import com.hrznstudio.titanium.recipe.generator.TitaniumShapedRecipeBuilder;
 import com.hrznstudio.titanium.tab.TitaniumTab;
 import com.hrznstudio.titanium.util.RayTraceUtils;
@@ -22,7 +23,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
-import net.minecraft.data.recipes.FinishedRecipe;
+import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -31,7 +32,6 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -44,7 +44,6 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
-import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
@@ -56,17 +55,15 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.neoforge.common.Tags;
-import net.neoforged.neoforge.common.capabilities.ICapabilityProvider;
+import net.neoforged.neoforge.items.IItemHandler;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import var;
+
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Optional;
-import java.util.function.Consumer;
 
 public class DrawerBlock extends RotatableBlock<DrawerTile> {
 
@@ -146,7 +143,7 @@ public class DrawerBlock extends RotatableBlock<DrawerTile> {
 
     @Override
     public BlockEntityType.BlockEntitySupplier<DrawerTile> getTileEntityFactory() {
-        return (blockPos, state) -> new DrawerTile(this, (BlockEntityType<DrawerTile>) FunctionalStorage.DRAWER_TYPES.get(type).stream().filter(registryObjectRegistryObjectPair -> registryObjectRegistryObjectPair.getLeft().get().equals(this)).map(Pair::getRight).findFirst().get().get(), blockPos, state, type, woodType);
+        return (blockPos, state) -> new DrawerTile(this, (BlockEntityType<DrawerTile>) FunctionalStorage.DRAWER_TYPES.get(type).stream().filter(registryObjectRegistryObjectPair -> registryObjectRegistryObjectPair.getBlock() == this).map(BlockWithTile::type).findFirst().get().get(), blockPos, state, type, woodType);
     }
 
     @Override
@@ -272,13 +269,8 @@ public class DrawerBlock extends RotatableBlock<DrawerTile> {
     }
 
     @Override
-    public void registerRecipe(Consumer<FinishedRecipe> consumer) {
+    public void registerRecipe(RecipeOutput consumer) {
         if (type == FunctionalStorage.DrawerType.X_1) {
-            TitaniumShapedRecipeBuilder.shapedRecipe(this)
-                    .pattern("PPP").pattern("PCP").pattern("PPP")
-                    .define('P', woodType.getPlanks())
-                    .define('C', Tags.Items.CHESTS_WOODEN)
-                    .save(consumer);
             if (woodType.getName().equals("oak")){
                 TitaniumShapedRecipeBuilder.shapedRecipe(this)
                         .setName(new ResourceLocation(FunctionalStorage.MOD_ID, "oak_drawer_alternate_x1"))
@@ -286,14 +278,15 @@ public class DrawerBlock extends RotatableBlock<DrawerTile> {
                         .define('P', new DrawerlessWoodIngredient())
                         .define('C', Tags.Items.CHESTS_WOODEN)
                         .save(consumer);
+            } else {
+                TitaniumShapedRecipeBuilder.shapedRecipe(this)
+                        .pattern("PPP").pattern("PCP").pattern("PPP")
+                        .define('P', woodType.getPlanks())
+                        .define('C', Tags.Items.CHESTS_WOODEN)
+                        .save(consumer);
             }
         }
         if (type == FunctionalStorage.DrawerType.X_2){
-            TitaniumShapedRecipeBuilder.shapedRecipe(this, 2)
-                    .pattern("PCP").pattern("PPP").pattern("PCP")
-                    .define('P', woodType.getPlanks())
-                    .define('C', Tags.Items.CHESTS_WOODEN)
-                    .save(consumer);
             if (woodType.getName().equals("oak")){
                 TitaniumShapedRecipeBuilder.shapedRecipe(this, 2)
                         .setName(new ResourceLocation(FunctionalStorage.MOD_ID, "oak_drawer_alternate_x2"))
@@ -301,19 +294,26 @@ public class DrawerBlock extends RotatableBlock<DrawerTile> {
                         .define('P', new DrawerlessWoodIngredient())
                         .define('C', Tags.Items.CHESTS_WOODEN)
                         .save(consumer);
+            } else {
+                TitaniumShapedRecipeBuilder.shapedRecipe(this, 2)
+                        .pattern("PCP").pattern("PPP").pattern("PCP")
+                        .define('P', woodType.getPlanks())
+                        .define('C', Tags.Items.CHESTS_WOODEN)
+                        .save(consumer);
             }
         }
         if (type == FunctionalStorage.DrawerType.X_4){
-            TitaniumShapedRecipeBuilder.shapedRecipe(this, 4)
-                    .pattern("CPC").pattern("PPP").pattern("CPC")
-                    .define('P', woodType.getPlanks())
-                    .define('C', Tags.Items.CHESTS_WOODEN)
-                    .save(consumer);
             if (woodType.getName().equals("oak")){
                 TitaniumShapedRecipeBuilder.shapedRecipe(this, 4)
                         .setName(new ResourceLocation(FunctionalStorage.MOD_ID, "oak_drawer_alternate_x4"))
                         .pattern("CPC").pattern("PPP").pattern("CPC")
                         .define('P', new DrawerlessWoodIngredient())
+                        .define('C', Tags.Items.CHESTS_WOODEN)
+                        .save(consumer);
+            } else {
+                TitaniumShapedRecipeBuilder.shapedRecipe(this, 4)
+                        .pattern("CPC").pattern("PPP").pattern("CPC")
+                        .define('P', woodType.getPlanks())
                         .define('C', Tags.Items.CHESTS_WOODEN)
                         .save(consumer);
             }
@@ -390,15 +390,9 @@ public class DrawerBlock extends RotatableBlock<DrawerTile> {
             tab.getTabList().add(this);
         }
 
-        @Override
-        public Optional<TooltipComponent> getTooltipImage(ItemStack stack) {
-            return super.getTooltipImage(stack);
-        }
-
         @Nullable
-        @Override
-        public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundTag nbt) {
-            return new DrawerCapabilityProvider(stack, this.drawerBlock.getType());
+        public IItemHandler initCapabilities(ItemStack stack) {
+            return new DrawerStackItemHandler(stack, this.drawerBlock.getType());
         }
     }
 

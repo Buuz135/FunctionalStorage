@@ -1,45 +1,32 @@
 {
-  "type": "forge:conditional",
-  "recipes": [
+  "neoforge:conditions": [
     {
-      "conditions": [
-        {
-          "type": "forge:and",
-          "values": [
-            {
-              "type": "forge:item_exists",
-              "item": "functionalstorage:armory_cabinet"
-            }
-          ]
-        }
-      ],
-      "recipe": {
-        "type": "minecraft:crafting_shaped",
-        "category": "misc",
-        "key": {
-          "B": {
-            "tag": "forge:ingots/netherite"
-          },
-          "C": {
-            "tag": "functionalstorage:drawer"
-          },
-          "D": {
-            "item": "minecraft:comparator"
-          },
-          "I": {
-            "tag": "forge:stone"
-          }
-        },
-        "pattern": [
-          "ICI",
-          "CDC",
-          "IBI"
-        ],
-        "result": {
-          "item": "functionalstorage:armory_cabinet"
-        },
-        "show_notification": true
-      }
+      "type": "neoforge:item_exists",
+      "item": "functionalstorage:armory_cabinet"
     }
-  ]
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "B": {
+      "tag": "forge:ingots/netherite"
+    },
+    "C": {
+      "tag": "functionalstorage:drawer"
+    },
+    "D": {
+      "item": "minecraft:comparator"
+    },
+    "I": {
+      "tag": "forge:stone"
+    }
+  },
+  "pattern": [
+    "ICI",
+    "CDC",
+    "IBI"
+  ],
+  "result": {
+    "item": "functionalstorage:armory_cabinet"
+  }
 }

@@ -23,6 +23,9 @@ repositories {
             includeGroup "curse.maven"
         }
     }
+    maven {
+        url(rootProject.file('../Titanium/repo'))
+    }
 }
 
 base {
@@ -50,6 +53,14 @@ runs {
     server {
         programArgument '--nogui'
     }
+
+    data {
+        // example of overriding the workingDirectory set in configureEach above, uncomment if you want to use it
+        // workingDirectory project.file('run-data')
+
+        // Specify the modid for data generation, where to output the resulting resource, and where to look for existing resources.
+        programArguments.addAll '--mod', 'functionalstorage', '--all', '--output', file('src/generated/resources/').getAbsolutePath(), '--existing', file('src/main/resources/').getAbsolutePath()
+    }
 }
 
 minecraft.accessTransformers.file rootProject.file('src/main/resources/META-INF/accesstransformer.cfg')
@@ -64,6 +75,9 @@ dependencies {
     compileOnly "mezz.jei:jei-1.20.4-neoforge-api:$jei_version"
     runtimeOnly "mezz.jei:jei-1.20.4-neoforge:$jei_version"
 	implementation "curse.maven:refined-storage-243076:5165548"
+
+    implementation('com.hrznstudio:titanium')
+    runtimeOnly('com.hrznstudio:Titanium:1.20.4-2.4.0')
 }
 
 jar {

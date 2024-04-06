@@ -1,45 +1,32 @@
 {
-  "type": "forge:conditional",
-  "recipes": [
+  "neoforge:conditions": [
     {
-      "conditions": [
-        {
-          "type": "forge:and",
-          "values": [
-            {
-              "type": "forge:item_exists",
-              "item": "functionalstorage:redstone_upgrade"
-            }
-          ]
-        }
-      ],
-      "recipe": {
-        "type": "minecraft:crafting_shaped",
-        "category": "misc",
-        "key": {
-          "B": {
-            "item": "minecraft:redstone_block"
-          },
-          "C": {
-            "item": "minecraft:comparator"
-          },
-          "D": {
-            "tag": "functionalstorage:drawer"
-          },
-          "I": {
-            "item": "minecraft:redstone"
-          }
-        },
-        "pattern": [
-          "IBI",
-          "CDC",
-          "IBI"
-        ],
-        "result": {
-          "item": "functionalstorage:redstone_upgrade"
-        },
-        "show_notification": true
-      }
+      "type": "neoforge:item_exists",
+      "item": "functionalstorage:redstone_upgrade"
     }
-  ]
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "B": {
+      "item": "minecraft:redstone_block"
+    },
+    "C": {
+      "item": "minecraft:comparator"
+    },
+    "D": {
+      "tag": "functionalstorage:drawer"
+    },
+    "I": {
+      "item": "minecraft:redstone"
+    }
+  },
+  "pattern": [
+    "IBI",
+    "CDC",
+    "IBI"
+  ],
+  "result": {
+    "item": "functionalstorage:redstone_upgrade"
+  }
 }

@@ -1,7 +1,6 @@
 {
   "type": "functionalstorage:custom_compacting",
   "higher_input": {
-    "count": 1,
     "item": "minecraft:packed_ice"
   },
   "lower_input": {

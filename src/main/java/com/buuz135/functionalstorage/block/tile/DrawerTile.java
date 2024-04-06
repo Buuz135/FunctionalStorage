@@ -17,20 +17,13 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.common.capabilities.Capabilities;
-import net.neoforged.neoforge.common.capabilities.Capability;
-import net.neoforged.neoforge.common.util.LazyOptional;
 import net.neoforged.neoforge.items.IItemHandler;
 import org.jetbrains.annotations.NotNull;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 public class DrawerTile extends ItemControllableDrawerTile<DrawerTile> {
 
     @Save
     public BigInventoryHandler handler;
-    private final LazyOptional<IItemHandler> lazyStorage;
     private FunctionalStorage.DrawerType type;
     private IWoodType woodType;
 
@@ -71,7 +64,6 @@ public class DrawerTile extends ItemControllableDrawerTile<DrawerTile> {
 
 
         };
-        lazyStorage = LazyOptional.of(() -> this.handler);
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -85,15 +77,6 @@ public class DrawerTile extends ItemControllableDrawerTile<DrawerTile> {
                 integer -> getHandler().getStackInSlot(integer),
                 integer -> getHandler().getSlotLimit(integer)
         ));
-    }
-
-    @Nonnull
-    @Override
-    public <U> LazyOptional<U> getCapability(@Nonnull Capability<U> cap, @Nullable Direction side) {
-        if (cap == Capabilities.ITEM_HANDLER) {
-            return lazyStorage.cast();
-        }
-        return super.getCapability(cap, side);
     }
 
     public InteractionResult onSlotActivated(Player playerIn, InteractionHand hand, Direction facing, double hitX, double hitY, double hitZ, int slot) {
@@ -126,11 +109,6 @@ public class DrawerTile extends ItemControllableDrawerTile<DrawerTile> {
     @Override
     public IItemHandler getStorage() {
         return handler;
-    }
-
-    @Override
-    public LazyOptional<IItemHandler> getOptional() {
-        return lazyStorage;
     }
 
     @Override

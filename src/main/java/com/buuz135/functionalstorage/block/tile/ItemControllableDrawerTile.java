@@ -7,7 +7,6 @@ import com.buuz135.functionalstorage.item.UpgradeItem;
 import com.hrznstudio.titanium.block.BasicTileBlock;
 import com.hrznstudio.titanium.component.inventory.InventoryComponent;
 import com.hrznstudio.titanium.util.RayTraceUtils;
-import com.hrznstudio.titanium.util.TileUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -25,8 +24,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.common.capabilities.Capabilities;
-import net.neoforged.neoforge.common.util.LazyOptional;
+import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
 import org.jetbrains.annotations.NotNull;
@@ -61,48 +59,46 @@ public abstract class ItemControllableDrawerTile<T extends ItemControllableDrawe
                         Item item = stack.getItem();
                         if (item.equals(FunctionalStorage.PULLING_UPGRADE.get())) {
                             Direction direction = UpgradeItem.getDirection(stack);
-                            TileUtil.getTileEntity(level, pos.relative(direction)).ifPresent(blockEntity1 -> {
-                                blockEntity1.getCapability(Capabilities.ITEM_HANDLER, direction.getOpposite()).ifPresent(iItemHandler -> {
-                                    for (int otherSlot = 0; otherSlot < iItemHandler.getSlots(); otherSlot++) {
-                                        ItemStack pulledStack = iItemHandler.extractItem(otherSlot, FunctionalStorageConfig.UPGRADE_PULL_ITEMS, true);
-                                        if (pulledStack.isEmpty()) continue;
-                                        boolean hasWorked = false;
-                                        for (int ourSlot = 0; ourSlot < this.getStorage().getSlots(); ourSlot++) {
-                                            ItemStack simulated = getStorage().insertItem(ourSlot, pulledStack, true);
-                                            if (!simulated.equals(pulledStack)) {
-                                                ItemStack extracted = iItemHandler.extractItem(otherSlot, pulledStack.getCount() - simulated.getCount(), false);
-                                                getStorage().insertItem(ourSlot, extracted, false);
-                                                hasWorked = true;
-                                                break;
-                                            }
+                            var iItemHandler = level.getCapability(Capabilities.ItemHandler.BLOCK, pos.relative(direction), direction.getOpposite());
+                            if (iItemHandler != null) {
+                                for (int otherSlot = 0; otherSlot < iItemHandler.getSlots(); otherSlot++) {
+                                    ItemStack pulledStack = iItemHandler.extractItem(otherSlot, FunctionalStorageConfig.UPGRADE_PULL_ITEMS, true);
+                                    if (pulledStack.isEmpty()) continue;
+                                    boolean hasWorked = false;
+                                    for (int ourSlot = 0; ourSlot < this.getStorage().getSlots(); ourSlot++) {
+                                        ItemStack simulated = getStorage().insertItem(ourSlot, pulledStack, true);
+                                        if (!simulated.equals(pulledStack)) {
+                                            ItemStack extracted = iItemHandler.extractItem(otherSlot, pulledStack.getCount() - simulated.getCount(), false);
+                                            getStorage().insertItem(ourSlot, extracted, false);
+                                            hasWorked = true;
+                                            break;
                                         }
-                                        if (hasWorked) break;
                                     }
-                                });
-                            });
+                                    if (hasWorked) break;
+                                }
+                            }
                         }
                         if (item.equals(FunctionalStorage.PUSHING_UPGRADE.get())) {
                             Direction direction = UpgradeItem.getDirection(stack);
-                            TileUtil.getTileEntity(level, pos.relative(direction)).ifPresent(blockEntity1 -> {
-                                blockEntity1.getCapability(Capabilities.ITEM_HANDLER, direction.getOpposite()).ifPresent(otherHandler -> {
-                                    for (int drawerSlot = 0; drawerSlot < getStorage().getSlots(); drawerSlot++) {
-                                        ItemStack pulledStack = getStorage().extractItem(drawerSlot, FunctionalStorageConfig.UPGRADE_PUSH_ITEMS, true);
-                                        if (pulledStack.isEmpty()) continue;
-                                        boolean hasWorked = false;
-                                        for (int destinationSlot = 0; destinationSlot < otherHandler.getSlots(); destinationSlot++) {
-                                            if (otherHandler.getStackInSlot(destinationSlot).getCount() >= otherHandler.getSlotLimit(destinationSlot))
-                                                continue;
-                                            ItemStack simulated = otherHandler.insertItem(destinationSlot, pulledStack, true);
-                                            if (simulated.getCount() <= pulledStack.getCount()) {
-                                                otherHandler.insertItem(destinationSlot, getStorage().extractItem(drawerSlot, pulledStack.getCount() - simulated.getCount(), false), false);
-                                                hasWorked = true;
-                                                break;
-                                            }
+                            var otherHandler = level.getCapability(Capabilities.ItemHandler.BLOCK, pos.relative(direction), direction.getOpposite());
+                            if (otherHandler != null) {
+                                for (int drawerSlot = 0; drawerSlot < getStorage().getSlots(); drawerSlot++) {
+                                    ItemStack pulledStack = getStorage().extractItem(drawerSlot, FunctionalStorageConfig.UPGRADE_PUSH_ITEMS, true);
+                                    if (pulledStack.isEmpty()) continue;
+                                    boolean hasWorked = false;
+                                    for (int destinationSlot = 0; destinationSlot < otherHandler.getSlots(); destinationSlot++) {
+                                        if (otherHandler.getStackInSlot(destinationSlot).getCount() >= otherHandler.getSlotLimit(destinationSlot))
+                                            continue;
+                                        ItemStack simulated = otherHandler.insertItem(destinationSlot, pulledStack, true);
+                                        if (simulated.getCount() <= pulledStack.getCount()) {
+                                            otherHandler.insertItem(destinationSlot, getStorage().extractItem(drawerSlot, pulledStack.getCount() - simulated.getCount(), false), false);
+                                            hasWorked = true;
+                                            break;
                                         }
-                                        if (hasWorked) break;
                                     }
-                                });
-                            });
+                                    if (hasWorked) break;
+                                }
+                            }
                         }
                         if (item.equals(FunctionalStorage.COLLECTOR_UPGRADE.get())) {
                             Direction direction = UpgradeItem.getDirection(stack);
@@ -172,15 +168,7 @@ public abstract class ItemControllableDrawerTile<T extends ItemControllableDrawe
 
     public abstract IItemHandler getStorage();
 
-    public abstract LazyOptional<IItemHandler> getOptional();
-
     public abstract int getBaseSize(int lost);
-
-    @Override
-    public void invalidateCaps() {
-        super.invalidateCaps();
-        getOptional().invalidate();
-    }
 
     @Override
     public InventoryComponent<ControllableDrawerTile<T>> getStorageUpgradesConstructor() {

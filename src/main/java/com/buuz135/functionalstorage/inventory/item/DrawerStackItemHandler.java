@@ -10,7 +10,7 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.common.util.INBTSerializable;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
-import var;
+
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
@@ -63,7 +63,7 @@ public class DrawerStackItemHandler implements IItemHandler, INBTSerializable<Co
         CompoundTag items = new CompoundTag();
         for (int i = 0; i < this.storedStacks.size(); i++) {
             CompoundTag bigStack = new CompoundTag();
-            bigStack.put(STACK, this.storedStacks.get(i).getStack().serializeNBT());
+            bigStack.put(STACK, this.storedStacks.get(i).getStack().save(new CompoundTag()));
             bigStack.putInt(AMOUNT, this.storedStacks.get(i).getAmount());
             items.put(i + "", bigStack);
         }

@@ -9,3 +9,9 @@ pluginManagement {
 plugins {
     id 'org.gradle.toolchains.foojay-resolver-convention' version '0.8.0'
 }
+
+includeBuild('../Titanium') {
+    dependencySubstitution {
+        substitute module('com.hrznstudio:titanium') using project(':')
+    }
+}

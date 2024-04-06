@@ -1,7 +1,10 @@
 package com.buuz135.functionalstorage.block;
 
 import com.buuz135.functionalstorage.FunctionalStorage;
-import com.buuz135.functionalstorage.block.tile.*;
+import com.buuz135.functionalstorage.block.tile.ControllableDrawerTile;
+import com.buuz135.functionalstorage.block.tile.EnderDrawerTile;
+import com.buuz135.functionalstorage.block.tile.ItemControllableDrawerTile;
+import com.buuz135.functionalstorage.block.tile.StorageControllerTile;
 import com.buuz135.functionalstorage.item.LinkingToolItem;
 import com.hrznstudio.titanium.block.RotatableBlock;
 import com.hrznstudio.titanium.datagenerator.loot.block.BasicBlockLootTables;
@@ -11,15 +14,18 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
-import net.minecraft.data.recipes.FinishedRecipe;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.*;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -28,7 +34,6 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
@@ -38,7 +43,6 @@ import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.neoforged.neoforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -47,7 +51,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import static com.buuz135.functionalstorage.block.DrawerBlock.LOCKED;
@@ -55,7 +58,7 @@ import static com.buuz135.functionalstorage.block.DrawerBlock.LOCKED;
 public class EnderDrawerBlock extends RotatableBlock<EnderDrawerTile> {
 
     public EnderDrawerBlock() {
-        super("ender_drawer", Properties.copy(Blocks.ENDER_CHEST), EnderDrawerTile.class);
+        super("ender_drawer", Properties.ofFullCopy(Blocks.ENDER_CHEST), EnderDrawerTile.class);
         setItemGroup(FunctionalStorage.TAB);
         registerDefaultState(defaultBlockState().setValue(RotatableBlock.FACING_HORIZONTAL, Direction.NORTH).setValue(LOCKED, false));
     }
@@ -64,7 +67,7 @@ public class EnderDrawerBlock extends RotatableBlock<EnderDrawerTile> {
 
     public static List<ItemStack> getFrequencyDisplay(String string){
         return FREQUENCY_LOOK.computeIfAbsent(string, s -> {
-            List<Item> minecraftItems = ForgeRegistries.ITEMS.getValues().stream().filter(item -> item != Items.AIR && ForgeRegistries.ITEMS.getKey(item).getNamespace().equals("minecraft") && !(item instanceof BlockItem)).collect(Collectors.toList());
+            List<Item> minecraftItems = BuiltInRegistries.ITEM.stream().filter(item -> item != Items.AIR && BuiltInRegistries.ITEM.getKey(item).getNamespace().equals("minecraft") && !(item instanceof BlockItem)).collect(Collectors.toList());
             return Arrays.stream(string.split("-")).map(s1 -> new ItemStack(minecraftItems.get(Math.abs(s1.hashCode()) % minecraftItems.size()))).collect(Collectors.toList());
         });
     }
@@ -83,7 +86,7 @@ public class EnderDrawerBlock extends RotatableBlock<EnderDrawerTile> {
 
     @Override
     public BlockEntityType.BlockEntitySupplier<EnderDrawerTile> getTileEntityFactory() {
-        return (blockPos, state) -> new EnderDrawerTile(this, (BlockEntityType<EnderDrawerTile>) FunctionalStorage.ENDER_DRAWER.getRight().get(),blockPos, state);
+        return (blockPos, state) -> new EnderDrawerTile(this, (BlockEntityType<EnderDrawerTile>) FunctionalStorage.ENDER_DRAWER.type().get(),blockPos, state);
     }
 
     @Override
@@ -180,11 +183,6 @@ public class EnderDrawerBlock extends RotatableBlock<EnderDrawerTile> {
     @Override
     public NonNullList<ItemStack> getDynamicDrops(BlockState state, Level worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
         return NonNullList.create();
-    }
-
-    @Override
-    public void registerRecipe(Consumer<FinishedRecipe> consumer) {
-
     }
 
     @Override

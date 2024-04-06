@@ -1,11 +1,10 @@
 {
   "type": "functionalstorage:custom_compacting",
   "higher_input": {
-    "count": 1,
-    "item": "minecraft:clay"
+    "item": "minecraft:blue_ice"
   },
   "lower_input": {
-    "count": 4,
-    "item": "minecraft:clay_ball"
+    "count": 9,
+    "item": "minecraft:packed_ice"
   }
 }

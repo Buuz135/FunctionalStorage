@@ -32,15 +32,8 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.common.capabilities.Capabilities;
-import net.neoforged.neoforge.common.capabilities.Capability;
-import net.neoforged.neoforge.common.util.LazyOptional;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.items.IItemHandler;
-import org.jetbrains.annotations.NotNull;
-import var;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
@@ -53,8 +46,6 @@ public abstract class StorageControllerTile<T extends StorageControllerTile<T>> 
     protected ConnectedDrawers connectedDrawers;
     public ControllerInventoryHandler inventoryHandler;
     public ControllerFluidHandler fluidHandler;
-    protected LazyOptional<IItemHandler> itemHandlerLazyOptional;
-    protected LazyOptional<IFluidHandler> fluidHandlerLazyOptional;
 
     public StorageControllerTile(BasicTileBlock<T> base, BlockEntityType<T> entityType, BlockPos pos, BlockState state) {
         super(base, entityType, pos, state);
@@ -65,14 +56,12 @@ public abstract class StorageControllerTile<T extends StorageControllerTile<T>> 
                 return connectedDrawers;
             }
         };
-        this.itemHandlerLazyOptional = LazyOptional.of(() -> this.inventoryHandler);
         this.fluidHandler = new ControllerFluidHandler() {
             @Override
             public ConnectedDrawers getDrawers() {
                 return connectedDrawers;
             }
         };
-        this.fluidHandlerLazyOptional = LazyOptional.of(() -> this.fluidHandler);
     }
 
     @Override
@@ -170,11 +159,6 @@ public abstract class StorageControllerTile<T extends StorageControllerTile<T>> 
     }
 
     @Override
-    public LazyOptional<IItemHandler> getOptional() {
-        return itemHandlerLazyOptional;
-    }
-
-    @Override
     public int getBaseSize(int lost) {
         return 1;
     }
@@ -251,29 +235,11 @@ public abstract class StorageControllerTile<T extends StorageControllerTile<T>> 
         return didWork;
     }
 
-    @Nonnull
-    @Override
-    public <U> LazyOptional<U> getCapability(@Nonnull Capability<U> cap, @Nullable Direction side) {
-        if (cap == Capabilities.ITEM_HANDLER) {
-            return itemHandlerLazyOptional.cast();
-        }
-        if (cap == Capabilities.FLUID_HANDLER) {
-            return fluidHandlerLazyOptional.cast();
-        }
-        return super.getCapability(cap, side);
-    }
-
-    @Override
-    public void invalidateCaps() {
-        super.invalidateCaps();
-        this.fluidHandlerLazyOptional.invalidate();
-        this.itemHandlerLazyOptional.invalidate();
-    }
-
-    @Override
-    public AABB getRenderBoundingBox() {
-        return super.getRenderBoundingBox().inflate(1200);
-    }
+    // TODO 1.20.4 - fix
+//    @Override
+//    public AABB getRenderBoundingBox() {
+//        return super.getRenderBoundingBox().inflate(1200);
+//    }
 
     @Override
     public InventoryComponent<ControllableDrawerTile<T>> getStorageUpgradesConstructor() {

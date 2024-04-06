@@ -27,7 +27,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
-import var;
+
 
 import static com.buuz135.functionalstorage.util.MathUtils.createTransformMatrix;
 
@@ -110,10 +110,10 @@ public class DrawerRenderer implements BlockEntityRenderer<DrawerTile> {
             float y1 = -6.65F / 16F;
             float y2 = y1 + 1.25f / 16F;
             float z2 = 0;
-            double bx1 = 0;
-            double bx2 = 8;
-            double bz1 = 0;
-            double bz2 = 2;
+            float bx1 = 0;
+            float bx2 = 8;
+            float bz1 = 0;
+            float bz2 = 2;
             float u1 = still.getU(bx1);
             float u2 = still.getU(bx2);
             float v1 = still.getV(bz1);
@@ -125,7 +125,7 @@ public class DrawerRenderer implements BlockEntityRenderer<DrawerTile> {
                 builder.vertex(posMat, x1, y1, z2).color(red, green, blue, alpha).uv(u1, v1).overlayCoords(combinedOverlayIn).uv2(combinedLightIn).normal(0f, 0f, 1f).endVertex();
             }
 
-            u2 = still.getU(bx2 * progress);
+            u2 = still.getU((float) (bx2 * progress));
             x2 = x1 + 0.5f * progress;
             z2 = 0.0001f;
             v1 = still.getV(8);

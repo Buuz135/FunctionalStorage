@@ -13,7 +13,6 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
@@ -26,13 +25,13 @@ import java.util.List;
 public class ArmoryCabinetBlock extends RotatableBlock<ArmoryCabinetTile> {
 
     public ArmoryCabinetBlock() {
-        super("armory_cabinet", Properties.copy(Blocks.IRON_BLOCK), ArmoryCabinetTile.class);
+        super("armory_cabinet", Properties.ofFullCopy(Blocks.IRON_BLOCK), ArmoryCabinetTile.class);
         //setItemGroup(FunctionalStorage.TAB);
     }
 
     @Override
     public BlockEntityType.BlockEntitySupplier<?> getTileEntityFactory() {
-        return (p_155268_, p_155269_) -> new ArmoryCabinetTile(this, FunctionalStorage.ARMORY_CABINET.getRight().get(), p_155268_, p_155269_);
+        return (p_155268_, p_155269_) -> new ArmoryCabinetTile(this, FunctionalStorage.ARMORY_CABINET.type().get(), p_155268_, p_155269_);
     }
 
     @NotNull

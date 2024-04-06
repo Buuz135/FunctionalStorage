@@ -202,12 +202,12 @@ public class CompactingStackItemHandler implements IItemHandler, INBTSerializabl
     @Override
     public CompoundTag serializeNBT() {
         CompoundTag compoundTag = new CompoundTag();
-        compoundTag.put(PARENT, this.getParent().serializeNBT());
+        compoundTag.put(PARENT, this.getParent().save(new CompoundTag()));
         compoundTag.putInt(AMOUNT, this.amount);
         CompoundTag items = new CompoundTag();
         for (int i = 0; i < this.resultList.size(); i++) {
             CompoundTag bigStack = new CompoundTag();
-            bigStack.put(STACK, this.resultList.get(i).getResult().serializeNBT());
+            bigStack.put(STACK, this.resultList.get(i).getResult().save(new CompoundTag()));
             bigStack.putInt(AMOUNT, this.resultList.get(i).getNeeded());
             items.put(i + "", bigStack);
         }

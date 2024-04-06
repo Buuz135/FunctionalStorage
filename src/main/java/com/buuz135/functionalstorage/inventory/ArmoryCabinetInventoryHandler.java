@@ -5,7 +5,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.HorseArmorItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.RecordItem;
-import net.neoforged.neoforge.common.capabilities.Capabilities;
+import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.common.util.INBTSerializable;
 import net.neoforged.neoforge.items.IItemHandler;
 import org.jetbrains.annotations.NotNull;
@@ -76,7 +76,7 @@ public abstract class ArmoryCabinetInventoryHandler implements IItemHandler, INB
     }
 
     private boolean isCertifiedStack(ItemStack stack){
-        if (stack.getCapability(Capabilities.ITEM_HANDLER, null).isPresent()) return false;
+        if (stack.getCapability(Capabilities.ItemHandler.ITEM) != null) return false;
         if (stack.getMaxStackSize() > 1) return false;
         return stack.hasTag() || stack.isDamageableItem() || stack.isEnchantable() || stack.getItem() instanceof RecordItem || stack.getItem() instanceof HorseArmorItem;
     }
@@ -87,7 +87,7 @@ public abstract class ArmoryCabinetInventoryHandler implements IItemHandler, INB
         for (int i = 0; i < this.stackList.size(); i++) {
             ItemStack stack = this.stackList.get(i);
             if (!stack.isEmpty()){
-                compoundTag.put(i + "", stack.serializeNBT());
+                compoundTag.put(String.valueOf(i), stack.save(new CompoundTag()));
             }
         }
         return compoundTag;

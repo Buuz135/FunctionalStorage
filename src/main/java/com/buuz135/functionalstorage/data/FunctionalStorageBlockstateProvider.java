@@ -1,9 +1,14 @@
 package com.buuz135.functionalstorage.data;
 
 import com.buuz135.functionalstorage.FunctionalStorage;
-import com.buuz135.functionalstorage.block.*;
+import com.buuz135.functionalstorage.block.CompactingDrawerBlock;
+import com.buuz135.functionalstorage.block.DrawerBlock;
+import com.buuz135.functionalstorage.block.EnderDrawerBlock;
+import com.buuz135.functionalstorage.block.FluidDrawerBlock;
+import com.buuz135.functionalstorage.block.SimpleCompactingDrawerBlock;
 import com.hrznstudio.titanium.block.RotatableBlock;
 import net.minecraft.core.Direction;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
@@ -14,7 +19,7 @@ import net.neoforged.neoforge.client.model.generators.ModelFile;
 import net.neoforged.neoforge.client.model.generators.VariantBlockStateBuilder;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.neoforged.neoforge.common.util.NonNullLazy;
-import net.neoforged.neoforge.registries.ForgeRegistries;
+
 import java.util.List;
 
 public class FunctionalStorageBlockstateProvider extends BlockStateProvider {
@@ -28,11 +33,11 @@ public class FunctionalStorageBlockstateProvider extends BlockStateProvider {
     }
 
     public static ResourceLocation getModel(Block block) {
-        return new ResourceLocation(ForgeRegistries.BLOCKS.getKey(block).getNamespace(), "block/" + ForgeRegistries.BLOCKS.getKey(block).getPath());
+        return new ResourceLocation(BuiltInRegistries.BLOCK.getKey(block).getNamespace(), "block/" + BuiltInRegistries.BLOCK.getKey(block).getPath());
     }
 
     public static ResourceLocation getModelLocked(Block block) {
-        return new ResourceLocation(ForgeRegistries.BLOCKS.getKey(block).getNamespace(), "block/" + ForgeRegistries.BLOCKS.getKey(block).getPath() + "_locked");
+        return new ResourceLocation(BuiltInRegistries.BLOCK.getKey(block).getNamespace(), "block/" + BuiltInRegistries.BLOCK.getKey(block).getPath() + "_locked");
     }
 
     @Override

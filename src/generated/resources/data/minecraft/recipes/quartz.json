@@ -1,11 +1,10 @@
 {
   "type": "functionalstorage:custom_compacting",
   "higher_input": {
-    "count": 1,
-    "item": "minecraft:glowstone"
+    "item": "minecraft:quartz_block"
   },
   "lower_input": {
     "count": 4,
-    "item": "minecraft:glowstone_dust"
+    "item": "minecraft:quartz"
   }
 }

@@ -1,45 +1,32 @@
 {
-  "type": "forge:conditional",
-  "recipes": [
+  "neoforge:conditions": [
     {
-      "conditions": [
-        {
-          "type": "forge:and",
-          "values": [
-            {
-              "type": "forge:item_exists",
-              "item": "functionalstorage:puller_upgrade"
-            }
-          ]
-        }
-      ],
-      "recipe": {
-        "type": "minecraft:crafting_shaped",
-        "category": "misc",
-        "key": {
-          "B": {
-            "tag": "forge:dusts/redstone"
-          },
-          "C": {
-            "item": "minecraft:hopper"
-          },
-          "D": {
-            "tag": "functionalstorage:drawer"
-          },
-          "I": {
-            "tag": "forge:stone"
-          }
-        },
-        "pattern": [
-          "ICI",
-          "IDI",
-          "IBI"
-        ],
-        "result": {
-          "item": "functionalstorage:puller_upgrade"
-        },
-        "show_notification": true
-      }
+      "type": "neoforge:item_exists",
+      "item": "functionalstorage:puller_upgrade"
     }
-  ]
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "B": {
+      "tag": "forge:dusts/redstone"
+    },
+    "C": {
+      "item": "minecraft:hopper"
+    },
+    "D": {
+      "tag": "functionalstorage:drawer"
+    },
+    "I": {
+      "tag": "forge:stone"
+    }
+  },
+  "pattern": [
+    "ICI",
+    "IDI",
+    "IBI"
+  ],
+  "result": {
+    "item": "functionalstorage:puller_upgrade"
+  }
 }

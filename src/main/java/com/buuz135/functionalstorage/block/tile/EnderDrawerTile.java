@@ -21,33 +21,27 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.common.capabilities.Capabilities;
-import net.neoforged.neoforge.common.capabilities.Capability;
-import net.neoforged.neoforge.common.util.LazyOptional;
 import net.neoforged.neoforge.items.IItemHandler;
 import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.UUID;
 
 public class EnderDrawerTile extends ItemControllableDrawerTile<EnderDrawerTile> {
 
     @Save
     private String frequency;
-    private LazyOptional<IItemHandler> lazyStorage;
+    private IItemHandler storage;
 
     public EnderDrawerTile(BasicTileBlock<EnderDrawerTile> base, BlockEntityType<EnderDrawerTile> blockEntityType, BlockPos pos, BlockState state) {
         super(base, blockEntityType, pos, state);
         this.frequency = UUID.randomUUID().toString();
-        this.lazyStorage = LazyOptional.empty();
     }
 
     @Override
     public void setLevel(Level p_155231_) {
         super.setLevel(p_155231_);
-        this.lazyStorage.invalidate();
-        this.lazyStorage = LazyOptional.of(() -> EnderSavedData.getInstance(this.level).getFrequency(this.frequency));
+        this.invalidateCapabilities();
+        this.storage = EnderSavedData.getInstance(this.level).getFrequency(this.frequency);
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -61,15 +55,6 @@ public class EnderDrawerTile extends ItemControllableDrawerTile<EnderDrawerTile>
                 integer -> getStorage().getStackInSlot(integer),
                 integer -> getStorage().getSlotLimit(integer)
         ));
-    }
-
-    @Nonnull
-    @Override
-    public <U> LazyOptional<U> getCapability(@Nonnull Capability<U> cap, @Nullable Direction side) {
-        if (cap == Capabilities.ITEM_HANDLER) {
-            return lazyStorage.cast();
-        }
-        return super.getCapability(cap, side);
     }
 
     @Override
@@ -144,12 +129,7 @@ public class EnderDrawerTile extends ItemControllableDrawerTile<EnderDrawerTile>
 
     @Override
     public IItemHandler getStorage() {
-        return this.lazyStorage.resolve().get();
-    }
-
-    @Override
-    public LazyOptional<IItemHandler> getOptional() {
-        return this.lazyStorage;
+        return this.storage;
     }
 
     @Override
@@ -181,8 +161,8 @@ public class EnderDrawerTile extends ItemControllableDrawerTile<EnderDrawerTile>
     public void setFrequency(String frequency) {
         if (frequency == null) return;
         this.frequency = frequency;
-        this.lazyStorage.invalidate();
-        this.lazyStorage = LazyOptional.of(() -> EnderSavedData.getInstance(this.level).getFrequency(this.frequency));
+        this.invalidateCapabilities();
+        this.storage = EnderSavedData.getInstance(this.level).getFrequency(this.frequency);
         this.markForUpdate();
     }
 

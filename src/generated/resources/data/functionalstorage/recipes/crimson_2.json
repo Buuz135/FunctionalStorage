@@ -1,40 +1,27 @@
 {
-  "type": "forge:conditional",
-  "recipes": [
+  "neoforge:conditions": [
     {
-      "conditions": [
-        {
-          "type": "forge:and",
-          "values": [
-            {
-              "type": "forge:item_exists",
-              "item": "functionalstorage:crimson_2"
-            }
-          ]
-        }
-      ],
-      "recipe": {
-        "type": "minecraft:crafting_shaped",
-        "category": "misc",
-        "key": {
-          "C": {
-            "tag": "forge:chests/wooden"
-          },
-          "P": {
-            "item": "minecraft:crimson_planks"
-          }
-        },
-        "pattern": [
-          "PCP",
-          "PPP",
-          "PCP"
-        ],
-        "result": {
-          "count": 2,
-          "item": "functionalstorage:crimson_2"
-        },
-        "show_notification": true
-      }
+      "type": "neoforge:item_exists",
+      "item": "functionalstorage:crimson_2"
     }
-  ]
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "C": {
+      "tag": "forge:chests/wooden"
+    },
+    "P": {
+      "item": "minecraft:crimson_planks"
+    }
+  },
+  "pattern": [
+    "PCP",
+    "PPP",
+    "PCP"
+  ],
+  "result": {
+    "count": 2,
+    "item": "functionalstorage:crimson_2"
+  }
 }

@@ -1,45 +1,32 @@
 {
-  "type": "forge:conditional",
-  "recipes": [
+  "neoforge:conditions": [
     {
-      "conditions": [
-        {
-          "type": "forge:and",
-          "values": [
-            {
-              "type": "forge:item_exists",
-              "item": "functionalstorage:configuration_tool"
-            }
-          ]
-        }
-      ],
-      "recipe": {
-        "type": "minecraft:crafting_shaped",
-        "category": "misc",
-        "key": {
-          "D": {
-            "tag": "functionalstorage:drawer"
-          },
-          "E": {
-            "item": "minecraft:emerald"
-          },
-          "G": {
-            "tag": "forge:ingots/gold"
-          },
-          "P": {
-            "item": "minecraft:paper"
-          }
-        },
-        "pattern": [
-          "PPG",
-          "PDG",
-          "PEP"
-        ],
-        "result": {
-          "item": "functionalstorage:configuration_tool"
-        },
-        "show_notification": true
-      }
+      "type": "neoforge:item_exists",
+      "item": "functionalstorage:configuration_tool"
     }
-  ]
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "D": {
+      "tag": "functionalstorage:drawer"
+    },
+    "E": {
+      "item": "minecraft:emerald"
+    },
+    "G": {
+      "tag": "forge:ingots/gold"
+    },
+    "P": {
+      "item": "minecraft:paper"
+    }
+  },
+  "pattern": [
+    "PPG",
+    "PDG",
+    "PEP"
+  ],
+  "result": {
+    "item": "functionalstorage:configuration_tool"
+  }
 }

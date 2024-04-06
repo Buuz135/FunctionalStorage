@@ -1,11 +1,10 @@
 {
   "type": "functionalstorage:custom_compacting",
   "higher_input": {
-    "count": 1,
-    "item": "minecraft:quartz_block"
+    "item": "minecraft:melon"
   },
   "lower_input": {
-    "count": 4,
-    "item": "minecraft:quartz"
+    "count": 9,
+    "item": "minecraft:melon_slice"
   }
 }

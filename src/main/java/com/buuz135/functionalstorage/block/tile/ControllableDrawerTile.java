@@ -29,7 +29,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.common.util.INBTSerializable;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
-import var;
+
 import java.util.HashMap;
 
 public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>> extends ActiveTile<T> {
@@ -296,11 +296,6 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
 
     public InventoryComponent<ControllableDrawerTile<T>> getStorageUpgrades() {
         return storageUpgrades;
-    }
-
-    @Override
-    public void invalidateCaps() {
-        super.invalidateCaps();
     }
 
     public boolean isEverythingEmpty() {

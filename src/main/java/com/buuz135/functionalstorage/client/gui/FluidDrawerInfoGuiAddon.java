@@ -18,7 +18,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.neoforged.neoforge.fluids.FluidStack;
 import org.apache.commons.lang3.tuple.Pair;
-import var;
+
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Optional;

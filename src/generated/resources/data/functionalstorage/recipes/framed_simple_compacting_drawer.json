@@ -1,45 +1,32 @@
 {
-  "type": "forge:conditional",
-  "recipes": [
+  "neoforge:conditions": [
     {
-      "conditions": [
-        {
-          "type": "forge:and",
-          "values": [
-            {
-              "type": "forge:item_exists",
-              "item": "functionalstorage:framed_simple_compacting_drawer"
-            }
-          ]
-        }
-      ],
-      "recipe": {
-        "type": "minecraft:crafting_shaped",
-        "category": "misc",
-        "key": {
-          "D": {
-            "tag": "functionalstorage:drawer"
-          },
-          "I": {
-            "tag": "forge:ingots/iron"
-          },
-          "P": {
-            "item": "minecraft:piston"
-          },
-          "S": {
-            "item": "minecraft:iron_nugget"
-          }
-        },
-        "pattern": [
-          "SSS",
-          "SDP",
-          "SIS"
-        ],
-        "result": {
-          "item": "functionalstorage:framed_simple_compacting_drawer"
-        },
-        "show_notification": true
-      }
+      "type": "neoforge:item_exists",
+      "item": "functionalstorage:framed_simple_compacting_drawer"
     }
-  ]
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "D": {
+      "tag": "functionalstorage:drawer"
+    },
+    "I": {
+      "tag": "forge:ingots/iron"
+    },
+    "P": {
+      "item": "minecraft:piston"
+    },
+    "S": {
+      "item": "minecraft:iron_nugget"
+    }
+  },
+  "pattern": [
+    "SSS",
+    "SDP",
+    "SIS"
+  ],
+  "result": {
+    "item": "functionalstorage:framed_simple_compacting_drawer"
+  }
 }
