@@ -11,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 
-public class FramedDrawerControllerTile extends StorageControllerTile<FramedDrawerControllerTile> {
+public class FramedDrawerControllerTile extends StorageControllerTile<FramedDrawerControllerTile> implements FramedTile {
 
     @Save
     private FramedDrawerModelData framedDrawerModelData;

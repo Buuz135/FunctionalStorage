@@ -79,19 +79,6 @@ public class FluidDrawerBlock extends Drawer<FluidDrawerTile> {
         boxes.add(total);
         return boxes;
     }
-
-    @Override
-    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> p_206840_1_) {
-        super.createBlockStateDefinition(p_206840_1_);
-        p_206840_1_.add(DrawerBlock.LOCKED);
-    }
-
-    @NotNull
-    @Override
-    public RotationType getRotationType() {
-        return RotationType.FOUR_WAY;
-    }
-
     @Override
     public BlockEntityType.BlockEntitySupplier<FluidDrawerTile> getTileEntityFactory() {
         return (blockPos, state) -> {
@@ -111,107 +98,9 @@ public class FluidDrawerBlock extends Drawer<FluidDrawerTile> {
         return getShapes(state, source, pos, this.type);
     }
 
-    @Nonnull
-    @Override
-    public VoxelShape getCollisionShape(BlockState state, BlockGetter world, BlockPos pos, CollisionContext selectionContext) {
-        return Shapes.box(0, 0, 0, 1, 1, 1);
-    }
-
-    @Override
-    public boolean hasCustomBoxes(BlockState state, BlockGetter source, BlockPos pos) {
-        return true;
-    }
-
-    @Override
-    public boolean hasIndividualRenderVoxelShape() {
-        return true;
-    }
-
-    @Override
-    public InteractionResult use(BlockState state, Level worldIn, BlockPos pos, Player player, InteractionHand hand, BlockHitResult ray) {
-        return TileUtil.getTileEntity(worldIn, pos, FluidDrawerTile.class).map(drawerTile -> drawerTile.onSlotActivated(player, hand, ray.getDirection(), ray.getLocation().x, ray.getLocation().y, ray.getLocation().z, getHit(state, worldIn, pos, player))).orElse(InteractionResult.PASS);
-    }
-
     @Override
     public Collection<VoxelShape> getHitShapes(BlockState state) {
         return DrawerBlock.CACHED_SHAPES.get(type).get(state.getValue(RotatableBlock.FACING_HORIZONTAL));
-    }
-
-    public int getHit(BlockState state, Level worldIn, BlockPos pos, Player player) {
-        HitResult result = RayTraceUtils.rayTraceSimple(worldIn, player, 32, 0);
-        if (result instanceof BlockHitResult) {
-            VoxelShape hit = RayTraceUtils.rayTraceVoxelShape((BlockHitResult) result, worldIn, player, 32, 0);
-            if (hit != null) {
-                if (hit.equals(Shapes.block())) return -1;
-                List<VoxelShape> shapes = new ArrayList<>();
-                shapes.addAll(DrawerBlock.CACHED_SHAPES.get(type).get(state.getValue(RotatableBlock.FACING_HORIZONTAL)));
-                for (int i = 0; i < shapes.size(); i++) {
-                    if (Shapes.joinIsNotEmpty(shapes.get(i), hit, BooleanOp.AND)) {
-                        return i;
-                    }
-                }
-            }
-        }
-        return -1;
-    }
-
-    @Override
-    public LootTable.Builder getLootTable(@Nonnull BasicBlockLootTables blockLootTables) {
-        //CopyNbtFunction.Builder nbtBuilder = CopyNbtFunction.copyData(ContextNbtProvider.BLOCK_ENTITY);
-        //nbtBuilder.copy("handler",  "BlockEntityTag.handler");
-        //nbtBuilder.copy("storageUpgrades",  "BlockEntityTag.storageUpgrades");
-        //nbtBuilder.copy("utilityUpgrades",  "BlockEntityTag.utilityUpgrades");
-        //return blockLootTables.droppingSelfWithNbt(this, nbtBuilder);
-        return blockLootTables.droppingNothing();
-    }
-
-
-    @Override
-    public List<ItemStack> getDrops(BlockState p_60537_, LootParams.Builder builder) {
-        NonNullList<ItemStack> stacks = NonNullList.create();
-        ItemStack stack = new ItemStack(this);
-        BlockEntity drawerTile = builder.getOptionalParameter(LootContextParams.BLOCK_ENTITY);
-        if (drawerTile instanceof FluidDrawerTile tile) {
-            if (!tile.isEverythingEmpty()) {
-                stack.setData(FSAttachments.TILE, drawerTile.saveWithoutMetadata());
-            }
-            if (tile.isLocked()) {
-                stack.setData(FSAttachments.LOCKED, tile.isLocked());
-            }
-        }
-        stacks.add(stack);
-        return stacks;
-    }
-
-    @Override
-    public NonNullList<ItemStack> getDynamicDrops(BlockState state, Level worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
-        return NonNullList.create();
-    }
-
-    @Override
-    public void setPlacedBy(Level level, BlockPos pos, BlockState p_49849_, @Nullable LivingEntity p_49850_, ItemStack stack) {
-        super.setPlacedBy(level, pos, p_49849_, p_49850_, stack);
-        if (level.getBlockEntity(pos) instanceof ControllableDrawerTile tile) {
-            tile.setLocked(stack.getData(FSAttachments.LOCKED));
-            if (stack.hasData(FSAttachments.TILE)) {
-                tile.load(stack.getData(FSAttachments.TILE));
-                tile.markForUpdate();
-            }
-        }
-        BlockEntity entity = level.getBlockEntity(pos);
-        var offhand = p_49850_.getOffhandItem();
-        if (offhand.is(FunctionalStorage.CONFIGURATION_TOOL.get())) {
-            var action = ConfigurationToolItem.getAction(offhand);
-            if (entity instanceof ControllableDrawerTile tile) {
-                if (action == ConfigurationToolItem.ConfigurationAction.LOCKING) {
-                    tile.setLocked(true);
-                } else if (action.getMax() == 1) {
-                    tile.getDrawerOptions().setActive(action, false);
-                } else {
-                    tile.getDrawerOptions().setAdvancedValue(action, 1);
-                }
-            }
-        }
     }
 
     @Override
@@ -244,22 +133,7 @@ public class FluidDrawerBlock extends Drawer<FluidDrawerTile> {
     }
 
     @Override
-    public void onRemove(BlockState state, Level worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
-        if (!state.is(newState.getBlock())) {
-            TileUtil.getTileEntity(worldIn, pos, FluidDrawerTile.class).ifPresent(tile -> {
-                if (tile.getControllerPos() != null) {
-                    TileUtil.getTileEntity(worldIn, tile.getControllerPos(), StorageControllerTile.class).ifPresent(drawerControllerTile -> {
-                        drawerControllerTile.addConnectedDrawers(LinkingToolItem.ActionMode.REMOVE, pos);
-                    });
-                }
-            });
-        }
-        super.onRemove(state, worldIn, pos, newState, isMoving);
-    }
-
-    @Override
     public void appendHoverText(ItemStack itemStack, @Nullable BlockGetter p_49817_, List<Component> tooltip, TooltipFlag p_49819_) {
-        super.appendHoverText(itemStack, p_49817_, tooltip, p_49819_);
         if (itemStack.hasData(FSAttachments.TILE)) {
             var tileTag = itemStack.getData(FSAttachments.TILE).getCompound("fluidHandler");
             tooltip.add(Component.translatable("drawer.block.contents").withStyle(ChatFormatting.GRAY));
@@ -269,16 +143,6 @@ public class FluidDrawerBlock extends Drawer<FluidDrawerTile> {
                     tooltip.add(Component.literal(" - " + ChatFormatting.YELLOW + NumberUtils.getFormatedFluidBigNumber(stack.getAmount()) + ChatFormatting.WHITE + " of ").append(stack.getDisplayName().copy().withStyle(ChatFormatting.GOLD)));
             }
         }
-    }
-
-    @Override
-    public boolean canConnectRedstone(BlockState state, BlockGetter level, BlockPos pos, @Nullable Direction direction) {
-        return true;
-    }
-
-    @Override
-    public boolean isSignalSource(BlockState p_60571_) {
-        return true;
     }
 
     @Override
@@ -298,17 +162,4 @@ public class FluidDrawerBlock extends Drawer<FluidDrawerTile> {
         return 0;
     }
 
-    public static class DrawerItem extends BlockItem {
-
-        private FluidDrawerBlock drawerBlock;
-
-        public DrawerItem(FluidDrawerBlock p_40565_, net.minecraft.world.item.Item.Properties p_40566_) {
-            super(p_40565_, p_40566_);
-            this.drawerBlock = p_40565_;
-        }
-
-        public IItemHandler initCapabilities(ItemStack stack, @Nullable CompoundTag nbt) {
-            return new DrawerStackItemHandler(stack, this.drawerBlock.getType());
-        }
-    }
 }

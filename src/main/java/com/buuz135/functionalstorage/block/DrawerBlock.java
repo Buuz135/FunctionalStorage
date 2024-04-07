@@ -69,9 +69,9 @@ import java.util.List;
 
 public class DrawerBlock extends Drawer<DrawerTile> {
 
-    public static HashMap<FunctionalStorage.DrawerType, Multimap<Direction, VoxelShape>> CACHED_SHAPES = new HashMap<>();
+    public static final HashMap<FunctionalStorage.DrawerType, Multimap<Direction, VoxelShape>> CACHED_SHAPES = new HashMap<>();
 
-    public static BooleanProperty LOCKED = BooleanProperty.create("locked");
+    public static final BooleanProperty LOCKED = BooleanProperty.create("locked");
 
     static {
         CACHED_SHAPES.computeIfAbsent(FunctionalStorage.DrawerType.X_1, type1 -> MultimapBuilder.hashKeys().arrayListValues().build())
@@ -129,20 +129,6 @@ public class DrawerBlock extends Drawer<DrawerTile> {
         setItemGroup(FunctionalStorage.TAB);
         registerDefaultState(defaultBlockState().setValue(RotatableBlock.FACING_HORIZONTAL, Direction.NORTH).setValue(LOCKED, false));
     }
-
-
-    @Override
-    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> p_206840_1_) {
-        super.createBlockStateDefinition(p_206840_1_);
-        p_206840_1_.add(LOCKED);
-    }
-
-    @NotNull
-    @Override
-    public RotationType getRotationType() {
-        return RotationType.FOUR_WAY;
-    }
-
     @Override
     public BlockEntityType.BlockEntitySupplier<DrawerTile> getTileEntityFactory() {
         return (blockPos, state) -> new DrawerTile(this, (BlockEntityType<DrawerTile>) FunctionalStorage.DRAWER_TYPES.get(type).stream().filter(registryObjectRegistryObjectPair -> registryObjectRegistryObjectPair.getBlock() == this).map(BlockWithTile::type).findFirst().get().get(), blockPos, state, type, woodType);
@@ -161,107 +147,9 @@ public class DrawerBlock extends Drawer<DrawerTile> {
         return boxes;
     }
 
-    @Nonnull
-    @Override
-    public VoxelShape getCollisionShape(BlockState state, BlockGetter world, BlockPos pos, CollisionContext selectionContext) {
-        return Shapes.box(0, 0, 0, 1,1,1);
-    }
-
-    @Override
-    public boolean hasCustomBoxes(BlockState state, BlockGetter source, BlockPos pos) {
-        return true;
-    }
-
-    @Override
-    public boolean hasIndividualRenderVoxelShape() {
-        return true;
-    }
-
-    @Override
-    public InteractionResult use(BlockState state, Level worldIn, BlockPos pos, Player player, InteractionHand hand, BlockHitResult ray) {
-        return TileUtil.getTileEntity(worldIn, pos, DrawerTile.class).map(drawerTile -> drawerTile.onSlotActivated(player, hand, ray.getDirection(), ray.getLocation().x, ray.getLocation().y, ray.getLocation().z, getHit(state, worldIn, pos, player))).orElse(InteractionResult.PASS);
-    }
-
     @Override
     public Collection<VoxelShape> getHitShapes(BlockState state) {
         return DrawerBlock.CACHED_SHAPES.get(type).get(state.getValue(RotatableBlock.FACING_HORIZONTAL));
-    }
-
-    public int getHit(BlockState state, Level worldIn, BlockPos pos, Player player) {
-        HitResult result = RayTraceUtils.rayTraceSimple(worldIn, player, 32, 0);
-        if (result instanceof BlockHitResult) {
-            VoxelShape hit = RayTraceUtils.rayTraceVoxelShape((BlockHitResult) result, worldIn, player, 32, 0);
-            if (hit != null) {
-                if (hit.equals(Shapes.block())) return -1;
-                List<VoxelShape> shapes = new ArrayList<>();
-                shapes.addAll(CACHED_SHAPES.get(type).get(state.getValue(RotatableBlock.FACING_HORIZONTAL)));
-                for (int i = 0; i < shapes.size(); i++) {
-                    if (Shapes.joinIsNotEmpty(shapes.get(i), hit, BooleanOp.AND)) {
-                        return i;
-                    }
-                }
-            }
-        }
-        return -1;
-    }
-
-    @Override
-    public LootTable.Builder getLootTable(@Nonnull BasicBlockLootTables blockLootTables) {
-        //CopyNbtFunction.Builder nbtBuilder = CopyNbtFunction.copyData(ContextNbtProvider.BLOCK_ENTITY);
-        //nbtBuilder.copy("handler",  "BlockEntityTag.handler");
-        //nbtBuilder.copy("storageUpgrades",  "BlockEntityTag.storageUpgrades");
-        //nbtBuilder.copy("utilityUpgrades",  "BlockEntityTag.utilityUpgrades");
-        //return blockLootTables.droppingSelfWithNbt(this, nbtBuilder);
-        return blockLootTables.droppingNothing();
-    }
-
-
-    @Override
-    public List<ItemStack> getDrops(BlockState p_60537_, LootParams.Builder builder) {
-        NonNullList<ItemStack> stacks = NonNullList.create();
-        ItemStack stack = new ItemStack(this);
-        BlockEntity drawerTile = builder.getOptionalParameter(LootContextParams.BLOCK_ENTITY);
-        if (drawerTile instanceof DrawerTile tile) {
-            if (!tile.isEverythingEmpty()) {
-                stack.setData(FSAttachments.TILE, drawerTile.saveWithoutMetadata());
-            }
-            if (tile.isLocked()) {
-                stack.setData(FSAttachments.LOCKED, tile.isLocked());
-            }
-        }
-        stacks.add(stack);
-        return stacks;
-    }
-
-    @Override
-    public NonNullList<ItemStack> getDynamicDrops(BlockState state, Level worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
-        return NonNullList.create();
-    }
-
-    @Override
-    public void setPlacedBy(Level level, BlockPos pos, BlockState p_49849_, @Nullable LivingEntity p_49850_, ItemStack stack) {
-        super.setPlacedBy(level, pos, p_49849_, p_49850_, stack);
-        BlockEntity entity = level.getBlockEntity(pos);
-        if (entity instanceof ControllableDrawerTile tile) {
-            tile.setLocked(stack.getData(FSAttachments.LOCKED));
-            if (stack.hasData(FSAttachments.TILE)) {
-                entity.load(stack.getData(FSAttachments.TILE));
-                tile.markForUpdate();
-            }
-        }
-        var offhand = p_49850_.getOffhandItem();
-        if (offhand.is(FunctionalStorage.CONFIGURATION_TOOL.get())) {
-            var action = ConfigurationToolItem.getAction(offhand);
-            if (entity instanceof ControllableDrawerTile tile) {
-                if (action == ConfigurationToolItem.ConfigurationAction.LOCKING) {
-                    tile.setLocked(true);
-                } else if (action.getMax() == 1) {
-                    tile.getDrawerOptions().setActive(action, false);
-                } else {
-                    tile.getDrawerOptions().setAdvancedValue(action, 1);
-                }
-            }
-        }
     }
 
     @Override
@@ -322,63 +210,6 @@ public class DrawerBlock extends Drawer<DrawerTile> {
 
     public IWoodType getWoodType() {
         return woodType;
-    }
-
-    @Override
-    public void onRemove(BlockState state, Level worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
-        if (!state.is(newState.getBlock())){
-            TileUtil.getTileEntity(worldIn, pos, DrawerTile.class).ifPresent(tile -> {
-                if (tile.getControllerPos() != null) {
-                    TileUtil.getTileEntity(worldIn, tile.getControllerPos(), StorageControllerTile.class).ifPresent(drawerControllerTile -> {
-                        drawerControllerTile.addConnectedDrawers(LinkingToolItem.ActionMode.REMOVE, pos);
-                    });
-                }
-            });
-        }
-        super.onRemove(state, worldIn, pos, newState, isMoving);
-    }
-
-    @Override
-    public void appendHoverText(ItemStack p_49816_, @Nullable BlockGetter p_49817_, List<net.minecraft.network.chat.Component> tooltip, TooltipFlag p_49819_) {
-        super.appendHoverText(p_49816_, p_49817_, tooltip, p_49819_);
-        if (p_49816_.hasData(FSAttachments.TILE)) {
-            MutableComponent text = Component.translatable("drawer.block.contents");
-            tooltip.add(text.withStyle(ChatFormatting.GRAY));
-            tooltip.add(Component.literal(""));
-            tooltip.add(Component.literal(""));
-        }
-    }
-
-    @Override
-    public boolean canConnectRedstone(BlockState state, BlockGetter level, BlockPos pos, @Nullable Direction direction) {
-        return true;
-    }
-
-    @Override
-    public boolean isSignalSource(BlockState p_60571_) {
-        return true;
-    }
-
-    @Override
-    public int getSignal(BlockState p_60483_, BlockGetter blockGetter, BlockPos blockPos, Direction p_60486_) {
-        return getSignal(blockGetter, blockPos);
-    }
-
-    public static int getSignal(BlockGetter blockGetter, BlockPos blockPos) {
-        ItemControllableDrawerTile tile = TileUtil.getTileEntity(blockGetter, blockPos, ItemControllableDrawerTile.class).orElse(null);
-        if (tile != null){
-            for (int i = 0; i < tile.getUtilityUpgrades().getSlots(); i++) {
-                ItemStack stack = tile.getUtilityUpgrades().getStackInSlot(i);
-                if (stack.getItem().equals(FunctionalStorage.REDSTONE_UPGRADE.get())){
-                    int redstoneSlot = stack.getData(FSAttachments.SLOT);
-                    if (redstoneSlot < tile.getStorage().getSlots()) {
-                        int amount = tile.getStorage().getStackInSlot(redstoneSlot).getCount() * 14 / tile.getStorage().getSlotLimit(redstoneSlot);
-                        return amount + (amount > 0 ? 1 : 0);
-                    }
-                }
-            }
-        }
-        return 0;
     }
 
     public static class DrawerItem extends BlockItem{

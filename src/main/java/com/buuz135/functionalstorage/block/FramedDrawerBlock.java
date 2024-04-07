@@ -1,6 +1,8 @@
 package com.buuz135.functionalstorage.block;
 
 import com.buuz135.functionalstorage.FunctionalStorage;
+import com.buuz135.functionalstorage.block.tile.CompactingDrawerTile;
+import com.buuz135.functionalstorage.block.tile.CompactingFramedDrawerTile;
 import com.buuz135.functionalstorage.block.tile.DrawerTile;
 import com.buuz135.functionalstorage.block.tile.FramedDrawerTile;
 import com.buuz135.functionalstorage.client.model.FramedDrawerModelData;
@@ -40,7 +42,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.HashMap;
 import java.util.List;
 
-public class FramedDrawerBlock extends DrawerBlock{
+public class FramedDrawerBlock extends DrawerBlock implements FramedBlock {
 
     public FramedDrawerBlock(FunctionalStorage.DrawerType type) {
         super(DrawerWoodType.FRAMED, type, Properties.ofFullCopy(Blocks.OAK_PLANKS).noOcclusion().isViewBlocking((p_61036_, p_61037_, p_61038_) -> false));
@@ -49,14 +51,6 @@ public class FramedDrawerBlock extends DrawerBlock{
     @Override
     public BlockEntityType.BlockEntitySupplier<DrawerTile> getTileEntityFactory() {
         return (blockPos, state) -> new FramedDrawerTile(this, (BlockEntityType<DrawerTile>) FunctionalStorage.DRAWER_TYPES.get(this.getType()).stream().filter(registryObjectRegistryObjectPair -> registryObjectRegistryObjectPair.getBlock() == this).map(BlockWithTile::type).findFirst().get().get(), blockPos, state, this.getType());
-    }
-
-    @Override
-    public void setPlacedBy(Level level, BlockPos pos, BlockState p_49849_, @Nullable LivingEntity p_49850_, ItemStack stack) {
-        super.setPlacedBy(level, pos, p_49849_, p_49850_, stack);
-        TileUtil.getTileEntity(level, pos, FramedDrawerTile.class).ifPresent(framedDrawerTile -> {
-            framedDrawerTile.setFramedDrawerModelData(getDrawerModelData(stack));
-        });
     }
 
     public static FramedDrawerModelData getDrawerModelData(ItemStack stack){
@@ -89,37 +83,6 @@ public class FramedDrawerBlock extends DrawerBlock{
     }
 
     @Override
-    public List<ItemStack> getDrops(BlockState p_60537_, LootParams.Builder builder) {
-        NonNullList<ItemStack> stacks = NonNullList.create();
-        ItemStack stack = new ItemStack(this);
-        BlockEntity drawerTile = builder.getOptionalParameter(LootContextParams.BLOCK_ENTITY);
-        if (drawerTile instanceof FramedDrawerTile framedDrawerTile) {
-            if (framedDrawerTile.getFramedDrawerModelData() != null) {
-                stack.setData(FSAttachments.STYLE, framedDrawerTile.getFramedDrawerModelData().serializeNBT());
-            }
-            if (!framedDrawerTile.isEverythingEmpty()) {
-                stack.setData(FSAttachments.TILE, framedDrawerTile.saveWithoutMetadata());
-            }
-            if (framedDrawerTile.isLocked()) {
-                stack.setData(FSAttachments.LOCKED, framedDrawerTile.isLocked());
-            }
-        }
-        stacks.add(stack);
-        return stacks;
-    }
-
-    @Override
-    public ItemStack getCloneItemStack(BlockState state, HitResult target, LevelReader level, BlockPos pos, Player player) {
-        BlockEntity entity = level.getBlockEntity(pos);
-        if (entity instanceof FramedDrawerTile framedDrawerTile && framedDrawerTile.getFramedDrawerModelData() != null && !framedDrawerTile.getFramedDrawerModelData().getDesign().isEmpty()){
-            ItemStack stack = new ItemStack(this);
-            stack.setData(FSAttachments.STYLE, framedDrawerTile.getFramedDrawerModelData().serializeNBT());
-            return stack;
-        }
-        return super.getCloneItemStack(state, target, level, pos, player);
-    }
-
-    @Override
     public void registerRecipe(RecipeOutput consumer) {
         if (this.getType() == FunctionalStorage.DrawerType.X_1) {
             TitaniumShapedRecipeBuilder.shapedRecipe(this)
@@ -146,9 +109,4 @@ public class FramedDrawerBlock extends DrawerBlock{
         }
     }
 
-    @Override
-    public void appendHoverText(ItemStack p_49816_, @Nullable BlockGetter p_49817_, List<Component> components, TooltipFlag p_49819_) {
-        components.add(Component.translatable("frameddrawer.use").withStyle(ChatFormatting.GRAY));
-        super.appendHoverText(p_49816_, p_49817_, components, p_49819_);
-    }
 }

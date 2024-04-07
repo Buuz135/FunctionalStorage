@@ -33,7 +33,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public class CompactingFramedDrawerBlock extends CompactingDrawerBlock{
+public class CompactingFramedDrawerBlock extends CompactingDrawerBlock implements FramedBlock {
     public CompactingFramedDrawerBlock(String name) {
         super(name, Properties.ofFullCopy(Blocks.STONE).noOcclusion().isViewBlocking((p_61036_, p_61037_, p_61038_) -> false));
     }
@@ -41,46 +41,6 @@ public class CompactingFramedDrawerBlock extends CompactingDrawerBlock{
     @Override
     public BlockEntityType.BlockEntitySupplier<CompactingDrawerTile> getTileEntityFactory() {
         return (blockPos, state) -> new CompactingFramedDrawerTile(this,  (BlockEntityType<CompactingDrawerTile>) FunctionalStorage.FRAMED_COMPACTING_DRAWER.type().get(), blockPos, state);
-    }
-
-    @Override
-    public void setPlacedBy(Level level, BlockPos pos, BlockState p_49849_, @Nullable LivingEntity p_49850_, ItemStack stack) {
-        super.setPlacedBy(level, pos, p_49849_, p_49850_, stack);
-        TileUtil.getTileEntity(level, pos, CompactingFramedDrawerTile.class).ifPresent(framedDrawerTile -> {
-            framedDrawerTile.setFramedDrawerModelData(FramedDrawerBlock.getDrawerModelData(stack));
-        });
-    }
-
-
-    @Override
-    public List<ItemStack> getDrops(BlockState p_60537_, LootParams.Builder builder) {
-        NonNullList<ItemStack> stacks = NonNullList.create();
-        ItemStack stack = new ItemStack(this);
-        BlockEntity drawerTile = builder.getOptionalParameter(LootContextParams.BLOCK_ENTITY);
-        if (drawerTile instanceof CompactingFramedDrawerTile framedDrawerTile) {
-            if (framedDrawerTile.getFramedDrawerModelData() != null) {
-                stack.setData(FSAttachments.STYLE, framedDrawerTile.getFramedDrawerModelData().serializeNBT());
-            }
-            if (!framedDrawerTile.isEverythingEmpty()) {
-                stack.setData(FSAttachments.TILE, framedDrawerTile.saveWithoutMetadata());
-            }
-            if (framedDrawerTile.isLocked()) {
-                stack.setData(FSAttachments.LOCKED, framedDrawerTile.isLocked());
-            }
-        }
-        stacks.add(stack);
-        return stacks;
-    }
-
-    @Override
-    public ItemStack getCloneItemStack(BlockState state, HitResult target, LevelReader level, BlockPos pos, Player player) {
-        BlockEntity entity = level.getBlockEntity(pos);
-        if (entity instanceof FramedDrawerTile framedDrawerTile && framedDrawerTile.getFramedDrawerModelData() != null && !framedDrawerTile.getFramedDrawerModelData().getDesign().isEmpty()){
-            ItemStack stack = new ItemStack(this);
-            stack.setData(FSAttachments.STYLE, framedDrawerTile.getFramedDrawerModelData().serializeNBT());
-            return stack;
-        }
-        return super.getCloneItemStack(state, target, level, pos, player);
     }
 
     @Override
@@ -93,9 +53,5 @@ public class CompactingFramedDrawerBlock extends CompactingDrawerBlock{
                 .define('I', Tags.Items.INGOTS_IRON)
                 .save(consumer);
     }
-    @Override
-    public void appendHoverText(ItemStack p_49816_, @Nullable BlockGetter p_49817_, List<Component> components, TooltipFlag p_49819_) {
-        components.add(Component.translatable("frameddrawer.use").withStyle(ChatFormatting.GRAY));
-        super.appendHoverText(p_49816_, p_49817_, components, p_49819_);
-    }
+    
 }

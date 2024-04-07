@@ -1,27 +1,19 @@
 package com.buuz135.functionalstorage.block;
 
 import com.buuz135.functionalstorage.FunctionalStorage;
-import com.buuz135.functionalstorage.block.tile.ControllableDrawerTile;
 import com.buuz135.functionalstorage.block.tile.EnderDrawerTile;
-import com.buuz135.functionalstorage.block.tile.ItemControllableDrawerTile;
 import com.buuz135.functionalstorage.block.tile.StorageControllerTile;
 import com.buuz135.functionalstorage.item.FSAttachments;
 import com.buuz135.functionalstorage.item.LinkingToolItem;
 import com.hrznstudio.titanium.block.RotatableBlock;
-import com.hrznstudio.titanium.datagenerator.loot.block.BasicBlockLootTables;
-import com.hrznstudio.titanium.util.RayTraceUtils;
 import com.hrznstudio.titanium.util.TileUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.NonNullList;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -29,25 +21,14 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.storage.loot.LootParams;
-import net.minecraft.world.level.storage.loot.LootTable;
-import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
-import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.HitResult;
-import net.minecraft.world.phys.shapes.BooleanOp;
-import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -65,25 +46,13 @@ public class EnderDrawerBlock extends Drawer<EnderDrawerTile> {
         registerDefaultState(defaultBlockState().setValue(RotatableBlock.FACING_HORIZONTAL, Direction.NORTH).setValue(LOCKED, false));
     }
 
-    public static HashMap<String, List<ItemStack>> FREQUENCY_LOOK = new HashMap<>();
+    public static final HashMap<String, List<ItemStack>> FREQUENCY_LOOK = new HashMap<>();
 
     public static List<ItemStack> getFrequencyDisplay(String string){
         return FREQUENCY_LOOK.computeIfAbsent(string, s -> {
             List<Item> minecraftItems = BuiltInRegistries.ITEM.stream().filter(item -> item != Items.AIR && BuiltInRegistries.ITEM.getKey(item).getNamespace().equals("minecraft") && !(item instanceof BlockItem)).collect(Collectors.toList());
             return Arrays.stream(string.split("-")).map(s1 -> new ItemStack(minecraftItems.get(Math.abs(s1.hashCode()) % minecraftItems.size()))).collect(Collectors.toList());
         });
-    }
-
-    @Override
-    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> p_206840_1_) {
-        super.createBlockStateDefinition(p_206840_1_);
-        p_206840_1_.add(LOCKED);
-    }
-
-    @NotNull
-    @Override
-    public RotationType getRotationType() {
-        return RotationType.FOUR_WAY;
     }
 
     @Override
@@ -104,84 +73,20 @@ public class EnderDrawerBlock extends Drawer<EnderDrawerTile> {
         return boxes;
     }
 
-    @Nonnull
-    @Override
-    public VoxelShape getCollisionShape(BlockState state, BlockGetter world, BlockPos pos, CollisionContext selectionContext) {
-        return Shapes.box(0, 0, 0, 1,1,1);
-    }
-
-    @Override
-    public boolean hasCustomBoxes(BlockState state, BlockGetter source, BlockPos pos) {
-        return true;
-    }
-
-    @Override
-    public boolean hasIndividualRenderVoxelShape() {
-        return true;
-    }
-
-    @Override
-    public InteractionResult use(BlockState state, Level worldIn, BlockPos pos, Player player, InteractionHand hand, BlockHitResult ray) {
-        return TileUtil.getTileEntity(worldIn, pos, EnderDrawerTile.class).map(drawerTile -> drawerTile.onSlotActivated(player, hand, ray.getDirection(), ray.getLocation().x, ray.getLocation().y, ray.getLocation().z, getHit(state, worldIn, pos, player))).orElse(InteractionResult.PASS);
-    }
-
     @Override
     public Collection<VoxelShape> getHitShapes(BlockState state) {
         return DrawerBlock.CACHED_SHAPES.get(FunctionalStorage.DrawerType.X_1).get(state.getValue(RotatableBlock.FACING_HORIZONTAL));
     }
 
-    public int getHit(BlockState state, Level worldIn, BlockPos pos, Player player) {
-        HitResult result = RayTraceUtils.rayTraceSimple(worldIn, player, 32, 0);
-        if (result instanceof BlockHitResult) {
-            VoxelShape hit = RayTraceUtils.rayTraceVoxelShape((BlockHitResult) result, worldIn, player, 32, 0);
-            if (hit != null) {
-                if (hit.equals(Shapes.block())) return -1;
-                List<VoxelShape> shapes = new ArrayList<>(DrawerBlock.CACHED_SHAPES.get(FunctionalStorage.DrawerType.X_1).get(state.getValue(RotatableBlock.FACING_HORIZONTAL)));
-                for (int i = 0; i < shapes.size(); i++) {
-                    if (Shapes.joinIsNotEmpty(shapes.get(i), hit, BooleanOp.AND)) {
-                        return i;
-                    }
-                }
-            }
-        }
-        return -1;
-    }
-
     @Override
-    public LootTable.Builder getLootTable(@Nonnull BasicBlockLootTables blockLootTables) {
-        //CopyNbtFunction.Builder nbtBuilder = CopyNbtFunction.copyData(ContextNbtProvider.BLOCK_ENTITY);
-        //nbtBuilder.copy("frequency",  "BlockEntityTag.frequency");
-        return blockLootTables.droppingNothing();
-    }
-
-    @Override
-    public List<ItemStack> getDrops(BlockState p_60537_, LootParams.Builder builder) {
-        NonNullList<ItemStack> stacks = NonNullList.create();
-        ItemStack stack = new ItemStack(this);
-        BlockEntity drawerTile = builder.getOptionalParameter(LootContextParams.BLOCK_ENTITY);
-        if (drawerTile instanceof EnderDrawerTile tile) {
-            if (!tile.isEverythingEmpty()) {
-                stack.setData(FSAttachments.TILE, drawerTile.saveWithoutMetadata());
-            }
-        }
-        stacks.add(stack);
-        return stacks;
-    }
-
-    @Override
-    public void setPlacedBy(Level level, BlockPos pos, BlockState p_49849_, @Nullable LivingEntity p_49850_, ItemStack stack) {
-        super.setPlacedBy(level, pos, p_49849_, p_49850_, stack);
-        if (level.getBlockEntity(pos) instanceof ControllableDrawerTile tile) {
-            if (stack.hasData(FSAttachments.TILE)) {
-                tile.load(stack.getData(FSAttachments.TILE));
-                tile.markForUpdate();
-            }
+    protected void copyTo(EnderDrawerTile tile, ItemStack stack) {
+        if (!tile.isEverythingEmpty()) {
+            stack.setData(FSAttachments.TILE, tile.saveWithoutMetadata());
         }
     }
 
     @Override
-    public NonNullList<ItemStack> getDynamicDrops(BlockState state, Level worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
-        return NonNullList.create();
+    protected void configure(LivingEntity player, EnderDrawerTile tile) {
     }
 
     @Override
@@ -201,7 +106,6 @@ public class EnderDrawerBlock extends Drawer<EnderDrawerTile> {
 
     @Override
     public void appendHoverText(ItemStack p_49816_, @Nullable BlockGetter p_49817_, List<Component> tooltip, TooltipFlag p_49819_) {
-        super.appendHoverText(p_49816_, p_49817_, tooltip, p_49819_);
         if (p_49816_.hasData(FSAttachments.TILE)) {
             MutableComponent text = Component.translatable("linkingtool.ender.frequency");
             tooltip.add(text.withStyle(ChatFormatting.GRAY));
@@ -211,18 +115,4 @@ public class EnderDrawerBlock extends Drawer<EnderDrawerTile> {
 
     }
 
-    @Override
-    public boolean canConnectRedstone(BlockState state, BlockGetter level, BlockPos pos, @Nullable Direction direction) {
-        return true;
-    }
-
-    @Override
-    public boolean isSignalSource(BlockState p_60571_) {
-        return true;
-    }
-
-    @Override
-    public int getSignal(BlockState p_60483_, BlockGetter blockGetter, BlockPos blockPos, Direction p_60486_) {
-        return DrawerBlock.getSignal(blockGetter, blockPos);
-    }
 }

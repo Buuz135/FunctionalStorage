@@ -10,7 +10,7 @@ import net.neoforged.neoforge.client.model.data.ModelData;
 import javax.annotation.Nonnull;
 import java.util.HashMap;
 
-public class FramedSimpleCompactingDrawerTile extends SimpleCompactingDrawerTile {
+public class FramedSimpleCompactingDrawerTile extends SimpleCompactingDrawerTile implements FramedTile {
 
     @Save
     private FramedDrawerModelData framedDrawerModelData;

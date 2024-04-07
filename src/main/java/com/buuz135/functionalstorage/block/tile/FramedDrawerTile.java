@@ -12,7 +12,7 @@ import net.neoforged.neoforge.client.model.data.ModelData;
 import javax.annotation.Nonnull;
 import java.util.HashMap;
 
-public class FramedDrawerTile extends DrawerTile{
+public class FramedDrawerTile extends DrawerTile implements FramedTile {
     @Save
     private FramedDrawerModelData framedDrawerModelData;
 

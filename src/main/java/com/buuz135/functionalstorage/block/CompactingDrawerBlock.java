@@ -85,12 +85,6 @@ public class CompactingDrawerBlock extends Drawer<CompactingDrawerTile> {
         registerDefaultState(defaultBlockState().setValue(RotatableBlock.FACING_HORIZONTAL, Direction.NORTH).setValue(DrawerBlock.LOCKED, false));
     }
 
-    @NotNull
-    @Override
-    public RotationType getRotationType() {
-        return RotationType.FOUR_WAY;
-    }
-
     @Override
     public BlockEntityType.BlockEntitySupplier<CompactingDrawerTile> getTileEntityFactory() {
         return (blockPos, state) -> new CompactingDrawerTile(this, (BlockEntityType<CompactingDrawerTile>) FunctionalStorage.COMPACTING_DRAWER.type().get(), blockPos, state);
@@ -110,111 +104,8 @@ public class CompactingDrawerBlock extends Drawer<CompactingDrawerTile> {
     }
 
     @Override
-    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> p_206840_1_) {
-        super.createBlockStateDefinition(p_206840_1_);
-        p_206840_1_.add(DrawerBlock.LOCKED);
-    }
-
-    @Nonnull
-    @Override
-    public VoxelShape getCollisionShape(BlockState state, BlockGetter world, BlockPos pos, CollisionContext selectionContext) {
-        return Shapes.box(0, 0, 0, 1,1,1);
-    }
-
-    @Override
-    public boolean hasCustomBoxes(BlockState state, BlockGetter source, BlockPos pos) {
-        return true;
-    }
-
-    @Override
-    public boolean hasIndividualRenderVoxelShape() {
-        return true;
-    }
-
-    @Override
-    public InteractionResult use(BlockState state, Level worldIn, BlockPos pos, Player player, InteractionHand hand, BlockHitResult ray) {
-        return TileUtil.getTileEntity(worldIn, pos, CompactingDrawerTile.class).map(drawerTile -> drawerTile.onSlotActivated(player, hand, ray.getDirection(), ray.getLocation().x, ray.getLocation().y, ray.getLocation().z, getHit(state, worldIn, pos, player))).orElse(InteractionResult.PASS);
-    }
-
-    @Override
     public Collection<VoxelShape> getHitShapes(BlockState state) {
         return CACHED_SHAPES.get(state.getValue(RotatableBlock.FACING_HORIZONTAL));
-    }
-
-    public int getHit(BlockState state, Level worldIn, BlockPos pos, Player player) {
-        HitResult result = RayTraceUtils.rayTraceSimple(worldIn, player, 32, 0);
-        if (result instanceof BlockHitResult) {
-            VoxelShape hit = RayTraceUtils.rayTraceVoxelShape((BlockHitResult) result, worldIn, player, 32, 0);
-            if (hit != null) {
-                if (hit.equals(Shapes.block())) return -1;
-                List<VoxelShape> shapes = new ArrayList<>(CACHED_SHAPES.get(state.getValue(RotatableBlock.FACING_HORIZONTAL)));
-                for (int i = 0; i < shapes.size(); i++) {
-                    if (Shapes.joinIsNotEmpty(shapes.get(i), hit, BooleanOp.AND)) {
-                        return i;
-                    }
-                }
-            }
-        }
-        return -1;
-    }
-
-    @Override
-    public LootTable.Builder getLootTable(@Nonnull BasicBlockLootTables blockLootTables) {
-        //CopyNbtFunction.Builder nbtBuilder = CopyNbtFunction.copyData(ContextNbtProvider.BLOCK_ENTITY);
-        //nbtBuilder.copy("handler",  "BlockEntityTag.handler");
-        //nbtBuilder.copy("storageUpgrades",  "BlockEntityTag.storageUpgrades");
-        //nbtBuilder.copy("utilityUpgrades",  "BlockEntityTag.utilityUpgrades");
-        //return blockLootTables.droppingSelfWithNbt(this, nbtBuilder);
-        return blockLootTables.droppingNothing();
-    }
-
-
-    @Override
-    public List<ItemStack> getDrops(BlockState p_60537_, LootParams.Builder builder) {
-        NonNullList<ItemStack> stacks = NonNullList.create();
-        ItemStack stack = new ItemStack(this);
-        BlockEntity drawerTile = builder.getOptionalParameter(LootContextParams.BLOCK_ENTITY);
-        if (drawerTile instanceof ControllableDrawerTile tile) {
-            if (!tile.isEverythingEmpty()) {
-                stack.setData(FSAttachments.TILE, drawerTile.saveWithoutMetadata());
-            }
-            if (tile.isLocked()) {
-                stack.setData(FSAttachments.LOCKED, tile.isLocked());
-            }
-        }
-        stacks.add(stack);
-        return stacks;
-    }
-
-    @Override
-    public NonNullList<ItemStack> getDynamicDrops(BlockState state, Level worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
-        return NonNullList.create();
-    }
-
-    @Override
-    public void setPlacedBy(Level level, BlockPos pos, BlockState p_49849_, @Nullable LivingEntity p_49850_, ItemStack stack) {
-        super.setPlacedBy(level, pos, p_49849_, p_49850_, stack);
-        BlockEntity entity = level.getBlockEntity(pos);
-        if (entity instanceof ControllableDrawerTile tile) {
-            tile.setLocked(stack.getData(FSAttachments.LOCKED));
-            if (stack.hasData(FSAttachments.TILE)) {
-                entity.load(stack.getData(FSAttachments.TILE));
-                tile.markForUpdate();
-            }
-        }
-        var offhand = p_49850_.getOffhandItem();
-        if (offhand.is(FunctionalStorage.CONFIGURATION_TOOL.get())) {
-            var action = ConfigurationToolItem.getAction(offhand);
-            if (entity instanceof ControllableDrawerTile tile) {
-                if (action == ConfigurationToolItem.ConfigurationAction.LOCKING) {
-                    tile.setLocked(true);
-                } else if (action.getMax() == 1) {
-                    tile.getDrawerOptions().setActive(action, false);
-                } else {
-                    tile.getDrawerOptions().setAdvancedValue(action, 1);
-                }
-            }
-        }
     }
 
     @Override
@@ -228,55 +119,12 @@ public class CompactingDrawerBlock extends Drawer<CompactingDrawerTile> {
                 .save(consumer);
     }
 
-    @Override
-    public void onRemove(BlockState state, Level worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
-        if (!state.is(newState.getBlock())){
-            TileUtil.getTileEntity(worldIn, pos, CompactingDrawerTile.class).ifPresent(tile -> {
-                if (tile.getControllerPos() != null){
-                    TileUtil.getTileEntity(worldIn, tile.getControllerPos(), StorageControllerTile.class).ifPresent(drawerControllerTile -> {
-                        drawerControllerTile.addConnectedDrawers(LinkingToolItem.ActionMode.REMOVE, pos);
-                    });
-                }
-            });
-        }
-        super.onRemove(state, worldIn, pos, newState, isMoving);
-    }
-
-
-    @Override
-    public boolean canConnectRedstone(BlockState state, BlockGetter level, BlockPos pos, @Nullable Direction direction) {
-        return true;
-    }
-
-    @Override
-    public boolean isSignalSource(BlockState p_60571_) {
-        return true;
-    }
-
-    @Override
-    public int getSignal(BlockState p_60483_, BlockGetter blockGetter, BlockPos blockPos, Direction p_60486_) {
-        return DrawerBlock.getSignal(blockGetter, blockPos);
-    }
-
-    @Override
-    public void appendHoverText(ItemStack p_49816_, @Nullable BlockGetter p_49817_, List<net.minecraft.network.chat.Component> tooltip, TooltipFlag p_49819_) {
-        super.appendHoverText(p_49816_, p_49817_, tooltip, p_49819_);
-        if (p_49816_.hasData(FSAttachments.TILE)) {
-            MutableComponent text = Component.translatable("drawer.block.contents");
-            tooltip.add(text.withStyle(ChatFormatting.GRAY));
-            tooltip.add(Component.literal(""));
-            tooltip.add(Component.literal(""));
-        }
-    }
-
     public static class CompactingDrawerItem extends BlockItem {
 
         private final int slots;
-        private Block drawerBlock;
 
         public CompactingDrawerItem(Block p_40565_, net.minecraft.world.item.Item.Properties p_40566_, int slots) {
             super(p_40565_, p_40566_);
-            this.drawerBlock = p_40565_;
             this.slots = slots;
         }
 

@@ -189,6 +189,22 @@ public class FunctionalStorage extends ModuleController {
         NBTManager.getInstance().scanTileClassForAnnotations(SimpleCompactingDrawerTile.class);
         NBTManager.getInstance().scanTileClassForAnnotations(FramedSimpleCompactingDrawerTile.class);
 
+        EventManager.forge(PlayerInteractEvent.LeftClickBlock.class)
+                .process(event -> {
+                    var state = event.getLevel().getBlockState(event.getPos());
+                    if (event.getLevel().getBlockState(event.getPos()).getBlock() instanceof Drawer<?> drawer) {
+                        final int hit = drawer.getHit(state, event.getLevel(), event.getEntity());
+                        if (hit != -1) {
+                            var be = drawer.getBlockEntityAt(event.getLevel(), event.getPos());
+                            if (be != null) {
+                                be.onClicked(event.getEntity(), hit);
+                                event.setCanceled(true);
+                            }
+                        }
+                    }
+                })
+                .subscribe();
+
         EventManager.mod(RegisterCapabilitiesEvent.class).process(event -> {
             class Registrar {
                 <T> void register(Class<T> tp, Function<T, IItemHandler> func, BlockWithTile... types) {
@@ -254,6 +270,7 @@ public class FunctionalStorage extends ModuleController {
                 }
             }
         }
+        // TODO - items for normal drawers
         FLUID_DRAWER_1 = getRegistries().registerBlockWithTile("fluid_1", () -> new FluidDrawerBlock(DrawerType.X_1, BlockBehaviour.Properties.ofFullCopy(Blocks.STONE_BRICKS)), TAB);
         FLUID_DRAWER_2 = getRegistries().registerBlockWithTile("fluid_2", () -> new FluidDrawerBlock(DrawerType.X_2, BlockBehaviour.Properties.ofFullCopy(Blocks.STONE_BRICKS)), TAB);
         FLUID_DRAWER_4 = getRegistries().registerBlockWithTile("fluid_4", () -> new FluidDrawerBlock(DrawerType.X_4, BlockBehaviour.Properties.ofFullCopy(Blocks.STONE_BRICKS)), TAB);
@@ -442,38 +459,6 @@ public class FunctionalStorage extends ModuleController {
             modelRegistryEvent.register(new ResourceLocation(MOD_ID, "framedblock"), FramedModel.Loader.INSTANCE);
         }).subscribe();
 
-        EventManager.forge(PlayerInteractEvent.LeftClickBlock.class)
-                .process(event -> {
-                    var state = event.getLevel().getBlockState(event.getPos());
-                    if (event.getLevel().getBlockState(event.getPos()).getBlock() instanceof Drawer<?> drawer) {
-                        final int hit = getHit(drawer, state, event.getLevel(), event.getEntity());
-                        if (hit != -1) {
-                            var be = drawer.getBlockEntityAt(event.getLevel(), event.getPos());
-                            if (be != null) {
-                                be.onClicked(event.getEntity(), hit);
-                                event.setCanceled(true);
-                            }
-                        }
-                    }
-                })
-                .subscribe();
-    }
-
-    private static int getHit(Drawer<?> drawer, BlockState state, Level worldIn, Player player) {
-        HitResult result = RayTraceUtils.rayTraceSimple(worldIn, player, 32, 0);
-        if (result instanceof BlockHitResult) {
-            VoxelShape hit = RayTraceUtils.rayTraceVoxelShape((BlockHitResult) result, worldIn, player, 32, 0);
-            if (hit != null) {
-                if (hit.equals(Shapes.block())) return -1;
-                List<VoxelShape> shapes = new ArrayList<>(drawer.getHitShapes(state));
-                for (int i = 0; i < shapes.size(); i++) {
-                    if (Shapes.joinIsNotEmpty(shapes.get(i), hit, BooleanOp.AND)) {
-                        return i;
-                    }
-                }
-            }
-        }
-        return -1;
     }
 
     @Override

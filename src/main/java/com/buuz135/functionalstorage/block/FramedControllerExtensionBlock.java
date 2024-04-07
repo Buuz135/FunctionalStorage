@@ -27,7 +27,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public class FramedControllerExtensionBlock extends StorageControllerExtensionBlock<FramedControllerExtensionTile>{
+public class FramedControllerExtensionBlock extends StorageControllerExtensionBlock<FramedControllerExtensionTile> {
 
     public FramedControllerExtensionBlock() {
         super("framed_controller_extension", Properties.ofFullCopy(Blocks.IRON_BLOCK).noOcclusion().isViewBlocking(((p_61036_, p_61037_, p_61038_) -> false)), FramedControllerExtensionTile.class);
@@ -52,10 +52,8 @@ public class FramedControllerExtensionBlock extends StorageControllerExtensionBl
         ItemStack stack = new ItemStack(this);
         BlockEntity blockEntity = builder.getOptionalParameter(LootContextParams.BLOCK_ENTITY);
 
-        if(blockEntity instanceof FramedControllerExtensionTile framedControllerExtensionTile)
-        {
-            if(framedControllerExtensionTile.getFramedDrawerModelData() != null)
-            {
+        if (blockEntity instanceof FramedControllerExtensionTile framedControllerExtensionTile) {
+            if (framedControllerExtensionTile.getFramedDrawerModelData() != null) {
                 stack.setData(FSAttachments.STYLE, framedControllerExtensionTile.getFramedDrawerModelData().serializeNBT());
             }
         }
@@ -67,12 +65,9 @@ public class FramedControllerExtensionBlock extends StorageControllerExtensionBl
     @Override
     public ItemStack getCloneItemStack(BlockState state, HitResult target, LevelReader level, BlockPos pos, Player player) {
         BlockEntity blockEntity = level.getBlockEntity(pos);
-        if(blockEntity instanceof FramedControllerExtensionTile framedControllerExtensionTile)
-        {
-            if(framedControllerExtensionTile.getFramedDrawerModelData() != null)
-            {
-                if(!framedControllerExtensionTile.getFramedDrawerModelData().getDesign().isEmpty())
-                {
+        if (blockEntity instanceof FramedControllerExtensionTile framedControllerExtensionTile) {
+            if (framedControllerExtensionTile.getFramedDrawerModelData() != null) {
+                if (!framedControllerExtensionTile.getFramedDrawerModelData().getDesign().isEmpty()) {
                     ItemStack stack = new ItemStack(this);
                     stack.setData(FSAttachments.STYLE, framedControllerExtensionTile.getFramedDrawerModelData().serializeNBT());
                     return stack;
