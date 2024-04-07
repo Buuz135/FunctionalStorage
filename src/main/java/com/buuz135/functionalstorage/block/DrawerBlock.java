@@ -359,8 +359,8 @@ public class DrawerBlock extends RotatableBlock<DrawerTile> {
                 if (stack.getItem().equals(FunctionalStorage.REDSTONE_UPGRADE.get())) {
                     int redstoneSlot = stack.getOrCreateTag().getInt("Slot");
                     if (redstoneSlot < tile.getStorage().getSlots()) {
-                        var amount = (tile.getStorage().getStackInSlot(redstoneSlot).getCount() / (double) tile.getStorage().getSlotLimit(redstoneSlot)) * 14;
-                        return Mth.floor(amount * 14.0F) + (amount > 0 ? 1 : 0);
+                        int amount = tile.getStorage().getStackInSlot(redstoneSlot).getCount() * 14 / tile.getStorage().getSlotLimit(redstoneSlot);
+                        return amount + (amount > 0 ? 1 : 0);
                     }
                 }
             }
