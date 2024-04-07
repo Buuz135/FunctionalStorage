@@ -6,6 +6,7 @@ import com.buuz135.functionalstorage.block.tile.FluidDrawerTile;
 import com.buuz135.functionalstorage.block.tile.StorageControllerTile;
 import com.buuz135.functionalstorage.inventory.item.DrawerStackItemHandler;
 import com.buuz135.functionalstorage.item.ConfigurationToolItem;
+import com.buuz135.functionalstorage.item.FSAttachments;
 import com.buuz135.functionalstorage.item.LinkingToolItem;
 import com.buuz135.functionalstorage.util.NumberUtils;
 import com.hrznstudio.titanium.block.RotatableBlock;
@@ -52,9 +53,10 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
-public class FluidDrawerBlock extends RotatableBlock<FluidDrawerTile> {
+public class FluidDrawerBlock extends Drawer<FluidDrawerTile> {
 
     /**
      * Framed version
@@ -131,8 +133,8 @@ public class FluidDrawerBlock extends RotatableBlock<FluidDrawerTile> {
     }
 
     @Override
-    public void attack(BlockState state, Level worldIn, BlockPos pos, Player player) {
-        TileUtil.getTileEntity(worldIn, pos, FluidDrawerTile.class).ifPresent(drawerTile -> drawerTile.onClicked(player, getHit(state, worldIn, pos, player)));
+    public Collection<VoxelShape> getHitShapes(BlockState state) {
+        return DrawerBlock.CACHED_SHAPES.get(type).get(state.getValue(RotatableBlock.FACING_HORIZONTAL));
     }
 
     public int getHit(BlockState state, Level worldIn, BlockPos pos, Player player) {
@@ -171,10 +173,10 @@ public class FluidDrawerBlock extends RotatableBlock<FluidDrawerTile> {
         BlockEntity drawerTile = builder.getOptionalParameter(LootContextParams.BLOCK_ENTITY);
         if (drawerTile instanceof FluidDrawerTile tile) {
             if (!tile.isEverythingEmpty()) {
-                stack.getOrCreateTag().put("Tile", drawerTile.saveWithoutMetadata());
+                stack.setData(FSAttachments.TILE, drawerTile.saveWithoutMetadata());
             }
             if (tile.isLocked()) {
-                stack.getOrCreateTag().putBoolean("Locked", tile.isLocked());
+                stack.setData(FSAttachments.LOCKED, tile.isLocked());
             }
         }
         stacks.add(stack);
@@ -189,16 +191,11 @@ public class FluidDrawerBlock extends RotatableBlock<FluidDrawerTile> {
     @Override
     public void setPlacedBy(Level level, BlockPos pos, BlockState p_49849_, @Nullable LivingEntity p_49850_, ItemStack stack) {
         super.setPlacedBy(level, pos, p_49849_, p_49850_, stack);
-        if (stack.hasTag()) {
-            if (stack.getTag().contains("Tile")) {
-                BlockEntity entity = level.getBlockEntity(pos);
-                if (entity instanceof ControllableDrawerTile tile) {
-                    entity.load(stack.getTag().getCompound("Tile"));
-                    tile.markForUpdate();
-                }
-            }
-            if (stack.getTag().contains("Locked")) {
-                level.setBlock(pos, p_49849_.setValue(DrawerBlock.LOCKED, true), 3);
+        if (level.getBlockEntity(pos) instanceof ControllableDrawerTile tile) {
+            tile.setLocked(stack.getData(FSAttachments.LOCKED));
+            if (stack.hasData(FSAttachments.TILE)) {
+                tile.load(stack.getData(FSAttachments.TILE));
+                tile.markForUpdate();
             }
         }
         BlockEntity entity = level.getBlockEntity(pos);
@@ -263,8 +260,8 @@ public class FluidDrawerBlock extends RotatableBlock<FluidDrawerTile> {
     @Override
     public void appendHoverText(ItemStack itemStack, @Nullable BlockGetter p_49817_, List<Component> tooltip, TooltipFlag p_49819_) {
         super.appendHoverText(itemStack, p_49817_, tooltip, p_49819_);
-        if (itemStack.hasTag() && itemStack.getTag().contains("Tile")) {
-            var tileTag = itemStack.getTag().getCompound("Tile").getCompound("fluidHandler");
+        if (itemStack.hasData(FSAttachments.TILE)) {
+            var tileTag = itemStack.getData(FSAttachments.TILE).getCompound("fluidHandler");
             tooltip.add(Component.translatable("drawer.block.contents").withStyle(ChatFormatting.GRAY));
             for (int i = 0; i < type.getSlots(); i++) {
                 FluidStack stack = FluidStack.loadFluidStackFromNBT(tileTag.getCompound(i + ""));
@@ -291,7 +288,7 @@ public class FluidDrawerBlock extends RotatableBlock<FluidDrawerTile> {
             for (int i = 0; i < tile.getUtilityUpgrades().getSlots(); i++) {
                 ItemStack stack = tile.getUtilityUpgrades().getStackInSlot(i);
                 if (stack.getItem().equals(FunctionalStorage.REDSTONE_UPGRADE.get())) {
-                    int redstoneSlot = stack.getOrCreateTag().getInt("Slot");
+                    int redstoneSlot = stack.getData(FSAttachments.SLOT);
                     if (redstoneSlot < tile.getFluidHandler().getTanks()) {
                         return tile.getFluidHandler().getFluidInTank(redstoneSlot).getAmount() * 15 / tile.getFluidHandler().getTankCapacity(redstoneSlot);
                     }

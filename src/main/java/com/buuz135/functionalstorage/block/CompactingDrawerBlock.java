@@ -3,10 +3,10 @@ package com.buuz135.functionalstorage.block;
 import com.buuz135.functionalstorage.FunctionalStorage;
 import com.buuz135.functionalstorage.block.tile.CompactingDrawerTile;
 import com.buuz135.functionalstorage.block.tile.ControllableDrawerTile;
-import com.buuz135.functionalstorage.block.tile.ItemControllableDrawerTile;
 import com.buuz135.functionalstorage.block.tile.StorageControllerTile;
 import com.buuz135.functionalstorage.inventory.item.CompactingStackItemHandler;
 import com.buuz135.functionalstorage.item.ConfigurationToolItem;
+import com.buuz135.functionalstorage.item.FSAttachments;
 import com.buuz135.functionalstorage.item.LinkingToolItem;
 import com.buuz135.functionalstorage.util.StorageTags;
 import com.google.common.collect.Multimap;
@@ -55,10 +55,11 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
-public class CompactingDrawerBlock extends RotatableBlock<CompactingDrawerTile> {
+public class CompactingDrawerBlock extends Drawer<CompactingDrawerTile> {
 
     public static Multimap<Direction, VoxelShape> CACHED_SHAPES = MultimapBuilder.hashKeys().arrayListValues().build();
 
@@ -136,8 +137,8 @@ public class CompactingDrawerBlock extends RotatableBlock<CompactingDrawerTile> 
     }
 
     @Override
-    public void attack(BlockState state, Level worldIn, BlockPos pos, Player player) {
-       TileUtil.getTileEntity(worldIn, pos, CompactingDrawerTile.class).ifPresent(drawerTile -> drawerTile.onClicked(player, getHit(state, worldIn, pos, player)));
+    public Collection<VoxelShape> getHitShapes(BlockState state) {
+        return CACHED_SHAPES.get(state.getValue(RotatableBlock.FACING_HORIZONTAL));
     }
 
     public int getHit(BlockState state, Level worldIn, BlockPos pos, Player player) {
@@ -175,10 +176,10 @@ public class CompactingDrawerBlock extends RotatableBlock<CompactingDrawerTile> 
         BlockEntity drawerTile = builder.getOptionalParameter(LootContextParams.BLOCK_ENTITY);
         if (drawerTile instanceof ControllableDrawerTile tile) {
             if (!tile.isEverythingEmpty()) {
-                stack.getOrCreateTag().put("Tile", drawerTile.saveWithoutMetadata());
+                stack.setData(FSAttachments.TILE, drawerTile.saveWithoutMetadata());
             }
-            if (tile.isLocked()){
-                stack.getOrCreateTag().putBoolean("Locked", tile.isLocked());
+            if (tile.isLocked()) {
+                stack.setData(FSAttachments.LOCKED, tile.isLocked());
             }
         }
         stacks.add(stack);
@@ -194,17 +195,11 @@ public class CompactingDrawerBlock extends RotatableBlock<CompactingDrawerTile> 
     public void setPlacedBy(Level level, BlockPos pos, BlockState p_49849_, @Nullable LivingEntity p_49850_, ItemStack stack) {
         super.setPlacedBy(level, pos, p_49849_, p_49850_, stack);
         BlockEntity entity = level.getBlockEntity(pos);
-        if (stack.hasTag()) {
-            if (stack.getTag().contains("Tile")){
-                if (entity instanceof ControllableDrawerTile tile) {
-                    entity.load(stack.getTag().getCompound("Tile"));
-                    tile.markForUpdate();
-                }
-            }
-            if (stack.getTag().contains("Locked")){
-                if (entity instanceof ControllableDrawerTile tile) {
-                    tile.setLocked(stack.getTag().getBoolean("Locked"));
-                }
+        if (entity instanceof ControllableDrawerTile tile) {
+            tile.setLocked(stack.getData(FSAttachments.LOCKED));
+            if (stack.hasData(FSAttachments.TILE)) {
+                entity.load(stack.getData(FSAttachments.TILE));
+                tile.markForUpdate();
             }
         }
         var offhand = p_49850_.getOffhandItem();
@@ -260,26 +255,13 @@ public class CompactingDrawerBlock extends RotatableBlock<CompactingDrawerTile> 
 
     @Override
     public int getSignal(BlockState p_60483_, BlockGetter blockGetter, BlockPos blockPos, Direction p_60486_) {
-        ItemControllableDrawerTile tile = TileUtil.getTileEntity(blockGetter, blockPos, ItemControllableDrawerTile.class).orElse(null);
-        if (tile != null){
-            for (int i = 0; i < tile.getUtilityUpgrades().getSlots(); i++) {
-                ItemStack stack = tile.getUtilityUpgrades().getStackInSlot(i);
-                if (stack.getItem().equals(FunctionalStorage.REDSTONE_UPGRADE.get())) {
-                    int redstoneSlot = stack.getOrCreateTag().getInt("Slot");
-                    if (redstoneSlot < tile.getStorage().getSlots()) {
-                        int amount = tile.getStorage().getStackInSlot(redstoneSlot).getCount() * 14 / tile.getStorage().getSlotLimit(redstoneSlot);
-                        return amount + (amount > 0 ? 1 : 0);
-                    }
-                }
-            }
-        }
-        return 0;
+        return DrawerBlock.getSignal(blockGetter, blockPos);
     }
 
     @Override
     public void appendHoverText(ItemStack p_49816_, @Nullable BlockGetter p_49817_, List<net.minecraft.network.chat.Component> tooltip, TooltipFlag p_49819_) {
         super.appendHoverText(p_49816_, p_49817_, tooltip, p_49819_);
-        if (p_49816_.hasTag() && p_49816_.getTag().contains("Tile")) {
+        if (p_49816_.hasData(FSAttachments.TILE)) {
             MutableComponent text = Component.translatable("drawer.block.contents");
             tooltip.add(text.withStyle(ChatFormatting.GRAY));
             tooltip.add(Component.literal(""));

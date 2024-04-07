@@ -4,6 +4,7 @@ import com.buuz135.functionalstorage.block.ArmoryCabinetBlock;
 import com.buuz135.functionalstorage.block.CompactingDrawerBlock;
 import com.buuz135.functionalstorage.block.CompactingFramedDrawerBlock;
 import com.buuz135.functionalstorage.block.ControllerExtensionBlock;
+import com.buuz135.functionalstorage.block.Drawer;
 import com.buuz135.functionalstorage.block.DrawerBlock;
 import com.buuz135.functionalstorage.block.DrawerControllerBlock;
 import com.buuz135.functionalstorage.block.EnderDrawerBlock;
@@ -42,6 +43,7 @@ import com.buuz135.functionalstorage.inventory.BigInventoryHandler;
 import com.buuz135.functionalstorage.inventory.item.CompactingStackItemHandler;
 import com.buuz135.functionalstorage.inventory.item.DrawerStackItemHandler;
 import com.buuz135.functionalstorage.item.ConfigurationToolItem;
+import com.buuz135.functionalstorage.item.FSAttachments;
 import com.buuz135.functionalstorage.item.LinkingToolItem;
 import com.buuz135.functionalstorage.item.StorageUpgradeItem;
 import com.buuz135.functionalstorage.item.UpgradeItem;
@@ -53,6 +55,7 @@ import com.buuz135.functionalstorage.util.DrawerWoodType;
 import com.buuz135.functionalstorage.util.IWoodType;
 import com.buuz135.functionalstorage.util.NumberUtils;
 import com.buuz135.functionalstorage.util.TooltipUtil;
+import com.hrznstudio.titanium.block.RotatableBlock;
 import com.hrznstudio.titanium.datagenerator.loot.TitaniumLootTableProvider;
 import com.hrznstudio.titanium.datagenerator.model.BlockItemModelGeneratorProvider;
 import com.hrznstudio.titanium.event.handler.EventManager;
@@ -62,23 +65,34 @@ import com.hrznstudio.titanium.nbthandler.NBTManager;
 import com.hrznstudio.titanium.network.NetworkHandler;
 import com.hrznstudio.titanium.recipe.serializer.GenericSerializer;
 import com.hrznstudio.titanium.tab.TitaniumTab;
+import com.hrznstudio.titanium.util.RayTraceUtils;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.shapes.BooleanOp;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.capabilities.Capabilities;
@@ -95,6 +109,7 @@ import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.common.crafting.IngredientType;
 import net.neoforged.neoforge.common.util.NonNullLazy;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.registries.DeferredHolder;
@@ -161,51 +176,13 @@ public class FunctionalStorage extends ModuleController {
     public static Holder<RecipeType<?>> CUSTOM_COMPACTING_RECIPE_TYPE;
 
 
-    public FunctionalStorage(Dist dist) {
+    public FunctionalStorage(Dist dist, IEventBus modBus) {
         NeoForgeMod.enableMilkFluid();
+        FSAttachments.DR.register(modBus);
         if (dist.isClient()) {
             Runnable runnable = this::onClient;
             runnable.run();
         }
-        EventManager.forge(BlockEvent.BreakEvent.class).process(breakEvent -> {
-            if (breakEvent.getPlayer().isCreative()) {
-                if (breakEvent.getState().getBlock() instanceof DrawerBlock) {
-                    int hit = ((DrawerBlock) breakEvent.getState().getBlock()).getHit(breakEvent.getState(), breakEvent.getPlayer().getCommandSenderWorld(), breakEvent.getPos(), breakEvent.getPlayer());
-                    if (hit != -1) {
-                        breakEvent.setCanceled(true);
-                        ((DrawerBlock) breakEvent.getState().getBlock()).attack(breakEvent.getState(), breakEvent.getPlayer().getCommandSenderWorld(), breakEvent.getPos(), breakEvent.getPlayer());
-                    }
-                }
-                if (breakEvent.getState().getBlock() instanceof CompactingDrawerBlock) {
-                    int hit = ((CompactingDrawerBlock) breakEvent.getState().getBlock()).getHit(breakEvent.getState(), breakEvent.getPlayer().getCommandSenderWorld(), breakEvent.getPos(), breakEvent.getPlayer());
-                    if (hit != -1) {
-                        breakEvent.setCanceled(true);
-                        ((CompactingDrawerBlock) breakEvent.getState().getBlock()).attack(breakEvent.getState(), breakEvent.getPlayer().getCommandSenderWorld(), breakEvent.getPos(), breakEvent.getPlayer());
-                    }
-                }
-                if (breakEvent.getState().getBlock() instanceof EnderDrawerBlock) {
-                    int hit = ((EnderDrawerBlock) breakEvent.getState().getBlock()).getHit(breakEvent.getState(), breakEvent.getPlayer().getCommandSenderWorld(), breakEvent.getPos(), breakEvent.getPlayer());
-                    if (hit != -1) {
-                        breakEvent.setCanceled(true);
-                        ((EnderDrawerBlock) breakEvent.getState().getBlock()).attack(breakEvent.getState(), breakEvent.getPlayer().getCommandSenderWorld(), breakEvent.getPos(), breakEvent.getPlayer());
-                    }
-                }
-                if (breakEvent.getState().getBlock() instanceof FluidDrawerBlock) {
-                    int hit = ((FluidDrawerBlock) breakEvent.getState().getBlock()).getHit(breakEvent.getState(), breakEvent.getPlayer().getCommandSenderWorld(), breakEvent.getPos(), breakEvent.getPlayer());
-                    if (hit != -1) {
-                        breakEvent.setCanceled(true);
-                        ((FluidDrawerBlock) breakEvent.getState().getBlock()).attack(breakEvent.getState(), breakEvent.getPlayer().getCommandSenderWorld(), breakEvent.getPos(), breakEvent.getPlayer());
-                    }
-                }
-                if (breakEvent.getState().getBlock() instanceof SimpleCompactingDrawerBlock) {
-                    int hit = ((SimpleCompactingDrawerBlock) breakEvent.getState().getBlock()).getHit(breakEvent.getState(), breakEvent.getPlayer().level(), breakEvent.getPos(), breakEvent.getPlayer());
-                    if (hit != -1) {
-                        breakEvent.setCanceled(true);
-                        ((SimpleCompactingDrawerBlock) breakEvent.getState().getBlock()).attack(breakEvent.getState(), breakEvent.getPlayer().level(), breakEvent.getPos(), breakEvent.getPlayer());
-                    }
-                }
-            }
-        }).subscribe();
         NBTManager.getInstance().scanTileClassForAnnotations(FramedDrawerTile.class);
         NBTManager.getInstance().scanTileClassForAnnotations(CompactingFramedDrawerTile.class);
         NBTManager.getInstance().scanTileClassForAnnotations(FluidDrawerTile.class);
@@ -392,13 +369,12 @@ public class FunctionalStorage extends ModuleController {
         }).subscribe();
         EventManager.mod(RegisterColorHandlersEvent.Item.class).process(item -> {
             item.getItemColors().register((stack, tint) -> {
-                CompoundTag tag = stack.getOrCreateTag();
                 LinkingToolItem.LinkingMode linkingMode = LinkingToolItem.getLinkingMode(stack);
                 LinkingToolItem.ActionMode linkingAction = LinkingToolItem.getActionMode(stack);
-                if (tint != 0 && stack.getOrCreateTag().contains(LinkingToolItem.NBT_ENDER)) {
+                if (tint != 0 && stack.hasData(FSAttachments.ENDER_FREQUENCY)) {
                     return new Color(44, 150, 88).getRGB();
                 }
-                if (tint == 3 && tag.contains(LinkingToolItem.NBT_CONTROLLER)) {
+                if (tint == 3 && stack.hasData(FSAttachments.CONTROLLER)) {
                     return Color.RED.getRGB();
                 }
                 if (tint == 1) {
@@ -435,10 +411,10 @@ public class FunctionalStorage extends ModuleController {
         }).subscribe();
         EventManager.forge(RenderTooltipEvent.Pre.class).process(itemTooltipEvent -> {
             if (itemTooltipEvent.getItemStack().getItem().equals(FunctionalStorage.ENDER_DRAWER.getBlock().asItem()) && itemTooltipEvent.getItemStack().hasTag()) {
-                TooltipUtil.renderItems(itemTooltipEvent.getGraphics(), EnderDrawerBlock.getFrequencyDisplay(itemTooltipEvent.getItemStack().getTag().getCompound("Tile").getString("frequency")), itemTooltipEvent.getX() + 14, itemTooltipEvent.getY() + 11);
+                TooltipUtil.renderItems(itemTooltipEvent.getGraphics(), EnderDrawerBlock.getFrequencyDisplay(itemTooltipEvent.getItemStack().getData(FSAttachments.TILE).getString("frequency")), itemTooltipEvent.getX() + 14, itemTooltipEvent.getY() + 11);
             }
-            if (itemTooltipEvent.getItemStack().is(FunctionalStorage.LINKING_TOOL.get()) && itemTooltipEvent.getItemStack().getOrCreateTag().contains(LinkingToolItem.NBT_ENDER)) {
-                TooltipUtil.renderItems(itemTooltipEvent.getGraphics(), EnderDrawerBlock.getFrequencyDisplay(itemTooltipEvent.getItemStack().getOrCreateTag().getString(LinkingToolItem.NBT_ENDER)), itemTooltipEvent.getX() + 14, itemTooltipEvent.getY() + 11);
+            if (itemTooltipEvent.getItemStack().is(FunctionalStorage.LINKING_TOOL.get()) && itemTooltipEvent.getItemStack().hasData(FSAttachments.ENDER_FREQUENCY)) {
+                TooltipUtil.renderItems(itemTooltipEvent.getGraphics(), EnderDrawerBlock.getFrequencyDisplay(itemTooltipEvent.getItemStack().getData(FSAttachments.ENDER_FREQUENCY)), itemTooltipEvent.getX() + 14, itemTooltipEvent.getY() + 11);
             }
             var iItemHandler = itemTooltipEvent.getItemStack().getCapability(Capabilities.ItemHandler.ITEM);
             if (iItemHandler != null) {
@@ -465,6 +441,39 @@ public class FunctionalStorage extends ModuleController {
         EventManager.mod(ModelEvent.RegisterGeometryLoaders.class).process(modelRegistryEvent -> {
             modelRegistryEvent.register(new ResourceLocation(MOD_ID, "framedblock"), FramedModel.Loader.INSTANCE);
         }).subscribe();
+
+        EventManager.forge(PlayerInteractEvent.LeftClickBlock.class)
+                .process(event -> {
+                    var state = event.getLevel().getBlockState(event.getPos());
+                    if (event.getLevel().getBlockState(event.getPos()).getBlock() instanceof Drawer<?> drawer) {
+                        final int hit = getHit(drawer, state, event.getLevel(), event.getEntity());
+                        if (hit != -1) {
+                            var be = drawer.getBlockEntityAt(event.getLevel(), event.getPos());
+                            if (be != null) {
+                                be.onClicked(event.getEntity(), hit);
+                                event.setCanceled(true);
+                            }
+                        }
+                    }
+                })
+                .subscribe();
+    }
+
+    private static int getHit(Drawer<?> drawer, BlockState state, Level worldIn, Player player) {
+        HitResult result = RayTraceUtils.rayTraceSimple(worldIn, player, 32, 0);
+        if (result instanceof BlockHitResult) {
+            VoxelShape hit = RayTraceUtils.rayTraceVoxelShape((BlockHitResult) result, worldIn, player, 32, 0);
+            if (hit != null) {
+                if (hit.equals(Shapes.block())) return -1;
+                List<VoxelShape> shapes = new ArrayList<>(drawer.getHitShapes(state));
+                for (int i = 0; i < shapes.size(); i++) {
+                    if (Shapes.joinIsNotEmpty(shapes.get(i), hit, BooleanOp.AND)) {
+                        return i;
+                    }
+                }
+            }
+        }
+        return -1;
     }
 
     @Override

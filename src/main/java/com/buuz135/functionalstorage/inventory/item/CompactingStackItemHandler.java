@@ -1,6 +1,7 @@
 package com.buuz135.functionalstorage.inventory.item;
 
 import com.buuz135.functionalstorage.FunctionalStorage;
+import com.buuz135.functionalstorage.item.FSAttachments;
 import com.buuz135.functionalstorage.item.StorageUpgradeItem;
 import com.buuz135.functionalstorage.util.CompactingUtil;
 import net.minecraft.nbt.CompoundTag;
@@ -49,8 +50,9 @@ public class CompactingStackItemHandler implements IItemHandler, INBTSerializabl
         this.isVoid = false;
         this.isCreative = false;
         if (stack.hasTag()) {
-            deserializeNBT(stack.getTag().getCompound("Tile").getCompound("handler"));
-            for (Tag tag : stack.getOrCreateTag().getCompound("Tile").getCompound("storageUpgrades").getList("Items", Tag.TAG_COMPOUND)) {
+            var tile = stack.getData(FSAttachments.TILE);
+            deserializeNBT(tile.getCompound("handler"));
+            for (Tag tag : tile.getCompound("storageUpgrades").getList("Items", Tag.TAG_COMPOUND)) {
                 ItemStack itemStack = ItemStack.of((CompoundTag) tag);
                 if (itemStack.getItem() instanceof StorageUpgradeItem) {
                     if (multiplier == 1) multiplier = ((StorageUpgradeItem) itemStack.getItem()).getStorageMultiplier();
@@ -63,7 +65,7 @@ public class CompactingStackItemHandler implements IItemHandler, INBTSerializabl
                     this.isCreative = true;
                 }
             }
-            for (Tag tag : stack.getOrCreateTag().getCompound("Tile").getCompound("utilityUpgrades").getList("Items", Tag.TAG_COMPOUND)) {
+            for (Tag tag : tile.getCompound("utilityUpgrades").getList("Items", Tag.TAG_COMPOUND)) {
                 ItemStack itemStack = ItemStack.of((CompoundTag) tag);
                 if (itemStack.getItem().equals(FunctionalStorage.VOID_UPGRADE.get())) {
                     this.isVoid = true;
@@ -226,9 +228,9 @@ public class CompactingStackItemHandler implements IItemHandler, INBTSerializabl
     }
 
     public void onChange() {
-        if (stack.getOrCreateTag().contains("Tile"))
-            stack.getOrCreateTag().put("Tile", new CompoundTag());
-        stack.getOrCreateTag().getCompound("Tile").put("handler", serializeNBT());
+        if (stack.hasData(FSAttachments.TILE))
+            stack.setData(FSAttachments.TILE, new CompoundTag());
+        stack.getData(FSAttachments.TILE).put("handler", serializeNBT());
     }
 
     public int getMultiplier() {

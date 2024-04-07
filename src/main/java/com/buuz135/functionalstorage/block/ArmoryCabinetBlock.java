@@ -2,6 +2,7 @@ package com.buuz135.functionalstorage.block;
 
 import com.buuz135.functionalstorage.FunctionalStorage;
 import com.buuz135.functionalstorage.block.tile.ArmoryCabinetTile;
+import com.buuz135.functionalstorage.item.FSAttachments;
 import com.hrznstudio.titanium.block.RotatableBlock;
 import com.hrznstudio.titanium.datagenerator.loot.block.BasicBlockLootTables;
 import net.minecraft.core.BlockPos;
@@ -57,7 +58,7 @@ public class ArmoryCabinetBlock extends RotatableBlock<ArmoryCabinetTile> {
         BlockEntity drawerTile = builder.getOptionalParameter(LootContextParams.BLOCK_ENTITY);
         if (drawerTile instanceof ArmoryCabinetTile) {
             if (!((ArmoryCabinetTile) drawerTile).isEverythingEmpty()) {
-                stack.getOrCreateTag().put("Tile", drawerTile.saveWithoutMetadata());
+                stack.setData(FSAttachments.TILE, drawerTile.saveWithoutMetadata());
             }
         }
         stacks.add(stack);
@@ -72,10 +73,10 @@ public class ArmoryCabinetBlock extends RotatableBlock<ArmoryCabinetTile> {
     @Override
     public void setPlacedBy(Level level, BlockPos pos, BlockState p_49849_, @Nullable LivingEntity p_49850_, ItemStack stack) {
         super.setPlacedBy(level, pos, p_49849_, p_49850_, stack);
-        if (stack.hasTag() && stack.getTag().contains("Tile")) {
+        if (stack.hasData(FSAttachments.TILE)) {
             BlockEntity entity = level.getBlockEntity(pos);
             if (entity instanceof ArmoryCabinetTile) {
-                entity.load(stack.getTag().getCompound("Tile"));
+                entity.load(stack.getData(FSAttachments.TILE));
                 ((ArmoryCabinetTile) entity).markForUpdate();
             }
         }

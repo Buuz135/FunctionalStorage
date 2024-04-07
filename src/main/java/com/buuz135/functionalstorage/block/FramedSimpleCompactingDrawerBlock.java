@@ -3,6 +3,7 @@ package com.buuz135.functionalstorage.block;
 import com.buuz135.functionalstorage.FunctionalStorage;
 import com.buuz135.functionalstorage.block.tile.FramedSimpleCompactingDrawerTile;
 import com.buuz135.functionalstorage.block.tile.SimpleCompactingDrawerTile;
+import com.buuz135.functionalstorage.item.FSAttachments;
 import com.buuz135.functionalstorage.util.StorageTags;
 import com.hrznstudio.titanium.recipe.generator.TitaniumShapedRecipeBuilder;
 import com.hrznstudio.titanium.util.TileUtil;
@@ -57,13 +58,13 @@ public class FramedSimpleCompactingDrawerBlock extends SimpleCompactingDrawerBlo
         BlockEntity drawerTile = builder.getOptionalParameter(LootContextParams.BLOCK_ENTITY);
         if (drawerTile instanceof FramedSimpleCompactingDrawerTile framedDrawerTile) {
             if (!framedDrawerTile.isEverythingEmpty()) {
-                stack.getOrCreateTag().put("Tile", drawerTile.saveWithoutMetadata());
-            }
-            if (framedDrawerTile.getFramedDrawerModelData() != null) {
-                stack.getOrCreateTag().put("Style", framedDrawerTile.getFramedDrawerModelData().serializeNBT());
+                stack.setData(FSAttachments.TILE, drawerTile.saveWithoutMetadata());
             }
             if (framedDrawerTile.isLocked()) {
-                stack.getOrCreateTag().putBoolean("Locked", framedDrawerTile.isLocked());
+                stack.setData(FSAttachments.LOCKED, framedDrawerTile.isLocked());
+            }
+            if (framedDrawerTile.getFramedDrawerModelData() != null) {
+                stack.setData(FSAttachments.STYLE, framedDrawerTile.getFramedDrawerModelData().serializeNBT());
             }
         }
         stacks.add(stack);
@@ -75,7 +76,7 @@ public class FramedSimpleCompactingDrawerBlock extends SimpleCompactingDrawerBlo
         BlockEntity entity = level.getBlockEntity(pos);
         if (entity instanceof FramedSimpleCompactingDrawerTile framedDrawerTile && framedDrawerTile.getFramedDrawerModelData() != null && !framedDrawerTile.getFramedDrawerModelData().getDesign().isEmpty()) {
             ItemStack stack = new ItemStack(this);
-            stack.getOrCreateTag().put("Style", framedDrawerTile.getFramedDrawerModelData().serializeNBT());
+            stack.setData(FSAttachments.STYLE, framedDrawerTile.getFramedDrawerModelData().serializeNBT());
             return stack;
         }
         return super.getCloneItemStack(state, target, level, pos, player);

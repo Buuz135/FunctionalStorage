@@ -3,6 +3,7 @@ package com.buuz135.functionalstorage.inventory.item;
 import com.buuz135.functionalstorage.FunctionalStorage;
 import com.buuz135.functionalstorage.inventory.BigInventoryHandler;
 import com.buuz135.functionalstorage.inventory.BigInventoryHandler.BigStack;
+import com.buuz135.functionalstorage.item.FSAttachments;
 import com.buuz135.functionalstorage.item.StorageUpgradeItem;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
@@ -36,9 +37,10 @@ public class DrawerStackItemHandler implements IItemHandler, INBTSerializable<Co
         for (int i = 0; i < drawerType.getSlots(); i++) {
             this.storedStacks.add(i, new BigInventoryHandler.BigStack(ItemStack.EMPTY, 0));
         }
-        if (stack.hasTag()) {
-            deserializeNBT(stack.getTag().getCompound("Tile").getCompound("handler"));
-            for (Tag tag : stack.getOrCreateTag().getCompound("Tile").getCompound("storageUpgrades").getList("Items", Tag.TAG_COMPOUND)) {
+        if (stack.hasData(FSAttachments.TILE)) {
+            var tile = stack.getData(FSAttachments.TILE);
+            deserializeNBT(tile.getCompound("handler"));
+            for (Tag tag : tile.getCompound("storageUpgrades").getList("Items", Tag.TAG_COMPOUND)) {
                 ItemStack itemStack = ItemStack.of((CompoundTag) tag);
                 if (itemStack.getItem() instanceof StorageUpgradeItem) {
                     if (multiplier == 1) multiplier = ((StorageUpgradeItem) itemStack.getItem()).getStorageMultiplier();
@@ -48,7 +50,7 @@ public class DrawerStackItemHandler implements IItemHandler, INBTSerializable<Co
                     this.downgrade = true;
                 }
             }
-            for (Tag tag : stack.getOrCreateTag().getCompound("Tile").getCompound("utilityUpgrades").getList("Items", Tag.TAG_COMPOUND)) {
+            for (Tag tag : tile.getCompound("utilityUpgrades").getList("Items", Tag.TAG_COMPOUND)) {
                 ItemStack itemStack = ItemStack.of((CompoundTag) tag);
                 if (itemStack.getItem().equals(FunctionalStorage.VOID_UPGRADE.get())) {
                     this.isVoid = true;
@@ -115,9 +117,9 @@ public class DrawerStackItemHandler implements IItemHandler, INBTSerializable<Co
     }
 
     private void onChange() {
-        if (stack.getOrCreateTag().contains("Tile"))
-            stack.getOrCreateTag().put("Tile", new CompoundTag());
-        stack.getOrCreateTag().getCompound("Tile").put("handler", serializeNBT());
+        if (stack.hasData(FSAttachments.TILE))
+            stack.setData(FSAttachments.TILE, new CompoundTag());
+        stack.getData(FSAttachments.TILE).put("handler", serializeNBT());
     }
 
     private boolean isValid(int slot, @Nonnull ItemStack stack) {

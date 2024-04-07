@@ -4,6 +4,7 @@ import com.buuz135.functionalstorage.FunctionalStorage;
 import com.buuz135.functionalstorage.block.tile.DrawerTile;
 import com.buuz135.functionalstorage.block.tile.FramedDrawerTile;
 import com.buuz135.functionalstorage.client.model.FramedDrawerModelData;
+import com.buuz135.functionalstorage.item.FSAttachments;
 import com.buuz135.functionalstorage.util.DrawerWoodType;
 import com.hrznstudio.titanium.module.BlockWithTile;
 import com.hrznstudio.titanium.recipe.generator.TitaniumShapedRecipeBuilder;
@@ -59,8 +60,8 @@ public class FramedDrawerBlock extends DrawerBlock{
     }
 
     public static FramedDrawerModelData getDrawerModelData(ItemStack stack){
-        if (stack.hasTag() && stack.getTag().contains("Style")){
-            CompoundTag tag = stack.getTag().getCompound("Style");
+        if (stack.hasData(FSAttachments.STYLE)){
+            CompoundTag tag = stack.getData(FSAttachments.STYLE);
             if (tag.isEmpty()) return null;
             HashMap<String, Item> data = new HashMap<>();
             data.put("particle", BuiltInRegistries.ITEM.get(new ResourceLocation(tag.getString("particle"))));
@@ -74,7 +75,7 @@ public class FramedDrawerBlock extends DrawerBlock{
 
     public static ItemStack fill(ItemStack first, ItemStack second, ItemStack drawer, ItemStack divider){
         drawer = ItemHandlerHelper.copyStackWithSize(drawer, 1);
-        CompoundTag style = drawer.getOrCreateTagElement("Style");
+        CompoundTag style = drawer.getData(FSAttachments.STYLE);
         style.putString("particle", BuiltInRegistries.ITEM.getKey(first.getItem()).toString());
         style.putString("side", BuiltInRegistries.ITEM.getKey(first.getItem()).toString());
         style.putString("front", BuiltInRegistries.ITEM.getKey(second.getItem()).toString());
@@ -83,7 +84,7 @@ public class FramedDrawerBlock extends DrawerBlock{
         } else {
             style.putString("front_divider", BuiltInRegistries.ITEM.getKey(divider.getItem()).toString());
         }
-        drawer.getOrCreateTag().put("Style", style);
+        drawer.setData(FSAttachments.STYLE, style);
         return drawer;
     }
 
@@ -93,14 +94,14 @@ public class FramedDrawerBlock extends DrawerBlock{
         ItemStack stack = new ItemStack(this);
         BlockEntity drawerTile = builder.getOptionalParameter(LootContextParams.BLOCK_ENTITY);
         if (drawerTile instanceof FramedDrawerTile framedDrawerTile) {
-            if (!framedDrawerTile.isEverythingEmpty()) {
-                stack.getOrCreateTag().put("Tile", drawerTile.saveWithoutMetadata());
-            }
             if (framedDrawerTile.getFramedDrawerModelData() != null) {
-                stack.getOrCreateTag().put("Style", framedDrawerTile.getFramedDrawerModelData().serializeNBT());
+                stack.setData(FSAttachments.STYLE, framedDrawerTile.getFramedDrawerModelData().serializeNBT());
             }
-            if (framedDrawerTile.isLocked()){
-                stack.getOrCreateTag().putBoolean("Locked", framedDrawerTile.isLocked());
+            if (!framedDrawerTile.isEverythingEmpty()) {
+                stack.setData(FSAttachments.TILE, framedDrawerTile.saveWithoutMetadata());
+            }
+            if (framedDrawerTile.isLocked()) {
+                stack.setData(FSAttachments.LOCKED, framedDrawerTile.isLocked());
             }
         }
         stacks.add(stack);
@@ -112,7 +113,7 @@ public class FramedDrawerBlock extends DrawerBlock{
         BlockEntity entity = level.getBlockEntity(pos);
         if (entity instanceof FramedDrawerTile framedDrawerTile && framedDrawerTile.getFramedDrawerModelData() != null && !framedDrawerTile.getFramedDrawerModelData().getDesign().isEmpty()){
             ItemStack stack = new ItemStack(this);
-            stack.getOrCreateTag().put("Style", framedDrawerTile.getFramedDrawerModelData().serializeNBT());
+            stack.setData(FSAttachments.STYLE, framedDrawerTile.getFramedDrawerModelData().serializeNBT());
             return stack;
         }
         return super.getCloneItemStack(state, target, level, pos, player);

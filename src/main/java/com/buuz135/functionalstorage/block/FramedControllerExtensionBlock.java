@@ -2,6 +2,7 @@ package com.buuz135.functionalstorage.block;
 
 import com.buuz135.functionalstorage.FunctionalStorage;
 import com.buuz135.functionalstorage.block.tile.FramedControllerExtensionTile;
+import com.buuz135.functionalstorage.item.FSAttachments;
 import com.buuz135.functionalstorage.util.StorageTags;
 import com.hrznstudio.titanium.recipe.generator.TitaniumShapedRecipeBuilder;
 import com.hrznstudio.titanium.util.TileUtil;
@@ -55,7 +56,7 @@ public class FramedControllerExtensionBlock extends StorageControllerExtensionBl
         {
             if(framedControllerExtensionTile.getFramedDrawerModelData() != null)
             {
-                stack.getOrCreateTag().put("Style", framedControllerExtensionTile.getFramedDrawerModelData().serializeNBT());
+                stack.setData(FSAttachments.STYLE, framedControllerExtensionTile.getFramedDrawerModelData().serializeNBT());
             }
         }
 
@@ -73,7 +74,7 @@ public class FramedControllerExtensionBlock extends StorageControllerExtensionBl
                 if(!framedControllerExtensionTile.getFramedDrawerModelData().getDesign().isEmpty())
                 {
                     ItemStack stack = new ItemStack(this);
-                    stack.getOrCreateTag().put("Style", framedControllerExtensionTile.getFramedDrawerModelData().serializeNBT());
+                    stack.setData(FSAttachments.STYLE, framedControllerExtensionTile.getFramedDrawerModelData().serializeNBT());
                     return stack;
                 }
             }

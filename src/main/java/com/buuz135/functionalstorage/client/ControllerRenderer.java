@@ -2,6 +2,7 @@ package com.buuz135.functionalstorage.client;
 
 import com.buuz135.functionalstorage.block.config.FunctionalStorageConfig;
 import com.buuz135.functionalstorage.block.tile.StorageControllerTile;
+import com.buuz135.functionalstorage.item.FSAttachments;
 import com.buuz135.functionalstorage.item.LinkingToolItem;
 import com.hrznstudio.titanium.util.RayTraceUtils;
 import com.mojang.blaze3d.platform.GlStateManager;
@@ -17,7 +18,6 @@ import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.AABB;
@@ -27,15 +27,11 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.joml.Matrix4f;
-import org.lwjgl.opengl.GL11;
 
 import java.util.List;
 import java.util.OptionalDouble;
 
-import static com.buuz135.functionalstorage.item.LinkingToolItem.NBT_CONTROLLER;
-import static com.buuz135.functionalstorage.item.LinkingToolItem.NBT_FIRST;
-
-public class ControllerRenderer implements BlockEntityRenderer<StorageControllerTile> {
+public class ControllerRenderer implements BlockEntityRenderer<StorageControllerTile<?>> {
 
     public static RenderType TYPE = RenderType.create("custom_lines", DefaultVertexFormat.POSITION_COLOR_NORMAL, VertexFormat.Mode.LINES, 256, false, false,RenderType.CompositeState.builder()
             .setShaderState(new RenderStateShard.ShaderStateShard(GameRenderer::getRendertypeLinesShader))
@@ -75,12 +71,10 @@ public class ControllerRenderer implements BlockEntityRenderer<StorageController
         ItemStack stack = Minecraft.getInstance().player.getMainHandItem();
         if (stack.isEmpty()) return;
         if (stack.getItem() instanceof LinkingToolItem) {
-            CompoundTag controllerNBT = stack.getOrCreateTag().getCompound(NBT_CONTROLLER);
-            BlockPos controller = new BlockPos(controllerNBT.getInt("X"), controllerNBT.getInt("Y"), controllerNBT.getInt("Z"));
+            BlockPos controller = stack.getData(FSAttachments.CONTROLLER);
             if (!controller.equals(tile.getBlockPos())) return;
-            if (stack.getOrCreateTag().contains(NBT_FIRST)) {
-                CompoundTag firstpos = stack.getOrCreateTag().getCompound(NBT_FIRST);
-                BlockPos firstPos = new BlockPos(firstpos.getInt("X"), firstpos.getInt("Y"), firstpos.getInt("Z"));
+            if (stack.hasData(FSAttachments.FIRST_POSITION)) {
+                BlockPos firstPos = stack.getData(FSAttachments.FIRST_POSITION);
                 HitResult result = RayTraceUtils.rayTraceSimple(Minecraft.getInstance().level, Minecraft.getInstance().player, 8, partialTicks);
                 if (result.getType() == HitResult.Type.BLOCK){
                     BlockPos hit = ((BlockHitResult)result).getBlockPos();

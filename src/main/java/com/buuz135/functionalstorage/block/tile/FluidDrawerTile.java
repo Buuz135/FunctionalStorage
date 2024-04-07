@@ -34,11 +34,12 @@ import net.neoforged.neoforge.fluids.capability.wrappers.BucketPickupHandlerWrap
 import net.neoforged.neoforge.fluids.capability.wrappers.FluidBlockWrapper;
 import org.jetbrains.annotations.NotNull;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import java.util.UUID;
 
 public class FluidDrawerTile extends ControllableDrawerTile<FluidDrawerTile> {
-    public static final GameProfile FP = new GameProfile(UUID.fromString("FunctionalStorage-Pickup"), "FunctionalStorage-Pickp");
+    public static final GameProfile FP = new GameProfile(UUID.nameUUIDFromBytes("FunctionalStorage-Pickup".getBytes(StandardCharsets.UTF_8)), "FunctionalStorage-Pickp");
     @Save
     public BigFluidHandler fluidHandler;
     private FunctionalStorage.DrawerType type;

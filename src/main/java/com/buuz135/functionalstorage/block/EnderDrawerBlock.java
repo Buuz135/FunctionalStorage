@@ -5,6 +5,7 @@ import com.buuz135.functionalstorage.block.tile.ControllableDrawerTile;
 import com.buuz135.functionalstorage.block.tile.EnderDrawerTile;
 import com.buuz135.functionalstorage.block.tile.ItemControllableDrawerTile;
 import com.buuz135.functionalstorage.block.tile.StorageControllerTile;
+import com.buuz135.functionalstorage.item.FSAttachments;
 import com.buuz135.functionalstorage.item.LinkingToolItem;
 import com.hrznstudio.titanium.block.RotatableBlock;
 import com.hrznstudio.titanium.datagenerator.loot.block.BasicBlockLootTables;
@@ -49,13 +50,14 @@ import org.jetbrains.annotations.Nullable;
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.buuz135.functionalstorage.block.DrawerBlock.LOCKED;
 
-public class EnderDrawerBlock extends RotatableBlock<EnderDrawerTile> {
+public class EnderDrawerBlock extends Drawer<EnderDrawerTile> {
 
     public EnderDrawerBlock() {
         super("ender_drawer", Properties.ofFullCopy(Blocks.ENDER_CHEST), EnderDrawerTile.class);
@@ -124,8 +126,8 @@ public class EnderDrawerBlock extends RotatableBlock<EnderDrawerTile> {
     }
 
     @Override
-    public void attack(BlockState state, Level worldIn, BlockPos pos, Player player) {
-       TileUtil.getTileEntity(worldIn, pos, EnderDrawerTile.class).ifPresent(drawerTile -> drawerTile.onClicked(player, getHit(state, worldIn, pos, player)));
+    public Collection<VoxelShape> getHitShapes(BlockState state) {
+        return DrawerBlock.CACHED_SHAPES.get(FunctionalStorage.DrawerType.X_1).get(state.getValue(RotatableBlock.FACING_HORIZONTAL));
     }
 
     public int getHit(BlockState state, Level worldIn, BlockPos pos, Player player) {
@@ -159,7 +161,7 @@ public class EnderDrawerBlock extends RotatableBlock<EnderDrawerTile> {
         BlockEntity drawerTile = builder.getOptionalParameter(LootContextParams.BLOCK_ENTITY);
         if (drawerTile instanceof EnderDrawerTile tile) {
             if (!tile.isEverythingEmpty()) {
-                stack.getOrCreateTag().put("Tile", drawerTile.saveWithoutMetadata());
+                stack.setData(FSAttachments.TILE, drawerTile.saveWithoutMetadata());
             }
         }
         stacks.add(stack);
@@ -169,13 +171,10 @@ public class EnderDrawerBlock extends RotatableBlock<EnderDrawerTile> {
     @Override
     public void setPlacedBy(Level level, BlockPos pos, BlockState p_49849_, @Nullable LivingEntity p_49850_, ItemStack stack) {
         super.setPlacedBy(level, pos, p_49849_, p_49850_, stack);
-        if (stack.hasTag()) {
-            if (stack.getTag().contains("Tile")) {
-                BlockEntity entity = level.getBlockEntity(pos);
-                if (entity instanceof ControllableDrawerTile tile) {
-                    entity.load(stack.getTag().getCompound("Tile"));
-                    tile.markForUpdate();
-                }
+        if (level.getBlockEntity(pos) instanceof ControllableDrawerTile tile) {
+            if (stack.hasData(FSAttachments.TILE)) {
+                tile.load(stack.getData(FSAttachments.TILE));
+                tile.markForUpdate();
             }
         }
     }
@@ -203,7 +202,7 @@ public class EnderDrawerBlock extends RotatableBlock<EnderDrawerTile> {
     @Override
     public void appendHoverText(ItemStack p_49816_, @Nullable BlockGetter p_49817_, List<Component> tooltip, TooltipFlag p_49819_) {
         super.appendHoverText(p_49816_, p_49817_, tooltip, p_49819_);
-        if (p_49816_.hasTag()) {
+        if (p_49816_.hasData(FSAttachments.TILE)) {
             MutableComponent text = Component.translatable("linkingtool.ender.frequency");
             tooltip.add(text.withStyle(ChatFormatting.GRAY));
             tooltip.add(Component.literal(""));
@@ -224,19 +223,6 @@ public class EnderDrawerBlock extends RotatableBlock<EnderDrawerTile> {
 
     @Override
     public int getSignal(BlockState p_60483_, BlockGetter blockGetter, BlockPos blockPos, Direction p_60486_) {
-        ItemControllableDrawerTile tile = TileUtil.getTileEntity(blockGetter, blockPos, ItemControllableDrawerTile.class).orElse(null);
-        if (tile != null){
-            for (int i = 0; i < tile.getUtilityUpgrades().getSlots(); i++) {
-                ItemStack stack = tile.getUtilityUpgrades().getStackInSlot(i);
-                if (stack.getItem().equals(FunctionalStorage.REDSTONE_UPGRADE.get())) {
-                    int redstoneSlot = stack.getOrCreateTag().getInt("Slot");
-                    if (redstoneSlot < tile.getStorage().getSlots()) {
-                        int amount = tile.getStorage().getStackInSlot(redstoneSlot).getCount() * 14 / tile.getStorage().getSlotLimit(redstoneSlot);
-                        return amount + (amount > 0 ? 1 : 0);
-                    }
-                }
-            }
-        }
-        return 0;
+        return DrawerBlock.getSignal(blockGetter, blockPos);
     }
 }

@@ -80,6 +80,10 @@ dependencies {
     runtimeOnly('com.hrznstudio:Titanium:1.20.4-2.4.0')
 }
 
+tasks.configureEach {
+    if (it.name.startsWith('neoForm')) it.enabled = false
+}
+
 jar {
     manifest {
         attributes(["Specification-Title"     : project.name,
