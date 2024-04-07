@@ -75,6 +75,8 @@ dependencies {
     compileOnly "mezz.jei:jei-1.20.4-neoforge-api:$jei_version"
     runtimeOnly "mezz.jei:jei-1.20.4-neoforge:$jei_version"
 	implementation "curse.maven:refined-storage-243076:5165548"
+    implementation "curse.maven:jade-324717:5109393"
+    compileOnly "curse.maven:the-one-probe-245211:5159289"
 
     implementation('com.hrznstudio:titanium')
     runtimeOnly('com.hrznstudio:Titanium:1.20.4-2.4.0')

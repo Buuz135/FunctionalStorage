@@ -213,8 +213,7 @@ public class DrawerBlock extends Drawer<DrawerTile> {
     }
 
     public static class DrawerItem extends BlockItem{
-
-        private DrawerBlock drawerBlock;
+        private final DrawerBlock drawerBlock;
         public DrawerItem(DrawerBlock p_40565_, net.minecraft.world.item.Item.Properties p_40566_, TitaniumTab tab) {
             super(p_40565_, p_40566_);
             this.drawerBlock = p_40565_;
@@ -226,6 +225,5 @@ public class DrawerBlock extends Drawer<DrawerTile> {
             return new DrawerStackItemHandler(stack, this.drawerBlock.getType());
         }
     }
-
 
 }

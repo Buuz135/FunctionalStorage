@@ -96,5 +96,7 @@ public class FunctionalStorageLangProvider extends LanguageProvider {
         this.add("gui.functionalstorage.storage", "Storage");
         this.add("gui.functionalstorage.utility", "Utility");
         this.add("gui.functionalstorage.storage_range", "Range");
+
+        this.add("config.jade.plugin_functionalstorage.drawer", "Functional Storage Drawers");
     }
 }

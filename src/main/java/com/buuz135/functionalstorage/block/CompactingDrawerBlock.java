@@ -2,62 +2,30 @@ package com.buuz135.functionalstorage.block;
 
 import com.buuz135.functionalstorage.FunctionalStorage;
 import com.buuz135.functionalstorage.block.tile.CompactingDrawerTile;
-import com.buuz135.functionalstorage.block.tile.ControllableDrawerTile;
-import com.buuz135.functionalstorage.block.tile.StorageControllerTile;
 import com.buuz135.functionalstorage.inventory.item.CompactingStackItemHandler;
-import com.buuz135.functionalstorage.item.ConfigurationToolItem;
-import com.buuz135.functionalstorage.item.FSAttachments;
-import com.buuz135.functionalstorage.item.LinkingToolItem;
 import com.buuz135.functionalstorage.util.StorageTags;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.MultimapBuilder;
 import com.hrznstudio.titanium.block.RotatableBlock;
-import com.hrznstudio.titanium.datagenerator.loot.block.BasicBlockLootTables;
 import com.hrznstudio.titanium.recipe.generator.TitaniumShapedRecipeBuilder;
-import com.hrznstudio.titanium.util.RayTraceUtils;
-import com.hrznstudio.titanium.util.TileUtil;
-import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.NonNullList;
 import net.minecraft.data.recipes.RecipeOutput;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.storage.loot.LootParams;
-import net.minecraft.world.level.storage.loot.LootTable;
-import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
-import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.HitResult;
-import net.minecraft.world.phys.shapes.BooleanOp;
-import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.items.IItemHandler;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 
 public class CompactingDrawerBlock extends Drawer<CompactingDrawerTile> {
 
@@ -126,11 +94,6 @@ public class CompactingDrawerBlock extends Drawer<CompactingDrawerTile> {
         public CompactingDrawerItem(Block p_40565_, net.minecraft.world.item.Item.Properties p_40566_, int slots) {
             super(p_40565_, p_40566_);
             this.slots = slots;
-        }
-
-        @Override
-        public Optional<TooltipComponent> getTooltipImage(ItemStack stack) {
-            return super.getTooltipImage(stack);
         }
 
         public IItemHandler initCapabilities(ItemStack stack) {

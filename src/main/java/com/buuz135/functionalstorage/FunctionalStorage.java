@@ -28,6 +28,7 @@ import com.buuz135.functionalstorage.block.tile.FramedSimpleCompactingDrawerTile
 import com.buuz135.functionalstorage.block.tile.ItemControllableDrawerTile;
 import com.buuz135.functionalstorage.block.tile.SimpleCompactingDrawerTile;
 import com.buuz135.functionalstorage.block.tile.StorageControllerTile;
+import com.buuz135.functionalstorage.client.ClientSetup;
 import com.buuz135.functionalstorage.client.CompactingDrawerRenderer;
 import com.buuz135.functionalstorage.client.ControllerRenderer;
 import com.buuz135.functionalstorage.client.DrawerRenderer;
@@ -80,6 +81,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -93,7 +95,9 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.capabilities.Capabilities;
@@ -110,11 +114,13 @@ import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.common.crafting.IngredientType;
 import net.neoforged.neoforge.common.util.NonNullLazy;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
+import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
+import net.neoforged.neoforge.registries.RegisterEvent;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -208,50 +214,19 @@ public class FunctionalStorage extends ModuleController {
                 .subscribe();
 
         EventManager.mod(RegisterCapabilitiesEvent.class).process(event -> {
-            class Registrar {
-                <T> void register(Class<T> tp, Function<T, IItemHandler> func, BlockWithTile... types) {
-                    for (var type : types) {
-                        event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, type.type().get(), (object, context) -> {
-                            if (tp.isInstance(object)) {
-                                return func.apply(tp.cast(object));
-                            }
-                            return null;
-                        });
-                    }
+            event.registerItem(Capabilities.ItemHandler.ITEM, (object, context) -> {
+                if (object.getItem() instanceof DrawerBlock.DrawerItem di) {
+                    return di.initCapabilities(object);
                 }
-            }
-            final var reg = new Registrar();
-            reg.register(ArmoryCabinetTile.class, ac -> ac.handler, ARMORY_CABINET);
-            reg.register(CompactingDrawerTile.class, cd -> cd.handler, COMPACTING_DRAWER, FRAMED_COMPACTING_DRAWER);
+                return null;
+            }, DRAWER_TYPES.values().stream().flatMap(List::stream).map(bl -> (ItemLike)bl.block().get()).toArray(ItemLike[]::new));
 
-            for (var type : List.of(FLUID_DRAWER_1, FLUID_DRAWER_2, FLUID_DRAWER_4)) {
-                event.registerBlockEntity(Capabilities.FluidHandler.BLOCK, type.type().get(), (object, context) -> {
-                    if (object instanceof FluidDrawerTile fd) {
-                        return fd.fluidHandler;
-                    }
-                    return null;
-                });
-            }
-            for (var type : List.of(FRAMED_DRAWER_CONTROLLER, DRAWER_CONTROLLER)) {
-                event.registerBlockEntity(Capabilities.FluidHandler.BLOCK, type.type().get(), (object, context) -> {
-                    if (object instanceof StorageControllerTile<?> sc) {
-                        return sc.fluidHandler;
-                    }
-                    return null;
-                });
-            }
-
-            BuiltInRegistries.BLOCK_ENTITY_TYPE.holders()
-                    .filter(hol -> hol.key().location().getNamespace().equals(MOD_ID))
-                    .map(Holder::value)
-                    .forEach(betype -> {
-                        event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, betype, (object, context) -> {
-                            if (object instanceof ItemControllableDrawerTile<?> icd) {
-                                return icd.getStorage();
-                            }
-                            return null;
-                        });
-                    });
+            event.registerItem(Capabilities.ItemHandler.ITEM, (object, context) -> {
+                if (object.getItem() instanceof CompactingDrawerBlock.CompactingDrawerItem di) {
+                    return di.initCapabilities(object);
+                }
+                return null;
+            }, COMPACTING_DRAWER.asItem(), SIMPLE_COMPACTING_DRAWER.asItem(), FRAMED_COMPACTING_DRAWER.asItem(), FRAMED_SIMPLE_COMPACTING_DRAWER.asItem());
         });
     }
 
@@ -272,7 +247,6 @@ public class FunctionalStorage extends ModuleController {
                 }
             }
         }
-        // TODO - items for normal drawers
         FLUID_DRAWER_1 = getRegistries().registerBlockWithTile("fluid_1", () -> new FluidDrawerBlock(DrawerType.X_1, BlockBehaviour.Properties.ofFullCopy(Blocks.STONE_BRICKS)), TAB);
         FLUID_DRAWER_2 = getRegistries().registerBlockWithTile("fluid_2", () -> new FluidDrawerBlock(DrawerType.X_2, BlockBehaviour.Properties.ofFullCopy(Blocks.STONE_BRICKS)), TAB);
         FLUID_DRAWER_4 = getRegistries().registerBlockWithTile("fluid_4", () -> new FluidDrawerBlock(DrawerType.X_4, BlockBehaviour.Properties.ofFullCopy(Blocks.STONE_BRICKS)), TAB);
@@ -310,15 +284,7 @@ public class FunctionalStorage extends ModuleController {
                 return true;
             }
         });
-
-        FRAMED_BLOCKS = getRegistries().getRegistry(Registries.BLOCK)
-                .getEntries().stream()
-                .filter(bl -> bl.value() instanceof FramedBlock)
-                .map(Holder::value)
-                .toList();
-
         DrawerlessWoodIngredient.TYPE = getRegistries().registerGeneric(NeoForgeRegistries.Keys.INGREDIENT_TYPES, DrawerlessWoodIngredient.NAME.getPath(), () -> new IngredientType<>(DrawerlessWoodIngredient.CODEC));
-
 
         getRegistries().registerGeneric(Registries.RECIPE_SERIALIZER, "framed_recipe", () -> FramedDrawerRecipe.SERIALIZER);
 
@@ -327,6 +293,17 @@ public class FunctionalStorage extends ModuleController {
         CUSTOM_COMPACTING_RECIPE_TYPE = getRegistries().registerGeneric(Registries.RECIPE_TYPE, "custom_compacting", () -> RecipeType.simple(new ResourceLocation(MOD_ID, "custom_compacting")));
 
         CUSTOM_COMPACTING_RECIPE_SERIALIZER = getRegistries().registerGeneric(Registries.RECIPE_SERIALIZER, "custom_compacting", () -> new GenericSerializer<>(CustomCompactingRecipe.class, CUSTOM_COMPACTING_RECIPE_TYPE::value, CustomCompactingRecipe.CODEC));
+
+        ModLoadingContext.get().getActiveContainer().getEventBus()
+                .addListener(EventPriority.LOWEST, (final RegisterEvent regEvent) -> {
+                    if (regEvent.getRegistryKey() == Registries.BLOCK) {
+                        FRAMED_BLOCKS = getRegistries().getRegistry(Registries.BLOCK)
+                                .getEntries().stream()
+                                .filter(bl -> bl.value() instanceof FramedBlock)
+                                .map(Holder::value)
+                                .toList();
+                    }
+                });
     }
 
     public enum DrawerType {
@@ -466,7 +443,7 @@ public class FunctionalStorage extends ModuleController {
         EventManager.mod(ModelEvent.RegisterGeometryLoaders.class).process(modelRegistryEvent -> {
             modelRegistryEvent.register(new ResourceLocation(MOD_ID, "framedblock"), FramedModel.Loader.INSTANCE);
         }).subscribe();
-
+        ClientSetup.init();
     }
 
     @Override

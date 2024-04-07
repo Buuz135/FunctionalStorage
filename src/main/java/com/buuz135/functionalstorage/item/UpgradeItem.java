@@ -1,10 +1,14 @@
 package com.buuz135.functionalstorage.item;
 
 import com.buuz135.functionalstorage.FunctionalStorage;
+import com.buuz135.functionalstorage.block.tile.ControllableDrawerTile;
+import com.buuz135.functionalstorage.block.tile.FluidDrawerTile;
+import com.hrznstudio.titanium.block.RotatableBlock;
 import com.hrznstudio.titanium.item.BasicItem;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.SlotAccess;
 import net.minecraft.world.entity.player.Player;
@@ -90,7 +94,7 @@ public class UpgradeItem extends BasicItem {
         super.addTooltipDetails(key, stack, tooltip, advanced);
         tooltip.add(Component.translatable("upgrade.type").withStyle(ChatFormatting.YELLOW).append(Component.translatable("upgrade.type." + getType().name().toLowerCase(Locale.ROOT)).withStyle(ChatFormatting.WHITE)));
         Item item = stack.getItem();
-        if ((item.equals(FunctionalStorage.PULLING_UPGRADE.get()) || item.equals(FunctionalStorage.PUSHING_UPGRADE.get()) || item.equals(FunctionalStorage.COLLECTOR_UPGRADE.get())) && stack.hasData(FSAttachments.DIRECTION)) {
+        if (isDirectionUpgrade(item) && stack.hasData(FSAttachments.DIRECTION)) {
             tooltip.add(Component.translatable("item.utility.direction").withStyle(ChatFormatting.YELLOW).append(Component.translatable(WordUtils.capitalize(getDirection(stack).getName().toLowerCase(Locale.ROOT))).withStyle(ChatFormatting.WHITE)));
             tooltip.add(Component.literal(""));
             tooltip.add(Component.translatable("item.utility.direction.desc").withStyle(ChatFormatting.GRAY));
@@ -101,6 +105,51 @@ public class UpgradeItem extends BasicItem {
             tooltip.add(Component.translatable("item.utility.direction.desc").withStyle(ChatFormatting.GRAY));
         }
 
+    }
+
+    public static boolean isDirectionUpgrade(Item item) {
+        return (item.equals(FunctionalStorage.PULLING_UPGRADE.get()) || item.equals(FunctionalStorage.PUSHING_UPGRADE.get()) || item.equals(FunctionalStorage.COLLECTOR_UPGRADE.get()));
+    }
+
+    @Nullable
+    public Component getDescription(ItemStack stack, ControllableDrawerTile<?> tile) {
+        var dir = tile.getBlockState().getValue(RotatableBlock.FACING_HORIZONTAL);
+        var type = tile instanceof FluidDrawerTile ? "fluids" : "items";
+        if (this == FunctionalStorage.PUSHING_UPGRADE.get()) {
+            return Component.literal("Pushes " + type + ": ").append(getRelativeDirection(
+                    getDirection(stack), dir
+            ).withStyle(ChatFormatting.GOLD));
+        } else if (this == FunctionalStorage.PULLING_UPGRADE.get()) {
+            return Component.literal("Pulls " + type + ": ").append(getRelativeDirection(
+                    getDirection(stack), dir
+            ).withStyle(ChatFormatting.GOLD));
+        } else if (this == FunctionalStorage.COLLECTOR_UPGRADE.get()) {
+            return Component.literal("Collects item entities: ").append(getRelativeDirection(
+                    getDirection(stack), dir
+            ).withStyle(ChatFormatting.GOLD));
+        } else if (this == FunctionalStorage.VOID_UPGRADE.get()) {
+            return Component.literal("Voids excess " + type);
+        } else if (this == FunctionalStorage.REDSTONE_UPGRADE.get()) {
+            return Component.literal("Emitting redstone signal for slot ").append(Component.literal(
+                    String.valueOf(stack.getData(FSAttachments.SLOT))
+            ).withStyle(ChatFormatting.RED));
+        }
+        return null;
+    }
+
+    public static MutableComponent getRelativeDirection(Direction upgrade, Direction facing) {
+        if (upgrade == facing) {
+            return Component.literal("front");
+        } else if (upgrade == facing.getOpposite()) {
+            return Component.literal("back");
+        } else if (upgrade == Direction.UP) {
+            return Component.literal("up");
+        } else if (upgrade == Direction.DOWN) {
+            return Component.literal("down");
+        } else if (upgrade == facing.getClockWise()) {
+            return Component.literal("left");
+        }
+        return Component.literal("right");
     }
 
     @Override

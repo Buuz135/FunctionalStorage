@@ -33,6 +33,7 @@ import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.capability.wrappers.BucketPickupHandlerWrapper;
 import net.neoforged.neoforge.fluids.capability.wrappers.FluidBlockWrapper;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
@@ -309,4 +310,8 @@ public class FluidDrawerTile extends ControllableDrawerTile<FluidDrawerTile> {
     }
 
 
+    @Override
+    public IFluidHandler getFluidHandler(@Nullable Direction direction) {
+        return fluidHandler;
+    }
 }

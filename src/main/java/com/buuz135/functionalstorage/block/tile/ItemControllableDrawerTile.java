@@ -28,6 +28,7 @@ import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.UUID;
@@ -239,4 +240,8 @@ public abstract class ItemControllableDrawerTile<T extends ItemControllableDrawe
         return ChatFormatting.DARK_GRAY.getColor();
     }
 
+    @Override
+    public IItemHandler getItemHandler(@Nullable Direction direction) {
+        return getStorage();
+    }
 }
