@@ -31,38 +31,10 @@ import org.joml.Vector3f;
 
 import static com.buuz135.functionalstorage.util.MathUtils.createTransformMatrix;
 
-public class DrawerRenderer implements BlockEntityRenderer<DrawerTile> {
+public class DrawerRenderer extends BaseDrawerRenderer<DrawerTile> {
 	
     @Override
-    public void render(DrawerTile tile, float partialTicks, PoseStack matrixStack, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
-        if (Minecraft.getInstance().player != null && !tile.getBlockPos().closerThan(Minecraft.getInstance().player.getOnPos(), FunctionalStorageClientConfig.DRAWER_RENDER_RANGE)){
-            return;
-        }
-        matrixStack.pushPose();
-
-        Direction facing = tile.getFacingDirection();
-        matrixStack.mulPoseMatrix(createTransformMatrix(
-                new Vector3f(0), new Vector3f(0, 180, 0), 1));
-        
-        if (facing == Direction.NORTH) {
-        	matrixStack.mulPoseMatrix(createTransformMatrix(
-        			new Vector3f(-1, 0, 0), new Vector3f(0), 1));
-        }
-        else if (facing == Direction.EAST) {
-        	matrixStack.mulPoseMatrix(createTransformMatrix(
-        			new Vector3f(-1, 0, -1), new Vector3f(0, -90, 0), 1));
-        }
-        else if (facing == Direction.SOUTH) {
-        	matrixStack.mulPoseMatrix(createTransformMatrix(
-        			new Vector3f(0, 0, -1), new Vector3f(0, 180, 0), 1));
-        }
-        else if (facing == Direction.WEST) {
-        	matrixStack.mulPoseMatrix(createTransformMatrix(
-        			new Vector3f(0, 0, 0), new Vector3f(0, 90, 0), 1));
-        }
-        matrixStack.translate(0,0,-0.5/16D);
-        combinedLightIn = LevelRenderer.getLightColor(tile.getLevel(), tile.getBlockPos().relative(facing));
-        renderUpgrades(matrixStack, bufferIn, combinedLightIn, combinedOverlayIn, tile);
+    public final void renderItems(DrawerTile tile, float partialTicks, PoseStack matrixStack, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
         if (tile.getDrawerType() == FunctionalStorage.DrawerType.X_1) render1Slot(matrixStack, bufferIn, combinedLightIn, combinedOverlayIn, tile);
         if (tile.getDrawerType() == FunctionalStorage.DrawerType.X_2) render2Slot(matrixStack, bufferIn, combinedLightIn, combinedOverlayIn, tile);
         if (tile.getDrawerType() == FunctionalStorage.DrawerType.X_4) render4Slot(matrixStack, bufferIn, combinedLightIn, combinedOverlayIn, tile);

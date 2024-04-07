@@ -90,12 +90,12 @@ public class UpgradeItem extends BasicItem {
         super.addTooltipDetails(key, stack, tooltip, advanced);
         tooltip.add(Component.translatable("upgrade.type").withStyle(ChatFormatting.YELLOW).append(Component.translatable("upgrade.type." + getType().name().toLowerCase(Locale.ROOT)).withStyle(ChatFormatting.WHITE)));
         Item item = stack.getItem();
-        if (item.equals(FunctionalStorage.PULLING_UPGRADE.get()) || item.equals(FunctionalStorage.PUSHING_UPGRADE.get()) || item.equals(FunctionalStorage.COLLECTOR_UPGRADE.get())) {
+        if ((item.equals(FunctionalStorage.PULLING_UPGRADE.get()) || item.equals(FunctionalStorage.PUSHING_UPGRADE.get()) || item.equals(FunctionalStorage.COLLECTOR_UPGRADE.get())) && stack.hasData(FSAttachments.DIRECTION)) {
             tooltip.add(Component.translatable("item.utility.direction").withStyle(ChatFormatting.YELLOW).append(Component.translatable(WordUtils.capitalize(getDirection(stack).getName().toLowerCase(Locale.ROOT))).withStyle(ChatFormatting.WHITE)));
             tooltip.add(Component.literal(""));
             tooltip.add(Component.translatable("item.utility.direction.desc").withStyle(ChatFormatting.GRAY));
         }
-        if (item.equals(FunctionalStorage.REDSTONE_UPGRADE.get())) {
+        if (item.equals(FunctionalStorage.REDSTONE_UPGRADE.get()) && stack.hasData(FSAttachments.SLOT)) {
             tooltip.add(Component.translatable("item.utility.slot").withStyle(ChatFormatting.YELLOW).append(Component.literal(stack.getData(FSAttachments.SLOT).toString()).withStyle(ChatFormatting.WHITE)));
             tooltip.add(Component.literal(""));
             tooltip.add(Component.translatable("item.utility.direction.desc").withStyle(ChatFormatting.GRAY));

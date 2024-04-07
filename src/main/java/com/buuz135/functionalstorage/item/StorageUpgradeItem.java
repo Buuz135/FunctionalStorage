@@ -14,7 +14,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public class StorageUpgradeItem extends UpgradeItem{
+public class StorageUpgradeItem extends UpgradeItem {
 
     private final StorageTier storageTier;
 

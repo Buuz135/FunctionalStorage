@@ -4,7 +4,7 @@ import java.text.DecimalFormat;
 
 public class NumberUtils {
 
-    private static DecimalFormat formatterWithUnits = new DecimalFormat("####0.#");
+    private static final DecimalFormat formatterWithUnits = new DecimalFormat("####0.#");
 
     public static String getFormatedBigNumber(int number) {
         if (number >= 1000000000) { //BILLION

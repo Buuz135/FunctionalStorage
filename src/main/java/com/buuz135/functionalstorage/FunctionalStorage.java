@@ -9,6 +9,7 @@ import com.buuz135.functionalstorage.block.DrawerBlock;
 import com.buuz135.functionalstorage.block.DrawerControllerBlock;
 import com.buuz135.functionalstorage.block.EnderDrawerBlock;
 import com.buuz135.functionalstorage.block.FluidDrawerBlock;
+import com.buuz135.functionalstorage.block.FramedBlock;
 import com.buuz135.functionalstorage.block.FramedControllerExtensionBlock;
 import com.buuz135.functionalstorage.block.FramedDrawerBlock;
 import com.buuz135.functionalstorage.block.FramedDrawerControllerBlock;
@@ -146,6 +147,7 @@ public class FunctionalStorage extends ModuleController {
     public static ConcurrentLinkedQueue<IWoodType> WOOD_TYPES = new ConcurrentLinkedQueue<>();
 
     public static HashMap<DrawerType, List<BlockWithTile>> DRAWER_TYPES = new HashMap<>();
+    public static List<Block> FRAMED_BLOCKS;
     public static BlockWithTile COMPACTING_DRAWER;
     public static BlockWithTile DRAWER_CONTROLLER;
     public static BlockWithTile ARMORY_CABINET;
@@ -308,6 +310,12 @@ public class FunctionalStorage extends ModuleController {
                 return true;
             }
         });
+
+        FRAMED_BLOCKS = getRegistries().getRegistry(Registries.BLOCK)
+                .getEntries().stream()
+                .filter(bl -> bl.value() instanceof FramedBlock)
+                .map(Holder::value)
+                .toList();
 
         DrawerlessWoodIngredient.TYPE = getRegistries().registerGeneric(NeoForgeRegistries.Keys.INGREDIENT_TYPES, DrawerlessWoodIngredient.NAME.getPath(), () -> new IngredientType<>(DrawerlessWoodIngredient.CODEC));
 

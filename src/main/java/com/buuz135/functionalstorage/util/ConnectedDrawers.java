@@ -23,7 +23,7 @@ import java.util.List;
 
 public class ConnectedDrawers implements INBTSerializable<CompoundTag> {
 
-    private StorageControllerTile controllerTile;
+    private final StorageControllerTile<?> controllerTile;
 
     private List<Long> connectedDrawers;
     private List<IItemHandler> itemHandlers;
@@ -32,7 +32,7 @@ public class ConnectedDrawers implements INBTSerializable<CompoundTag> {
     private int extensions;
     private VoxelShape cachedVoxelShape;
 
-    public ConnectedDrawers(Level level, StorageControllerTile controllerTile) {
+    public ConnectedDrawers(Level level, StorageControllerTile<?> controllerTile) {
         this.controllerTile = controllerTile;
 
         this.connectedDrawers = new ArrayList<>();

@@ -27,8 +27,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public class FramedDrawerControllerBlock extends StorageControllerBlock<FramedDrawerControllerTile>
-{
+public class FramedDrawerControllerBlock extends StorageControllerBlock<FramedDrawerControllerTile> implements FramedBlock {
     public FramedDrawerControllerBlock() {
         super("framed_storage_controller", Properties.ofFullCopy(Blocks.IRON_BLOCK).noOcclusion().isViewBlocking(((p_61036_, p_61037_, p_61038_) -> false)), FramedDrawerControllerTile.class);
     }
@@ -52,10 +51,8 @@ public class FramedDrawerControllerBlock extends StorageControllerBlock<FramedDr
         ItemStack stack = new ItemStack(this);
         BlockEntity blockEntity = builder.getOptionalParameter(LootContextParams.BLOCK_ENTITY);
 
-        if(blockEntity instanceof FramedDrawerControllerTile framedControllerTile)
-        {
-            if(framedControllerTile.getFramedDrawerModelData() != null)
-            {
+        if (blockEntity instanceof FramedDrawerControllerTile framedControllerTile) {
+            if (framedControllerTile.getFramedDrawerModelData() != null) {
                 stack.setData(FSAttachments.STYLE, framedControllerTile.getFramedDrawerModelData().serializeNBT());
             }
         }
@@ -67,12 +64,9 @@ public class FramedDrawerControllerBlock extends StorageControllerBlock<FramedDr
     @Override
     public ItemStack getCloneItemStack(BlockState state, HitResult target, LevelReader level, BlockPos pos, Player player) {
         BlockEntity blockEntity = level.getBlockEntity(pos);
-        if(blockEntity instanceof FramedDrawerControllerTile framedDrawerControllerTile)
-        {
-            if(framedDrawerControllerTile.getFramedDrawerModelData() != null)
-            {
-                if(!framedDrawerControllerTile.getFramedDrawerModelData().getDesign().isEmpty())
-                {
+        if (blockEntity instanceof FramedDrawerControllerTile framedDrawerControllerTile) {
+            if (framedDrawerControllerTile.getFramedDrawerModelData() != null) {
+                if (!framedDrawerControllerTile.getFramedDrawerModelData().getDesign().isEmpty()) {
                     ItemStack stack = new ItemStack(this);
                     stack.setData(FSAttachments.STYLE, framedDrawerControllerTile.getFramedDrawerModelData().serializeNBT());
                     return stack;

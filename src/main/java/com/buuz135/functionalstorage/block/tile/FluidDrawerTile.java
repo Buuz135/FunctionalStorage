@@ -42,7 +42,7 @@ public class FluidDrawerTile extends ControllableDrawerTile<FluidDrawerTile> {
     public static final GameProfile FP = new GameProfile(UUID.nameUUIDFromBytes("FunctionalStorage-Pickup".getBytes(StandardCharsets.UTF_8)), "FunctionalStorage-Pickp");
     @Save
     public BigFluidHandler fluidHandler;
-    private FunctionalStorage.DrawerType type;
+    private final FunctionalStorage.DrawerType type;
 
     public FluidDrawerTile(BasicTileBlock<FluidDrawerTile> base, BlockEntityType<FluidDrawerTile> blockEntityType, BlockPos pos, BlockState state, FunctionalStorage.DrawerType type) {
         super(base, blockEntityType, pos, state);
