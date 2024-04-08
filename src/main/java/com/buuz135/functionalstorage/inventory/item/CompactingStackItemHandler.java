@@ -49,7 +49,7 @@ public class CompactingStackItemHandler implements IItemHandler, INBTSerializabl
         this.downgrade = false;
         this.isVoid = false;
         this.isCreative = false;
-        if (stack.hasTag()) {
+        if (stack.hasData(FSAttachments.TILE)) {
             var tile = stack.getData(FSAttachments.TILE);
             deserializeNBT(tile.getCompound("handler"));
             for (Tag tag : tile.getCompound("storageUpgrades").getList("Items", Tag.TAG_COMPOUND)) {

@@ -235,6 +235,15 @@ public abstract class ItemControllableDrawerTile<T extends ItemControllableDrawe
         return true;
     }
 
+    public boolean isInventoryEmpty() {
+        for (int i = 0; i < getStorage().getSlots(); i++) {
+            if (!getStorage().getStackInSlot(i).isEmpty()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     @Override
     public int getTitleColor() {
         return ChatFormatting.DARK_GRAY.getColor();

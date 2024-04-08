@@ -47,12 +47,12 @@ public class FluidDrawerRenderer implements BlockEntityRenderer<FluidDrawerTile>
         float y2 = (float) bounds.maxY;
         float z1 = (float) bounds.minZ;
         float z2 = (float) bounds.maxZ;
-        float bx1 = (float) bounds.minX * 16;
-        float bx2 = (float) bounds.maxX * 16;
-        float by1 = (float) bounds.minY * 16;
-        float by2 = (float) bounds.maxY * 16;
-        float bz1 = (float) bounds.minZ * 16;
-        float bz2 = (float) bounds.maxZ * 16;
+        float bx1 = (float) bounds.minX* 1.0f;
+        float bx2 = (float) bounds.maxX* 1.0f;
+        float by1 = (float) bounds.minY* 1.0f;
+        float by2 = (float) bounds.maxY* 1.0f;
+        float bz1 = (float) bounds.minZ* 1.0f;
+        float bz2 = (float) bounds.maxZ* 1.0f;
 
 
         Matrix4f posMat = matrixStack.last().pose();

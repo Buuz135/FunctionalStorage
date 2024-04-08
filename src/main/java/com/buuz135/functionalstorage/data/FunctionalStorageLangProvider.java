@@ -85,6 +85,7 @@ public class FunctionalStorageLangProvider extends LanguageProvider {
         this.add("linkingtool.ender.frequency", "Frequency: ");
         this.add("linkingtool.ender.clear", "Sneak + Right Click in the air to clear frequency.");
         this.add("drawer.block.contents", "Contents: ");
+        this.add("drawer.block.multiplier", "Storage multiplier: %s");
         this.add("frameddrawer.use", "How 2 Change Texture: \nInside a crafting window place the block you want use the texture of for the outside of the drawer in the first slot of the crafting window, on the second slot put the block that will be used for the texture on the inside of the framed drawer and on the third slot put a framed drawer. You can change the drawer divider texture by adding a block into the 4th slot\n");
         this.add("item.utility.slot", "Slot: ");
         this.add("item.utility.slot.desc", "Right click in a GUI to change slot");
@@ -96,6 +97,25 @@ public class FunctionalStorageLangProvider extends LanguageProvider {
         this.add("gui.functionalstorage.storage", "Storage");
         this.add("gui.functionalstorage.utility", "Utility");
         this.add("gui.functionalstorage.storage_range", "Range");
+
+        this.add("drawer_upgrade.functionalstorage.sides.up", "up");
+        this.add("drawer_upgrade.functionalstorage.sides.down", "down");
+        this.add("drawer_upgrade.functionalstorage.sides.left", "left");
+        this.add("drawer_upgrade.functionalstorage.sides.right", "right");
+        this.add("drawer_upgrade.functionalstorage.sides.front", "front");
+        this.add("drawer_upgrade.functionalstorage.sides.back", "back");
+
+        this.add("drawer_upgrade.functionalstorage.void.item", "Voids excess items");
+        this.add("drawer_upgrade.functionalstorage.void.fluid", "Voids excess fluids");
+        this.add("drawer_upgrade.functionalstorage.pull.item", "Pulls items: %s");
+        this.add("drawer_upgrade.functionalstorage.pull.fluid", "Pulls fluids: %s");
+        this.add("drawer_upgrade.functionalstorage.push.item", "Pushes items: %s");
+        this.add("drawer_upgrade.functionalstorage.push.fluid", "Pushes fluids: %s");
+        this.add("drawer_upgrade.functionalstorage.collect.item", "Collects item entities: %s");
+        this.add("drawer_upgrade.functionalstorage.collect.fluid", "Picks up fluids: %s");
+
+        this.add("drawer_upgrade.functionalstorage.redstone", "Emitting redstone signal for slot %s");
+        this.add("drawer_upgrade.functionalstorage.relative_direction", "Relative direction: %s");
 
         this.add("config.jade.plugin_functionalstorage.drawer", "Functional Storage Drawers");
     }

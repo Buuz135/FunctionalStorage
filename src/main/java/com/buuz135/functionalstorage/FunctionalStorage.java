@@ -79,6 +79,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.ItemLike;
@@ -213,7 +214,7 @@ public class FunctionalStorage extends ModuleController {
                 })
                 .subscribe();
 
-        EventManager.mod(RegisterCapabilitiesEvent.class).process(event -> {
+        modBus.addListener((final RegisterCapabilitiesEvent event) -> {
             event.registerItem(Capabilities.ItemHandler.ITEM, (object, context) -> {
                 if (object.getItem() instanceof DrawerBlock.DrawerItem di) {
                     return di.initCapabilities(object);
@@ -412,7 +413,7 @@ public class FunctionalStorage extends ModuleController {
             ItemBlockRenderTypes.setRenderLayer(FRAMED_SIMPLE_COMPACTING_DRAWER.getBlock(), RenderType.cutout());
         }).subscribe();
         EventManager.forge(RenderTooltipEvent.Pre.class).process(itemTooltipEvent -> {
-            if (itemTooltipEvent.getItemStack().getItem().equals(FunctionalStorage.ENDER_DRAWER.getBlock().asItem()) && itemTooltipEvent.getItemStack().hasTag()) {
+            if (itemTooltipEvent.getItemStack().getItem().equals(FunctionalStorage.ENDER_DRAWER.getBlock().asItem()) && itemTooltipEvent.getItemStack().hasData(FSAttachments.TILE)) {
                 TooltipUtil.renderItems(itemTooltipEvent.getGraphics(), EnderDrawerBlock.getFrequencyDisplay(itemTooltipEvent.getItemStack().getData(FSAttachments.TILE).getString("frequency")), itemTooltipEvent.getX() + 14, itemTooltipEvent.getY() + 11);
             }
             if (itemTooltipEvent.getItemStack().is(FunctionalStorage.LINKING_TOOL.get()) && itemTooltipEvent.getItemStack().hasData(FSAttachments.ENDER_FREQUENCY)) {
@@ -423,8 +424,10 @@ public class FunctionalStorage extends ModuleController {
                 if (iItemHandler instanceof DrawerStackItemHandler) {
                     int i = 0;
                     for (BigInventoryHandler.BigStack storedStack : ((DrawerStackItemHandler) iItemHandler).getStoredStacks()) {
-                        TooltipUtil.renderItemAdvanced(itemTooltipEvent.getGraphics(), storedStack.getStack(), itemTooltipEvent.getX() + 20 + 26 * i, itemTooltipEvent.getY() + 11, 512, NumberUtils.getFormatedBigNumber(storedStack.getAmount()) + "/" + NumberUtils.getFormatedBigNumber(iItemHandler.getSlotLimit(i)));
-                        ++i;
+                        if (storedStack.getStack().getItem() != Items.AIR) {
+                            TooltipUtil.renderItemAdvanced(itemTooltipEvent.getGraphics(), storedStack.getStack(), itemTooltipEvent.getX() + 20 + 32 * i, itemTooltipEvent.getY() + 11, 512, NumberUtils.getFormatedBigNumber(storedStack.getAmount()) + "/" + NumberUtils.getFormatedBigNumber(iItemHandler.getSlotLimit(i)));
+                            ++i;
+                        }
                     }
                 }
                 if (iItemHandler instanceof CompactingStackItemHandler compactingStackItemHandler) {

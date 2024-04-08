@@ -114,23 +114,23 @@ public class UpgradeItem extends BasicItem {
     @Nullable
     public Component getDescription(ItemStack stack, ControllableDrawerTile<?> tile) {
         var dir = tile.getBlockState().getValue(RotatableBlock.FACING_HORIZONTAL);
-        var type = tile instanceof FluidDrawerTile ? "fluids" : "items";
+        var type = tile instanceof FluidDrawerTile ? "fluid" : "item";
         if (this == FunctionalStorage.PUSHING_UPGRADE.get()) {
-            return Component.literal("Pushes " + type + ": ").append(getRelativeDirection(
+            return Component.translatable("drawer_upgrade.functionalstorage.push." + type, getRelativeDirection(
                     getDirection(stack), dir
             ).withStyle(ChatFormatting.GOLD));
         } else if (this == FunctionalStorage.PULLING_UPGRADE.get()) {
-            return Component.literal("Pulls " + type + ": ").append(getRelativeDirection(
+            return Component.translatable("drawer_upgrade.functionalstorage.pull." + type, getRelativeDirection(
                     getDirection(stack), dir
             ).withStyle(ChatFormatting.GOLD));
         } else if (this == FunctionalStorage.COLLECTOR_UPGRADE.get()) {
-            return Component.literal("Collects item entities: ").append(getRelativeDirection(
+            return Component.translatable("drawer_upgrade.functionalstorage.collect." + type, getRelativeDirection(
                     getDirection(stack), dir
             ).withStyle(ChatFormatting.GOLD));
         } else if (this == FunctionalStorage.VOID_UPGRADE.get()) {
-            return Component.literal("Voids excess " + type);
+            return Component.translatable("drawer_upgrade.functionalstorage.void." + type);
         } else if (this == FunctionalStorage.REDSTONE_UPGRADE.get()) {
-            return Component.literal("Emitting redstone signal for slot ").append(Component.literal(
+            return Component.translatable("drawer_upgrade.functionalstorage.redstone", Component.literal(
                     String.valueOf(stack.getData(FSAttachments.SLOT))
             ).withStyle(ChatFormatting.RED));
         }
@@ -139,17 +139,17 @@ public class UpgradeItem extends BasicItem {
 
     public static MutableComponent getRelativeDirection(Direction upgrade, Direction facing) {
         if (upgrade == facing) {
-            return Component.literal("front");
+            return Component.translatable("drawer_upgrade.functionalstorage.sides.front");
         } else if (upgrade == facing.getOpposite()) {
-            return Component.literal("back");
+            return Component.translatable("drawer_upgrade.functionalstorage.sides.back");
         } else if (upgrade == Direction.UP) {
-            return Component.literal("up");
+            return Component.translatable("drawer_upgrade.functionalstorage.sides.up");
         } else if (upgrade == Direction.DOWN) {
-            return Component.literal("down");
+            return Component.translatable("drawer_upgrade.functionalstorage.sides.down");
         } else if (upgrade == facing.getClockWise()) {
-            return Component.literal("left");
+            return Component.translatable("drawer_upgrade.functionalstorage.sides.left");
         }
-        return Component.literal("right");
+        return Component.translatable("drawer_upgrade.functionalstorage.sides.right");
     }
 
     @Override

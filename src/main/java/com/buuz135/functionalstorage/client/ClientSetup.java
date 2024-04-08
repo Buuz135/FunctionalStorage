@@ -19,7 +19,7 @@ public class ClientSetup {
             .process(event -> {
                 var sc = (BasicAddonScreen) Minecraft.getInstance().screen;
                 var direction = ((ItemControllableDrawerTile<?>) sc.getMenu().getObject()).getBlockState().getValue(RotatableBlock.FACING_HORIZONTAL);
-                event.getToolTip().add(Component.literal("Relative direction: ").append(UpgradeItem.getRelativeDirection(
+                event.getToolTip().add(Component.translatable("drawer_upgrade.functionalstorage.relative_direction", UpgradeItem.getRelativeDirection(
                         UpgradeItem.getDirection(event.getItemStack()), direction
                 ).withStyle(ChatFormatting.GOLD)));
             }).subscribe();

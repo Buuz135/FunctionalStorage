@@ -266,6 +266,15 @@ public class FluidDrawerTile extends ControllableDrawerTile<FluidDrawerTile> {
         return true;
     }
 
+    public boolean isInventoryEmpty() {
+        for (int i = 0; i < getFluidHandler().getTanks(); i++) {
+            if (!getFluidHandler().getFluidInTank(i).isEmpty()) {
+                return false;
+            }
+        }
+        return false;
+    }
+
     @Override
     public InventoryComponent<ControllableDrawerTile<FluidDrawerTile>> getStorageUpgradesConstructor() {
         return new InventoryComponent<ControllableDrawerTile<FluidDrawerTile>>("storage_upgrades", 10, 70, getStorageSlotAmount()) {

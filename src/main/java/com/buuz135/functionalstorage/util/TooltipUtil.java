@@ -34,8 +34,11 @@ public class TooltipUtil {
     }
 
     public static void renderItemAdvanced(GuiGraphics guiGraphics, ItemStack stack, int x, int y, int z, String amount) {
+        guiGraphics.pose().pushPose();
+        guiGraphics.pose().translate(0, 0, z);
         renderItemModelIntoGUI(guiGraphics, stack, x, y, z, Minecraft.getInstance().getItemRenderer().getModel(stack, (Level) null, (LivingEntity) null, 0));
         renderItemStackOverlay(guiGraphics, Minecraft.getInstance().font, stack, x, y, amount, amount.length() - 2);
+        guiGraphics.pose().popPose();
     }
 
     public static void renderItemStackOverlay(GuiGraphics guiGraphics, Font fr, ItemStack stack, int xPosition, int yPosition, @Nullable String text, int scaled) {
