@@ -26,6 +26,7 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import net.neoforged.neoforge.client.extensions.IBlockEntityRendererExtension;
 import org.joml.Matrix4f;
 
 import java.util.List;
@@ -124,6 +125,11 @@ public class ControllerRenderer implements BlockEntityRenderer<StorageController
     @Override
     public boolean shouldRenderOffScreen(StorageControllerTile p_112306_) {
         return true;
+    }
+
+    @Override
+    public AABB getRenderBoundingBox(StorageControllerTile<?> blockEntity) {
+        return IBlockEntityRendererExtension.INFINITE_EXTENT_AABB;
     }
 
     private static RenderType AREA_TYPE = createRenderType();

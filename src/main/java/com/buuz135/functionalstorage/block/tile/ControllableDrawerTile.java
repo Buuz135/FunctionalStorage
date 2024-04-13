@@ -62,7 +62,16 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
         }
         if (getUtilitySlotAmount() > 0){
             this.addInventory((InventoryComponent<T>) (this.utilityUpgrades = new InventoryComponent<ControllableDrawerTile<T>>("utility_upgrades", 114, 70, getUtilitySlotAmount())
-                            .setInputFilter((stack, integer) -> stack.getItem() instanceof UpgradeItem && ((UpgradeItem) stack.getItem()).getType() == UpgradeItem.Type.UTILITY)
+                            .setInputFilter((stack, integer) -> {
+                                if (stack.is(FunctionalStorage.VOID_UPGRADE)) {
+                                    for (int i = 0; i < utilityUpgrades.getSlots(); i++) {
+                                        if (utilityUpgrades.getStackInSlot(i).is(FunctionalStorage.VOID_UPGRADE)) {
+                                            return false;
+                                        }
+                                    }
+                                }
+                                return stack.getItem() instanceof UpgradeItem && ((UpgradeItem) stack.getItem()).getType() == UpgradeItem.Type.UTILITY;
+                            })
                             .setSlotLimit(1)
                             .setOnSlotChanged((itemStack, integer) -> {
                                 needsUpgradeCache = true;

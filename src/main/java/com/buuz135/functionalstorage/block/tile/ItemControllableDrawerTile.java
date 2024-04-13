@@ -78,8 +78,7 @@ public abstract class ItemControllableDrawerTile<T extends ItemControllableDrawe
                                     if (hasWorked) break;
                                 }
                             }
-                        }
-                        if (item.equals(FunctionalStorage.PUSHING_UPGRADE.get())) {
+                        } else if (item.equals(FunctionalStorage.PUSHING_UPGRADE.get())) {
                             Direction direction = UpgradeItem.getDirection(stack);
                             var otherHandler = level.getCapability(Capabilities.ItemHandler.BLOCK, pos.relative(direction), direction.getOpposite());
                             if (otherHandler != null) {
@@ -100,8 +99,7 @@ public abstract class ItemControllableDrawerTile<T extends ItemControllableDrawe
                                     if (hasWorked) break;
                                 }
                             }
-                        }
-                        if (item.equals(FunctionalStorage.COLLECTOR_UPGRADE.get())) {
+                        } else if (item.equals(FunctionalStorage.COLLECTOR_UPGRADE.get())) {
                             Direction direction = UpgradeItem.getDirection(stack);
                             AABB box = new AABB(pos.relative(direction));
                             for (ItemEntity entitiesOfClass : level.getEntitiesOfClass(ItemEntity.class, box)) {

@@ -18,7 +18,7 @@ public abstract class BigInventoryHandler implements IItemHandler, INBTSerializa
     public static String AMOUNT = "Amount";
 
     private final FunctionalStorage.DrawerType type;
-    private List<BigStack> storedStacks;
+    private final List<BigStack> storedStacks;
 
     public BigInventoryHandler(FunctionalStorage.DrawerType type) {
         this.type = type;
@@ -39,9 +39,10 @@ public abstract class BigInventoryHandler implements IItemHandler, INBTSerializa
     public ItemStack getStackInSlot(int slot) {
         if (type.getSlots() == slot) return ItemStack.EMPTY;
         BigStack bigStack = this.storedStacks.get(slot);
-        ItemStack copied = bigStack.getStack().copy();
-        copied.setCount(isCreative() ? Integer.MAX_VALUE : bigStack.getAmount());
-        return copied;
+        if (isCreative()) {
+            return bigStack.slotStack.copyWithCount(Integer.MAX_VALUE);
+        }
+        return bigStack.slotStack;
     }
 
     @Nonnull
@@ -168,11 +169,13 @@ public abstract class BigInventoryHandler implements IItemHandler, INBTSerializa
     public static class BigStack {
 
         private ItemStack stack;
+        private ItemStack slotStack;
         private int amount;
 
         public BigStack(ItemStack stack, int amount) {
             this.stack = stack.copy();
             this.amount = amount;
+            this.slotStack = stack.copyWithCount(amount);
         }
 
         public ItemStack getStack() {
@@ -181,6 +184,7 @@ public abstract class BigInventoryHandler implements IItemHandler, INBTSerializa
 
         public void setStack(ItemStack stack) {
             this.stack = stack.copy();
+            this.slotStack = stack.copyWithCount(amount);
         }
 
         public int getAmount() {
@@ -189,6 +193,7 @@ public abstract class BigInventoryHandler implements IItemHandler, INBTSerializa
 
         public void setAmount(int amount) {
             this.amount = amount;
+            this.slotStack.setCount(amount);
         }
     }
 }
