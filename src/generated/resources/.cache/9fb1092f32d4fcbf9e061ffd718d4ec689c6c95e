@@ -1,4 +1,4 @@
-// 1.20.4	2024-04-07T00:54:11.3332477	Recipes
+// 1.20.4	2024-04-14T22:20:37.4581111	Recipes
 72528341b7f8317bcd4b46b536d3eea663345706 data/functionalstorage/advancements/recipes/misc/acacia_1.json
 b0e04e073c0a2d4f3398b977678a581b581a6e99 data/functionalstorage/advancements/recipes/misc/acacia_2.json
 53e29bff9cf54d0d489a66ad711b40f7d6c1d4f5 data/functionalstorage/advancements/recipes/misc/acacia_4.json
@@ -115,9 +115,9 @@ f336fee45abfd07c1f2810275b816b04f606448c data/functionalstorage/recipes/storage_
 f016626b869686a6657b772c100d9e923b58cf39 data/functionalstorage/recipes/warped_1.json
 b034bdc06d0734de160f9c857b630e9261d6df01 data/functionalstorage/recipes/warped_2.json
 53ba0cbca3c75a9f90ec12d241622d743cfadcc4 data/functionalstorage/recipes/warped_4.json
-435084d750577a3e1e31113cb6976f65ce98170b data/minecraft/recipes/amethyst.json
-185e1f0c092f5aef2db16ff27daf7796ea578fbf data/minecraft/recipes/blue_ice.json
-59f83e20d8a359a63417b2d6dad0ddc0b1657bac data/minecraft/recipes/glowstone.json
-286fc95fc2f0fbe0341b751cf5bfdab1007bd6e3 data/minecraft/recipes/melon.json
-e9c6ff4fbcb2617dc7fd7f4371db0ead6cea7154 data/minecraft/recipes/packed_ice.json
-6fb23d653de5174dc0094f8a81c933162b0ad806 data/minecraft/recipes/quartz.json
+435084d750577a3e1e31113cb6976f65ce98170b data/minecraft/recipes/functionalstorage/compacting/amethyst.json
+59f83e20d8a359a63417b2d6dad0ddc0b1657bac data/minecraft/recipes/functionalstorage/compacting/glowstone.json
+e9c6ff4fbcb2617dc7fd7f4371db0ead6cea7154 data/minecraft/recipes/functionalstorage/compacting/ice.json
+286fc95fc2f0fbe0341b751cf5bfdab1007bd6e3 data/minecraft/recipes/functionalstorage/compacting/melon.json
+185e1f0c092f5aef2db16ff27daf7796ea578fbf data/minecraft/recipes/functionalstorage/compacting/packed_ice.json
+6fb23d653de5174dc0094f8a81c933162b0ad806 data/minecraft/recipes/functionalstorage/compacting/quartz.json
