@@ -283,7 +283,7 @@ public class FluidDrawerBlock extends RotatableBlock<FluidDrawerTile> {
                 if (stack.getItem().equals(FunctionalStorage.REDSTONE_UPGRADE.get())) {
                     int redstoneSlot = stack.getOrCreateTag().getInt("Slot");
                     if (redstoneSlot < tile.getFluidHandler().getTanks()) {
-                        return (int) ((tile.getFluidHandler().getFluidInTank(redstoneSlot).getAmount() / (double) tile.getFluidHandler().getTankCapacity(redstoneSlot)) * 16);
+                        return tile.getFluidHandler().getFluidInTank(redstoneSlot).getAmount() * 15 / tile.getFluidHandler().getTankCapacity(redstoneSlot);
                     }
                 }
             }
