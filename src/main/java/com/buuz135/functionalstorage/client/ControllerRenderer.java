@@ -84,9 +84,10 @@ public class ControllerRenderer implements BlockEntityRenderer<DrawerControllerT
                     return;
                 }
             }
-            VoxelShape shape = Shapes.create(new AABB(tile.getBlockPos()));
-            for (Long connectedDrawer : tile.getConnectedDrawers().getConnectedDrawers()) {
-                shape = Shapes.join(shape, Shapes.create(new AABB(BlockPos.of(connectedDrawer))), BooleanOp.OR);
+            VoxelShape shape = tile.getConnectedDrawers().getCachedVoxelShape();
+            if (shape == null || tile.getLevel().getGameTime() % 400 == 0) {
+                tile.getConnectedDrawers().rebuildShapes();
+                shape = tile.getConnectedDrawers().getCachedVoxelShape();
             }
             //LevelRenderer.renderVoxelShape(matrixStack, bufferIn.getBuffer(TYPE), shape, -tile.getBlockPos().getX(), -tile.getBlockPos().getY(), -tile.getBlockPos().getZ(), 1f, 1f, 1f, 1f);
             List<AABB> list = shape.toAabbs();

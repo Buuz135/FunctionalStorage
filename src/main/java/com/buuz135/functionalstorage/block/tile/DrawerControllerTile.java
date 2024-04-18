@@ -22,6 +22,9 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.BooleanOp;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.common.util.LazyOptional;
@@ -227,6 +230,7 @@ public class DrawerControllerTile extends ItemControllableDrawerTile<DrawerContr
         private List<IFluidHandler> fluidHandlers;
         private Level level;
         private int extensions;
+        private VoxelShape cachedVoxelShape;
 
         public ConnectedDrawers(Level level) {
             this.connectedDrawers = new ArrayList<>();
@@ -234,10 +238,18 @@ public class DrawerControllerTile extends ItemControllableDrawerTile<DrawerContr
             this.fluidHandlers = new ArrayList<>();
             this.level = level;
             this.extensions = 0;
+            this.cachedVoxelShape = null;
         }
 
         public void setLevel(Level level) {
             this.level = level;
+        }
+
+        public void rebuildShapes() {
+            this.cachedVoxelShape = Shapes.create(new AABB(DrawerControllerTile.this.getBlockPos()));
+            for (Long connectedDrawer : this.connectedDrawers) {
+                this.cachedVoxelShape = Shapes.join(this.cachedVoxelShape, Shapes.create(new AABB(BlockPos.of(connectedDrawer))), BooleanOp.OR);
+            }
         }
 
         public void rebuild() {
@@ -279,6 +291,9 @@ public class DrawerControllerTile extends ItemControllableDrawerTile<DrawerContr
                 connectedDrawers.add(nbt.getLong(allKey));
             }
             rebuild();
+            if (DrawerControllerTile.this.level != null && DrawerControllerTile.this.level.isClientSide()) {
+                rebuildShapes();
+            }
         }
 
         public List<Long> getConnectedDrawers() {
@@ -295,6 +310,10 @@ public class DrawerControllerTile extends ItemControllableDrawerTile<DrawerContr
 
         public int getExtensions() {
             return extensions;
+        }
+
+        public VoxelShape getCachedVoxelShape() {
+            return cachedVoxelShape;
         }
     }
 
