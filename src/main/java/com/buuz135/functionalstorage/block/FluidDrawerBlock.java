@@ -4,6 +4,7 @@ import com.buuz135.functionalstorage.FunctionalStorage;
 import com.buuz135.functionalstorage.block.tile.ControllableDrawerTile;
 import com.buuz135.functionalstorage.block.tile.FluidDrawerTile;
 import com.buuz135.functionalstorage.block.tile.StorageControllerTile;
+import com.buuz135.functionalstorage.client.item.FluidDrawerISTER;
 import com.buuz135.functionalstorage.inventory.item.DrawerCapabilityProvider;
 import com.buuz135.functionalstorage.item.ConfigurationToolItem;
 import com.buuz135.functionalstorage.item.LinkingToolItem;
@@ -11,9 +12,11 @@ import com.buuz135.functionalstorage.util.NumberUtils;
 import com.hrznstudio.titanium.block.RotatableBlock;
 import com.hrznstudio.titanium.datagenerator.loot.block.BasicBlockLootTables;
 import com.hrznstudio.titanium.recipe.generator.TitaniumShapedRecipeBuilder;
+import com.hrznstudio.titanium.tab.TitaniumTab;
 import com.hrznstudio.titanium.util.RayTraceUtils;
 import com.hrznstudio.titanium.util.TileUtil;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
@@ -37,7 +40,6 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
@@ -47,6 +49,9 @@ import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.client.extensions.common.IClientItemExtensions;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.fluids.FluidStack;
 import org.jetbrains.annotations.NotNull;
@@ -305,13 +310,14 @@ public class FluidDrawerBlock extends RotatableBlock<FluidDrawerTile> {
         return 0;
     }
 
-    public static class DrawerItem extends BlockItem {
+    public static class FluidDrawerItem extends BlockItem {
 
         private FluidDrawerBlock drawerBlock;
 
-        public DrawerItem(FluidDrawerBlock p_40565_, Properties p_40566_) {
+        public FluidDrawerItem(FluidDrawerBlock p_40565_, Properties p_40566_,  TitaniumTab tab) {
             super(p_40565_, p_40566_);
             this.drawerBlock = p_40565_;
+            tab.getTabList().add(this);
         }
 
         @Override
@@ -323,6 +329,21 @@ public class FluidDrawerBlock extends RotatableBlock<FluidDrawerTile> {
         @Override
         public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundTag nbt) {
             return new DrawerCapabilityProvider(stack, this.drawerBlock.getType());
+        }
+
+        @OnlyIn(Dist.CLIENT)
+        @Override
+        public void initializeClient(Consumer<IClientItemExtensions> consumer) {
+            consumer.accept(new IClientItemExtensions() {
+                @Override
+                public BlockEntityWithoutLevelRenderer getCustomRenderer() {
+                    return switch (drawerBlock.getType()){
+                        case X_2 -> FluidDrawerISTER.SLOT_2;
+                        case X_4 -> FluidDrawerISTER.SLOT_4;
+                        default -> FluidDrawerISTER.SLOT_1;
+                    };
+                }
+            });
         }
     }
 

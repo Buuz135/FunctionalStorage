@@ -1,3 +1,7 @@
+# VERSION 1.2.10
+
+* Added drawer renders to items
+
 # VERSION 1.2.9
 
 * Fixed creative vending upgrades using the base stack, closes #239
