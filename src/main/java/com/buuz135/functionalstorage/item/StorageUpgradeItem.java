@@ -1,5 +1,6 @@
 package com.buuz135.functionalstorage.item;
 
+import com.buuz135.functionalstorage.block.config.FunctionalStorageConfig;
 import com.hrznstudio.titanium.item.BasicItem;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -38,8 +39,8 @@ public class StorageUpgradeItem extends UpgradeItem{
             tooltip.add(Component.translatable("item.utility.downgrade").withStyle(ChatFormatting.GRAY));
         } else {
             tooltip.add(Component.translatable("storageupgrade.desc.item").withStyle(ChatFormatting.GRAY).append(this.storageTier.getStorageMultiplier() + ""));
-            tooltip.add(Component.translatable("storageupgrade.desc.fluid").withStyle(ChatFormatting.GRAY).append(this.storageTier.getStorageMultiplier() / 2 + ""));
-            tooltip.add(Component.translatable("storageupgrade.desc.range", this.storageTier.getStorageMultiplier() / 4 + "").withStyle(ChatFormatting.GRAY));
+            tooltip.add(Component.translatable("storageupgrade.desc.fluid").withStyle(ChatFormatting.GRAY).append(this.storageTier.getStorageMultiplier() / FunctionalStorageConfig.FLUID_DIVISOR + ""));
+            tooltip.add(Component.translatable("storageupgrade.desc.range", this.storageTier.getStorageMultiplier() / FunctionalStorageConfig.RANGE_DIVISOR + "").withStyle(ChatFormatting.GRAY));
         }
     }
 
@@ -60,10 +61,10 @@ public class StorageUpgradeItem extends UpgradeItem{
     }
 
     public static enum StorageTier {
-        COPPER(8, Mth.color(204/255f, 109/255f, 81/255f)),
-        GOLD(16, Mth.color(233/255f, 177/255f, 21/255f)),
-        DIAMOND(24, Mth.color(32/255f, 197/255f, 181/255f)),
-        NETHERITE(32, Mth.color(49, 41, 42)),
+        COPPER(FunctionalStorageConfig.COPPER_MULTIPLIER, Mth.color(204/255f, 109/255f, 81/255f)),
+        GOLD(FunctionalStorageConfig.GOLD_MULTIPLIER, Mth.color(233/255f, 177/255f, 21/255f)),
+        DIAMOND(FunctionalStorageConfig.DIAMOND_MULTIPLIER, Mth.color(32/255f, 197/255f, 181/255f)),
+        NETHERITE(FunctionalStorageConfig.NETHERITE_MULTIPLIER, Mth.color(49, 41, 42)),
         IRON(1, Mth.color(130/255f, 130/255f, 130/255f));
 
         private final int storageMultiplier;
