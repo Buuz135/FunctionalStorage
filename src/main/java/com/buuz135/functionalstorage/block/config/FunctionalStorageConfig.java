@@ -48,4 +48,14 @@ public class FunctionalStorageConfig {
 
     @ConfigVal(comment = "How much should the range be divided by for any given Storage Upgrade")
     public static int RANGE_DIVISOR = 4;
+
+    public static int getLevelMult(int level){
+        return switch (level){
+            case 1 -> COPPER_MULTIPLIER;
+            case 2 -> GOLD_MULTIPLIER;
+            case 3 -> DIAMOND_MULTIPLIER;
+            case 4 -> NETHERITE_MULTIPLIER;
+            default -> 1;
+        };
+    }
 }
