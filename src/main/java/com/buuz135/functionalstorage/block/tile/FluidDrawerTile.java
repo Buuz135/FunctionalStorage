@@ -113,7 +113,7 @@ public class FluidDrawerTile extends ControllableDrawerTile<FluidDrawerTile> {
 
     @Override
     public double getStorageDiv() {
-        return 2;
+        return FunctionalStorageConfig.FLUID_DIVISOR;
     }
 
     @Override
