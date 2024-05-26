@@ -54,6 +54,7 @@ public class FunctionalStorageConfig {
 
     public static int getLevelMult(int level){
         return switch (level){
+            case -1 -> Integer.MAX_VALUE;
             case 1 -> COPPER_MULTIPLIER;
             case 2 -> GOLD_MULTIPLIER;
             case 3 -> DIAMOND_MULTIPLIER;

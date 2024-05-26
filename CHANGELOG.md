@@ -6,6 +6,7 @@
 * Added a minimum to the UPGRADE_TICK config
 * Fixed drawers not pushing items if there was a slot not full with a different item, closes #276 
 * Fixed empty locked fluid drawers in a controller network stalling fluid insertion, closes #258 closes #275
+* Added Max Storage Upgrade closes #279
 
 # VERSION 1.2.9
 

@@ -1,4 +1,4 @@
-// 1.20.1	2024-05-26T11:18:37.1820811	Item Models: functionalstorage
+// 1.20.1	2024-05-26T12:09:04.2020576	Item Models: functionalstorage
 e0f7b66a84e6588f01abbbce75b1803ffe5d46e2 assets/functionalstorage/models/item/acacia_1.json
 e0f7b66a84e6588f01abbbce75b1803ffe5d46e2 assets/functionalstorage/models/item/acacia_2.json
 e0f7b66a84e6588f01abbbce75b1803ffe5d46e2 assets/functionalstorage/models/item/acacia_4.json
@@ -40,6 +40,7 @@ e0f7b66a84e6588f01abbbce75b1803ffe5d46e2 assets/functionalstorage/models/item/ju
 e0f7b66a84e6588f01abbbce75b1803ffe5d46e2 assets/functionalstorage/models/item/mangrove_1.json
 e0f7b66a84e6588f01abbbce75b1803ffe5d46e2 assets/functionalstorage/models/item/mangrove_2.json
 e0f7b66a84e6588f01abbbce75b1803ffe5d46e2 assets/functionalstorage/models/item/mangrove_4.json
+72f172e5b945722422af2426624174e7ae2f6e84 assets/functionalstorage/models/item/max_storage_upgrade.json
 ef1127c7347512f48e4d2ca93e2a7768b3d9a6e4 assets/functionalstorage/models/item/netherite_upgrade.json
 e0f7b66a84e6588f01abbbce75b1803ffe5d46e2 assets/functionalstorage/models/item/oak_1.json
 e0f7b66a84e6588f01abbbce75b1803ffe5d46e2 assets/functionalstorage/models/item/oak_2.json

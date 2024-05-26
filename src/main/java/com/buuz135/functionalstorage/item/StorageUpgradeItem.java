@@ -13,6 +13,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.Nullable;
 
+import java.text.DecimalFormat;
 import java.util.List;
 
 public class StorageUpgradeItem extends UpgradeItem{
@@ -38,9 +39,9 @@ public class StorageUpgradeItem extends UpgradeItem{
         if (storageTier == StorageTier.IRON){
             tooltip.add(Component.translatable("item.utility.downgrade").withStyle(ChatFormatting.GRAY));
         } else {
-            tooltip.add(Component.translatable("storageupgrade.desc.item").withStyle(ChatFormatting.GRAY).append(FunctionalStorageConfig.getLevelMult(this.storageTier.getLevel()) + ""));
-            tooltip.add(Component.translatable("storageupgrade.desc.fluid").withStyle(ChatFormatting.GRAY).append(FunctionalStorageConfig.getLevelMult(this.storageTier.getLevel()) / FunctionalStorageConfig.FLUID_DIVISOR + ""));
-            tooltip.add(Component.translatable("storageupgrade.desc.range", FunctionalStorageConfig.getLevelMult(this.storageTier.getLevel()) / FunctionalStorageConfig.RANGE_DIVISOR + "").withStyle(ChatFormatting.GRAY));
+            tooltip.add(Component.translatable("storageupgrade.desc.item").withStyle(ChatFormatting.GRAY).append(new DecimalFormat().format(FunctionalStorageConfig.getLevelMult(this.storageTier.getLevel()))));
+            tooltip.add(Component.translatable("storageupgrade.desc.fluid").withStyle(ChatFormatting.GRAY).append(new DecimalFormat().format(FunctionalStorageConfig.getLevelMult(this.storageTier.getLevel()) / FunctionalStorageConfig.FLUID_DIVISOR)));
+            tooltip.add(Component.translatable("storageupgrade.desc.range", new DecimalFormat().format(FunctionalStorageConfig.getLevelMult(this.storageTier.getLevel()) / FunctionalStorageConfig.RANGE_DIVISOR)).withStyle(ChatFormatting.GRAY));
         }
     }
 
@@ -49,6 +50,10 @@ public class StorageUpgradeItem extends UpgradeItem{
         return key == null;
     }
 
+    @Override
+    public boolean isFoil(ItemStack p_41453_) {
+        return storageTier == StorageTier.MAX_STORAGE;
+    }
 
     @Override
     @OnlyIn(Dist.CLIENT)
@@ -65,7 +70,9 @@ public class StorageUpgradeItem extends UpgradeItem{
         GOLD(2, Mth.color(233/255f, 177/255f, 21/255f)),
         DIAMOND(3, Mth.color(32/255f, 197/255f, 181/255f)),
         NETHERITE(4, Mth.color(49, 41, 42)),
-        IRON(0, Mth.color(130/255f, 130/255f, 130/255f));
+        IRON(0, Mth.color(130/255f, 130/255f, 130/255f)),
+        MAX_STORAGE(-1, Mth.color(167/255f, 54/255f, 247/255f))
+        ;
 
         private final int level;
         private final int color;
