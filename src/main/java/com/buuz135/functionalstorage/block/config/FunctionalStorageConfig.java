@@ -14,6 +14,7 @@ public class FunctionalStorageConfig {
     public static int DRAWER_CONTROLLER_LINKING_RANGE = 8;
 
     @ConfigVal(comment = "Every how many ticks the drawer upgrades will work")
+    @ConfigVal.InRangeInt(min = 1)
     public static int UPGRADE_TICK = 4;
 
     @ConfigVal(comment = "How many items the pulling upgrade will try to pull")

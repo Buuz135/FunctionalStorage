@@ -3,6 +3,7 @@
 * Added drawer renders to items
 * Added config option to modify the values of upgrades
 * Added the ability to disable fluid drawers renders, closes #281
+* Added a minimum to the UPGRADE_TICK config
 
 # VERSION 1.2.9
 
