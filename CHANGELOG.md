@@ -4,6 +4,7 @@
 * Added config option to modify the values of upgrades
 * Added the ability to disable fluid drawers renders, closes #281
 * Added a minimum to the UPGRADE_TICK config
+* Fixed drawers not pushing items if there was a slot not full with a different item, closes #276 
 
 # VERSION 1.2.9
 

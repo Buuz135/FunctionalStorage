@@ -90,6 +90,9 @@ public abstract class ItemControllableDrawerTile<T extends ItemControllableDrawe
                                         if (pulledStack.isEmpty()) continue;
                                         boolean hasWorked = false;
                                         for (int destinationSlot = 0; destinationSlot < otherHandler.getSlots(); destinationSlot++) {
+                                            ItemStack otherHandlerStackInSlot = otherHandler.getStackInSlot(destinationSlot);
+                                            if (!otherHandlerStackInSlot.isEmpty() && !ItemStack.isSameItemSameTags(pulledStack, otherHandler.getStackInSlot(destinationSlot)))
+                                                continue;
                                             if (otherHandler.getStackInSlot(destinationSlot).getCount() >= otherHandler.getSlotLimit(destinationSlot))
                                                 continue;
                                             ItemStack simulated = otherHandler.insertItem(destinationSlot, pulledStack, true);
