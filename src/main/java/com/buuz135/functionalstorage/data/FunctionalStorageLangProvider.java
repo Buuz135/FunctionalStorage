@@ -73,7 +73,7 @@ public class FunctionalStorageLangProvider extends LanguageProvider {
         this.add("configurationtool.configmode", "Config Mode: ");
         this.add("configurationtool.configmode.locking", "Locking");
         this.add("configurationtool.configmode.toggle_numbers", "Hide/Show Amounts");
-        this.add("configurationtool.configmode.toggle_render", "Hide/Show Item Renders");
+        this.add("configurationtool.configmode.toggle_render", "Hide/Show Item/Fluid Renders");
         this.add("configurationtool.configmode.toggle_upgrades", "Hide/Show Upgrade Renders");
         this.add("configurationtool.configmode.indicator", "Swap indicator modes");
         this.add("configurationtool.configmode.indicator.mode_0", "Hidden");

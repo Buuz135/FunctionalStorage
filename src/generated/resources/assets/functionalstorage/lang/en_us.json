@@ -53,7 +53,7 @@
   "configurationtool.configmode.indicator.mode_3": "Show progress bar only when full without background",
   "configurationtool.configmode.locking": "Locking",
   "configurationtool.configmode.toggle_numbers": "Hide/Show Amounts",
-  "configurationtool.configmode.toggle_render": "Hide/Show Item Renders",
+  "configurationtool.configmode.toggle_render": "Hide/Show Item/Fluid Renders",
   "configurationtool.configmode.toggle_upgrades": "Hide/Show Upgrade Renders",
   "configurationtool.use": "Sneak + Right Click in the air to change modes. Right click a drawer to toggle the option.",
   "drawer.block.contents": "Contents: ",
