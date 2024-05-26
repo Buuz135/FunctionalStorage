@@ -1,5 +1,6 @@
 package com.buuz135.functionalstorage.item;
 
+import com.buuz135.functionalstorage.block.config.FunctionalStorageConfig;
 import com.hrznstudio.titanium.item.BasicItem;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -24,7 +25,7 @@ public class StorageUpgradeItem extends UpgradeItem{
     }
 
     public int getStorageMultiplier() {
-        return storageTier.storageMultiplier;
+        return FunctionalStorageConfig.getLevelMult(storageTier.getLevel());
     }
 
     public StorageTier getStorageTier() {
@@ -37,8 +38,8 @@ public class StorageUpgradeItem extends UpgradeItem{
         if (storageTier == StorageTier.IRON){
             tooltip.add(Component.translatable("item.utility.downgrade").withStyle(ChatFormatting.GRAY));
         } else {
-            tooltip.add(Component.translatable("storageupgrade.desc.item").withStyle(ChatFormatting.GRAY).append(this.storageTier.getStorageMultiplier() + ""));
-            tooltip.add(Component.translatable("storageupgrade.desc.fluid").withStyle(ChatFormatting.GRAY).append(this.storageTier.getStorageMultiplier() / 2 + ""));
+            tooltip.add(Component.translatable("storageupgrade.desc.item").withStyle(ChatFormatting.GRAY).append(FunctionalStorageConfig.getLevelMult(this.storageTier.getLevel()) + ""));
+            tooltip.add(Component.translatable("storageupgrade.desc.fluid").withStyle(ChatFormatting.GRAY).append(FunctionalStorageConfig.getLevelMult(this.storageTier.getLevel()) / FunctionalStorageConfig.FLUID_DIVISOR + ""));
         }
     }
 
@@ -59,22 +60,22 @@ public class StorageUpgradeItem extends UpgradeItem{
     }
 
     public static enum StorageTier {
-        COPPER(8, Mth.color(204, 109, 81)),
-        GOLD(16, Mth.color(233, 177, 21)),
-        DIAMOND(24, Mth.color(32, 197, 181)),
-        NETHERITE(32, Mth.color(49, 41, 42)),
-        IRON(1, Mth.color(130, 130, 130));
+        COPPER(1, Mth.color(204, 109, 81)),
+        GOLD(2, Mth.color(233, 177, 21)),
+        DIAMOND(3, Mth.color(32, 197, 181)),
+        NETHERITE(4, Mth.color(49, 41, 42)),
+        IRON(0, Mth.color(130, 130, 130));
 
-        private final int storageMultiplier;
+        private final int level;
         private final int color;
 
-        StorageTier(int storageMultiplier, int color) {
-            this.storageMultiplier = storageMultiplier;
+        StorageTier(int level, int color) {
+            this.level = level;
             this.color = color;
         }
 
-        public int getStorageMultiplier() {
-            return storageMultiplier;
+        public int getLevel() {
+            return level;
         }
 
         public int getColor() {
