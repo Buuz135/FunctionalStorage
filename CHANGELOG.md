@@ -1,7 +1,7 @@
 # VERSION 1.2.10
 
 * Added drawer renders to items
-* Added config option to modify the values of upgrades
+* Added config option to modify the values of upgrades by ProGoofster
 * Added the ability to disable fluid drawers renders, closes #281
 * Added a minimum to the UPGRADE_TICK config
 * Fixed drawers not pushing items if there was a slot not full with a different item, closes #276 
