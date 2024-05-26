@@ -63,12 +63,12 @@ public abstract class ControllerFluidHandler implements IFluidHandler {
     @Override
     public int fill(FluidStack resource, FluidAction action) {
         for (HandlerTankSelector selector : this.selectors) {
-            if (!selector.getStackInSlot().isEmpty() && selector.getStackInSlot().isFluidEqual(resource)) {
+            if (!selector.getStackInSlot().isEmpty() && selector.getStackInSlot().isFluidEqual(resource) && selector.fill(resource, FluidAction.SIMULATE) > 0) {
                 return selector.fill(resource, action);
             }
         }
         for (HandlerTankSelector selector : this.selectors) {
-            if (selector.getStackInSlot().isEmpty()) {
+            if (selector.getStackInSlot().isEmpty() && selector.fill(resource, FluidAction.SIMULATE) > 0) {
                 return selector.fill(resource, action);
             }
         }
