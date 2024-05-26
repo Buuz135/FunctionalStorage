@@ -44,6 +44,7 @@ public class FunctionalStorageConfig {
     public static int NETHERITE_MULTIPLIER = 32;
 
     @ConfigVal(comment = "How much should the fluid storage be divided by for any given Storage Upgrade")
+    @ConfigVal.InRangeInt(min = 1)
     public static int FLUID_DIVISOR = 2;
 
     public static int getLevelMult(int level){
