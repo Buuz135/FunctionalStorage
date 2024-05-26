@@ -82,7 +82,7 @@ public abstract class StorageControllerTile<T extends StorageControllerTile<T>> 
 
     @Override
     public double getStorageDiv() {
-        return 4;
+        return FunctionalStorageConfig.RANGE_DIVISOR;
     }
 
     @Override
