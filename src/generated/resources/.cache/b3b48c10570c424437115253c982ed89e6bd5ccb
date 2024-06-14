@@ -1,6 +1,7 @@
-// 1.20.1	2024-05-26T12:09:04.2015584	Titanium Serializable (functionalstorage)
+// 1.20.1	2024-06-09T12:42:21.586569991	Titanium Serializable (functionalstorage)
 35cd7d63477caf5ea93cae6c81984fd4d7992fc3 data/functionalstorage/recipes/custom_compacting/amethyst.json
 d24028ec840b0e7b4d100b43144e7a3f5a70283c data/functionalstorage/recipes/custom_compacting/clay.json
+161049cc1e9dc1555b105c2563812893ddd8cea9 data/functionalstorage/recipes/custom_compacting/dripstone.json
 b3d11532f966981fbe0349b89e09cc691e8f68e4 data/functionalstorage/recipes/custom_compacting/glowstone.json
 6847d92c8055493634aed84c9de6de4835aab167 data/functionalstorage/recipes/custom_compacting/ice.json
 266466efff4179eae51a2ce4c4541d65ebd9bb60 data/functionalstorage/recipes/custom_compacting/melon.json
