@@ -54,7 +54,7 @@ public class FramedControllerExtensionBlock extends StorageControllerExtensionBl
 
         if (blockEntity instanceof FramedControllerExtensionTile framedControllerExtensionTile) {
             if (framedControllerExtensionTile.getFramedDrawerModelData() != null) {
-                stack.setData(FSAttachments.STYLE, framedControllerExtensionTile.getFramedDrawerModelData().serializeNBT());
+                stack.set(FSAttachments.STYLE, framedControllerExtensionTile.getFramedDrawerModelData().serializeNBT(blockEntity.getLevel().registryAccess()));
             }
         }
 
@@ -69,7 +69,7 @@ public class FramedControllerExtensionBlock extends StorageControllerExtensionBl
             if (framedControllerExtensionTile.getFramedDrawerModelData() != null) {
                 if (!framedControllerExtensionTile.getFramedDrawerModelData().getDesign().isEmpty()) {
                     ItemStack stack = new ItemStack(this);
-                    stack.setData(FSAttachments.STYLE, framedControllerExtensionTile.getFramedDrawerModelData().serializeNBT());
+                    stack.set(FSAttachments.STYLE, framedControllerExtensionTile.getFramedDrawerModelData().serializeNBT(level.registryAccess()));
                     return stack;
                 }
             }
@@ -82,7 +82,7 @@ public class FramedControllerExtensionBlock extends StorageControllerExtensionBl
         TitaniumShapedRecipeBuilder.shapedRecipe(FunctionalStorage.FRAMED_CONTROLLER_EXTENSION.block().get())
                 .pattern("IBI").pattern("CDC").pattern("IBI")
                 .define('I', Items.IRON_NUGGET)
-                .define('B', Tags.Items.STORAGE_BLOCKS_QUARTZ)
+                .define('B', Items.QUARTZ_BLOCK)
                 .define('C', StorageTags.DRAWER)
                 .define('D', Items.REPEATER)
                 .save(consumer);

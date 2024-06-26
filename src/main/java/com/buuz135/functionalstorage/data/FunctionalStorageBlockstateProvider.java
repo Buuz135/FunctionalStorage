@@ -18,26 +18,24 @@ import net.neoforged.neoforge.client.model.generators.ConfiguredModel;
 import net.neoforged.neoforge.client.model.generators.ModelFile;
 import net.neoforged.neoforge.client.model.generators.VariantBlockStateBuilder;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
-import net.neoforged.neoforge.common.util.NonNullLazy;
+import net.neoforged.neoforge.common.util.Lazy;
 
 import java.util.List;
 
 public class FunctionalStorageBlockstateProvider extends BlockStateProvider {
-    private ExistingFileHelper helper;
-    private final NonNullLazy<List<Block>> blocks;
+    private final Lazy<List<Block>> blocks;
 
-    public FunctionalStorageBlockstateProvider(DataGenerator gen, ExistingFileHelper exFileHelper, NonNullLazy<List<Block>> blocks) {
+    public FunctionalStorageBlockstateProvider(DataGenerator gen, ExistingFileHelper exFileHelper, Lazy<List<Block>> blocks) {
         super(gen.getPackOutput(), FunctionalStorage.MOD_ID, exFileHelper);
-        this.helper = exFileHelper;
         this.blocks = blocks;
     }
 
     public static ResourceLocation getModel(Block block) {
-        return new ResourceLocation(BuiltInRegistries.BLOCK.getKey(block).getNamespace(), "block/" + BuiltInRegistries.BLOCK.getKey(block).getPath());
+        return com.buuz135.functionalstorage.util.Utils.resourceLocation(BuiltInRegistries.BLOCK.getKey(block).getNamespace(), "block/" + BuiltInRegistries.BLOCK.getKey(block).getPath());
     }
 
     public static ResourceLocation getModelLocked(Block block) {
-        return new ResourceLocation(BuiltInRegistries.BLOCK.getKey(block).getNamespace(), "block/" + BuiltInRegistries.BLOCK.getKey(block).getPath() + "_locked");
+        return com.buuz135.functionalstorage.util.Utils.resourceLocation(BuiltInRegistries.BLOCK.getKey(block).getNamespace(), "block/" + BuiltInRegistries.BLOCK.getKey(block).getPath() + "_locked");
     }
 
     @Override

@@ -2,13 +2,16 @@ package com.buuz135.functionalstorage.recipe;
 
 import com.buuz135.functionalstorage.FunctionalStorage;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
@@ -17,10 +20,10 @@ import net.minecraft.world.level.Level;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CustomCompactingRecipe implements Recipe<Container> {
-    public static final Codec<CustomCompactingRecipe> CODEC = RecordCodecBuilder.create(in -> in.group(
-            ItemStack.ITEM_WITH_COUNT_CODEC.fieldOf("lower_input").forGetter(CustomCompactingRecipe::getLower_input),
-            ItemStack.ITEM_WITH_COUNT_CODEC.fieldOf("higher_input").forGetter(CustomCompactingRecipe::getHigher_input)
+public class CustomCompactingRecipe implements Recipe<CraftingInput> {
+    public static final MapCodec<CustomCompactingRecipe> CODEC = RecordCodecBuilder.mapCodec(in -> in.group(
+            ItemStack.CODEC.fieldOf("lower_input").forGetter(CustomCompactingRecipe::getLower_input),
+            ItemStack.CODEC.fieldOf("higher_input").forGetter(CustomCompactingRecipe::getHigher_input)
     ).apply(in, CustomCompactingRecipe::new));
 
     public static List<CustomCompactingRecipe> RECIPES = new ArrayList<>();
@@ -38,12 +41,12 @@ public class CustomCompactingRecipe implements Recipe<Container> {
     }
 
     @Override
-    public boolean matches(Container inv, Level worldIn) {
+    public boolean matches(CraftingInput input, Level level) {
         return false;
     }
 
     @Override
-    public ItemStack assemble(Container inv, RegistryAccess access) {
+    public ItemStack assemble(CraftingInput input, HolderLookup.Provider registries) {
         return ItemStack.EMPTY;
     }
 
@@ -53,7 +56,7 @@ public class CustomCompactingRecipe implements Recipe<Container> {
     }
 
     @Override
-    public ItemStack getResultItem(RegistryAccess access) {
+    public ItemStack getResultItem(HolderLookup.Provider access) {
         return ItemStack.EMPTY;
     }
 

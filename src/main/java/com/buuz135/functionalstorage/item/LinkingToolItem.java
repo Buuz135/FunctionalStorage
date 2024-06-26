@@ -40,11 +40,11 @@ import java.util.Locale;
 public class LinkingToolItem extends BasicItem {
 
     public static LinkingMode getLinkingMode(ItemStack stack) {
-        return stack.getData(FSAttachments.LINKING_MODE);
+        return stack.getOrDefault(FSAttachments.LINKING_MODE, LinkingMode.SINGLE);
     }
 
     public static ActionMode getActionMode(ItemStack stack) {
-        return stack.getData(FSAttachments.ACTION_MODE);
+        return stack.getOrDefault(FSAttachments.ACTION_MODE, ActionMode.ADD);
     }
 
     static {
@@ -52,7 +52,7 @@ public class LinkingToolItem extends BasicItem {
             ItemStack stack = leftClickBlock.getItemStack();
             BlockEntity blockEntity = leftClickBlock.getLevel().getBlockEntity(leftClickBlock.getPos());
             if (blockEntity instanceof EnderDrawerTile tile) {
-                stack.setData(FSAttachments.ENDER_FREQUENCY, tile.getFrequency());
+                stack.set(FSAttachments.ENDER_FREQUENCY, tile.getFrequency());
                 leftClickBlock.getEntity().displayClientMessage(Component.literal("Stored frequency in the tool").setStyle(Style.EMPTY.withColor(LinkingMode.SINGLE.color)), true);
                 leftClickBlock.setCanceled(true);
             }
@@ -66,7 +66,7 @@ public class LinkingToolItem extends BasicItem {
 
     @Override
     public boolean isFoil(ItemStack stack) {
-        return stack.hasData(FSAttachments.ENDER_FREQUENCY);
+        return stack.has(FSAttachments.ENDER_FREQUENCY);
     }
 
     @Override
@@ -74,7 +74,7 @@ public class LinkingToolItem extends BasicItem {
         ItemStack stack = player.getItemInHand(InteractionHand.MAIN_HAND);
         BlockEntity blockEntity = level.getBlockEntity(pos);
         if (blockEntity instanceof EnderDrawerTile tile) {
-            stack.setData(FSAttachments.ENDER_FREQUENCY, tile.getFrequency());
+            stack.set(FSAttachments.ENDER_FREQUENCY, tile.getFrequency());
             player.displayClientMessage(Component.literal("Stored frequency in the tool").setStyle(Style.EMPTY.withColor(LinkingMode.SINGLE.color)), true);
             return false;
         }
@@ -90,28 +90,28 @@ public class LinkingToolItem extends BasicItem {
         LinkingMode linkingMode = getLinkingMode(stack);
         ActionMode linkingAction = getActionMode(stack);
         if (blockEntity instanceof EnderDrawerTile){
-            if (stack.hasData(FSAttachments.ENDER_FREQUENCY)){
-                String frequency = stack.getData(FSAttachments.ENDER_FREQUENCY);
+            if (stack.has(FSAttachments.ENDER_FREQUENCY)){
+                String frequency = stack.get(FSAttachments.ENDER_FREQUENCY);
                 EnderInventoryHandler inventory = EnderSavedData.getInstance(context.getLevel()).getFrequency(((EnderDrawerTile) blockEntity).getFrequency());
-                if (inventory.getStackInSlot(0).isEmpty() || (context.getPlayer().isShiftKeyDown() && stack.hasData(FSAttachments.ENDER_SAFETY))) {
+                if (inventory.getStackInSlot(0).isEmpty() || (context.getPlayer().isShiftKeyDown() && stack.has(FSAttachments.ENDER_SAFETY))) {
                     ((EnderDrawerTile) blockEntity).setFrequency(frequency);
                     context.getPlayer().displayClientMessage(Component.literal("Changed drawer frequency").setStyle(Style.EMPTY.withColor(linkingMode.color)), true);
-                    stack.removeData(FSAttachments.ENDER_SAFETY);
+                    stack.remove(FSAttachments.ENDER_SAFETY);
                 } else {
                     context.getPlayer().displayClientMessage(Component.literal("Cannot change frequency, there are items in the drawer. Sneak + Right Click again to ignore this safety").withStyle(ChatFormatting.RED), true);
-                    stack.setData(FSAttachments.ENDER_SAFETY, Unit.INSTANCE);
+                    stack.set(FSAttachments.ENDER_SAFETY, Unit.INSTANCE);
                 }
                 return InteractionResult.SUCCESS;
             }
         }
         if (blockEntity instanceof StorageControllerTile) {
-            stack.setData(FSAttachments.CONTROLLER, pos);
+            stack.set(FSAttachments.CONTROLLER, pos);
             context.getPlayer().playSound(SoundEvents.ITEM_FRAME_ADD_ITEM, 0.5f, 1);
             context.getPlayer().displayClientMessage(Component.literal("Controller configured to the tool").withStyle(ChatFormatting.GREEN), true);
-            stack.removeData(FSAttachments.ENDER_FREQUENCY);
+            stack.remove(FSAttachments.ENDER_FREQUENCY);
             return InteractionResult.SUCCESS;
-        } else if (blockEntity instanceof ControllableDrawerTile && stack.hasData(FSAttachments.CONTROLLER)) {
-            BlockEntity controller = level.getBlockEntity(stack.getData(FSAttachments.CONTROLLER));
+        } else if (blockEntity instanceof ControllableDrawerTile && stack.has(FSAttachments.CONTROLLER)) {
+            BlockEntity controller = level.getBlockEntity(stack.get(FSAttachments.CONTROLLER));
             if (controller instanceof StorageControllerTile) {
                 if (linkingMode == LinkingMode.SINGLE) {
                     if (((StorageControllerTile) controller).addConnectedDrawers(linkingAction, pos)){
@@ -122,8 +122,8 @@ public class LinkingToolItem extends BasicItem {
                         }
                     }
                 } else {
-                    if (stack.hasData(FSAttachments.FIRST_POSITION)) {
-                        BlockPos firstPos = stack.getData(FSAttachments.FIRST_POSITION);
+                    if (stack.has(FSAttachments.FIRST_POSITION)) {
+                        BlockPos firstPos = stack.get(FSAttachments.FIRST_POSITION);
                         AABB aabb = new AABB(Math.min(firstPos.getX(), pos.getX()), Math.min(firstPos.getY(), pos.getY()), Math.min(firstPos.getZ(), pos.getZ()), Math.max(firstPos.getX(), pos.getX()) + 1, Math.max(firstPos.getY(), pos.getY()) + 1, Math.max(firstPos.getZ(), pos.getZ()) + 1);
                         if (((StorageControllerTile) controller).addConnectedDrawers(linkingAction, getBlockPosInAABB(aabb).toArray(BlockPos[]::new))){
                             if (linkingAction == ActionMode.ADD){
@@ -132,9 +132,9 @@ public class LinkingToolItem extends BasicItem {
                                 context.getPlayer().displayClientMessage(Component.literal("Removed drawers from the controller").setStyle(Style.EMPTY.withColor(linkingMode.color)), true);
                             }
                         }
-                        stack.removeData(FSAttachments.FIRST_POSITION);
+                        stack.remove(FSAttachments.FIRST_POSITION);
                     } else {
-                        stack.setData(FSAttachments.FIRST_POSITION, pos);
+                        stack.set(FSAttachments.FIRST_POSITION, pos);
                     }
                 }
                 context.getPlayer().playSound(SoundEvents.ITEM_FRAME_ROTATE_ITEM, 0.5f, 1);
@@ -148,22 +148,22 @@ public class LinkingToolItem extends BasicItem {
     public InteractionResultHolder<ItemStack> use(Level p_41432_, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         if (!stack.isEmpty()) {
-            if (stack.hasData(FSAttachments.ENDER_FREQUENCY)) {
+            if (stack.has(FSAttachments.ENDER_FREQUENCY)) {
                 if (player.isShiftKeyDown()) {
-                    stack.removeData(FSAttachments.ENDER_FREQUENCY);
+                    stack.remove(FSAttachments.ENDER_FREQUENCY);
                     player.displayClientMessage(Component.literal("Cleared drawer frequency").setStyle(Style.EMPTY.withColor(ActionMode.ADD.getColor())), true);
                 }
             } else {
                 if (player.isShiftKeyDown()) {
                     LinkingMode linkingMode = getLinkingMode(stack);
                     LinkingMode newMode = linkingMode == LinkingMode.SINGLE ? LinkingMode.MULTIPLE : LinkingMode.SINGLE;
-                    stack.setData(FSAttachments.LINKING_MODE, newMode);
+                    stack.set(FSAttachments.LINKING_MODE, newMode);
                     player.displayClientMessage(Component.literal("Swapped mode to " + newMode.name().toLowerCase(Locale.ROOT)).setStyle(Style.EMPTY.withColor(LinkingMode.MULTIPLE.getColor())), true);
-                    stack.removeData(FSAttachments.FIRST_POSITION);
+                    stack.remove(FSAttachments.FIRST_POSITION);
                 } else {
                     ActionMode linkingMode = getActionMode(stack);
                     ActionMode newMode = linkingMode == ActionMode.ADD ? ActionMode.REMOVE : ActionMode.ADD;
-                    stack.setData(FSAttachments.ACTION_MODE, newMode);
+                    stack.set(FSAttachments.ACTION_MODE, newMode);
                     player.displayClientMessage(Component.literal("Swapped action to " + newMode.name().toLowerCase(Locale.ROOT)).setStyle(Style.EMPTY.withColor(ActionMode.REMOVE.getColor())), true);
                 }
             }
@@ -179,7 +179,7 @@ public class LinkingToolItem extends BasicItem {
         LinkingMode linkingMode = getLinkingMode(stack);
         ActionMode linkingAction = getActionMode(stack);
         if (key == null) {
-            if (stack.hasData(FSAttachments.ENDER_FREQUENCY)) {
+            if (stack.has(FSAttachments.ENDER_FREQUENCY)) {
                 MutableComponent text = Component.translatable("linkingtool.ender.frequency");
                 //frequencyDisplay.forEach(item -> text.append(item.getName(new ItemStack(item))));
                 tooltip.add(text.withStyle(ChatFormatting.GRAY));
@@ -191,8 +191,8 @@ public class LinkingToolItem extends BasicItem {
                         .append(Component.translatable("linkingtool.linkingmode." + linkingMode.name().toLowerCase(Locale.ROOT)).withStyle(Style.EMPTY.withColor(linkingMode.getColor()))));
                 tooltip.add(Component.translatable("linkingtool.linkingaction").withStyle(ChatFormatting.YELLOW)
                         .append(Component.translatable("linkingtool.linkingaction." + linkingAction.name().toLowerCase(Locale.ROOT)).withStyle(Style.EMPTY.withColor(linkingAction.getColor()))));
-                if (stack.hasData(FSAttachments.CONTROLLER)) {
-                    var pos = stack.getData(FSAttachments.CONTROLLER);
+                if (stack.has(FSAttachments.CONTROLLER)) {
+                    var pos = stack.get(FSAttachments.CONTROLLER);
                     tooltip.add(Component.translatable("linkingtool.controller").withStyle(ChatFormatting.YELLOW)
                             .append(Component.literal(pos.getX() + "" + ChatFormatting.WHITE + ", " + ChatFormatting.DARK_AQUA + pos.getY() + ChatFormatting.WHITE + ", " + ChatFormatting.DARK_AQUA + pos.getZ()).withStyle(ChatFormatting.DARK_AQUA)));
                 } else {

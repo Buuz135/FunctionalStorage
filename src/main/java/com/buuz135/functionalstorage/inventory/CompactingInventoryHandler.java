@@ -1,6 +1,7 @@
 package com.buuz135.functionalstorage.inventory;
 
 import com.buuz135.functionalstorage.util.CompactingUtil;
+import com.buuz135.functionalstorage.util.Utils;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.common.util.INBTSerializable;
@@ -12,10 +13,10 @@ import java.util.List;
 
 public abstract class CompactingInventoryHandler implements IItemHandler, INBTSerializable<CompoundTag>, ILockable {
 
-    public static String PARENT = "Parent";
-    public static String BIG_ITEMS = "BigItems";
-    public static String STACK = "Stack";
-    public static String AMOUNT = "Amount";
+    public static final String PARENT = "Parent";
+    public static final String BIG_ITEMS = "BigItems";
+    public static final String STACK = "Stack";
+    public static final String AMOUNT = "Amount";
 
     public int totalAmount;
 
@@ -67,7 +68,7 @@ public abstract class CompactingInventoryHandler implements IItemHandler, INBTSe
                 onChange();
             }
             if (inserted == stack.getCount() * result.getNeeded() || isVoid()) return ItemStack.EMPTY;
-            return ItemHandlerHelper.copyStackWithSize(stack, stack.getCount() - inserted / result.getNeeded());
+            return stack.copyWithCount(stack.getCount() - inserted / result.getNeeded());
 
         }
         return stack;
@@ -75,7 +76,7 @@ public abstract class CompactingInventoryHandler implements IItemHandler, INBTSe
 
     private boolean isVoidValid(ItemStack stack) {
         for (CompactingUtil.Result result : this.resultList) {
-            if (ItemStack.isSameItemSameTags(result.getResult(), stack)) return true;
+            if (ItemStack.isSameItemSameComponents(result.getResult(), stack)) return true;
         }
         return false;
     }
@@ -131,7 +132,7 @@ public abstract class CompactingInventoryHandler implements IItemHandler, INBTSe
                     this.amount -= stackAmount;
                     onChange();
                 }
-                return ItemHandlerHelper.copyStackWithSize(bigStack.getResult(), amount);
+                return bigStack.getResult().copyWithCount(amount);
             }
 
 
@@ -164,20 +165,20 @@ public abstract class CompactingInventoryHandler implements IItemHandler, INBTSe
         if (slot < this.slots) {
             CompactingUtil.Result bigStack = this.resultList.get(slot);
             ItemStack fl = bigStack.getResult();
-            return !fl.isEmpty() && ItemStack.isSameItemSameTags(fl, stack);
+            return !fl.isEmpty() && ItemStack.isSameItemSameComponents(fl, stack);
         }
         return false;
     }
 
     @Override
-    public CompoundTag serializeNBT() {
+    public CompoundTag serializeNBT(net.minecraft.core.HolderLookup.Provider provider) {
         CompoundTag compoundTag = new CompoundTag();
-        compoundTag.put(PARENT, this.getParent().save(new CompoundTag()));
+        compoundTag.put(PARENT, this.getParent().saveOptional(provider));
         compoundTag.putInt(AMOUNT, this.amount);
         CompoundTag items = new CompoundTag();
         for (int i = 0; i < this.resultList.size(); i++) {
             CompoundTag bigStack = new CompoundTag();
-            bigStack.put(STACK, this.resultList.get(i).getResult().save(new CompoundTag()));
+            bigStack.put(STACK, this.resultList.get(i).getResult().saveOptional(provider));
             bigStack.putInt(AMOUNT, this.resultList.get(i).getNeeded());
             items.put(i + "", bigStack);
         }
@@ -186,11 +187,11 @@ public abstract class CompactingInventoryHandler implements IItemHandler, INBTSe
     }
 
     @Override
-    public void deserializeNBT(CompoundTag nbt) {
-        this.parent = ItemStack.of(nbt.getCompound(PARENT));
+    public void deserializeNBT(net.minecraft.core.HolderLookup.Provider provider, CompoundTag nbt) {
+        this.parent = Utils.deserialize(provider, nbt.getCompound(PARENT));
         this.amount = nbt.getInt(AMOUNT);
         for (String allKey : nbt.getCompound(BIG_ITEMS).getAllKeys()) {
-            this.resultList.get(Integer.parseInt(allKey)).setResult(ItemStack.of(nbt.getCompound(BIG_ITEMS).getCompound(allKey).getCompound(STACK)));
+            this.resultList.get(Integer.parseInt(allKey)).setResult(Utils.deserialize(provider, nbt.getCompound(BIG_ITEMS).getCompound(allKey).getCompound(STACK)));
             this.resultList.get(Integer.parseInt(allKey)).setNeeded(Math.max(1, nbt.getCompound(BIG_ITEMS).getCompound(allKey).getInt(AMOUNT)));
         }
     }

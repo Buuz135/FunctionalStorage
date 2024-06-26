@@ -60,7 +60,7 @@ public class DrawerRenderer extends BaseDrawerRenderer<DrawerTile> {
         }
         if (tile.isVoid()){
             matrixStack.pushPose();
-            matrixStack.mulPoseMatrix(createTransformMatrix(
+            matrixStack.mulPose(createTransformMatrix(
             		new Vector3f(0.969f,0.031f,0.469f/16.0f), new Vector3f(0), scale));
             Minecraft.getInstance().getItemRenderer().renderStatic(new ItemStack(FunctionalStorage.VOID_UPGRADE.get()), ItemDisplayContext.NONE, combinedLightIn, combinedOverlayIn, matrixStack, bufferIn, tile.getLevel(),0);
             matrixStack.popPose();
@@ -70,7 +70,7 @@ public class DrawerRenderer extends BaseDrawerRenderer<DrawerTile> {
     public static void renderIndicator(PoseStack matrixStack, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn, float progress, ControllableDrawerTile.DrawerOptions options) {
         var indicatiorValue = options.getAdvancedValue(ConfigurationToolItem.ConfigurationAction.INDICATOR);
         if (indicatiorValue != 0) {
-            TextureAtlasSprite still = Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(new ResourceLocation(FunctionalStorage.MOD_ID, "block/indicator"));
+            TextureAtlasSprite still = Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(com.buuz135.functionalstorage.util.Utils.resourceLocation(FunctionalStorage.MOD_ID, "block/indicator"));
             VertexConsumer builder = bufferIn.getBuffer(RenderType.translucent());
             Matrix4f posMat = matrixStack.last().pose();
             float red = 1;
@@ -91,22 +91,22 @@ public class DrawerRenderer extends BaseDrawerRenderer<DrawerTile> {
             float v1 = still.getV(bz1);
             float v2 = still.getV(bz2);
             if (indicatiorValue != 3) { //HIDE IN MODE 3 NO BG
-                builder.vertex(posMat, x2, y1, z2).color(red, green, blue, alpha).uv(u2, v1).overlayCoords(combinedOverlayIn).uv2(combinedLightIn).normal(0f, 0f, 1f).endVertex();
-                builder.vertex(posMat, x2, y2, z2).color(red, green, blue, alpha).uv(u2, v2).overlayCoords(combinedOverlayIn).uv2(combinedLightIn).normal(0f, 0f, 1f).endVertex();
-                builder.vertex(posMat, x1, y2, z2).color(red, green, blue, alpha).uv(u1, v2).overlayCoords(combinedOverlayIn).uv2(combinedLightIn).normal(0f, 0f, 1f).endVertex();
-                builder.vertex(posMat, x1, y1, z2).color(red, green, blue, alpha).uv(u1, v1).overlayCoords(combinedOverlayIn).uv2(combinedLightIn).normal(0f, 0f, 1f).endVertex();
+                builder.addVertex(posMat, x2, y1, z2).setColor(red, green, blue, alpha).setUv(u2, v1).setOverlay(combinedOverlayIn).setNormal(0f, 0f, 1f);
+                builder.addVertex(posMat, x2, y2, z2).setColor(red, green, blue, alpha).setUv(u2, v2).setOverlay(combinedOverlayIn).setNormal(0f, 0f, 1f);
+                builder.addVertex(posMat, x1, y2, z2).setColor(red, green, blue, alpha).setUv(u1, v2).setOverlay(combinedOverlayIn).setNormal(0f, 0f, 1f);
+                builder.addVertex(posMat, x1, y1, z2).setColor(red, green, blue, alpha).setUv(u1, v1).setOverlay(combinedOverlayIn).setNormal(0f, 0f, 1f);
             }
 
-            u2 = still.getU((float) (bx2 * progress));
+            u2 = still.getU((bx2 * progress));
             x2 = x1 + 0.5f * progress;
             z2 = 0.0001f;
             v1 = still.getV(8);
             v2 = still.getV(10);
             if (indicatiorValue == 1 || progress >= 1) {
-                builder.vertex(posMat, x2, y1, z2).color(red, green, blue, alpha).uv(u2, v1).overlayCoords(combinedOverlayIn).uv2(combinedLightIn).normal(0f, 0f, 1f).endVertex();
-                builder.vertex(posMat, x2, y2, z2).color(red, green, blue, alpha).uv(u2, v2).overlayCoords(combinedOverlayIn).uv2(combinedLightIn).normal(0f, 0f, 1f).endVertex();
-                builder.vertex(posMat, x1, y2, z2).color(red, green, blue, alpha).uv(u1, v2).overlayCoords(combinedOverlayIn).uv2(combinedLightIn).normal(0f, 0f, 1f).endVertex();
-                builder.vertex(posMat, x1, y1, z2).color(red, green, blue, alpha).uv(u1, v1).overlayCoords(combinedOverlayIn).uv2(combinedLightIn).normal(0f, 0f, 1f).endVertex();
+                builder.addVertex(posMat, x2, y1, z2).setColor(red, green, blue, alpha).setUv(u2, v1).setOverlay(combinedOverlayIn).setNormal(0f, 0f, 1f);
+                builder.addVertex(posMat, x2, y2, z2).setColor(red, green, blue, alpha).setUv(u2, v2).setOverlay(combinedOverlayIn).setNormal(0f, 0f, 1f);
+                builder.addVertex(posMat, x1, y2, z2).setColor(red, green, blue, alpha).setUv(u1, v2).setOverlay(combinedOverlayIn).setNormal(0f, 0f, 1f);
+                builder.addVertex(posMat, x1, y1, z2).setColor(red, green, blue, alpha).setUv(u1, v1).setOverlay(combinedOverlayIn).setNormal(0f, 0f, 1f);
             }
         }
     }
@@ -124,14 +124,14 @@ public class DrawerRenderer extends BaseDrawerRenderer<DrawerTile> {
         BigInventoryHandler inventoryHandler = (BigInventoryHandler) tile.getStorage();
         if (!inventoryHandler.getStoredStacks().get(0).getStack().isEmpty()){
             matrixStack.pushPose();
-            matrixStack.mulPoseMatrix(createTransformMatrix(new Vector3f(0.5f, 0.27f, 0.0005f), new Vector3f(0), new Vector3f(.5f, .5f, 1.0f)));
+            matrixStack.mulPose(createTransformMatrix(new Vector3f(0.5f, 0.27f, 0.0005f), new Vector3f(0), new Vector3f(.5f, .5f, 1.0f)));
             ItemStack stack = inventoryHandler.getStoredStacks().get(0).getStack();
             renderStack(matrixStack, bufferIn, combinedLightIn, combinedOverlayIn, stack, inventoryHandler.getStackInSlot(0).getCount(), inventoryHandler.getSlotLimit(0),0.02f, tile.getDrawerOptions(), tile.getLevel());
             matrixStack.popPose();
         }
         if (!inventoryHandler.getStoredStacks().get(1).getStack().isEmpty()){
             matrixStack.pushPose();
-            matrixStack.mulPoseMatrix(createTransformMatrix(
+            matrixStack.mulPose(createTransformMatrix(
             		new Vector3f(0.5f, 0.77f, 0.0005f), new Vector3f(0), new Vector3f(.5f, .5f, 1.0f)));
             ItemStack stack = inventoryHandler.getStoredStacks().get(1).getStack();
             renderStack(matrixStack, bufferIn, combinedLightIn, combinedOverlayIn, stack, inventoryHandler.getStackInSlot(1).getCount(), inventoryHandler.getSlotLimit(1),0.02f, tile.getDrawerOptions(), tile.getLevel());
@@ -142,7 +142,7 @@ public class DrawerRenderer extends BaseDrawerRenderer<DrawerTile> {
         BigInventoryHandler inventoryHandler = (BigInventoryHandler) tile.getStorage();
         if (!inventoryHandler.getStoredStacks().get(0).getStack().isEmpty()){ //BOTTOM RIGHT
             matrixStack.pushPose();
-            matrixStack.mulPoseMatrix(createTransformMatrix(
+            matrixStack.mulPose(createTransformMatrix(
             		new Vector3f(.75f, .27f, .0005f), new Vector3f(0), new Vector3f(.5f, .5f, 1.0f)));
             ItemStack stack = inventoryHandler.getStoredStacks().get(0).getStack();
             renderStack(matrixStack, bufferIn, combinedLightIn, combinedOverlayIn, stack, inventoryHandler.getStackInSlot(0).getCount(), inventoryHandler.getSlotLimit(0),0.02f, tile.getDrawerOptions(), tile.getLevel());
@@ -150,7 +150,7 @@ public class DrawerRenderer extends BaseDrawerRenderer<DrawerTile> {
         }
         if (!inventoryHandler.getStoredStacks().get(1).getStack().isEmpty()){ //BOTTOM LEFT
             matrixStack.pushPose();
-            matrixStack.mulPoseMatrix(createTransformMatrix(
+            matrixStack.mulPose(createTransformMatrix(
             		new Vector3f(.25f, .27f, .0005f), new Vector3f(0), new Vector3f(.5f, .5f, 1.0f)));
             ItemStack stack = inventoryHandler.getStoredStacks().get(1).getStack();
             renderStack(matrixStack, bufferIn, combinedLightIn, combinedOverlayIn, stack, inventoryHandler.getStackInSlot(1).getCount(), inventoryHandler.getSlotLimit(1),0.02f, tile.getDrawerOptions(), tile.getLevel());
@@ -158,7 +158,7 @@ public class DrawerRenderer extends BaseDrawerRenderer<DrawerTile> {
         }
         if (!inventoryHandler.getStoredStacks().get(2).getStack().isEmpty()){ //TOP RIGHT
             matrixStack.pushPose();
-            matrixStack.mulPoseMatrix(createTransformMatrix(
+            matrixStack.mulPose(createTransformMatrix(
             		new Vector3f(.75f, .77f, .0005f), new Vector3f(0), new Vector3f(.5f, .5f, 1.0f)));
             ItemStack stack = inventoryHandler.getStoredStacks().get(2).getStack();
             renderStack(matrixStack, bufferIn, combinedLightIn, combinedOverlayIn, stack, inventoryHandler.getStackInSlot(2).getCount(), inventoryHandler.getSlotLimit(2),0.02f, tile.getDrawerOptions(), tile.getLevel());
@@ -166,7 +166,7 @@ public class DrawerRenderer extends BaseDrawerRenderer<DrawerTile> {
         }
         if (!inventoryHandler.getStoredStacks().get(3).getStack().isEmpty()){ //TOP LEFT
             matrixStack.pushPose();
-            matrixStack.mulPoseMatrix(createTransformMatrix(
+            matrixStack.mulPose(createTransformMatrix(
             		new Vector3f(.25f, .77f, .0005f), new Vector3f(0), new Vector3f(.5f, .5f, 1.0f)));
             ItemStack stack = inventoryHandler.getStoredStacks().get(3).getStack();
             renderStack(matrixStack, bufferIn, combinedLightIn, combinedOverlayIn, stack, inventoryHandler.getStackInSlot(3).getCount(), inventoryHandler.getSlotLimit(3),0.02f, tile.getDrawerOptions(), tile.getLevel());
@@ -181,11 +181,11 @@ public class DrawerRenderer extends BaseDrawerRenderer<DrawerTile> {
         BakedModel model = Minecraft.getInstance().getItemRenderer().getModel(stack, Minecraft.getInstance().level, null, 0);
         if (model.isGui3d()){
         	float thickness = (float)FunctionalStorageClientConfig.DRAWER_RENDER_THICKNESS;
-        	// Avoid scaling normal matrix by using mulPoseMatrix() instead of scale()
-        	matrixStack.mulPoseMatrix(createTransformMatrix(
+        	// Avoid scaling normal matrix by using mulPose() instead of scale()
+        	matrixStack.mulPose(createTransformMatrix(
         			new Vector3f(0), new Vector3f(0), new Vector3f(.75f, .75f, thickness)));
         } else {
-        	matrixStack.mulPoseMatrix(createTransformMatrix(
+        	matrixStack.mulPose(createTransformMatrix(
         			new Vector3f(0), new Vector3f(0), .4f));
         }
 
@@ -195,13 +195,13 @@ public class DrawerRenderer extends BaseDrawerRenderer<DrawerTile> {
         	Minecraft.getInstance().getItemRenderer().renderStatic(stack, ItemDisplayContext.FIXED, combinedLightIn, combinedOverlayIn, matrixStack, bufferIn, level,0);
         }
 
-    	matrixStack.mulPoseMatrix(createTransformMatrix(
+    	matrixStack.mulPose(createTransformMatrix(
     			new Vector3f(0), new Vector3f(0, 180, 0), 1));
         if (!model.isGui3d()){
-        	matrixStack.mulPoseMatrix(createTransformMatrix(
+        	matrixStack.mulPose(createTransformMatrix(
         			new Vector3f(0), new Vector3f(0), new Vector3f(0.5f / 0.4f, 0.5f / 0.4f, 1)));
         } else {
-        	matrixStack.mulPoseMatrix(createTransformMatrix(
+        	matrixStack.mulPose(createTransformMatrix(
         			new Vector3f(0), new Vector3f(0), .665f));
         }
 

@@ -11,6 +11,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.neoforged.neoforge.common.Tags;
+import net.neoforged.neoforge.common.crafting.BlockTagIngredient;
 import org.jetbrains.annotations.NotNull;
 
 public class ControllerExtensionBlock extends StorageControllerExtensionBlock<ControllerExtensionTile> {
@@ -28,8 +29,8 @@ public class ControllerExtensionBlock extends StorageControllerExtensionBlock<Co
     public void registerRecipe(RecipeOutput consumer) {
         TitaniumShapedRecipeBuilder.shapedRecipe(FunctionalStorage.CONTROLLER_EXTENSION.block().get())
                 .pattern("IBI").pattern("CDC").pattern("IBI")
-                .define('I', Tags.Items.STONE)
-                .define('B', Tags.Items.STORAGE_BLOCKS_QUARTZ)
+                .define('I', Tags.Items.STONES)
+                .define('B', Items.QUARTZ_BLOCK)
                 .define('C', StorageTags.DRAWER)
                 .define('D', Items.REPEATER)
                 .save(consumer);

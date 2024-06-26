@@ -54,22 +54,22 @@ public class FramedDrawerBlock extends DrawerBlock implements FramedBlock {
     }
 
     public static FramedDrawerModelData getDrawerModelData(ItemStack stack){
-        if (stack.hasData(FSAttachments.STYLE)){
-            CompoundTag tag = stack.getData(FSAttachments.STYLE);
+        if (stack.has(FSAttachments.STYLE)) {
+            CompoundTag tag = stack.get(FSAttachments.STYLE);
             if (tag.isEmpty()) return null;
             HashMap<String, Item> data = new HashMap<>();
-            data.put("particle", BuiltInRegistries.ITEM.get(new ResourceLocation(tag.getString("particle"))));
-            data.put("front", BuiltInRegistries.ITEM.get(new ResourceLocation(tag.getString("front"))));
-            data.put("side", BuiltInRegistries.ITEM.get(new ResourceLocation(tag.getString("side"))));
-            data.put("front_divider", BuiltInRegistries.ITEM.get(new ResourceLocation(tag.getString("front_divider"))));
+            data.put("particle", BuiltInRegistries.ITEM.get(com.buuz135.functionalstorage.util.Utils.resourceLocation(tag.getString("particle"))));
+            data.put("front", BuiltInRegistries.ITEM.get(com.buuz135.functionalstorage.util.Utils.resourceLocation(tag.getString("front"))));
+            data.put("side", BuiltInRegistries.ITEM.get(com.buuz135.functionalstorage.util.Utils.resourceLocation(tag.getString("side"))));
+            data.put("front_divider", BuiltInRegistries.ITEM.get(com.buuz135.functionalstorage.util.Utils.resourceLocation(tag.getString("front_divider"))));
             return new FramedDrawerModelData(data);
         }
         return null;
     }
 
     public static ItemStack fill(ItemStack first, ItemStack second, ItemStack drawer, ItemStack divider){
-        drawer = ItemHandlerHelper.copyStackWithSize(drawer, 1);
-        CompoundTag style = drawer.getData(FSAttachments.STYLE);
+        drawer = drawer.copyWithCount(1);
+        CompoundTag style = drawer.get(FSAttachments.STYLE);
         style.putString("particle", BuiltInRegistries.ITEM.getKey(first.getItem()).toString());
         style.putString("side", BuiltInRegistries.ITEM.getKey(first.getItem()).toString());
         style.putString("front", BuiltInRegistries.ITEM.getKey(second.getItem()).toString());
@@ -78,7 +78,7 @@ public class FramedDrawerBlock extends DrawerBlock implements FramedBlock {
         } else {
             style.putString("front_divider", BuiltInRegistries.ITEM.getKey(divider.getItem()).toString());
         }
-        drawer.setData(FSAttachments.STYLE, style);
+        drawer.set(FSAttachments.STYLE, style);
         return drawer;
     }
 

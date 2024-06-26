@@ -23,8 +23,10 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.BlockGetter;
@@ -90,10 +92,27 @@ public abstract class Drawer<T extends ControllableDrawerTile<T>> extends Rotata
     }
 
     @Override
-    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult ray) {
-        var entity = getBlockEntityAt(level, pos);
+    protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level worldIn, BlockPos pos, Player player, InteractionHand hand, BlockHitResult ray) {
+        var entity = getBlockEntityAt(worldIn, pos);
         if (entity != null) {
-            return entity.onSlotActivated(player, hand, ray.getDirection(), ray.getLocation().x, ray.getLocation().y, ray.getLocation().z, getHit(state, level, player));
+            var result = entity.onSlotActivated(player, hand, ray.getDirection(), ray.getLocation().x, ray.getLocation().y, ray.getLocation().z, getHit(state, worldIn, player));
+            if (result == InteractionResult.SUCCESS) {
+                return ItemInteractionResult.SUCCESS;
+            } else if (result.consumesAction()) {
+                return ItemInteractionResult.CONSUME;
+            } else {
+                // TODO - validate if this is ok
+                return ItemInteractionResult.SKIP_DEFAULT_BLOCK_INTERACTION;
+            }
+        }
+        return ItemInteractionResult.SKIP_DEFAULT_BLOCK_INTERACTION;
+    }
+
+    @Override
+    protected InteractionResult useWithoutItem(BlockState state, Level worldIn, BlockPos pos, Player player, BlockHitResult ray) {
+        var entity = getBlockEntityAt(worldIn, pos);
+        if (entity != null) {
+            return entity.onSlotActivated(player, InteractionHand.MAIN_HAND, ray.getDirection(), ray.getLocation().x, ray.getLocation().y, ray.getLocation().z, getHit(state, worldIn, player));
         }
         return InteractionResult.PASS;
     }
@@ -122,23 +141,23 @@ public abstract class Drawer<T extends ControllableDrawerTile<T>> extends Rotata
 
     protected void copyTo(T tile, ItemStack stack) {
         if (!tile.isEverythingEmpty()) {
-            stack.setData(FSAttachments.TILE, tile.saveWithoutMetadata());
+            stack.set(FSAttachments.TILE, tile.saveWithoutMetadata(tile.getLevel().registryAccess()));
         }
         if (tile.isLocked()) {
-            stack.setData(FSAttachments.LOCKED, tile.isLocked());
+            stack.set(FSAttachments.LOCKED, tile.isLocked());
         }
         if (tile instanceof FramedTile framedDrawerTile && framedDrawerTile.getFramedDrawerModelData() != null) {
-            stack.setData(FSAttachments.STYLE, framedDrawerTile.getFramedDrawerModelData().serializeNBT());
+            stack.set(FSAttachments.STYLE, framedDrawerTile.getFramedDrawerModelData().serializeNBT(tile.getLevel().registryAccess()));
         }
     }
 
     protected void copyFrom(ItemStack stack, T tile) {
-        tile.setLocked(stack.getData(FSAttachments.LOCKED));
-        if (stack.hasData(FSAttachments.TILE)) {
-            tile.load(stack.getData(FSAttachments.TILE));
+        tile.setLocked(stack.getOrDefault(FSAttachments.LOCKED, false));
+        if (stack.has(FSAttachments.TILE)) {
+            tile.loadAdditional(stack.get(FSAttachments.TILE), tile.getLevel().registryAccess());
             tile.markForUpdate();
         }
-        if (stack.hasData(FSAttachments.STYLE) && tile instanceof FramedTile framed) {
+        if (stack.has(FSAttachments.STYLE) && tile instanceof FramedTile framed) {
             framed.setFramedDrawerModelData(FramedDrawerBlock.getDrawerModelData(stack));
         }
     }
@@ -193,7 +212,7 @@ public abstract class Drawer<T extends ControllableDrawerTile<T>> extends Rotata
             for (int i = 0; i < tile.getUtilityUpgrades().getSlots(); i++) {
                 ItemStack stack = tile.getUtilityUpgrades().getStackInSlot(i);
                 if (stack.getItem().equals(FunctionalStorage.REDSTONE_UPGRADE.get())){
-                    int redstoneSlot = stack.getData(FSAttachments.SLOT);
+                    int redstoneSlot = stack.getOrDefault(FSAttachments.SLOT, 0);
                     if (redstoneSlot < tile.getStorage().getSlots()) {
                         int amount = tile.getStorage().getStackInSlot(redstoneSlot).getCount() * 14 / tile.getStorage().getSlotLimit(redstoneSlot);
                         return amount + (amount > 0 ? 1 : 0);
@@ -205,17 +224,17 @@ public abstract class Drawer<T extends ControllableDrawerTile<T>> extends Rotata
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @org.jetbrains.annotations.Nullable BlockGetter p_49817_, List<net.minecraft.network.chat.Component> tooltip, TooltipFlag p_49819_) {
-        super.appendHoverText(stack, p_49817_, tooltip, p_49819_);
-        if (stack.hasData(FSAttachments.TILE)) {
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
+        super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
+        if (stack.has(FSAttachments.TILE)) {
             MutableComponent text = Component.translatable("drawer.block.contents");
-            tooltip.add(text.withStyle(ChatFormatting.GRAY));
-            tooltip.add(Component.literal(""));
-            tooltip.add(Component.literal(""));
+            tooltipComponents.add(text.withStyle(ChatFormatting.GRAY));
+            tooltipComponents.add(Component.literal(""));
+            tooltipComponents.add(Component.literal(""));
         }
 
         if (this instanceof FramedBlock) {
-            tooltip.add(Component.translatable("frameddrawer.use").withStyle(ChatFormatting.GRAY));
+            tooltipComponents.add(Component.translatable("frameddrawer.use").withStyle(ChatFormatting.GRAY));
         }
     }
 
@@ -224,7 +243,7 @@ public abstract class Drawer<T extends ControllableDrawerTile<T>> extends Rotata
         BlockEntity entity = level.getBlockEntity(pos);
         ItemStack stack = new ItemStack(this);
         if (entity instanceof FramedTile framedDrawerTile && framedDrawerTile.getFramedDrawerModelData() != null && !framedDrawerTile.getFramedDrawerModelData().getDesign().isEmpty()) {
-            stack.setData(FSAttachments.STYLE, framedDrawerTile.getFramedDrawerModelData().serializeNBT());
+            stack.set(FSAttachments.STYLE, framedDrawerTile.getFramedDrawerModelData().serializeNBT(level.registryAccess()));
             return stack;
         }
         if (entity instanceof ControllableDrawerTile<?> tile) {

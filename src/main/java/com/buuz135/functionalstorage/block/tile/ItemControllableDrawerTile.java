@@ -12,6 +12,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -103,13 +104,13 @@ public abstract class ItemControllableDrawerTile<T extends ItemControllableDrawe
                             Direction direction = UpgradeItem.getDirection(stack);
                             AABB box = new AABB(pos.relative(direction));
                             for (ItemEntity entitiesOfClass : level.getEntitiesOfClass(ItemEntity.class, box)) {
-                                ItemStack pulledStack = ItemHandlerHelper.copyStackWithSize(entitiesOfClass.getItem(), Math.min(entitiesOfClass.getItem().getCount(), FunctionalStorageConfig.UPGRADE_COLLECTOR_ITEMS));
+                                ItemStack pulledStack = entitiesOfClass.getItem().copyWithCount(Math.min(entitiesOfClass.getItem().getCount(), FunctionalStorageConfig.UPGRADE_COLLECTOR_ITEMS));
                                 if (pulledStack.isEmpty()) continue;
                                 boolean hasWorked = false;
                                 for (int ourSlot = 0; ourSlot < this.getStorage().getSlots(); ourSlot++) {
                                     ItemStack simulated = getStorage().insertItem(ourSlot, pulledStack, true);
                                     if (simulated.getCount() != pulledStack.getCount()) {
-                                        getStorage().insertItem(ourSlot, ItemHandlerHelper.copyStackWithSize(entitiesOfClass.getItem(), pulledStack.getCount() - simulated.getCount()), false);
+                                        getStorage().insertItem(ourSlot, entitiesOfClass.getItem().copyWithCount(pulledStack.getCount() - simulated.getCount()), false);
                                         entitiesOfClass.getItem().shrink(pulledStack.getCount() - simulated.getCount());
                                         hasWorked = true;
                                         break;
@@ -127,7 +128,7 @@ public abstract class ItemControllableDrawerTile<T extends ItemControllableDrawe
     @Override
     public InteractionResult onSlotActivated(Player playerIn, InteractionHand hand, Direction facing, double hitX, double hitY, double hitZ, int slot) {
         ItemStack stack = playerIn.getItemInHand(hand);
-        if (super.onActivated(playerIn, hand, facing, hitX, hitY, hitZ) == InteractionResult.SUCCESS) {
+        if (super.onActivated(playerIn, hand, facing, hitX, hitY, hitZ) == ItemInteractionResult.SUCCESS) {
             return InteractionResult.SUCCESS;
         }
         if (slot != -1 && isServer()) {

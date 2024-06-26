@@ -81,7 +81,7 @@ public class EnderDrawerBlock extends Drawer<EnderDrawerTile> {
     @Override
     protected void copyTo(EnderDrawerTile tile, ItemStack stack) {
         if (!tile.isEverythingEmpty()) {
-            stack.setData(FSAttachments.TILE, tile.saveWithoutMetadata());
+            stack.set(FSAttachments.TILE, tile.saveWithoutMetadata(tile.getLevel().registryAccess()));
         }
     }
 
@@ -105,12 +105,12 @@ public class EnderDrawerBlock extends Drawer<EnderDrawerTile> {
 
 
     @Override
-    public void appendHoverText(ItemStack p_49816_, @Nullable BlockGetter p_49817_, List<Component> tooltip, TooltipFlag p_49819_) {
-        if (p_49816_.hasData(FSAttachments.TILE)) {
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
+        if (stack.has(FSAttachments.TILE)) {
             MutableComponent text = Component.translatable("linkingtool.ender.frequency");
-            tooltip.add(text.withStyle(ChatFormatting.GRAY));
-            tooltip.add(Component.literal(""));
-            tooltip.add(Component.literal(""));
+            tooltipComponents.add(text.withStyle(ChatFormatting.GRAY));
+            tooltipComponents.add(Component.literal(""));
+            tooltipComponents.add(Component.literal(""));
         }
 
     }

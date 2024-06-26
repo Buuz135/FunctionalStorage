@@ -4,6 +4,7 @@ import com.buuz135.functionalstorage.FunctionalStorage;
 import com.buuz135.functionalstorage.item.FSAttachments;
 import com.buuz135.functionalstorage.item.StorageUpgradeItem;
 import com.buuz135.functionalstorage.util.CompactingUtil;
+import com.buuz135.functionalstorage.util.Utils;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.item.ItemStack;
@@ -49,11 +50,11 @@ public class CompactingStackItemHandler implements IItemHandler, INBTSerializabl
         this.downgrade = false;
         this.isVoid = false;
         this.isCreative = false;
-        if (stack.hasData(FSAttachments.TILE)) {
-            var tile = stack.getData(FSAttachments.TILE);
-            deserializeNBT(tile.getCompound("handler"));
+        if (stack.has(FSAttachments.TILE)) {
+            var tile = stack.get(FSAttachments.TILE);
+            deserializeNBT(Utils.registryAccess(), tile.getCompound("handler"));
             for (Tag tag : tile.getCompound("storageUpgrades").getList("Items", Tag.TAG_COMPOUND)) {
-                ItemStack itemStack = ItemStack.of((CompoundTag) tag);
+                ItemStack itemStack = Utils.deserialize(Utils.registryAccess(), (CompoundTag) tag);
                 if (itemStack.getItem() instanceof StorageUpgradeItem) {
                     if (multiplier == 1) multiplier = ((StorageUpgradeItem) itemStack.getItem()).getStorageMultiplier();
                     else multiplier *= ((StorageUpgradeItem) itemStack.getItem()).getStorageMultiplier();
@@ -66,7 +67,7 @@ public class CompactingStackItemHandler implements IItemHandler, INBTSerializabl
                 }
             }
             for (Tag tag : tile.getCompound("utilityUpgrades").getList("Items", Tag.TAG_COMPOUND)) {
-                ItemStack itemStack = ItemStack.of((CompoundTag) tag);
+                ItemStack itemStack = Utils.deserialize(Utils.registryAccess(), (CompoundTag) tag);
                 if (itemStack.getItem().equals(FunctionalStorage.VOID_UPGRADE.get())) {
                     this.isVoid = true;
                 }
@@ -104,14 +105,14 @@ public class CompactingStackItemHandler implements IItemHandler, INBTSerializabl
                 onChange();
             }
             if (inserted == stack.getCount() * result.getNeeded() || isVoid()) return ItemStack.EMPTY;
-            return ItemHandlerHelper.copyStackWithSize(stack, stack.getCount() - inserted / result.getNeeded());
+            return stack.copyWithCount(stack.getCount() - inserted / result.getNeeded());
         }
         return stack;
     }
 
     private boolean isVoidValid(ItemStack stack) {
         for (CompactingUtil.Result result : this.resultList) {
-            if (ItemStack.isSameItemSameTags(result.getResult(), stack)) return true;
+            if (ItemStack.isSameItemSameComponents(result.getResult(), stack)) return true;
         }
         return false;
     }
@@ -163,7 +164,7 @@ public class CompactingStackItemHandler implements IItemHandler, INBTSerializabl
                     this.amount -= stackAmount;
                     onChange();
                 }
-                return ItemHandlerHelper.copyStackWithSize(bigStack.getResult(), amount);
+                return bigStack.getResult().copyWithCount(amount);
             }
 
 
@@ -196,20 +197,20 @@ public class CompactingStackItemHandler implements IItemHandler, INBTSerializabl
         if (slot < this.slots) {
             CompactingUtil.Result bigStack = this.resultList.get(slot);
             ItemStack fl = bigStack.getResult();
-            return !fl.isEmpty() && ItemStack.isSameItemSameTags(fl, stack);
+            return !fl.isEmpty() && ItemStack.isSameItemSameComponents(fl, stack);
         }
         return false;
     }
 
     @Override
-    public CompoundTag serializeNBT() {
+    public CompoundTag serializeNBT(net.minecraft.core.HolderLookup.Provider provider) {
         CompoundTag compoundTag = new CompoundTag();
-        compoundTag.put(PARENT, this.getParent().save(new CompoundTag()));
+        compoundTag.put(PARENT, this.getParent().saveOptional(provider));
         compoundTag.putInt(AMOUNT, this.amount);
         CompoundTag items = new CompoundTag();
         for (int i = 0; i < this.resultList.size(); i++) {
             CompoundTag bigStack = new CompoundTag();
-            bigStack.put(STACK, this.resultList.get(i).getResult().save(new CompoundTag()));
+            bigStack.put(STACK, this.resultList.get(i).getResult().saveOptional(provider));
             bigStack.putInt(AMOUNT, this.resultList.get(i).getNeeded());
             items.put(i + "", bigStack);
         }
@@ -218,19 +219,18 @@ public class CompactingStackItemHandler implements IItemHandler, INBTSerializabl
     }
 
     @Override
-    public void deserializeNBT(CompoundTag nbt) {
-        this.parent = ItemStack.of(nbt.getCompound(PARENT));
+    public void deserializeNBT(net.minecraft.core.HolderLookup.Provider provider, CompoundTag nbt) {
+        this.parent = Utils.deserialize(provider, nbt.getCompound(PARENT));
         this.amount = nbt.getInt(AMOUNT);
         for (String allKey : nbt.getCompound(BIG_ITEMS).getAllKeys()) {
-            this.resultList.get(Integer.parseInt(allKey)).setResult(ItemStack.of(nbt.getCompound(BIG_ITEMS).getCompound(allKey).getCompound(STACK)));
+            this.resultList.get(Integer.parseInt(allKey)).setResult(Utils.deserialize(provider, nbt.getCompound(BIG_ITEMS).getCompound(allKey).getCompound(STACK)));
             this.resultList.get(Integer.parseInt(allKey)).setNeeded(Math.max(1, nbt.getCompound(BIG_ITEMS).getCompound(allKey).getInt(AMOUNT)));
         }
     }
 
     public void onChange() {
-        if (stack.hasData(FSAttachments.TILE))
-            stack.setData(FSAttachments.TILE, new CompoundTag());
-        stack.getData(FSAttachments.TILE).put("handler", serializeNBT());
+        stack.set(FSAttachments.TILE, new CompoundTag());
+        stack.get(FSAttachments.TILE).put("handler", serializeNBT(Utils.registryAccess()));
     }
 
     public int getMultiplier() {

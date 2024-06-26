@@ -21,16 +21,16 @@ public class EnderInventoryHandler extends BigInventoryHandler implements ILocka
     }
 
     @Override
-    public CompoundTag serializeNBT() {
-        CompoundTag compoundTag = super.serializeNBT();
+    public CompoundTag serializeNBT(net.minecraft.core.HolderLookup.Provider provider) {
+        CompoundTag compoundTag = super.serializeNBT(provider);
         compoundTag.putBoolean(NBT_LOCKED, this.locked);
         compoundTag.putBoolean(NBT_VOID, this.voidItems);
         return compoundTag;
     }
 
     @Override
-    public void deserializeNBT(CompoundTag nbt) {
-        super.deserializeNBT(nbt);
+    public void deserializeNBT(net.minecraft.core.HolderLookup.Provider provider, CompoundTag nbt) {
+        super.deserializeNBT(provider, nbt);
         this.locked = nbt.getBoolean(NBT_LOCKED);
         this.voidItems = nbt.getBoolean(NBT_VOID);
     }

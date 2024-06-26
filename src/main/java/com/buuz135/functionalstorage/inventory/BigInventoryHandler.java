@@ -1,6 +1,7 @@
 package com.buuz135.functionalstorage.inventory;
 
 import com.buuz135.functionalstorage.FunctionalStorage;
+import com.buuz135.functionalstorage.util.Utils;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.common.util.INBTSerializable;
@@ -55,12 +56,12 @@ public abstract class BigInventoryHandler implements IItemHandler, INBTSerializa
             int inserted = Math.min(getSlotLimit(slot) - bigStack.getAmount(), stack.getCount());
             if (!simulate) {
                 if (bigStack.getStack().isEmpty())
-                    bigStack.setStack(ItemHandlerHelper.copyStackWithSize(stack, stack.getMaxStackSize()));
+                    bigStack.setStack(stack.copyWithCount(stack.getMaxStackSize()));
                 bigStack.setAmount(Math.min(bigStack.getAmount() + inserted, getSlotLimit(slot)));
                 onChange();
             }
             if (inserted == stack.getCount() || isVoid()) return ItemStack.EMPTY;
-            return ItemHandlerHelper.copyStackWithSize(stack, stack.getCount() - inserted);
+            return stack.copyWithCount(stack.getCount() - inserted);
         }
         return stack;
     }
@@ -87,7 +88,7 @@ public abstract class BigInventoryHandler implements IItemHandler, INBTSerializa
                     bigStack.setAmount(bigStack.getAmount() - amount);
                     onChange();
                 }
-                return ItemHandlerHelper.copyStackWithSize(bigStack.getStack(), amount);
+                return bigStack.getStack().copyWithCount(amount);
             }
         }
         return ItemStack.EMPTY;
@@ -116,25 +117,25 @@ public abstract class BigInventoryHandler implements IItemHandler, INBTSerializa
             BigStack bigStack = this.storedStacks.get(slot);
             ItemStack fl = bigStack.getStack();
             if (isLocked() && fl.isEmpty()) return false;
-            return fl.isEmpty() || (ItemStack.isSameItemSameTags(fl, stack));
+            return fl.isEmpty() || (ItemStack.isSameItemSameComponents(fl, stack));
         }
         return false;
     }
 
     private boolean isVoidValid(ItemStack stack){
         for (BigStack storedStack : this.storedStacks) {
-            if (ItemStack.isSameItemSameTags(storedStack.getStack(), stack)) return true;
+            if (ItemStack.isSameItemSameComponents(storedStack.getStack(), stack)) return true;
         }
         return false;
     }
 
     @Override
-    public CompoundTag serializeNBT() {
+    public CompoundTag serializeNBT(net.minecraft.core.HolderLookup.Provider provider) {
         CompoundTag compoundTag = new CompoundTag();
         CompoundTag items = new CompoundTag();
         for (int i = 0; i < this.storedStacks.size(); i++) {
             CompoundTag bigStack = new CompoundTag();
-            bigStack.put(STACK, this.storedStacks.get(i).getStack().save(new CompoundTag()));
+            bigStack.put(STACK, this.storedStacks.get(i).getStack().saveOptional(provider));
             bigStack.putInt(AMOUNT, this.storedStacks.get(i).getAmount());
             items.put(i + "", bigStack);
         }
@@ -143,9 +144,9 @@ public abstract class BigInventoryHandler implements IItemHandler, INBTSerializa
     }
 
     @Override
-    public void deserializeNBT(CompoundTag nbt) {
+    public void deserializeNBT(net.minecraft.core.HolderLookup.Provider provider, CompoundTag nbt) {
         for (String allKey : nbt.getCompound(BIG_ITEMS).getAllKeys()) {
-            this.storedStacks.get(Integer.parseInt(allKey)).setStack(ItemStack.of(nbt.getCompound(BIG_ITEMS).getCompound(allKey).getCompound(STACK)));
+            this.storedStacks.get(Integer.parseInt(allKey)).setStack(Utils.deserialize(provider, nbt.getCompound(BIG_ITEMS).getCompound(allKey).getCompound(STACK)));
             this.storedStacks.get(Integer.parseInt(allKey)).setAmount(nbt.getCompound(BIG_ITEMS).getCompound(allKey).getInt(AMOUNT));
         }
     }

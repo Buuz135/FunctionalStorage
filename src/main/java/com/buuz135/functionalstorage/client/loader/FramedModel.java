@@ -81,10 +81,7 @@ public class FramedModel implements IUnbakedGeometry<FramedModel> {
     }
 
     @Override
-    public BakedModel bake(IGeometryBakingContext context, ModelBaker bakery, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelState, ItemOverrides overrides, ResourceLocation modelLocation) {
-        if (logWarning)
-            LOGGER.warn("Model \"" + modelLocation + "\" is using the deprecated \"parts\" field in its composite model instead of \"children\". This field will be removed in 1.20.");
-
+    public BakedModel bake(IGeometryBakingContext context, ModelBaker baker, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelState, ItemOverrides overrides) {
         Material particleLocation = context.getMaterial("particle");
         TextureAtlasSprite particle = spriteGetter.apply(particleLocation);
 
@@ -98,7 +95,7 @@ public class FramedModel implements IUnbakedGeometry<FramedModel> {
             if (!context.isComponentVisible(name, true))
                 continue;
             var model = entry.getValue();
-            bakedPartsBuilder.put(name, model.bake(bakery, model, spriteGetter, modelState, modelLocation, true));
+            bakedPartsBuilder.put(name, model.bake(baker, model, spriteGetter, modelState, true));
         }
         var bakedParts = bakedPartsBuilder.build();
 

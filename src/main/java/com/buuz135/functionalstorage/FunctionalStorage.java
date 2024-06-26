@@ -15,7 +15,6 @@ import com.buuz135.functionalstorage.block.FramedDrawerBlock;
 import com.buuz135.functionalstorage.block.FramedDrawerControllerBlock;
 import com.buuz135.functionalstorage.block.FramedSimpleCompactingDrawerBlock;
 import com.buuz135.functionalstorage.block.SimpleCompactingDrawerBlock;
-import com.buuz135.functionalstorage.block.tile.ArmoryCabinetTile;
 import com.buuz135.functionalstorage.block.tile.CompactingDrawerTile;
 import com.buuz135.functionalstorage.block.tile.CompactingFramedDrawerTile;
 import com.buuz135.functionalstorage.block.tile.DrawerControllerTile;
@@ -25,9 +24,7 @@ import com.buuz135.functionalstorage.block.tile.FluidDrawerTile;
 import com.buuz135.functionalstorage.block.tile.FramedDrawerControllerTile;
 import com.buuz135.functionalstorage.block.tile.FramedDrawerTile;
 import com.buuz135.functionalstorage.block.tile.FramedSimpleCompactingDrawerTile;
-import com.buuz135.functionalstorage.block.tile.ItemControllableDrawerTile;
 import com.buuz135.functionalstorage.block.tile.SimpleCompactingDrawerTile;
-import com.buuz135.functionalstorage.block.tile.StorageControllerTile;
 import com.buuz135.functionalstorage.client.ClientSetup;
 import com.buuz135.functionalstorage.client.CompactingDrawerRenderer;
 import com.buuz135.functionalstorage.client.ControllerRenderer;
@@ -57,7 +54,6 @@ import com.buuz135.functionalstorage.util.DrawerWoodType;
 import com.buuz135.functionalstorage.util.IWoodType;
 import com.buuz135.functionalstorage.util.NumberUtils;
 import com.buuz135.functionalstorage.util.TooltipUtil;
-import com.hrznstudio.titanium.block.RotatableBlock;
 import com.hrznstudio.titanium.datagenerator.loot.TitaniumLootTableProvider;
 import com.hrznstudio.titanium.datagenerator.model.BlockItemModelGeneratorProvider;
 import com.hrznstudio.titanium.event.handler.EventManager;
@@ -67,33 +63,22 @@ import com.hrznstudio.titanium.nbthandler.NBTManager;
 import com.hrznstudio.titanium.network.NetworkHandler;
 import com.hrznstudio.titanium.recipe.serializer.GenericSerializer;
 import com.hrznstudio.titanium.tab.TitaniumTab;
-import com.hrznstudio.titanium.util.RayTraceUtils;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.ItemLike;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.HitResult;
-import net.minecraft.world.phys.shapes.BooleanOp;
-import net.minecraft.world.phys.shapes.Shapes;
-import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.EventPriority;
@@ -113,12 +98,9 @@ import net.neoforged.neoforge.client.model.generators.ItemModelProvider;
 import net.neoforged.neoforge.client.model.generators.ModelFile;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.common.crafting.IngredientType;
-import net.neoforged.neoforge.common.util.NonNullLazy;
+import net.neoforged.neoforge.common.util.Lazy;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
-import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
-import net.neoforged.neoforge.event.level.BlockEvent;
-import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import net.neoforged.neoforge.registries.RegisterEvent;
@@ -133,7 +115,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -149,7 +130,7 @@ public class FunctionalStorage extends ModuleController {
     }
 
     // Directly reference a log4j logger.
-    public static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger();
 
     public static ConcurrentLinkedQueue<IWoodType> WOOD_TYPES = new ConcurrentLinkedQueue<>();
 
@@ -180,7 +161,7 @@ public class FunctionalStorage extends ModuleController {
     public static DeferredHolder<Item, Item> REDSTONE_UPGRADE;
     public static DeferredHolder<Item, Item> CREATIVE_UPGRADE;
 
-    public static TitaniumTab TAB = new TitaniumTab(new ResourceLocation(MOD_ID, "main"));
+    public static TitaniumTab TAB = new TitaniumTab(com.buuz135.functionalstorage.util.Utils.resourceLocation(MOD_ID, "main"));
     public static Holder<RecipeSerializer<?>> CUSTOM_COMPACTING_RECIPE_SERIALIZER;
     public static Holder<RecipeType<?>> CUSTOM_COMPACTING_RECIPE_TYPE;
 
@@ -291,7 +272,7 @@ public class FunctionalStorage extends ModuleController {
 
         this.addCreativeTab("main", () -> new ItemStack(DRAWER_CONTROLLER), MOD_ID, TAB);
 
-        CUSTOM_COMPACTING_RECIPE_TYPE = getRegistries().registerGeneric(Registries.RECIPE_TYPE, "custom_compacting", () -> RecipeType.simple(new ResourceLocation(MOD_ID, "custom_compacting")));
+        CUSTOM_COMPACTING_RECIPE_TYPE = getRegistries().registerGeneric(Registries.RECIPE_TYPE, "custom_compacting", () -> RecipeType.simple(com.buuz135.functionalstorage.util.Utils.resourceLocation(MOD_ID, "custom_compacting")));
 
         CUSTOM_COMPACTING_RECIPE_SERIALIZER = getRegistries().registerGeneric(Registries.RECIPE_SERIALIZER, "custom_compacting", () -> new GenericSerializer<>(CustomCompactingRecipe.class, CUSTOM_COMPACTING_RECIPE_TYPE::value, CustomCompactingRecipe.CODEC));
 
@@ -374,10 +355,10 @@ public class FunctionalStorage extends ModuleController {
             item.getItemColors().register((stack, tint) -> {
                 LinkingToolItem.LinkingMode linkingMode = LinkingToolItem.getLinkingMode(stack);
                 LinkingToolItem.ActionMode linkingAction = LinkingToolItem.getActionMode(stack);
-                if (tint != 0 && stack.hasData(FSAttachments.ENDER_FREQUENCY)) {
+                if (tint != 0 && stack.has(FSAttachments.ENDER_FREQUENCY)) {
                     return new Color(44, 150, 88).getRGB();
                 }
-                if (tint == 3 && stack.hasData(FSAttachments.CONTROLLER)) {
+                if (tint == 3 && stack.has(FSAttachments.CONTROLLER)) {
                     return Color.RED.getRGB();
                 }
                 if (tint == 1) {
@@ -413,11 +394,11 @@ public class FunctionalStorage extends ModuleController {
             ItemBlockRenderTypes.setRenderLayer(FRAMED_SIMPLE_COMPACTING_DRAWER.getBlock(), RenderType.cutout());
         }).subscribe();
         EventManager.forge(RenderTooltipEvent.Pre.class).process(itemTooltipEvent -> {
-            if (itemTooltipEvent.getItemStack().getItem().equals(FunctionalStorage.ENDER_DRAWER.getBlock().asItem()) && itemTooltipEvent.getItemStack().hasData(FSAttachments.TILE)) {
-                TooltipUtil.renderItems(itemTooltipEvent.getGraphics(), EnderDrawerBlock.getFrequencyDisplay(itemTooltipEvent.getItemStack().getData(FSAttachments.TILE).getString("frequency")), itemTooltipEvent.getX() + 14, itemTooltipEvent.getY() + 11);
+            if (itemTooltipEvent.getItemStack().getItem().equals(FunctionalStorage.ENDER_DRAWER.getBlock().asItem()) && itemTooltipEvent.getItemStack().has(FSAttachments.TILE)) {
+                TooltipUtil.renderItems(itemTooltipEvent.getGraphics(), EnderDrawerBlock.getFrequencyDisplay(itemTooltipEvent.getItemStack().get(FSAttachments.TILE).getString("frequency")), itemTooltipEvent.getX() + 14, itemTooltipEvent.getY() + 11);
             }
-            if (itemTooltipEvent.getItemStack().is(FunctionalStorage.LINKING_TOOL.get()) && itemTooltipEvent.getItemStack().hasData(FSAttachments.ENDER_FREQUENCY)) {
-                TooltipUtil.renderItems(itemTooltipEvent.getGraphics(), EnderDrawerBlock.getFrequencyDisplay(itemTooltipEvent.getItemStack().getData(FSAttachments.ENDER_FREQUENCY)), itemTooltipEvent.getX() + 14, itemTooltipEvent.getY() + 11);
+            if (itemTooltipEvent.getItemStack().is(FunctionalStorage.LINKING_TOOL.get()) && itemTooltipEvent.getItemStack().has(FSAttachments.ENDER_FREQUENCY)) {
+                TooltipUtil.renderItems(itemTooltipEvent.getGraphics(), EnderDrawerBlock.getFrequencyDisplay(itemTooltipEvent.getItemStack().get(FSAttachments.ENDER_FREQUENCY)), itemTooltipEvent.getX() + 14, itemTooltipEvent.getY() + 11);
             }
             var iItemHandler = itemTooltipEvent.getItemStack().getCapability(Capabilities.ItemHandler.ITEM);
             if (iItemHandler != null) {
@@ -444,14 +425,14 @@ public class FunctionalStorage extends ModuleController {
             }
         }).subscribe();
         EventManager.mod(ModelEvent.RegisterGeometryLoaders.class).process(modelRegistryEvent -> {
-            modelRegistryEvent.register(new ResourceLocation(MOD_ID, "framedblock"), FramedModel.Loader.INSTANCE);
+            modelRegistryEvent.register(com.buuz135.functionalstorage.util.Utils.resourceLocation(MOD_ID, "framedblock"), FramedModel.Loader.INSTANCE);
         }).subscribe();
         ClientSetup.init();
     }
 
     @Override
     public void addDataProvider(GatherDataEvent event) {
-        NonNullLazy<List<Block>> blocksToProcess = NonNullLazy.of(() ->
+        Lazy<List<Block>> blocksToProcess = Lazy.of(() ->
                 BuiltInRegistries.BLOCK.stream()
                         .filter(basicBlock -> Optional.of(BuiltInRegistries.BLOCK.getKey(basicBlock))
                                 .map(ResourceLocation::getNamespace)
@@ -462,7 +443,7 @@ public class FunctionalStorage extends ModuleController {
         if (true) {
             event.getGenerator().addProvider(true, new BlockItemModelGeneratorProvider(event.getGenerator(), MOD_ID, blocksToProcess));
             event.getGenerator().addProvider(true, new FunctionalStorageBlockstateProvider(event.getGenerator(), event.getExistingFileHelper(), blocksToProcess));
-            event.getGenerator().addProvider(true, new TitaniumLootTableProvider(event.getGenerator(), blocksToProcess));
+            event.getGenerator().addProvider(true, new TitaniumLootTableProvider(event.getGenerator(), blocksToProcess, event.getLookupProvider()));
 
             var blockTags = new FunctionalStorageBlockTagsProvider(event.getGenerator(), event.getLookupProvider(), MOD_ID, event.getExistingFileHelper());
             event.getGenerator().addProvider(true, blockTags);
@@ -472,7 +453,7 @@ public class FunctionalStorage extends ModuleController {
             event.getGenerator().addProvider(true, new ItemModelProvider(event.getGenerator().getPackOutput(), MOD_ID, event.getExistingFileHelper()) {
                 @Override
                 protected void registerModels() {
-                    blocksToProcess.get().forEach(block -> withUnchecked(BuiltInRegistries.BLOCK.getKey(block).getPath(), new ResourceLocation(FunctionalStorage.MOD_ID, "block/" + BuiltInRegistries.BLOCK.getKey(block).getPath())));
+                    blocksToProcess.get().forEach(block -> withUnchecked(BuiltInRegistries.BLOCK.getKey(block).getPath(), com.buuz135.functionalstorage.util.Utils.resourceLocation(FunctionalStorage.MOD_ID, "block/" + BuiltInRegistries.BLOCK.getKey(block).getPath())));
                     for (StorageUpgradeItem.StorageTier storageTier : STORAGE_UPGRADES.keySet()) {
                         item(STORAGE_UPGRADES.get(storageTier).get());
                     }
@@ -485,7 +466,7 @@ public class FunctionalStorage extends ModuleController {
                 }
 
                 private void item(Item item) {
-                    withUnchecked(BuiltInRegistries.ITEM.getKey(item).getPath(), new ResourceLocation("minecraft:item/generated")).texture( "layer0", new ResourceLocation(MOD_ID, "item/" + BuiltInRegistries.ITEM.getKey(item).getPath()));
+                    withUnchecked(BuiltInRegistries.ITEM.getKey(item).getPath(), com.buuz135.functionalstorage.util.Utils.resourceLocation("minecraft:item/generated")).texture( "layer0", com.buuz135.functionalstorage.util.Utils.resourceLocation(MOD_ID, "item/" + BuiltInRegistries.ITEM.getKey(item).getPath()));
                 }
 
                 private ItemModelBuilder withUnchecked(String name, ResourceLocation parent){
@@ -521,6 +502,6 @@ public class FunctionalStorage extends ModuleController {
                 }
             });
         }
-        event.getGenerator().addProvider(true, new FunctionalStorageRecipesProvider(event.getGenerator(), blocksToProcess));
+        event.getGenerator().addProvider(true, new FunctionalStorageRecipesProvider(event.getGenerator(), blocksToProcess, event.getLookupProvider()));
     }
 }

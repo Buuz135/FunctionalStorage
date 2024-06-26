@@ -16,7 +16,7 @@ import net.minecraft.world.item.crafting.RecipeType;
 @JeiPlugin
 public class JEIPlugin implements IModPlugin {
 
-    public static ResourceLocation PLUGIN_ID = new ResourceLocation(FunctionalStorage.MOD_ID, "main");
+    public static ResourceLocation PLUGIN_ID = com.buuz135.functionalstorage.util.Utils.resourceLocation(FunctionalStorage.MOD_ID, "main");
 
     private CompactingRecipeCategory compactingRecipeCategory;
 

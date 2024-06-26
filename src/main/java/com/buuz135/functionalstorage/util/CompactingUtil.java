@@ -6,21 +6,19 @@ import com.hrznstudio.titanium.util.RecipeUtil;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.CraftingContainer;
-import net.minecraft.world.inventory.TransientCraftingContainer;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.items.ItemHandlerHelper;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.IntStream;
 
 
 /**
@@ -83,12 +81,12 @@ public class CompactingUtil {
     private Result findUpperTier(ItemStack stack){
         for (CustomCompactingRecipe recipe : this.recipes) {
             if (ItemStack.isSameItem(recipe.lower_input, stack)) {
-                return new Result(ItemHandlerHelper.copyStackWithSize(recipe.higher_input, 1), recipe.lower_input.getCount());
+                return new Result(recipe.higher_input.copyWithCount(1), recipe.lower_input.getCount());
             }
         }
         //Checking 3x3
         int sizeCheck = 9;
-        CraftingContainer container = createContainerAndFill(3, stack);
+        var container = createContainerAndFill(3, stack);
         List<ItemStack> outputs = findAllMatchingRecipes(container);
         List<ItemStack> realOutputs = new ArrayList<>();
         if (outputs.size() == 0){
@@ -125,7 +123,7 @@ public class CompactingUtil {
     private Result findLowerTier(ItemStack stack){
         for (CustomCompactingRecipe recipe : this.recipes) {
             if (ItemStack.isSameItem(recipe.higher_input, stack)) {
-                return new Result(ItemHandlerHelper.copyStackWithSize(recipe.lower_input, 1), recipe.lower_input.getCount());
+                return new Result(recipe.lower_input.copyWithCount(1), recipe.lower_input.getCount());
             }
         }
         List<ItemStack> candidates = new ArrayList<>();
@@ -141,7 +139,7 @@ public class CompactingUtil {
                     candidates.add(match);
                     candidatesRate.put(match, recipeSize);
                 }
-                CraftingContainer container = createContainerAndFill(1, output);
+                var container = createContainerAndFill(1, output);
                 List<ItemStack> matchStacks = findAllMatchingRecipes(container);
                 for (ItemStack matchStack : matchStacks) {
                     if (ItemStack.isSameItem(match, matchStack) && matchStack.getCount() == recipeSize) {
@@ -163,7 +161,7 @@ public class CompactingUtil {
         return new Result(ItemStack.EMPTY, 0);
     }
 
-    private List<ItemStack> findAllMatchingRecipes(CraftingContainer crafting) {
+    private List<ItemStack> findAllMatchingRecipes(CraftingInput crafting) {
         List<ItemStack> candidates = new ArrayList<>();
         for (var rcp : level.getRecipeManager().getRecipesFor(RecipeType.CRAFTING, crafting, level)) {
             var recipe = rcp.value();
@@ -218,22 +216,9 @@ public class CompactingUtil {
         return match;
     }
 
-    private CraftingContainer createContainerAndFill(int size, ItemStack stack){
-        CraftingContainer inventoryCrafting = new TransientCraftingContainer(new AbstractContainerMenu(null, 0) {
-            @Override
-            public ItemStack quickMoveStack(Player p_38941_, int p_38942_) {
-                return ItemStack.EMPTY;
-            }
-
-            @Override
-            public boolean stillValid(Player playerIn) {
-                return false;
-            }
-        }, size, size);
-        for (int i = 0; i < size * size; i++) {
-            inventoryCrafting.setItem(i, stack.copy());
-        }
-        return inventoryCrafting;
+    private CraftingInput createContainerAndFill(int size, ItemStack stack){
+        return CraftingInput.of(size, size, IntStream.range(0, size * size)
+                .mapToObj(i -> stack.copy()).toList());
     }
 
     public static class Result{

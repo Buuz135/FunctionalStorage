@@ -133,7 +133,7 @@ public class FluidDrawerInfoGuiAddon extends BasicScreenAddon {
                 if (over.isEmpty()) {
                     componentList.add(Component.translatable("gui.functionalstorage.fluid").withStyle(ChatFormatting.GOLD).append(Component.literal("Empty").withStyle(ChatFormatting.WHITE)));
                 } else {
-                    componentList.add(Component.translatable("gui.functionalstorage.fluid").withStyle(ChatFormatting.GOLD).append(over.getDisplayName().copy().withStyle(ChatFormatting.WHITE)));
+                    componentList.add(Component.translatable("gui.functionalstorage.fluid").withStyle(ChatFormatting.GOLD).append(over.getHoverName().copy().withStyle(ChatFormatting.WHITE)));
                     var amount = NumberUtils.getFormatedFluidBigNumber(over.getAmount()) + "/" + NumberUtils.getFormatedFluidBigNumber(slotMaxAmount.apply(i));
                     componentList.add(Component.translatable("gui.functionalstorage.amount").withStyle(ChatFormatting.GOLD).append(Component.literal(amount).withStyle(ChatFormatting.WHITE)));
                 }

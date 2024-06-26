@@ -15,6 +15,7 @@ import mcjty.theoneprobe.apiimpl.elements.ElementTank;
 import mcjty.theoneprobe.apiimpl.elements.ElementVertical;
 import mcjty.theoneprobe.apiimpl.styles.ProgressStyle;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
@@ -34,7 +35,7 @@ public class FunctionalDrawerProvider implements IProbeInfoProvider {
         iTheOneProbe.registerProvider(new FunctionalDrawerProvider());
         iTheOneProbe.registerElementFactory(new IElementFactory() {
             @Override
-            public IElement createElement(FriendlyByteBuf friendlyByteBuf) {
+            public IElement createElement(RegistryFriendlyByteBuf friendlyByteBuf) {
                 return new CustomElementItemStack(friendlyByteBuf);
             }
 
@@ -48,7 +49,7 @@ public class FunctionalDrawerProvider implements IProbeInfoProvider {
 
     @Override
     public ResourceLocation getID() {
-        return new ResourceLocation(FunctionalStorage.MOD_ID, "drawer");
+        return com.buuz135.functionalstorage.util.Utils.resourceLocation(FunctionalStorage.MOD_ID, "drawer");
     }
 
     @Override

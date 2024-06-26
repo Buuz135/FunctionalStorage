@@ -12,12 +12,13 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 
 public class CustomElementItemStack implements IElement {
 
-    public static ResourceLocation RL = new ResourceLocation(FunctionalStorage.MOD_ID, "drawer_element");
+    public static ResourceLocation RL = com.buuz135.functionalstorage.util.Utils.resourceLocation(FunctionalStorage.MOD_ID, "drawer_element");
 
     private final ItemStack itemStack;
     private final IItemStyle style;
@@ -36,7 +37,7 @@ public class CustomElementItemStack implements IElement {
         this.displayName = true;
     }
 
-    public CustomElementItemStack(FriendlyByteBuf buf) {
+    public CustomElementItemStack(RegistryFriendlyByteBuf buf) {
         if (buf.readBoolean()) {
             this.itemStack = NetworkTools.readItemStack(buf);
         } else {
@@ -75,7 +76,7 @@ public class CustomElementItemStack implements IElement {
     }
 
     @Override
-    public void toBytes(FriendlyByteBuf buf) {
+    public void toBytes(RegistryFriendlyByteBuf buf) {
         if (!this.itemStack.isEmpty()) {
             buf.writeBoolean(true);
             NetworkTools.writeItemStack(buf, this.itemStack);

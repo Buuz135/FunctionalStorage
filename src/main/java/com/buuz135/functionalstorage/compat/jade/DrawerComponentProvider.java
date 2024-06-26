@@ -40,14 +40,14 @@ import java.util.ArrayList;
 
 public enum DrawerComponentProvider implements IBlockComponentProvider {
     INSTANCE;
-    public static final ResourceLocation ITEM_STORAGE = new ResourceLocation("minecraft:item_storage");
+    public static final ResourceLocation ITEM_STORAGE = com.buuz135.functionalstorage.util.Utils.resourceLocation("minecraft:item_storage");
 
-    public static final ResourceLocation ID = new ResourceLocation(FunctionalStorage.MOD_ID, "drawer");
+    public static final ResourceLocation ID = com.buuz135.functionalstorage.util.Utils.resourceLocation(FunctionalStorage.MOD_ID, "drawer");
 
     @Override
     public void appendTooltip(ITooltip iTooltip, BlockAccessor blockAccessor, IPluginConfig iPluginConfig) {
         iTooltip.remove(ITEM_STORAGE);
-        iTooltip.remove(new ResourceLocation("minecraft:fluid_storage"));
+        iTooltip.remove(com.buuz135.functionalstorage.util.Utils.resourceLocation("minecraft:fluid_storage"));
 
         var helper = IElementHelper.get();
         if (blockAccessor.getBlockEntity() instanceof ControllableDrawerTile<?> controllable) {
@@ -109,9 +109,9 @@ public enum DrawerComponentProvider implements IBlockComponentProvider {
                         var contentsBox = helper.tooltip();
                         iTooltip.add(helper.text(Component.translatable("drawer.block.contents")));
                         for (var stack : stacks) {
-                            var view = new FluidView(helper.fluid(JadeFluidObject.of(stack.getFirst().getRawFluid())));
+                            var view = new FluidView(helper.fluid(JadeFluidObject.of(stack.getFirst().getFluid())));
                             ProgressStyle progressStyle = helper.progressStyle().overlay(view.overlay);
-                            contentsBox.add(helper.progress((float) stack.getFirst().getAmount() / stack.getSecond(), Component.empty().append(stack.getFirst().getDisplayName()).append(Component.literal(" x ").append(NumberUtils.getFormatedFluidBigNumber(stack.getFirst().getAmount()) + " / " + NumberUtils.getFormatedFluidBigNumber(stack.getSecond()))), progressStyle, BoxStyle.getNestedBox(), true));
+                            contentsBox.add(helper.progress((float) stack.getFirst().getAmount() / stack.getSecond(), Component.empty().append(stack.getFirst().getHoverName()).append(Component.literal(" x ").append(NumberUtils.getFormatedFluidBigNumber(stack.getFirst().getAmount()) + " / " + NumberUtils.getFormatedFluidBigNumber(stack.getSecond()))), progressStyle, BoxStyle.getNestedBox(), true));
                         }
                         iTooltip.add(helper.box(contentsBox, BoxStyle.getNestedBox()));
                     }

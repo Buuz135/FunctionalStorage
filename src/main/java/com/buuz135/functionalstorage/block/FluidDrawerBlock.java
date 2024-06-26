@@ -9,6 +9,7 @@ import com.buuz135.functionalstorage.item.ConfigurationToolItem;
 import com.buuz135.functionalstorage.item.FSAttachments;
 import com.buuz135.functionalstorage.item.LinkingToolItem;
 import com.buuz135.functionalstorage.util.NumberUtils;
+import com.buuz135.functionalstorage.util.Utils;
 import com.hrznstudio.titanium.block.RotatableBlock;
 import com.hrznstudio.titanium.datagenerator.loot.block.BasicBlockLootTables;
 import com.hrznstudio.titanium.recipe.generator.TitaniumShapedRecipeBuilder;
@@ -20,13 +21,16 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.RegistryOps;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.TooltipFlag;
@@ -133,14 +137,14 @@ public class FluidDrawerBlock extends Drawer<FluidDrawerTile> {
     }
 
     @Override
-    public void appendHoverText(ItemStack itemStack, @Nullable BlockGetter p_49817_, List<Component> tooltip, TooltipFlag p_49819_) {
-        if (itemStack.hasData(FSAttachments.TILE)) {
-            var tileTag = itemStack.getData(FSAttachments.TILE).getCompound("fluidHandler");
+    public void appendHoverText(ItemStack itemStack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag tooltipFlag) {
+        if (itemStack.has(FSAttachments.TILE)) {
+            var tileTag = itemStack.get(FSAttachments.TILE).getCompound("fluidHandler");
             tooltip.add(Component.translatable("drawer.block.contents").withStyle(ChatFormatting.GRAY));
             for (int i = 0; i < type.getSlots(); i++) {
-                FluidStack stack = FluidStack.loadFluidStackFromNBT(tileTag.getCompound(i + ""));
+                FluidStack stack = FluidStack.CODEC.decode(RegistryOps.create(NbtOps.INSTANCE, Utils.registryAccess()), tileTag.getCompound(i + "")).getOrThrow().getFirst();
                 if (!stack.isEmpty())
-                    tooltip.add(Component.literal(" - " + ChatFormatting.YELLOW + NumberUtils.getFormatedFluidBigNumber(stack.getAmount()) + ChatFormatting.WHITE + " of ").append(stack.getDisplayName().copy().withStyle(ChatFormatting.GOLD)));
+                    tooltip.add(Component.literal(" - " + ChatFormatting.YELLOW + NumberUtils.getFormatedFluidBigNumber(stack.getAmount()) + ChatFormatting.WHITE + " of ").append(stack.getHoverName().copy().withStyle(ChatFormatting.GOLD)));
             }
         }
     }
@@ -152,7 +156,7 @@ public class FluidDrawerBlock extends Drawer<FluidDrawerTile> {
             for (int i = 0; i < tile.getUtilityUpgrades().getSlots(); i++) {
                 ItemStack stack = tile.getUtilityUpgrades().getStackInSlot(i);
                 if (stack.getItem().equals(FunctionalStorage.REDSTONE_UPGRADE.get())) {
-                    int redstoneSlot = stack.getData(FSAttachments.SLOT);
+                    int redstoneSlot = stack.getOrDefault(FSAttachments.SLOT, 0);
                     if (redstoneSlot < tile.getFluidHandler().getTanks()) {
                         return tile.getFluidHandler().getFluidInTank(redstoneSlot).getAmount() * 15 / tile.getFluidHandler().getTankCapacity(redstoneSlot);
                     }

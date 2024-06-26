@@ -28,10 +28,8 @@ import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.common.util.FakePlayerFactory;
 import net.neoforged.neoforge.fluids.FluidUtil;
-import net.neoforged.neoforge.fluids.IFluidBlock;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.capability.wrappers.BucketPickupHandlerWrapper;
-import net.neoforged.neoforge.fluids.capability.wrappers.FluidBlockWrapper;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -89,7 +87,7 @@ public class FluidDrawerTile extends ControllableDrawerTile<FluidDrawerTile> {
         }
         String finalSlotName = slotName;
         addGuiAddonFactory(() -> new FluidDrawerInfoGuiAddon(64, 16,
-                new ResourceLocation(FunctionalStorage.MOD_ID, "textures/block/fluid_front" + finalSlotName + ".png"),
+                com.buuz135.functionalstorage.util.Utils.resourceLocation(FunctionalStorage.MOD_ID, "textures/block/fluid_front" + finalSlotName + ".png"),
                 type.getSlots(),
                 type.getSlotPosition(),
                 this::getFluidHandler,
@@ -152,9 +150,7 @@ public class FluidDrawerTile extends ControllableDrawerTile<FluidDrawerTile> {
                             BlockState state = level.getBlockState(pos.relative(direction));
                             Block block = state.getBlock();
                             IFluidHandler targetFluidHandler = null;
-                            if (block instanceof IFluidBlock) {
-                                targetFluidHandler = new FluidBlockWrapper((IFluidBlock) block, level, pos.relative(direction));
-                            } else if (block instanceof BucketPickup) {
+                            if (block instanceof BucketPickup) {
                                 targetFluidHandler = new BucketPickupHandlerWrapper(FakePlayerFactory.get((ServerLevel) level, FP), (BucketPickup) block, level, pos.relative(direction));
                             }
                             if (targetFluidHandler != null) {

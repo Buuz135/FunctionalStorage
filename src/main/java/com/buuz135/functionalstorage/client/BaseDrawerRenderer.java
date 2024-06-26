@@ -21,23 +21,23 @@ public abstract class BaseDrawerRenderer<T extends ControllableDrawerTile<T>> im
         matrixStack.pushPose();
 
         Direction facing = tile.getFacingDirection();
-        matrixStack.mulPoseMatrix(createTransformMatrix(
+        matrixStack.mulPose(createTransformMatrix(
                 new Vector3f(0), new Vector3f(0, 180, 0), 1));
 
         if (facing == Direction.NORTH) {
-            matrixStack.mulPoseMatrix(createTransformMatrix(
+            matrixStack.mulPose(createTransformMatrix(
                     new Vector3f(-1, 0, 0), new Vector3f(0), 1));
         }
         else if (facing == Direction.EAST) {
-            matrixStack.mulPoseMatrix(createTransformMatrix(
+            matrixStack.mulPose(createTransformMatrix(
                     new Vector3f(-1, 0, -1), new Vector3f(0, -90, 0), 1));
         }
         else if (facing == Direction.SOUTH) {
-            matrixStack.mulPoseMatrix(createTransformMatrix(
+            matrixStack.mulPose(createTransformMatrix(
                     new Vector3f(0, 0, -1), new Vector3f(0, 180, 0), 1));
         }
         else if (facing == Direction.WEST) {
-            matrixStack.mulPoseMatrix(createTransformMatrix(
+            matrixStack.mulPose(createTransformMatrix(
                     new Vector3f(0, 0, 0), new Vector3f(0, 90, 0), 1));
         }
 

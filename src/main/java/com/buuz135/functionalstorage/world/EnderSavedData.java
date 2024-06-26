@@ -2,6 +2,7 @@ package com.buuz135.functionalstorage.world;
 
 import com.buuz135.functionalstorage.inventory.EnderInventoryHandler;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
@@ -29,7 +30,7 @@ public class EnderSavedData extends SavedData {
         if (accessor instanceof ServerLevel){
             ServerLevel serverWorld = ((ServerLevel) accessor).getServer().getLevel(Level.OVERWORLD);
             EnderSavedData data = serverWorld.getDataStorage().computeIfAbsent(
-                    new Factory<EnderSavedData>(() -> new EnderSavedData((ServerLevel)accessor), tag -> EnderSavedData.load(tag, (ServerLevel) accessor)), NAME);
+                    new Factory<>(() -> new EnderSavedData((ServerLevel)accessor), (tag, prov) -> EnderSavedData.load(tag, (ServerLevel) accessor)), NAME);
             return data;
         } else if (accessor instanceof ClientLevel){
             return CLIENT;
@@ -43,7 +44,7 @@ public class EnderSavedData extends SavedData {
         CompoundTag backpacks = compoundTag.getCompound("Ender");
         for (String s : backpacks.getAllKeys()) {
             EnderInventoryHandler hander = new EnderInventoryHandler(s, manager);
-            hander.deserializeNBT(backpacks.getCompound(s));
+            hander.deserializeNBT(level.registryAccess(), backpacks.getCompound(s));
             manager.itemHandlers.put(s, hander);
         }
 
@@ -59,9 +60,9 @@ public class EnderSavedData extends SavedData {
     }
 
     @Override
-    public CompoundTag save(CompoundTag tag) {
+    public CompoundTag save(CompoundTag tag, HolderLookup.Provider provider) {
         CompoundTag nbt = new CompoundTag();
-        itemHandlers.forEach((s, iItemHandler) -> nbt.put(s, iItemHandler.serializeNBT()));
+        itemHandlers.forEach((s, iItemHandler) -> nbt.put(s, iItemHandler.serializeNBT(provider)));
         tag.put("Ender", nbt);
         return tag;
     }

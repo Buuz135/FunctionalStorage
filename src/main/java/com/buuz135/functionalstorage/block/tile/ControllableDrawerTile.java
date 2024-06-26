@@ -19,6 +19,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -209,7 +210,7 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
                 }
             }
         }
-        if (super.onActivated(playerIn, hand, facing, hitX, hitY, hitZ) == InteractionResult.SUCCESS) {
+        if (super.onActivated(playerIn, hand, facing, hitX, hitY, hitZ) == ItemInteractionResult.SUCCESS) {
             return InteractionResult.SUCCESS;
         }
         if (slot == -1) {
@@ -359,7 +360,7 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
         }
 
         @Override
-        public CompoundTag serializeNBT() {
+        public CompoundTag serializeNBT(net.minecraft.core.HolderLookup.Provider provider) {
             CompoundTag compoundTag = new CompoundTag();
             for (ConfigurationToolItem.ConfigurationAction action : this.options.keySet()) {
                 compoundTag.putBoolean(action.name(), this.options.get(action));
@@ -371,7 +372,7 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
         }
 
         @Override
-        public void deserializeNBT(CompoundTag nbt) {
+        public void deserializeNBT(net.minecraft.core.HolderLookup.Provider provider, CompoundTag nbt) {
             for (String allKey : nbt.getAllKeys()) {
                 if (allKey.startsWith("Advanced: ")) {
                     this.advancedOptions.put(ConfigurationToolItem.ConfigurationAction.valueOf(allKey.replace("Advanced: ", "")), nbt.getInt(allKey));

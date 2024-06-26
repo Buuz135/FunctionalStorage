@@ -5,18 +5,20 @@ import com.buuz135.functionalstorage.inventory.BigInventoryHandler;
 import com.buuz135.functionalstorage.inventory.BigInventoryHandler.BigStack;
 import com.buuz135.functionalstorage.item.FSAttachments;
 import com.buuz135.functionalstorage.item.StorageUpgradeItem;
+import com.buuz135.functionalstorage.util.Utils;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.common.util.INBTSerializable;
 import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.ItemHandlerHelper;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.buuz135.functionalstorage.inventory.BigInventoryHandler.*;
+import static com.buuz135.functionalstorage.inventory.BigInventoryHandler.AMOUNT;
+import static com.buuz135.functionalstorage.inventory.BigInventoryHandler.BIG_ITEMS;
+import static com.buuz135.functionalstorage.inventory.BigInventoryHandler.STACK;
 
 public class DrawerStackItemHandler implements IItemHandler, INBTSerializable<CompoundTag> {
 
@@ -37,11 +39,12 @@ public class DrawerStackItemHandler implements IItemHandler, INBTSerializable<Co
         for (int i = 0; i < drawerType.getSlots(); i++) {
             this.storedStacks.add(i, new BigInventoryHandler.BigStack(ItemStack.EMPTY, 0));
         }
-        if (stack.hasData(FSAttachments.TILE)) {
-            var tile = stack.getData(FSAttachments.TILE);
-            deserializeNBT(tile.getCompound("handler"));
+        if (stack.has(FSAttachments.TILE)) {
+            var tile = stack.get(FSAttachments.TILE);
+            var access = Utils.registryAccess();
+            deserializeNBT(access, tile.getCompound("handler"));
             for (Tag tag : tile.getCompound("storageUpgrades").getList("Items", Tag.TAG_COMPOUND)) {
-                ItemStack itemStack = ItemStack.of((CompoundTag) tag);
+                ItemStack itemStack = Utils.deserialize(access, (CompoundTag) tag);
                 if (itemStack.getItem() instanceof StorageUpgradeItem) {
                     if (multiplier == 1) multiplier = ((StorageUpgradeItem) itemStack.getItem()).getStorageMultiplier();
                     else multiplier *= ((StorageUpgradeItem) itemStack.getItem()).getStorageMultiplier();
@@ -51,7 +54,7 @@ public class DrawerStackItemHandler implements IItemHandler, INBTSerializable<Co
                 }
             }
             for (Tag tag : tile.getCompound("utilityUpgrades").getList("Items", Tag.TAG_COMPOUND)) {
-                ItemStack itemStack = ItemStack.of((CompoundTag) tag);
+                ItemStack itemStack = Utils.deserialize(access, (CompoundTag) tag);
                 if (itemStack.getItem().equals(FunctionalStorage.VOID_UPGRADE.get())) {
                     this.isVoid = true;
                 }
@@ -60,12 +63,12 @@ public class DrawerStackItemHandler implements IItemHandler, INBTSerializable<Co
     }
 
     @Override
-    public CompoundTag serializeNBT() {
+    public CompoundTag serializeNBT(net.minecraft.core.HolderLookup.Provider provider) {
         CompoundTag compoundTag = new CompoundTag();
         CompoundTag items = new CompoundTag();
         for (int i = 0; i < this.storedStacks.size(); i++) {
             CompoundTag bigStack = new CompoundTag();
-            bigStack.put(STACK, this.storedStacks.get(i).getStack().save(new CompoundTag()));
+            bigStack.put(STACK, this.storedStacks.get(i).getStack().saveOptional(provider));
             bigStack.putInt(AMOUNT, this.storedStacks.get(i).getAmount());
             items.put(i + "", bigStack);
         }
@@ -74,9 +77,9 @@ public class DrawerStackItemHandler implements IItemHandler, INBTSerializable<Co
     }
 
     @Override
-    public void deserializeNBT(CompoundTag nbt) {
+    public void deserializeNBT(net.minecraft.core.HolderLookup.Provider provider, CompoundTag nbt) {
         for (String allKey : nbt.getCompound(BIG_ITEMS).getAllKeys()) {
-            this.storedStacks.get(Integer.parseInt(allKey)).setStack(ItemStack.of(nbt.getCompound(BIG_ITEMS).getCompound(allKey).getCompound(STACK)));
+            this.storedStacks.get(Integer.parseInt(allKey)).setStack(Utils.deserialize(provider, nbt.getCompound(BIG_ITEMS).getCompound(allKey).getCompound(STACK)));
             this.storedStacks.get(Integer.parseInt(allKey)).setAmount(nbt.getCompound(BIG_ITEMS).getCompound(allKey).getInt(AMOUNT));
         }
     }
@@ -107,7 +110,7 @@ public class DrawerStackItemHandler implements IItemHandler, INBTSerializable<Co
                 onChange();
             }
             if (inserted == stack.getCount() || isVoid()) return ItemStack.EMPTY;
-            return ItemHandlerHelper.copyStackWithSize(stack, stack.getCount() - inserted);
+            return stack.copyWithCount(stack.getCount() - inserted);
         }
         return stack;
     }
@@ -117,16 +120,15 @@ public class DrawerStackItemHandler implements IItemHandler, INBTSerializable<Co
     }
 
     private void onChange() {
-        if (stack.hasData(FSAttachments.TILE))
-            stack.setData(FSAttachments.TILE, new CompoundTag());
-        stack.getData(FSAttachments.TILE).put("handler", serializeNBT());
+        stack.set(FSAttachments.TILE, new CompoundTag());
+        stack.get(FSAttachments.TILE).put("handler", serializeNBT(Utils.registryAccess()));
     }
 
     private boolean isValid(int slot, @Nonnull ItemStack stack) {
         if (slot < type.getSlots()) {
             BigStack bigStack = this.storedStacks.get(slot);
             ItemStack fl = bigStack.getStack();
-            return fl.isEmpty() || ItemStack.isSameItemSameTags(fl, stack);
+            return fl.isEmpty() || ItemStack.isSameItemSameComponents(fl, stack);
         }
         return false;
     }
@@ -153,7 +155,7 @@ public class DrawerStackItemHandler implements IItemHandler, INBTSerializable<Co
                     bigStack.setAmount(bigStack.getAmount() - amount);
                     onChange();
                 }
-                return ItemHandlerHelper.copyStackWithSize(bigStack.getStack(), amount);
+                return bigStack.getStack().copyWithCount(amount);
             }
         }
         return ItemStack.EMPTY;

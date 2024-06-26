@@ -70,7 +70,7 @@ public class CompactingDrawerTile extends ItemControllableDrawerTile<CompactingD
     public void initClient() {
         super.initClient();
         addGuiAddonFactory(() -> new DrawerInfoGuiAddon(64, 16,
-                new ResourceLocation(FunctionalStorage.MOD_ID, this instanceof CompactingFramedDrawerTile ? "textures/block/framed_front_compacting.png" : "textures/block/compacting_drawer_front.png"),
+                com.buuz135.functionalstorage.util.Utils.resourceLocation(FunctionalStorage.MOD_ID, this instanceof CompactingFramedDrawerTile ? "textures/block/framed_front_compacting.png" : "textures/block/compacting_drawer_front.png"),
                 3,
                 integer -> {
                     if (integer == 0) return Pair.of(28, 28);

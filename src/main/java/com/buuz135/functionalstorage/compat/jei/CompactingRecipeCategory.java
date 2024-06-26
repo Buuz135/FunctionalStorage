@@ -53,7 +53,7 @@ public class CompactingRecipeCategory implements IRecipeCategory<CustomCompactin
 
     @Override
     public void draw(CustomCompactingRecipe recipe, IRecipeSlotsView recipeSlotsView, GuiGraphics guiGraphics, double mouseX, double mouseY) {
-        //new ResourceLocation(FunctionalStorage.MOD_ID, "textures/block/compacting_drawer_front.png")
-        guiGraphics.blit(new ResourceLocation(FunctionalStorage.MOD_ID, "textures/block/compacting_drawer_front.png"), 0,0, 64,64, 64, 64, 64,64);
+        //com.buuz135.functionalstorage.util.Utils.resourceLocation(FunctionalStorage.MOD_ID, "textures/block/compacting_drawer_front.png")
+        guiGraphics.blit(com.buuz135.functionalstorage.util.Utils.resourceLocation(FunctionalStorage.MOD_ID, "textures/block/compacting_drawer_front.png"), 0,0, 64,64, 64, 64, 64,64);
     }
 }

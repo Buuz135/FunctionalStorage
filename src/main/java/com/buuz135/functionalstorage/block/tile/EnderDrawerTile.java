@@ -9,6 +9,7 @@ import com.hrznstudio.titanium.annotation.Save;
 import com.hrznstudio.titanium.block.BasicTileBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -49,7 +50,7 @@ public class EnderDrawerTile extends ItemControllableDrawerTile<EnderDrawerTile>
     public void initClient() {
         super.initClient();
         addGuiAddonFactory(() -> new DrawerInfoGuiAddon(64, 16,
-                new ResourceLocation(FunctionalStorage.MOD_ID, "textures/block/ender_front.png"),
+                com.buuz135.functionalstorage.util.Utils.resourceLocation(FunctionalStorage.MOD_ID, "textures/block/ender_front.png"),
                 1,
                 FunctionalStorage.DrawerType.X_1.getSlotPosition(),
                 integer -> getStorage().getStackInSlot(integer),
@@ -98,9 +99,9 @@ public class EnderDrawerTile extends ItemControllableDrawerTile<EnderDrawerTile>
     }
 
     @Override
-    public void load(CompoundTag compound) {
+    public void loadAdditional(CompoundTag compound, HolderLookup.Provider provider) {
         String oldFreq = this.frequency;
-        super.load(compound);
+        super.loadAdditional(compound, provider);
         if (!this.frequency.equalsIgnoreCase(oldFreq) && level instanceof ServerLevel){
             setFrequency(this.frequency);
         }

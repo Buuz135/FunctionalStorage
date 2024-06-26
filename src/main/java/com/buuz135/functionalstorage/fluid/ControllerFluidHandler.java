@@ -63,7 +63,7 @@ public abstract class ControllerFluidHandler implements IFluidHandler {
     @Override
     public int fill(FluidStack resource, FluidAction action) {
         for (HandlerTankSelector selector : this.selectors) {
-            if (!selector.getStackInSlot().isEmpty() && selector.getStackInSlot().isFluidEqual(resource)) {
+            if (!selector.getStackInSlot().isEmpty() && FluidStack.isSameFluidSameComponents(selector.getStackInSlot(), resource)) {
                 return selector.fill(resource, action);
             }
         }
@@ -78,7 +78,7 @@ public abstract class ControllerFluidHandler implements IFluidHandler {
     @Override
     public @NotNull FluidStack drain(FluidStack resource, FluidAction action) {
         for (HandlerTankSelector selector : this.selectors) {
-            if (!selector.getStackInSlot().isEmpty() && selector.getStackInSlot().isFluidEqual(resource)) {
+            if (!selector.getStackInSlot().isEmpty() && FluidStack.isSameFluidSameComponents(selector.getStackInSlot(), resource)) {
                 return selector.drain(resource, action);
             }
         }

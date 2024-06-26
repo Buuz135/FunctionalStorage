@@ -9,7 +9,9 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -41,8 +43,29 @@ public abstract class StorageControllerBlock<T extends StorageControllerTile<T>>
     }
 
     @Override
-    public InteractionResult use(BlockState state, Level worldIn, BlockPos pos, Player player, InteractionHand hand, BlockHitResult ray) {
-        return TileUtil.getTileEntity(worldIn, pos, StorageControllerTile.class).map(storageTile -> storageTile.onSlotActivated(player, hand, ray.getDirection(), ray.getLocation().x, ray.getLocation().y, ray.getLocation().z)).orElse(InteractionResult.PASS);
+    protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level worldIn, BlockPos pos, Player player, InteractionHand hand, BlockHitResult ray) {
+        var entity = TileUtil.getTileEntity(worldIn, pos, StorageControllerTile.class).orElse(null);
+        if (entity != null) {
+            var result = entity.onSlotActivated(player, hand, ray.getDirection(), ray.getLocation().x, ray.getLocation().y, ray.getLocation().z);
+            if (result == InteractionResult.SUCCESS) {
+                return ItemInteractionResult.SUCCESS;
+            } else if (result.consumesAction()) {
+                return ItemInteractionResult.CONSUME;
+            } else {
+                // TODO - validate if this is ok
+                return ItemInteractionResult.SKIP_DEFAULT_BLOCK_INTERACTION;
+            }
+        }
+        return ItemInteractionResult.SKIP_DEFAULT_BLOCK_INTERACTION;
+    }
+
+    @Override
+    protected InteractionResult useWithoutItem(BlockState state, Level worldIn, BlockPos pos, Player player, BlockHitResult ray) {
+        var entity = TileUtil.getTileEntity(worldIn, pos, StorageControllerTile.class).orElse(null);
+        if (entity != null) {
+            return entity.onSlotActivated(player, InteractionHand.MAIN_HAND, ray.getDirection(), ray.getLocation().x, ray.getLocation().y, ray.getLocation().z);
+        }
+        return InteractionResult.PASS;
     }
 
     @Override

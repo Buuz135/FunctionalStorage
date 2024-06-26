@@ -6,11 +6,13 @@ import com.buuz135.functionalstorage.block.FramedControllerExtensionBlock;
 import com.buuz135.functionalstorage.block.FramedDrawerBlock;
 import com.buuz135.functionalstorage.block.FramedDrawerControllerBlock;
 import com.buuz135.functionalstorage.block.FramedSimpleCompactingDrawerBlock;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingBookCategory;
+import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.crafting.CustomRecipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.SimpleCraftingRecipeSerializer;
@@ -49,7 +51,7 @@ public class FramedDrawerRecipe extends CustomRecipe {
     }
 
     @Override
-    public boolean matches(CraftingContainer inv, Level worldIn) {
+    public boolean matches(CraftingInput inv, Level worldIn) {
         return matches(inv.getItem(0), inv.getItem(1), inv.getItem(2)) ||
                 matchesCompacting(inv.getItem(0), inv.getItem(1), inv.getItem(2)) ||
                 matchesSimpleCompacting(inv.getItem(0), inv.getItem(1), inv.getItem(2)) ||
@@ -58,7 +60,7 @@ public class FramedDrawerRecipe extends CustomRecipe {
     }
 
     @Override
-    public ItemStack assemble(CraftingContainer inv, RegistryAccess registryAccess) {
+    public ItemStack assemble(CraftingInput inv, HolderLookup.Provider registryAccess) {
         if (matches(inv.getItem(0), inv.getItem(1), inv.getItem(2)) ||
                 matchesCompacting(inv.getItem(0), inv.getItem(1), inv.getItem(2)) ||
                 matchesSimpleCompacting(inv.getItem(0), inv.getItem(1), inv.getItem(2)) ||

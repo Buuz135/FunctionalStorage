@@ -58,7 +58,7 @@ public class ArmoryCabinetBlock extends RotatableBlock<ArmoryCabinetTile> {
         BlockEntity drawerTile = builder.getOptionalParameter(LootContextParams.BLOCK_ENTITY);
         if (drawerTile instanceof ArmoryCabinetTile) {
             if (!((ArmoryCabinetTile) drawerTile).isEverythingEmpty()) {
-                stack.setData(FSAttachments.TILE, drawerTile.saveWithoutMetadata());
+                stack.set(FSAttachments.TILE, drawerTile.saveWithoutMetadata(drawerTile.getLevel().registryAccess()));
             }
         }
         stacks.add(stack);
@@ -73,11 +73,11 @@ public class ArmoryCabinetBlock extends RotatableBlock<ArmoryCabinetTile> {
     @Override
     public void setPlacedBy(Level level, BlockPos pos, BlockState p_49849_, @Nullable LivingEntity p_49850_, ItemStack stack) {
         super.setPlacedBy(level, pos, p_49849_, p_49850_, stack);
-        if (stack.hasData(FSAttachments.TILE)) {
+        if (stack.has(FSAttachments.TILE)) {
             BlockEntity entity = level.getBlockEntity(pos);
-            if (entity instanceof ArmoryCabinetTile) {
-                entity.load(stack.getData(FSAttachments.TILE));
-                ((ArmoryCabinetTile) entity).markForUpdate();
+            if (entity instanceof ArmoryCabinetTile et) {
+                et.loadAdditional(stack.get(FSAttachments.TILE), entity.getLevel().registryAccess());
+                et.markForUpdate();
             }
         }
     }

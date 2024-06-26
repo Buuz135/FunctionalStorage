@@ -50,17 +50,17 @@ public class FramedDrawerModelData implements INBTSerializable<CompoundTag> {
     }
 
     @Override
-    public CompoundTag serializeNBT() {
+    public CompoundTag serializeNBT(net.minecraft.core.HolderLookup.Provider provider) {
         CompoundTag compoundTag = new CompoundTag();
         design.forEach((s, item) -> compoundTag.putString(s, BuiltInRegistries.ITEM.getKey(item).toString()));
         return compoundTag;
     }
 
     @Override
-    public void deserializeNBT(CompoundTag nbt) {
+    public void deserializeNBT(net.minecraft.core.HolderLookup.Provider provider, CompoundTag nbt) {
         design = new HashMap<>();
         for (String allKey : nbt.getAllKeys()) {
-            design.put(allKey, BuiltInRegistries.ITEM.get(new ResourceLocation(nbt.getString(allKey))));
+            design.put(allKey, BuiltInRegistries.ITEM.get(com.buuz135.functionalstorage.util.Utils.resourceLocation(nbt.getString(allKey))));
         }
         this.generateCode();
     }

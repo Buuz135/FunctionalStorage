@@ -157,9 +157,9 @@ public class DrawerBlock extends Drawer<DrawerTile> {
         if (type == FunctionalStorage.DrawerType.X_1) {
             if (woodType.getName().equals("oak")){
                 TitaniumShapedRecipeBuilder.shapedRecipe(this)
-                        .setName(new ResourceLocation(FunctionalStorage.MOD_ID, "oak_drawer_alternate_x1"))
+                        .setName(com.buuz135.functionalstorage.util.Utils.resourceLocation(FunctionalStorage.MOD_ID, "oak_drawer_alternate_x1"))
                         .pattern("PPP").pattern("PCP").pattern("PPP")
-                        .define('P', new DrawerlessWoodIngredient())
+                        .define('P', new DrawerlessWoodIngredient().toVanilla())
                         .define('C', Tags.Items.CHESTS_WOODEN)
                         .save(consumer);
             } else {
@@ -173,9 +173,9 @@ public class DrawerBlock extends Drawer<DrawerTile> {
         if (type == FunctionalStorage.DrawerType.X_2){
             if (woodType.getName().equals("oak")){
                 TitaniumShapedRecipeBuilder.shapedRecipe(this, 2)
-                        .setName(new ResourceLocation(FunctionalStorage.MOD_ID, "oak_drawer_alternate_x2"))
+                        .setName(com.buuz135.functionalstorage.util.Utils.resourceLocation(FunctionalStorage.MOD_ID, "oak_drawer_alternate_x2"))
                         .pattern("PCP").pattern("PPP").pattern("PCP")
-                        .define('P', new DrawerlessWoodIngredient())
+                        .define('P', new DrawerlessWoodIngredient().toVanilla())
                         .define('C', Tags.Items.CHESTS_WOODEN)
                         .save(consumer);
             } else {
@@ -189,9 +189,9 @@ public class DrawerBlock extends Drawer<DrawerTile> {
         if (type == FunctionalStorage.DrawerType.X_4){
             if (woodType.getName().equals("oak")){
                 TitaniumShapedRecipeBuilder.shapedRecipe(this, 4)
-                        .setName(new ResourceLocation(FunctionalStorage.MOD_ID, "oak_drawer_alternate_x4"))
+                        .setName(com.buuz135.functionalstorage.util.Utils.resourceLocation(FunctionalStorage.MOD_ID, "oak_drawer_alternate_x4"))
                         .pattern("CPC").pattern("PPP").pattern("CPC")
-                        .define('P', new DrawerlessWoodIngredient())
+                        .define('P', new DrawerlessWoodIngredient().toVanilla())
                         .define('C', Tags.Items.CHESTS_WOODEN)
                         .save(consumer);
             } else {
@@ -217,7 +217,6 @@ public class DrawerBlock extends Drawer<DrawerTile> {
         public DrawerItem(DrawerBlock p_40565_, net.minecraft.world.item.Item.Properties p_40566_, TitaniumTab tab) {
             super(p_40565_, p_40566_);
             this.drawerBlock = p_40565_;
-            tab.getTabList().add(this);
         }
 
         @Nullable

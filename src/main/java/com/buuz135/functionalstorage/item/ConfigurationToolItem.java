@@ -29,7 +29,7 @@ import java.util.Locale;
 public class ConfigurationToolItem extends BasicItem {
 
     public static ConfigurationAction getAction(ItemStack stack) {
-        return stack.getData(FSAttachments.CONFIGURATION_ACTION);
+        return stack.getOrDefault(FSAttachments.CONFIGURATION_ACTION, ConfigurationAction.LOCKING);
     }
 
     public ConfigurationToolItem() {
@@ -66,7 +66,7 @@ public class ConfigurationToolItem extends BasicItem {
             if (player.isShiftKeyDown()) {
                 ConfigurationAction action = getAction(stack);
                 ConfigurationAction newAction = ConfigurationAction.values()[(Arrays.asList(ConfigurationAction.values()).indexOf(action) + 1) % ConfigurationAction.values().length];
-                stack.setData(FSAttachments.CONFIGURATION_ACTION, newAction);
+                stack.set(FSAttachments.CONFIGURATION_ACTION, newAction);
                 player.displayClientMessage(Component.literal("Swapped mode to ").setStyle(Style.EMPTY.withColor(newAction.getColor()))
                         .append(Component.translatable("configurationtool.configmode." + newAction.name().toLowerCase(Locale.ROOT))), true);
                 player.playSound(SoundEvents.ITEM_FRAME_REMOVE_ITEM, 0.5f, 1);

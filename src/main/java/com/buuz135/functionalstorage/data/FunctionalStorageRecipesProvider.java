@@ -5,22 +5,23 @@ import com.buuz135.functionalstorage.recipe.CustomCompactingRecipe;
 import com.buuz135.functionalstorage.util.StorageTags;
 import com.hrznstudio.titanium.block.BasicBlock;
 import com.hrznstudio.titanium.recipe.generator.TitaniumShapedRecipeBuilder;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.data.recipes.SmithingTransformRecipeBuilder;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.block.Block;
 import net.neoforged.neoforge.common.Tags;
-import net.neoforged.neoforge.common.util.NonNullLazy;
+import net.neoforged.neoforge.common.util.Lazy;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import static com.buuz135.functionalstorage.FunctionalStorage.ARMORY_CABINET;
 import static com.buuz135.functionalstorage.FunctionalStorage.COLLECTOR_UPGRADE;
@@ -35,10 +36,10 @@ import static com.buuz135.functionalstorage.FunctionalStorage.VOID_UPGRADE;
 
 public class FunctionalStorageRecipesProvider extends RecipeProvider {
 
-    private final NonNullLazy<List<Block>> blocksToProcess;
+    private final Lazy<List<Block>> blocksToProcess;
 
-    public FunctionalStorageRecipesProvider(DataGenerator generator, NonNullLazy<List<Block>> blocksToProcess) {
-        super(generator.getPackOutput());
+    public FunctionalStorageRecipesProvider(DataGenerator generator, Lazy<List<Block>> blocksToProcess, CompletableFuture<HolderLookup.Provider> prov) {
+        super(generator.getPackOutput(), prov);
         this.blocksToProcess = blocksToProcess;
     }
 
@@ -52,7 +53,7 @@ public class FunctionalStorageRecipesProvider extends RecipeProvider {
                 .save(output);
         TitaniumShapedRecipeBuilder.shapedRecipe(VOID_UPGRADE.get())
                 .pattern("III").pattern("IDI").pattern("III")
-                .define('I', Tags.Items.OBSIDIAN)
+                .define('I', Tags.Items.OBSIDIANS)
                 .define('D', StorageTags.DRAWER)
                 .save(output);
         TitaniumShapedRecipeBuilder.shapedRecipe(CONFIGURATION_TOOL.get())
@@ -102,28 +103,28 @@ public class FunctionalStorageRecipesProvider extends RecipeProvider {
                 .save(output, BuiltInRegistries.ITEM.getKey(STORAGE_UPGRADES.get(StorageUpgradeItem.StorageTier.NETHERITE).get()));
         TitaniumShapedRecipeBuilder.shapedRecipe(ARMORY_CABINET.getBlock())
                 .pattern("ICI").pattern("CDC").pattern("IBI")
-                .define('I', Tags.Items.STONE)
+                .define('I', Tags.Items.STONES)
                 .define('B', Tags.Items.INGOTS_NETHERITE)
                 .define('C', StorageTags.DRAWER)
                 .define('D', Items.COMPARATOR)
                 .save(output);
         TitaniumShapedRecipeBuilder.shapedRecipe(PULLING_UPGRADE.get())
                 .pattern("ICI").pattern("IDI").pattern("IBI")
-                .define('I', Tags.Items.STONE)
+                .define('I', Tags.Items.STONES)
                 .define('B', Tags.Items.DUSTS_REDSTONE)
                 .define('C', Items.HOPPER)
                 .define('D', StorageTags.DRAWER)
                 .save(output);
         TitaniumShapedRecipeBuilder.shapedRecipe(PUSHING_UPGRADE.get())
                 .pattern("IBI").pattern("IDI").pattern("IRI")
-                .define('I', Tags.Items.STONE)
+                .define('I', Tags.Items.STONES)
                 .define('B', Tags.Items.DUSTS_REDSTONE)
                 .define('R', Items.HOPPER)
                 .define('D', StorageTags.DRAWER)
                 .save(output);
         TitaniumShapedRecipeBuilder.shapedRecipe(COLLECTOR_UPGRADE.get())
                 .pattern("IBI").pattern("RDR").pattern("IBI")
-                .define('I', Tags.Items.STONE)
+                .define('I', Tags.Items.STONES)
                 .define('B', Items.HOPPER)
                 .define('R', Tags.Items.DUSTS_REDSTONE)
                 .define('D', StorageTags.DRAWER)
@@ -135,11 +136,11 @@ public class FunctionalStorageRecipesProvider extends RecipeProvider {
                 .define('L', StorageTags.DRAWER)
                 .save(output);
 
-        new CustomCompactingRecipe(new ItemStack(Items.GLOWSTONE_DUST, 4), new ItemStack(Items.GLOWSTONE)).save(output, new ResourceLocation("functionalstorage/compacting/glowstone"));
-        new CustomCompactingRecipe(new ItemStack(Items.MELON_SLICE, 9), new ItemStack(Items.MELON)).save(output, new ResourceLocation("functionalstorage/compacting/melon"));
-        new CustomCompactingRecipe(new ItemStack(Items.QUARTZ, 4), new ItemStack(Items.QUARTZ_BLOCK)).save(output, new ResourceLocation("functionalstorage/compacting/quartz"));
-        new CustomCompactingRecipe(new ItemStack(Items.ICE, 9), new ItemStack(Items.PACKED_ICE)).save(output, new ResourceLocation("functionalstorage/compacting/ice"));
-        new CustomCompactingRecipe(new ItemStack(Items.PACKED_ICE, 9), new ItemStack(Items.BLUE_ICE)).save(output, new ResourceLocation("functionalstorage/compacting/packed_ice"));
-        new CustomCompactingRecipe(new ItemStack(Items.AMETHYST_SHARD, 4), new ItemStack(Items.AMETHYST_BLOCK)).save(output, new ResourceLocation("functionalstorage/compacting/amethyst"));
+        new CustomCompactingRecipe(new ItemStack(Items.GLOWSTONE_DUST, 4), new ItemStack(Items.GLOWSTONE)).save(output, com.buuz135.functionalstorage.util.Utils.resourceLocation("functionalstorage/compacting/glowstone"));
+        new CustomCompactingRecipe(new ItemStack(Items.MELON_SLICE, 9), new ItemStack(Items.MELON)).save(output, com.buuz135.functionalstorage.util.Utils.resourceLocation("functionalstorage/compacting/melon"));
+        new CustomCompactingRecipe(new ItemStack(Items.QUARTZ, 4), new ItemStack(Items.QUARTZ_BLOCK)).save(output, com.buuz135.functionalstorage.util.Utils.resourceLocation("functionalstorage/compacting/quartz"));
+        new CustomCompactingRecipe(new ItemStack(Items.ICE, 9), new ItemStack(Items.PACKED_ICE)).save(output, com.buuz135.functionalstorage.util.Utils.resourceLocation("functionalstorage/compacting/ice"));
+        new CustomCompactingRecipe(new ItemStack(Items.PACKED_ICE, 9), new ItemStack(Items.BLUE_ICE)).save(output, com.buuz135.functionalstorage.util.Utils.resourceLocation("functionalstorage/compacting/packed_ice"));
+        new CustomCompactingRecipe(new ItemStack(Items.AMETHYST_SHARD, 4), new ItemStack(Items.AMETHYST_BLOCK)).save(output, com.buuz135.functionalstorage.util.Utils.resourceLocation("functionalstorage/compacting/amethyst"));
     }
 }

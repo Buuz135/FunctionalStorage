@@ -29,10 +29,10 @@ public class UpgradeItem extends BasicItem {
     public static final int MAX_SLOT = 4;
 
     public static Direction getDirection(ItemStack stack){
-        if (stack.hasData(FSAttachments.DIRECTION)) {
+        if (stack.has(FSAttachments.DIRECTION)) {
             Item item = stack.getItem();
             if (item.equals(FunctionalStorage.PULLING_UPGRADE.get()) || item.equals(FunctionalStorage.PUSHING_UPGRADE.get()) || item.equals(FunctionalStorage.COLLECTOR_UPGRADE.get())) {
-                return stack.getData(FSAttachments.DIRECTION);
+                return stack.get(FSAttachments.DIRECTION);
             }
         }
         return Direction.NORTH;
@@ -55,10 +55,10 @@ public class UpgradeItem extends BasicItem {
     private ItemStack initNbt(ItemStack stack){
         Item item = stack.getItem();
         if (item.equals(FunctionalStorage.PULLING_UPGRADE.get()) || item.equals(FunctionalStorage.PUSHING_UPGRADE.get()) || item.equals(FunctionalStorage.COLLECTOR_UPGRADE.get())){
-            stack.setData(FSAttachments.DIRECTION, Direction.NORTH);
+            stack.set(FSAttachments.DIRECTION, Direction.NORTH);
         }
         if (item.equals(FunctionalStorage.REDSTONE_UPGRADE.get())){
-            stack.setData(FSAttachments.SLOT, 0);
+            stack.set(FSAttachments.SLOT, 0);
         }
         return stack;
     }
@@ -75,13 +75,13 @@ public class UpgradeItem extends BasicItem {
             if (item.equals(FunctionalStorage.PULLING_UPGRADE.get()) || item.equals(FunctionalStorage.PUSHING_UPGRADE.get()) || item.equals(FunctionalStorage.COLLECTOR_UPGRADE.get())){
                 Direction direction = getDirection(first);
                 Direction next = Direction.values()[(Arrays.asList(Direction.values()).indexOf(direction) + 1 ) % Direction.values().length];
-                first.setData(FSAttachments.DIRECTION, next);
+                first.set(FSAttachments.DIRECTION, next);
                 p_150896_.playSound(SoundEvents.UI_BUTTON_CLICK.value(), 0.5f, 1);
                 return true;
             }
             if (item.equals(FunctionalStorage.REDSTONE_UPGRADE.get())){
-                int slot = first.getData(FSAttachments.SLOT);
-                first.setData(FSAttachments.SLOT, (slot + 1) % MAX_SLOT);
+                int slot = first.getOrDefault(FSAttachments.SLOT, 0);
+                first.set(FSAttachments.SLOT, (slot + 1) % MAX_SLOT);
                 p_150896_.playSound(SoundEvents.UI_BUTTON_CLICK.value(), 0.5f, 1);
                 return true;
             }
@@ -94,13 +94,13 @@ public class UpgradeItem extends BasicItem {
         super.addTooltipDetails(key, stack, tooltip, advanced);
         tooltip.add(Component.translatable("upgrade.type").withStyle(ChatFormatting.YELLOW).append(Component.translatable("upgrade.type." + getType().name().toLowerCase(Locale.ROOT)).withStyle(ChatFormatting.WHITE)));
         Item item = stack.getItem();
-        if (isDirectionUpgrade(item) && stack.hasData(FSAttachments.DIRECTION)) {
+        if (isDirectionUpgrade(item) && stack.has(FSAttachments.DIRECTION)) {
             tooltip.add(Component.translatable("item.utility.direction").withStyle(ChatFormatting.YELLOW).append(Component.translatable(WordUtils.capitalize(getDirection(stack).getName().toLowerCase(Locale.ROOT))).withStyle(ChatFormatting.WHITE)));
             tooltip.add(Component.literal(""));
             tooltip.add(Component.translatable("item.utility.direction.desc").withStyle(ChatFormatting.GRAY));
         }
-        if (item.equals(FunctionalStorage.REDSTONE_UPGRADE.get()) && stack.hasData(FSAttachments.SLOT)) {
-            tooltip.add(Component.translatable("item.utility.slot").withStyle(ChatFormatting.YELLOW).append(Component.literal(stack.getData(FSAttachments.SLOT).toString()).withStyle(ChatFormatting.WHITE)));
+        if (item.equals(FunctionalStorage.REDSTONE_UPGRADE.get()) && stack.has(FSAttachments.SLOT)) {
+            tooltip.add(Component.translatable("item.utility.slot").withStyle(ChatFormatting.YELLOW).append(Component.literal(stack.get(FSAttachments.SLOT).toString()).withStyle(ChatFormatting.WHITE)));
             tooltip.add(Component.literal(""));
             tooltip.add(Component.translatable("item.utility.direction.desc").withStyle(ChatFormatting.GRAY));
         }
@@ -131,7 +131,7 @@ public class UpgradeItem extends BasicItem {
             return Component.translatable("drawer_upgrade.functionalstorage.void." + type);
         } else if (this == FunctionalStorage.REDSTONE_UPGRADE.get()) {
             return Component.translatable("drawer_upgrade.functionalstorage.redstone", Component.literal(
-                    String.valueOf(stack.getData(FSAttachments.SLOT))
+                    String.valueOf(stack.getOrDefault(FSAttachments.SLOT, 0))
             ).withStyle(ChatFormatting.RED));
         }
         return null;

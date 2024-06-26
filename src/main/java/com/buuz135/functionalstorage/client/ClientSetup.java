@@ -14,7 +14,7 @@ import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 public class ClientSetup {
     public static void init() {
         EventManager.forge(ItemTooltipEvent.class).filter(
-                event -> UpgradeItem.isDirectionUpgrade(event.getItemStack().getItem()) && event.getItemStack().hasData(FSAttachments.DIRECTION)
+                event -> UpgradeItem.isDirectionUpgrade(event.getItemStack().getItem()) && event.getItemStack().has(FSAttachments.DIRECTION)
         ).filter(event -> Minecraft.getInstance().screen != null && Minecraft.getInstance().screen instanceof BasicAddonScreen bcs && bcs.getMenu().getObject() instanceof ItemControllableDrawerTile<?>)
             .process(event -> {
                 var sc = (BasicAddonScreen) Minecraft.getInstance().screen;
