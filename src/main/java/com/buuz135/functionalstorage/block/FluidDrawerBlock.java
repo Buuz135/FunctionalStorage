@@ -142,7 +142,7 @@ public class FluidDrawerBlock extends Drawer<FluidDrawerTile> {
             var tileTag = itemStack.get(FSAttachments.TILE).getCompound("fluidHandler");
             tooltip.add(Component.translatable("drawer.block.contents").withStyle(ChatFormatting.GRAY));
             for (int i = 0; i < type.getSlots(); i++) {
-                FluidStack stack = FluidStack.CODEC.decode(RegistryOps.create(NbtOps.INSTANCE, Utils.registryAccess()), tileTag.getCompound(i + "")).getOrThrow().getFirst();
+                FluidStack stack = FluidStack.OPTIONAL_CODEC.decode(RegistryOps.create(NbtOps.INSTANCE, Utils.registryAccess()), tileTag.getCompound(i + "")).getOrThrow().getFirst();
                 if (!stack.isEmpty())
                     tooltip.add(Component.literal(" - " + ChatFormatting.YELLOW + NumberUtils.getFormatedFluidBigNumber(stack.getAmount()) + ChatFormatting.WHITE + " of ").append(stack.getHoverName().copy().withStyle(ChatFormatting.GOLD)));
             }

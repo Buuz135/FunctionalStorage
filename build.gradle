@@ -1,5 +1,5 @@
 plugins {
-    id 'net.neoforged.moddev' version '0.1.112'
+    id 'net.neoforged.moddev' version '0.1.120'
     id 'maven-publish'
 }
 
@@ -43,6 +43,8 @@ neoForge {
         mappingsVersion = '2024.06.23'
     }
 
+    validateAccessTransformers = true
+
     runs {
         client {
             client()
@@ -66,7 +68,7 @@ neoForge {
 dependencies {    
 	compileOnly "mezz.jei:jei-1.21-common-api:$jei_version"
     compileOnly "mezz.jei:jei-1.21-neoforge-api:$jei_version"
-//    runtimeOnly "mezz.jei:jei-1.21-neoforge:$jei_version"
+    runtimeOnly "mezz.jei:jei-1.21-neoforge:$jei_version"
 	implementation('com.hrznstudio:titanium') {
         transitive = false
     }

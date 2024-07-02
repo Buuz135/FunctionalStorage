@@ -124,7 +124,7 @@ public abstract class BigFluidHandler implements IFluidHandler, INBTSerializable
         CompoundTag compoundTag = new CompoundTag();
         for (int i = 0; i < this.tanks.length; i++) {
             compoundTag.put(i + "", this.tanks[i].writeToNBT(provider, new CompoundTag()));
-            compoundTag.put("Locked" + i, FluidStack.CODEC.encodeStart(RegistryOps.create(NbtOps.INSTANCE, provider), this.filterStack[i]).getOrThrow());
+            compoundTag.put("Locked" + i, FluidStack.OPTIONAL_CODEC.encodeStart(RegistryOps.create(NbtOps.INSTANCE, provider), this.filterStack[i]).getOrThrow());
         }
         compoundTag.putInt("Capacity", this.capacity);
         return compoundTag;
