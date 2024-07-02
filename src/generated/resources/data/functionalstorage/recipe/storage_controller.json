@@ -1,0 +1,33 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:item_exists",
+      "item": "functionalstorage:storage_controller"
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "B": {
+      "item": "minecraft:quartz_block"
+    },
+    "C": {
+      "tag": "functionalstorage:drawer"
+    },
+    "D": {
+      "item": "minecraft:comparator"
+    },
+    "I": {
+      "tag": "c:stones"
+    }
+  },
+  "pattern": [
+    "IBI",
+    "CDC",
+    "IBI"
+  ],
+  "result": {
+    "count": 1,
+    "id": "functionalstorage:storage_controller"
+  }
+}

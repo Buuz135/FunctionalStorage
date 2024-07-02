@@ -1,0 +1,11 @@
+{
+  "type": "functionalstorage:custom_compacting",
+  "higher_input": {
+    "count": 1,
+    "id": "minecraft:melon"
+  },
+  "lower_input": {
+    "count": 9,
+    "id": "minecraft:melon_slice"
+  }
+}

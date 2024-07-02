@@ -1,0 +1,33 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:item_exists",
+      "item": "functionalstorage:puller_upgrade"
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "B": {
+      "tag": "c:dusts/redstone"
+    },
+    "C": {
+      "item": "minecraft:hopper"
+    },
+    "D": {
+      "tag": "functionalstorage:drawer"
+    },
+    "I": {
+      "tag": "c:stones"
+    }
+  },
+  "pattern": [
+    "ICI",
+    "IDI",
+    "IBI"
+  ],
+  "result": {
+    "count": 1,
+    "id": "functionalstorage:puller_upgrade"
+  }
+}

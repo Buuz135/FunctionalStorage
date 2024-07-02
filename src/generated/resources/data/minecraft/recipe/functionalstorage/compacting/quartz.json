@@ -1,0 +1,11 @@
+{
+  "type": "functionalstorage:custom_compacting",
+  "higher_input": {
+    "count": 1,
+    "id": "minecraft:quartz_block"
+  },
+  "lower_input": {
+    "count": 4,
+    "id": "minecraft:quartz"
+  }
+}

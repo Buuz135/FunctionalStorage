@@ -1,0 +1,33 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:item_exists",
+      "item": "functionalstorage:diamond_upgrade"
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "B": {
+      "tag": "c:storage_blocks/diamond"
+    },
+    "C": {
+      "tag": "c:chests/wooden"
+    },
+    "D": {
+      "item": "functionalstorage:gold_upgrade"
+    },
+    "I": {
+      "tag": "c:gems/diamond"
+    }
+  },
+  "pattern": [
+    "IBI",
+    "CDC",
+    "IBI"
+  ],
+  "result": {
+    "count": 1,
+    "id": "functionalstorage:diamond_upgrade"
+  }
+}

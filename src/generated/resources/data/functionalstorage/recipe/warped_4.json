@@ -1,0 +1,27 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:item_exists",
+      "item": "functionalstorage:warped_4"
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "C": {
+      "tag": "c:chests/wooden"
+    },
+    "P": {
+      "item": "minecraft:warped_planks"
+    }
+  },
+  "pattern": [
+    "CPC",
+    "PPP",
+    "CPC"
+  ],
+  "result": {
+    "count": 4,
+    "id": "functionalstorage:warped_4"
+  }
+}

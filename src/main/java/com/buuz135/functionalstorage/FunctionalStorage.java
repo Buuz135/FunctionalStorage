@@ -69,6 +69,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.FastColor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -83,6 +84,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
@@ -166,7 +168,8 @@ public class FunctionalStorage extends ModuleController {
     public static Holder<RecipeType<?>> CUSTOM_COMPACTING_RECIPE_TYPE;
 
 
-    public FunctionalStorage(Dist dist, IEventBus modBus) {
+    public FunctionalStorage(Dist dist, IEventBus modBus, ModContainer container) {
+        super(container);
         NeoForgeMod.enableMilkFluid();
         FSAttachments.DR.register(modBus);
         if (dist.isClient()) {
@@ -356,25 +359,25 @@ public class FunctionalStorage extends ModuleController {
                 LinkingToolItem.LinkingMode linkingMode = LinkingToolItem.getLinkingMode(stack);
                 LinkingToolItem.ActionMode linkingAction = LinkingToolItem.getActionMode(stack);
                 if (tint != 0 && stack.has(FSAttachments.ENDER_FREQUENCY)) {
-                    return new Color(44, 150, 88).getRGB();
+                    return FastColor.ARGB32.opaque(new Color(44, 150, 88).getRGB());
                 }
                 if (tint == 3 && stack.has(FSAttachments.CONTROLLER)) {
-                    return Color.RED.getRGB();
+                    return FastColor.ARGB32.opaque(Color.RED.getRGB());
                 }
                 if (tint == 1) {
-                    return linkingMode.getColor().getValue();
+                    return FastColor.ARGB32.opaque(linkingMode.getColor().getValue());
                 }
                 if (tint == 2) {
-                    return linkingAction.getColor().getValue();
+                    return FastColor.ARGB32.opaque(linkingAction.getColor().getValue());
                 }
-                return 0xffffff;
+                return -1;
             }, LINKING_TOOL.get());
             item.getItemColors().register((stack, tint) -> {
                 ConfigurationToolItem.ConfigurationAction action = ConfigurationToolItem.getAction(stack);
                 if (tint == 1) {
-                    return action.getColor().getValue();
+                    return FastColor.ARGB32.opaque(action.getColor().getValue());
                 }
-                return 0xffffff;
+                return -1;
             }, CONFIGURATION_TOOL.get());
         }).subscribe();
         EventManager.mod(FMLClientSetupEvent.class).process(event -> {

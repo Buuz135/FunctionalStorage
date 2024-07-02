@@ -1,0 +1,11 @@
+{
+  "type": "functionalstorage:custom_compacting",
+  "higher_input": {
+    "count": 1,
+    "id": "minecraft:amethyst_block"
+  },
+  "lower_input": {
+    "count": 4,
+    "id": "minecraft:amethyst_shard"
+  }
+}

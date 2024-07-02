@@ -50,6 +50,10 @@ neoForge {
         server {
             server()
         }
+        data {
+            data()
+            programArguments.addAll '--mod', 'functionalstorage', '--all', '--output', file('src/generated/resources/').getAbsolutePath(), '--existing', file('src/main/resources/').getAbsolutePath()
+        }
     }
 
     mods {
