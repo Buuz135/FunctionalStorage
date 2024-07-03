@@ -1,5 +1,6 @@
 package com.buuz135.functionalstorage.item;
 
+import com.buuz135.functionalstorage.block.config.FunctionalStorageConfig;
 import com.hrznstudio.titanium.item.BasicItem;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -12,6 +13,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.Nullable;
 
+import java.text.DecimalFormat;
 import java.util.List;
 
 public class StorageUpgradeItem extends UpgradeItem {
@@ -24,7 +26,7 @@ public class StorageUpgradeItem extends UpgradeItem {
     }
 
     public int getStorageMultiplier() {
-        return storageTier.storageMultiplier;
+        return FunctionalStorageConfig.getLevelMult(storageTier.getLevel());
     }
 
     public StorageTier getStorageTier() {
@@ -37,9 +39,9 @@ public class StorageUpgradeItem extends UpgradeItem {
         if (storageTier == StorageTier.IRON){
             tooltip.add(Component.translatable("item.utility.downgrade").withStyle(ChatFormatting.GRAY));
         } else {
-            tooltip.add(Component.translatable("storageupgrade.desc.item").withStyle(ChatFormatting.GRAY).append(this.storageTier.getStorageMultiplier() + ""));
-            tooltip.add(Component.translatable("storageupgrade.desc.fluid").withStyle(ChatFormatting.GRAY).append(this.storageTier.getStorageMultiplier() / 2 + ""));
-            tooltip.add(Component.translatable("storageupgrade.desc.range", this.storageTier.getStorageMultiplier() / 4 + "").withStyle(ChatFormatting.GRAY));
+            tooltip.add(Component.translatable("storageupgrade.desc.item").withStyle(ChatFormatting.GRAY).append(new DecimalFormat().format(FunctionalStorageConfig.getLevelMult(this.storageTier.getLevel()))));
+            tooltip.add(Component.translatable("storageupgrade.desc.fluid").withStyle(ChatFormatting.GRAY).append(new DecimalFormat().format(FunctionalStorageConfig.getLevelMult(this.storageTier.getLevel()) / FunctionalStorageConfig.FLUID_DIVISOR)));
+            tooltip.add(Component.translatable("storageupgrade.desc.range", new DecimalFormat().format(FunctionalStorageConfig.getLevelMult(this.storageTier.getLevel()) / FunctionalStorageConfig.RANGE_DIVISOR)).withStyle(ChatFormatting.GRAY));
         }
     }
 
@@ -48,6 +50,10 @@ public class StorageUpgradeItem extends UpgradeItem {
         return key == null;
     }
 
+    @Override
+    public boolean isFoil(ItemStack p_41453_) {
+        return storageTier == StorageTier.MAX_STORAGE;
+    }
 
     @Override
     @OnlyIn(Dist.CLIENT)
@@ -60,22 +66,24 @@ public class StorageUpgradeItem extends UpgradeItem {
     }
 
     public static enum StorageTier {
-        COPPER(8, Mth.color(204/255f, 109/255f, 81/255f)),
-        GOLD(16, Mth.color(233/255f, 177/255f, 21/255f)),
-        DIAMOND(24, Mth.color(32/255f, 197/255f, 181/255f)),
-        NETHERITE(32, Mth.color(49, 41, 42)),
-        IRON(1, Mth.color(130/255f, 130/255f, 130/255f));
+        COPPER(1, Mth.color(204/255f, 109/255f, 81/255f)),
+        GOLD(2, Mth.color(233/255f, 177/255f, 21/255f)),
+        DIAMOND(3, Mth.color(32/255f, 197/255f, 181/255f)),
+        NETHERITE(4, Mth.color(49, 41, 42)),
+        IRON(0, Mth.color(130/255f, 130/255f, 130/255f)),
+        MAX_STORAGE(-1, Mth.color(167/255f, 54/255f, 247/255f))
+        ;
 
-        private final int storageMultiplier;
+        private final int level;
         private final int color;
 
-        StorageTier(int storageMultiplier, int color) {
-            this.storageMultiplier = storageMultiplier;
+        StorageTier(int level, int color) {
+            this.level = level;
             this.color = color;
         }
 
-        public int getStorageMultiplier() {
-            return storageMultiplier;
+        public int getLevel() {
+            return level;
         }
 
         public int getColor() {

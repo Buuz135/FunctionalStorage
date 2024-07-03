@@ -1,3 +1,13 @@
+# VERSION 1.2.10
+
+* Added drawer renders to items
+* Added config option to modify the values of upgrades by ProGoofster
+* Added the ability to disable fluid drawers renders, closes #281
+* Added a minimum to the UPGRADE_TICK config
+* Fixed drawers not pushing items if there was a slot not full with a different item, closes #276 
+* Fixed empty locked fluid drawers in a controller network stalling fluid insertion, closes #258 closes #275
+* Added Max Storage Upgrade closes #279
+
 # VERSION 1.2.9
 
 * Fixed creative vending upgrades using the base stack, closes #239

@@ -2,12 +2,14 @@ package com.buuz135.functionalstorage.block;
 
 import com.buuz135.functionalstorage.FunctionalStorage;
 import com.buuz135.functionalstorage.block.tile.CompactingDrawerTile;
+import com.buuz135.functionalstorage.client.item.CompactingDrawerISTER;
 import com.buuz135.functionalstorage.inventory.item.CompactingStackItemHandler;
 import com.buuz135.functionalstorage.util.StorageTags;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.MultimapBuilder;
 import com.hrznstudio.titanium.block.RotatableBlock;
 import com.hrznstudio.titanium.recipe.generator.TitaniumShapedRecipeBuilder;
+import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.data.recipes.RecipeOutput;
@@ -20,12 +22,14 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.items.IItemHandler;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class CompactingDrawerBlock extends Drawer<CompactingDrawerTile> {
 
@@ -88,16 +92,25 @@ public class CompactingDrawerBlock extends Drawer<CompactingDrawerTile> {
     }
 
     public static class CompactingDrawerItem extends BlockItem {
-
         private final int slots;
 
-        public CompactingDrawerItem(Block p_40565_, net.minecraft.world.item.Item.Properties p_40566_, int slots) {
-            super(p_40565_, p_40566_);
+        public CompactingDrawerItem(Block block, net.minecraft.world.item.Item.Properties properties, int slots) {
+            super(block, properties);
             this.slots = slots;
         }
 
         public IItemHandler initCapabilities(ItemStack stack) {
             return new CompactingStackItemHandler(stack, slots);
+        }
+
+        @Override
+        public void initializeClient(Consumer<IClientItemExtensions> consumer) {
+            consumer.accept(new IClientItemExtensions() {
+                @Override
+                public BlockEntityWithoutLevelRenderer getCustomRenderer() {
+                    return getBlock() instanceof SimpleCompactingDrawerBlock ? CompactingDrawerISTER.SIMPLE : CompactingDrawerISTER.NORMAL;
+                }
+            });
         }
     }
 }
