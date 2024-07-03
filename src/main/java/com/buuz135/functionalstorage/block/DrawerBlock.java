@@ -189,7 +189,6 @@ public class DrawerBlock extends Drawer<DrawerTile> {
         public DrawerItem(DrawerBlock drawerBlock, Properties properties, TitaniumTab tab) {
             super(drawerBlock, properties);
             this.drawerBlock = drawerBlock;
-            tab.getTabList().add(this);
         }
 
         @Nullable

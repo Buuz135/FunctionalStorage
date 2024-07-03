@@ -9,9 +9,11 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.AABB;
 import net.neoforged.neoforge.fluids.FluidStack;
 import org.jetbrains.annotations.NotNull;
@@ -45,20 +47,20 @@ public class FluidDrawerISTER extends FunctionalStorageISTER{
             matrix.translate(-1,0,-1);
             var tileTag = stack.get(FSAttachments.TILE).getCompound("fluidHandler");
             if (type == FunctionalStorage.DrawerType.X_1){
-                FluidStack fluidStack = Utils.deserializeFluid(access, tileTag.getCompound(0 + ""));
+                FluidStack fluidStack = deserialize(access, tileTag, 0);
                 if (!fluidStack.isEmpty()){
                     int displayAmount = fluidStack.getAmount();
                     AABB bounds = new AABB(1 / 16D, 1.25 / 16D, 1 / 16D, 15 / 16D, 1.25 / 16D + (fluidStack.getAmount() / (double) fluidStack.getAmount()) * (12.5 / 16D), 15 / 16D);
                     FluidDrawerRenderer.renderFluidStack(matrix, renderer, light, overlayLight, fluidStack, displayAmount, fluidStack.getAmount(), 0.007f, options, bounds, false, false);
                 }
             } else if (type == FunctionalStorage.DrawerType.X_2) {
-                FluidStack fluidStack = Utils.deserializeFluid(access, tileTag.getCompound(0 + ""));
+                FluidStack fluidStack = deserialize(access, tileTag, 0);
                 if (!fluidStack.isEmpty()){
                     int displayAmount = fluidStack.getAmount();
                     AABB bounds = new AABB(1 / 16D, 1.25 / 16D, 1 / 16D, 15 / 16D, 1.25 / 16D + (fluidStack.getAmount() / (double) fluidStack.getAmount()) * (5.5 / 16D), 15 / 16D);
                     FluidDrawerRenderer.renderFluidStack(matrix, renderer, light, overlayLight, fluidStack, displayAmount, fluidStack.getAmount(), 0.007f, options, bounds, false, true);
                 }
-                fluidStack = Utils.deserializeFluid(access, tileTag.getCompound(1 + ""));
+                fluidStack = deserialize(access, tileTag, 1);
                 if (!fluidStack.isEmpty()){
                     matrix.pushPose();
                     matrix.translate(0, 0.5, 0);
@@ -68,7 +70,7 @@ public class FluidDrawerISTER extends FunctionalStorageISTER{
                     matrix.popPose();
                 }
             } else if (type == FunctionalStorage.DrawerType.X_4) {
-                FluidStack fluidStack = Utils.deserializeFluid(access, tileTag.getCompound(0 + ""));
+                FluidStack fluidStack = deserialize(access, tileTag, 0);
                 if (!fluidStack.isEmpty()){
                     matrix.pushPose();
                     matrix.translate(0.5, 0, 0);
@@ -77,7 +79,7 @@ public class FluidDrawerISTER extends FunctionalStorageISTER{
                     FluidDrawerRenderer.renderFluidStack(matrix, renderer, light, overlayLight, fluidStack, displayAmount, fluidStack.getAmount(), 0.007f, options, bounds, true, true);
                     matrix.popPose();
                 }
-                fluidStack = Utils.deserializeFluid(access, tileTag.getCompound(1 + ""));
+                fluidStack = deserialize(access, tileTag, 1);
                 if (!fluidStack.isEmpty()){
                     matrix.pushPose();
                     int displayAmount = fluidStack.getAmount();
@@ -85,7 +87,7 @@ public class FluidDrawerISTER extends FunctionalStorageISTER{
                     FluidDrawerRenderer.renderFluidStack(matrix, renderer, light, overlayLight, fluidStack, displayAmount, fluidStack.getAmount(), 0.007f, options, bounds, true, true);
                     matrix.popPose();
                 }
-                fluidStack = Utils.deserializeFluid(access, tileTag.getCompound(2 + ""));
+                fluidStack = deserialize(access, tileTag, 2);
                 if (!fluidStack.isEmpty()){
                     matrix.pushPose();
                     matrix.translate(0.5, 0.5, 0);
@@ -94,7 +96,7 @@ public class FluidDrawerISTER extends FunctionalStorageISTER{
                     FluidDrawerRenderer.renderFluidStack(matrix, renderer, light, overlayLight, fluidStack, displayAmount, fluidStack.getAmount(), 0.007f, options, bounds, true, true);
                     matrix.popPose();
                 }
-                fluidStack = Utils.deserializeFluid(access, tileTag.getCompound(3 + ""));
+                fluidStack = deserialize(access, tileTag, 3);
                 if (!fluidStack.isEmpty()){
                     matrix.pushPose();
                     matrix.translate(0, 0.5, 0);
@@ -105,5 +107,10 @@ public class FluidDrawerISTER extends FunctionalStorageISTER{
                 }
             }
         }
+    }
+
+    public static FluidStack deserialize(HolderLookup.Provider access, CompoundTag tileTag, int i) {
+        var fluidTag = tileTag.getCompound(String.valueOf(i));
+        return Utils.deserializeFluid(access, fluidTag.getCompound("Fluid"));
     }
 }

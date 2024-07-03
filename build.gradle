@@ -72,7 +72,7 @@ dependencies {
         transitive = false
     }
     implementation "curse.maven:jade-324717:5444008"
-    implementation "curse.maven:the-one-probe-245211:5475189"
+    compileOnly "curse.maven:the-one-probe-245211:5475189"
 }
 
 jar {
