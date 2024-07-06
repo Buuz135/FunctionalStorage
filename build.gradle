@@ -78,11 +78,11 @@ dependencies {
 jar {
     manifest {
         attributes(["Specification-Title"     : project.name,
-                    "Specification-Vendor"    : "Buuz135",
+                    "Specification-Vendor"    : "Buuz135, Rid",
                     "Specification-Version"   : "1.0",
                     "Implementation-Title"    : project.name,
                     "Implementation-Version"  : "${project.version}",
-                    "Implementation-Vendor"   : "Buuz135",
+                    "Implementation-Vendor"   : "Buuz135, Rid",
                     "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
                     "ModSide"                 : "BOTH"
         ])
