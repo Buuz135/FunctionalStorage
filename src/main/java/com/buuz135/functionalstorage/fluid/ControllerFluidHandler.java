@@ -3,12 +3,12 @@ package com.buuz135.functionalstorage.fluid;
 import com.buuz135.functionalstorage.block.tile.DrawerControllerTile;
 import com.buuz135.functionalstorage.inventory.ControllerInventoryHandler;
 import com.buuz135.functionalstorage.util.ConnectedDrawers;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.IFluidHandler;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 
 public abstract class ControllerFluidHandler implements IFluidHandler {
 
@@ -63,7 +63,7 @@ public abstract class ControllerFluidHandler implements IFluidHandler {
     @Override
     public int fill(FluidStack resource, FluidAction action) {
         for (HandlerTankSelector selector : this.selectors) {
-            if (!selector.getStackInSlot().isEmpty() && selector.getStackInSlot().isFluidEqual(resource) && selector.fill(resource, FluidAction.SIMULATE) > 0) {
+            if (!selector.getStackInSlot().isEmpty() && FluidStack.isSameFluidSameComponents(selector.getStackInSlot(), resource) && selector.fill(resource, FluidAction.SIMULATE) > 0) {
                 return selector.fill(resource, action);
             }
         }
@@ -78,7 +78,7 @@ public abstract class ControllerFluidHandler implements IFluidHandler {
     @Override
     public @NotNull FluidStack drain(FluidStack resource, FluidAction action) {
         for (HandlerTankSelector selector : this.selectors) {
-            if (!selector.getStackInSlot().isEmpty() && selector.getStackInSlot().isFluidEqual(resource)) {
+            if (!selector.getStackInSlot().isEmpty() && FluidStack.isSameFluidSameComponents(selector.getStackInSlot(), resource)) {
                 return selector.drain(resource, action);
             }
         }

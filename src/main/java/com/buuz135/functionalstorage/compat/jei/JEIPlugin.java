@@ -16,7 +16,7 @@ import net.minecraft.world.item.crafting.RecipeType;
 @JeiPlugin
 public class JEIPlugin implements IModPlugin {
 
-    public static ResourceLocation PLUGIN_ID = new ResourceLocation(FunctionalStorage.MOD_ID, "main");
+    public static ResourceLocation PLUGIN_ID = com.buuz135.functionalstorage.util.Utils.resourceLocation(FunctionalStorage.MOD_ID, "main");
 
     private CompactingRecipeCategory compactingRecipeCategory;
 
@@ -28,16 +28,16 @@ public class JEIPlugin implements IModPlugin {
 
     @Override
     public void registerRecipes(IRecipeRegistration registration) {
-        registration.addRecipes(CompactingRecipeCategory.TYPE, RecipeUtil.getRecipes(Minecraft.getInstance().level, (RecipeType<CustomCompactingRecipe>) FunctionalStorage.CUSTOM_COMPACTING_RECIPE_TYPE.get()));
+        registration.addRecipes(CompactingRecipeCategory.TYPE, RecipeUtil.getRecipes(Minecraft.getInstance().level, (RecipeType<CustomCompactingRecipe>) FunctionalStorage.CUSTOM_COMPACTING_RECIPE_TYPE.value()));
     }
 
     @Override
     public void registerRecipeCatalysts(IRecipeCatalystRegistration registration) {
         IModPlugin.super.registerRecipeCatalysts(registration);
-        registration.addRecipeCatalyst(new ItemStack(FunctionalStorage.COMPACTING_DRAWER.getKey().get()), CompactingRecipeCategory.TYPE);
-        registration.addRecipeCatalyst(new ItemStack(FunctionalStorage.FRAMED_COMPACTING_DRAWER.getKey().get()), CompactingRecipeCategory.TYPE);
-        registration.addRecipeCatalyst(new ItemStack(FunctionalStorage.SIMPLE_COMPACTING_DRAWER.getKey().get()), CompactingRecipeCategory.TYPE);
-        registration.addRecipeCatalyst(new ItemStack(FunctionalStorage.FRAMED_SIMPLE_COMPACTING_DRAWER.getKey().get()), CompactingRecipeCategory.TYPE);
+        registration.addRecipeCatalyst(new ItemStack(FunctionalStorage.COMPACTING_DRAWER.getBlock()), CompactingRecipeCategory.TYPE);
+        registration.addRecipeCatalyst(new ItemStack(FunctionalStorage.FRAMED_COMPACTING_DRAWER.getBlock()), CompactingRecipeCategory.TYPE);
+        registration.addRecipeCatalyst(new ItemStack(FunctionalStorage.SIMPLE_COMPACTING_DRAWER.getBlock()), CompactingRecipeCategory.TYPE);
+        registration.addRecipeCatalyst(new ItemStack(FunctionalStorage.FRAMED_SIMPLE_COMPACTING_DRAWER.getBlock()), CompactingRecipeCategory.TYPE);
     }
 
     @Override

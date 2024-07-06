@@ -1,13 +1,15 @@
 package com.buuz135.functionalstorage.inventory;
 
 import com.buuz135.functionalstorage.block.config.FunctionalStorageConfig;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.item.HorseArmorItem;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.resources.RegistryOps;
+import net.minecraft.world.item.AnimalArmorItem;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.RecordItem;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.INBTSerializable;
-import net.minecraftforge.items.IItemHandler;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.common.util.INBTSerializable;
+import net.neoforged.neoforge.items.IItemHandler;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -76,18 +78,18 @@ public abstract class ArmoryCabinetInventoryHandler implements IItemHandler, INB
     }
 
     private boolean isCertifiedStack(ItemStack stack){
-        if (stack.getCapability(ForgeCapabilities.ITEM_HANDLER, null).isPresent()) return false;
+        if (stack.getCapability(Capabilities.ItemHandler.ITEM) != null) return false;
         if (stack.getMaxStackSize() > 1) return false;
-        return stack.hasTag() || stack.isDamageableItem() || stack.isEnchantable() || stack.getItem() instanceof RecordItem || stack.getItem() instanceof HorseArmorItem;
+        return stack.isDamageableItem() || stack.isEnchantable() || stack.has(DataComponents.JUKEBOX_PLAYABLE) || stack.getItem() instanceof AnimalArmorItem;
     }
 
     @Override
-    public CompoundTag serializeNBT() {
+    public CompoundTag serializeNBT(net.minecraft.core.HolderLookup.Provider provider) {
         CompoundTag compoundTag = new CompoundTag();
         for (int i = 0; i < this.stackList.size(); i++) {
             ItemStack stack = this.stackList.get(i);
             if (!stack.isEmpty()){
-                compoundTag.put(i + "", stack.serializeNBT());
+                compoundTag.put(String.valueOf(i), stack.saveOptional(provider));
             }
         }
         return compoundTag;
@@ -102,12 +104,12 @@ public abstract class ArmoryCabinetInventoryHandler implements IItemHandler, INB
     }
 
     @Override
-    public void deserializeNBT(CompoundTag nbt) {
+    public void deserializeNBT(net.minecraft.core.HolderLookup.Provider provider, CompoundTag nbt) {
         this.stackList = create();
         for (String allKey : nbt.getAllKeys()) {
             int pos = Integer.parseInt(allKey);
             if (pos < this.stackList.size()){
-                this.stackList.set(pos, ItemStack.of(nbt.getCompound(allKey)));
+                this.stackList.set(pos, ItemStack.CODEC.decode(RegistryOps.create(NbtOps.INSTANCE, provider), nbt.getCompound(allKey)).getOrThrow().getFirst());
             }
         }
     }

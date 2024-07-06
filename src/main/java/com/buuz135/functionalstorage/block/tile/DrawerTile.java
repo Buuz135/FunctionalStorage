@@ -15,22 +15,15 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.IItemHandler;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.items.IItemHandler;
 import org.jetbrains.annotations.NotNull;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 public class DrawerTile extends ItemControllableDrawerTile<DrawerTile> {
 
     @Save
     public BigInventoryHandler handler;
-    private final LazyOptional<IItemHandler> lazyStorage;
     private FunctionalStorage.DrawerType type;
     private IWoodType woodType;
 
@@ -71,7 +64,6 @@ public class DrawerTile extends ItemControllableDrawerTile<DrawerTile> {
 
 
         };
-        lazyStorage = LazyOptional.of(() -> this.handler);
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -79,21 +71,12 @@ public class DrawerTile extends ItemControllableDrawerTile<DrawerTile> {
     public void initClient() {
         super.initClient();
         addGuiAddonFactory(() -> new DrawerInfoGuiAddon(64, 16,
-                new ResourceLocation(FunctionalStorage.MOD_ID, "textures/block/" + woodType.getName() + "_front_" + type.getSlots() + ".png"),
+                com.buuz135.functionalstorage.util.Utils.resourceLocation(FunctionalStorage.MOD_ID, "textures/block/" + woodType.getName() + "_front_" + type.getSlots() + ".png"),
                 type.getSlots(),
                 type.getSlotPosition(),
                 integer -> getHandler().getStackInSlot(integer),
                 integer -> getHandler().getSlotLimit(integer)
         ));
-    }
-
-    @Nonnull
-    @Override
-    public <U> LazyOptional<U> getCapability(@Nonnull Capability<U> cap, @Nullable Direction side) {
-        if (cap == ForgeCapabilities.ITEM_HANDLER) {
-            return lazyStorage.cast();
-        }
-        return super.getCapability(cap, side);
     }
 
     public InteractionResult onSlotActivated(Player playerIn, InteractionHand hand, Direction facing, double hitX, double hitY, double hitZ, int slot) {
@@ -126,11 +109,6 @@ public class DrawerTile extends ItemControllableDrawerTile<DrawerTile> {
     @Override
     public IItemHandler getStorage() {
         return handler;
-    }
-
-    @Override
-    public LazyOptional<IItemHandler> getOptional() {
-        return lazyStorage;
     }
 
     @Override

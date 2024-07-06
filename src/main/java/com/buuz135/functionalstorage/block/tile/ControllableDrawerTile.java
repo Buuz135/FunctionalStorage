@@ -19,16 +19,17 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.util.INBTSerializable;
-import net.minecraftforge.items.ItemHandlerHelper;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.common.util.INBTSerializable;
+import net.neoforged.neoforge.items.ItemHandlerHelper;
 
 import java.util.HashMap;
 
@@ -62,7 +63,16 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
         }
         if (getUtilitySlotAmount() > 0){
             this.addInventory((InventoryComponent<T>) (this.utilityUpgrades = new InventoryComponent<ControllableDrawerTile<T>>("utility_upgrades", 114, 70, getUtilitySlotAmount())
-                            .setInputFilter((stack, integer) -> stack.getItem() instanceof UpgradeItem && ((UpgradeItem) stack.getItem()).getType() == UpgradeItem.Type.UTILITY)
+                            .setInputFilter((stack, integer) -> {
+                                if (stack.is(FunctionalStorage.VOID_UPGRADE)) {
+                                    for (int i = 0; i < utilityUpgrades.getSlots(); i++) {
+                                        if (utilityUpgrades.getStackInSlot(i).is(FunctionalStorage.VOID_UPGRADE)) {
+                                            return false;
+                                        }
+                                    }
+                                }
+                                return stack.getItem() instanceof UpgradeItem && ((UpgradeItem) stack.getItem()).getType() == UpgradeItem.Type.UTILITY;
+                            })
                             .setSlotLimit(1)
                             .setOnSlotChanged((itemStack, integer) -> {
                                 needsUpgradeCache = true;
@@ -200,7 +210,7 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
                 }
             }
         }
-        if (super.onActivated(playerIn, hand, facing, hitX, hitY, hitZ) == InteractionResult.SUCCESS) {
+        if (super.onActivated(playerIn, hand, facing, hitX, hitY, hitZ) == ItemInteractionResult.SUCCESS) {
             return InteractionResult.SUCCESS;
         }
         if (slot == -1) {
@@ -298,11 +308,6 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
         return storageUpgrades;
     }
 
-    @Override
-    public void invalidateCaps() {
-        super.invalidateCaps();
-    }
-
     public boolean isEverythingEmpty() {
         for (int i = 0; i < getStorageUpgrades().getSlots(); i++) {
             if (!getStorageUpgrades().getStackInSlot(i).isEmpty()) {
@@ -355,7 +360,7 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
         }
 
         @Override
-        public CompoundTag serializeNBT() {
+        public CompoundTag serializeNBT(net.minecraft.core.HolderLookup.Provider provider) {
             CompoundTag compoundTag = new CompoundTag();
             for (ConfigurationToolItem.ConfigurationAction action : this.options.keySet()) {
                 compoundTag.putBoolean(action.name(), this.options.get(action));
@@ -367,7 +372,7 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
         }
 
         @Override
-        public void deserializeNBT(CompoundTag nbt) {
+        public void deserializeNBT(net.minecraft.core.HolderLookup.Provider provider, CompoundTag nbt) {
             for (String allKey : nbt.getAllKeys()) {
                 if (allKey.startsWith("Advanced: ")) {
                     this.advancedOptions.put(ConfigurationToolItem.ConfigurationAction.valueOf(allKey.replace("Advanced: ", "")), nbt.getInt(allKey));

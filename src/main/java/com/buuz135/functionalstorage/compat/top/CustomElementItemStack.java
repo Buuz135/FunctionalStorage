@@ -2,7 +2,6 @@ package com.buuz135.functionalstorage.compat.top;
 
 
 import com.buuz135.functionalstorage.FunctionalStorage;
-import com.mojang.blaze3d.vertex.PoseStack;
 import mcjty.theoneprobe.api.IElement;
 import mcjty.theoneprobe.api.IItemStyle;
 import mcjty.theoneprobe.apiimpl.styles.ItemStyle;
@@ -13,12 +12,13 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 
 public class CustomElementItemStack implements IElement {
 
-    public static ResourceLocation RL = new ResourceLocation(FunctionalStorage.MOD_ID, "drawer_element");
+    public static ResourceLocation RL = com.buuz135.functionalstorage.util.Utils.resourceLocation(FunctionalStorage.MOD_ID, "drawer_element");
 
     private final ItemStack itemStack;
     private final IItemStyle style;
@@ -37,7 +37,7 @@ public class CustomElementItemStack implements IElement {
         this.displayName = true;
     }
 
-    public CustomElementItemStack(FriendlyByteBuf buf) {
+    public CustomElementItemStack(RegistryFriendlyByteBuf buf) {
         if (buf.readBoolean()) {
             this.itemStack = NetworkTools.readItemStack(buf);
         } else {
@@ -49,11 +49,10 @@ public class CustomElementItemStack implements IElement {
         this.displayName = buf.readBoolean();
     }
 
+    @Override
     public void render(GuiGraphics matrixStack, int x, int y) {
         ItemRenderer itemRender = Minecraft.getInstance().getItemRenderer();
         if (!itemStack.isEmpty()) {
-            int size = itemStack.getCount();
-
             if (!RenderHelper.renderItemStack(Minecraft.getInstance(), itemRender, itemStack, matrixStack, x + (style.getWidth() - 18) / 2, y + (style.getHeight() - 18) / 2, display)) {
                 Minecraft var10000 = Minecraft.getInstance();
                 ChatFormatting var10004 = ChatFormatting.RED;
@@ -62,20 +61,22 @@ public class CustomElementItemStack implements IElement {
             if (this.displayName){
                 RenderHelper.renderText(Minecraft.getInstance(), matrixStack, x + 22, y + 7, itemStack.getHoverName());
             }
-
         }
 
     }
 
+    @Override
     public int getWidth() {
         return this.style.getWidth() + (this.displayName ? Minecraft.getInstance().font.width(itemStack.getHoverName().getString()) : 0) ;
     }
 
+    @Override
     public int getHeight() {
         return this.style.getHeight();
     }
 
-    public void toBytes(FriendlyByteBuf buf) {
+    @Override
+    public void toBytes(RegistryFriendlyByteBuf buf) {
         if (!this.itemStack.isEmpty()) {
             buf.writeBoolean(true);
             NetworkTools.writeItemStack(buf, this.itemStack);
@@ -89,6 +90,7 @@ public class CustomElementItemStack implements IElement {
         buf.writeBoolean(this.displayName);
     }
 
+    @Override
     public ResourceLocation getID() {
         return RL;
     }

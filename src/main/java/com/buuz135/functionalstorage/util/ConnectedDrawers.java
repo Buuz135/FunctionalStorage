@@ -14,17 +14,16 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.common.util.INBTSerializable;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.items.IItemHandler;
-
+import net.neoforged.neoforge.common.util.INBTSerializable;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.items.IItemHandler;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
 public class ConnectedDrawers implements INBTSerializable<CompoundTag> {
 
-    private StorageControllerTile controllerTile;
+    private final StorageControllerTile<?> controllerTile;
 
     private List<Long> connectedDrawers;
     private List<IItemHandler> itemHandlers;
@@ -33,7 +32,7 @@ public class ConnectedDrawers implements INBTSerializable<CompoundTag> {
     private int extensions;
     private VoxelShape cachedVoxelShape;
 
-    public ConnectedDrawers(Level level, StorageControllerTile controllerTile) {
+    public ConnectedDrawers(Level level, StorageControllerTile<?> controllerTile) {
         this.controllerTile = controllerTile;
 
         this.connectedDrawers = new ArrayList<>();
@@ -90,7 +89,7 @@ public class ConnectedDrawers implements INBTSerializable<CompoundTag> {
     }
 
     @Override
-    public CompoundTag serializeNBT() {
+    public CompoundTag serializeNBT(net.minecraft.core.HolderLookup.Provider provider) {
         CompoundTag compoundTag = new CompoundTag();
         for (int i = 0; i < this.connectedDrawers.size(); i++) {
             compoundTag.putLong(i + "", this.connectedDrawers.get(i));
@@ -99,7 +98,7 @@ public class ConnectedDrawers implements INBTSerializable<CompoundTag> {
     }
 
     @Override
-    public void deserializeNBT(CompoundTag nbt) {
+    public void deserializeNBT(net.minecraft.core.HolderLookup.Provider provider, CompoundTag nbt) {
         this.connectedDrawers = new ArrayList<>();
         for (String allKey : nbt.getAllKeys()) {
             connectedDrawers.add(nbt.getLong(allKey));

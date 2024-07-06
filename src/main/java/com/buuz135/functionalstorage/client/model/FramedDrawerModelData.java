@@ -23,12 +23,12 @@
 package com.buuz135.functionalstorage.client.model;
 
 
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
-import net.minecraftforge.client.model.data.ModelProperty;
-import net.minecraftforge.common.util.INBTSerializable;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.client.model.data.ModelProperty;
+import net.neoforged.neoforge.common.util.INBTSerializable;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -50,25 +50,25 @@ public class FramedDrawerModelData implements INBTSerializable<CompoundTag> {
     }
 
     @Override
-    public CompoundTag serializeNBT() {
+    public CompoundTag serializeNBT(net.minecraft.core.HolderLookup.Provider provider) {
         CompoundTag compoundTag = new CompoundTag();
-        design.forEach((s, item) -> compoundTag.putString(s, ForgeRegistries.ITEMS.getKey(item).toString()));
+        design.forEach((s, item) -> compoundTag.putString(s, BuiltInRegistries.ITEM.getKey(item).toString()));
         return compoundTag;
     }
 
     @Override
-    public void deserializeNBT(CompoundTag nbt) {
+    public void deserializeNBT(net.minecraft.core.HolderLookup.Provider provider, CompoundTag nbt) {
         design = new HashMap<>();
         for (String allKey : nbt.getAllKeys()) {
-            design.put(allKey, ForgeRegistries.ITEMS.getValue(new ResourceLocation(nbt.getString(allKey))));
+            design.put(allKey, BuiltInRegistries.ITEM.get(com.buuz135.functionalstorage.util.Utils.resourceLocation(nbt.getString(allKey))));
         }
         this.generateCode();
     }
 
-    private void generateCode(){
+    private void generateCode() {
         this.code = "";
         this.design.forEach((s, item) -> {
-            this.code += (s + ForgeRegistries.ITEMS.getKey(item).toString());
+            this.code += (s + BuiltInRegistries.ITEM.getKey(item));
         });
     }
 

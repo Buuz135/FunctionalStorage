@@ -7,12 +7,12 @@ import com.buuz135.functionalstorage.item.UpgradeItem;
 import com.hrznstudio.titanium.block.BasicTileBlock;
 import com.hrznstudio.titanium.component.inventory.InventoryComponent;
 import com.hrznstudio.titanium.util.RayTraceUtils;
-import com.hrznstudio.titanium.util.TileUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -23,13 +23,13 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemHandlerHelper;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.ItemHandlerHelper;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.UUID;
@@ -61,63 +61,56 @@ public abstract class ItemControllableDrawerTile<T extends ItemControllableDrawe
                         Item item = stack.getItem();
                         if (item.equals(FunctionalStorage.PULLING_UPGRADE.get())) {
                             Direction direction = UpgradeItem.getDirection(stack);
-                            TileUtil.getTileEntity(level, pos.relative(direction)).ifPresent(blockEntity1 -> {
-                                blockEntity1.getCapability(ForgeCapabilities.ITEM_HANDLER, direction.getOpposite()).ifPresent(iItemHandler -> {
-                                    for (int otherSlot = 0; otherSlot < iItemHandler.getSlots(); otherSlot++) {
-                                        ItemStack pulledStack = iItemHandler.extractItem(otherSlot, FunctionalStorageConfig.UPGRADE_PULL_ITEMS, true);
-                                        if (pulledStack.isEmpty()) continue;
-                                        boolean hasWorked = false;
-                                        for (int ourSlot = 0; ourSlot < this.getStorage().getSlots(); ourSlot++) {
-                                            ItemStack simulated = getStorage().insertItem(ourSlot, pulledStack, true);
-                                            if (!simulated.equals(pulledStack)) {
-                                                ItemStack extracted = iItemHandler.extractItem(otherSlot, pulledStack.getCount() - simulated.getCount(), false);
-                                                getStorage().insertItem(ourSlot, extracted, false);
-                                                hasWorked = true;
-                                                break;
-                                            }
+                            var iItemHandler = level.getCapability(Capabilities.ItemHandler.BLOCK, pos.relative(direction), direction.getOpposite());
+                            if (iItemHandler != null) {
+                                for (int otherSlot = 0; otherSlot < iItemHandler.getSlots(); otherSlot++) {
+                                    ItemStack pulledStack = iItemHandler.extractItem(otherSlot, FunctionalStorageConfig.UPGRADE_PULL_ITEMS, true);
+                                    if (pulledStack.isEmpty()) continue;
+                                    boolean hasWorked = false;
+                                    for (int ourSlot = 0; ourSlot < this.getStorage().getSlots(); ourSlot++) {
+                                        ItemStack simulated = getStorage().insertItem(ourSlot, pulledStack, true);
+                                        if (!simulated.equals(pulledStack)) {
+                                            ItemStack extracted = iItemHandler.extractItem(otherSlot, pulledStack.getCount() - simulated.getCount(), false);
+                                            getStorage().insertItem(ourSlot, extracted, false);
+                                            hasWorked = true;
+                                            break;
                                         }
-                                        if (hasWorked) break;
                                     }
-                                });
-                            });
-                        }
-                        if (item.equals(FunctionalStorage.PUSHING_UPGRADE.get())) {
+                                    if (hasWorked) break;
+                                }
+                            }
+                        } else if (item.equals(FunctionalStorage.PUSHING_UPGRADE.get())) {
                             Direction direction = UpgradeItem.getDirection(stack);
-                            TileUtil.getTileEntity(level, pos.relative(direction)).ifPresent(blockEntity1 -> {
-                                blockEntity1.getCapability(ForgeCapabilities.ITEM_HANDLER, direction.getOpposite()).ifPresent(otherHandler -> {
-                                    for (int drawerSlot = 0; drawerSlot < getStorage().getSlots(); drawerSlot++) {
-                                        ItemStack pulledStack = getStorage().extractItem(drawerSlot, FunctionalStorageConfig.UPGRADE_PUSH_ITEMS, true);
-                                        if (pulledStack.isEmpty()) continue;
-                                        boolean hasWorked = false;
-                                        for (int destinationSlot = 0; destinationSlot < otherHandler.getSlots(); destinationSlot++) {
-                                            ItemStack otherHandlerStackInSlot = otherHandler.getStackInSlot(destinationSlot);
-                                            if (!otherHandlerStackInSlot.isEmpty() && !ItemStack.isSameItemSameTags(pulledStack, otherHandler.getStackInSlot(destinationSlot)))
-                                                continue;
-                                            if (otherHandler.getStackInSlot(destinationSlot).getCount() >= otherHandler.getSlotLimit(destinationSlot))
-                                                continue;
-                                            ItemStack simulated = otherHandler.insertItem(destinationSlot, pulledStack, true);
-                                            if (simulated.getCount() <= pulledStack.getCount()) {
-                                                otherHandler.insertItem(destinationSlot, getStorage().extractItem(drawerSlot, pulledStack.getCount() - simulated.getCount(), false), false);
-                                                hasWorked = true;
-                                                break;
-                                            }
+                            var otherHandler = level.getCapability(Capabilities.ItemHandler.BLOCK, pos.relative(direction), direction.getOpposite());
+                            if (otherHandler != null) {
+                                for (int drawerSlot = 0; drawerSlot < getStorage().getSlots(); drawerSlot++) {
+                                    ItemStack pulledStack = getStorage().extractItem(drawerSlot, FunctionalStorageConfig.UPGRADE_PUSH_ITEMS, true);
+                                    if (pulledStack.isEmpty()) continue;
+                                    boolean hasWorked = false;
+                                    for (int destinationSlot = 0; destinationSlot < otherHandler.getSlots(); destinationSlot++) {
+                                        if (otherHandler.getStackInSlot(destinationSlot).getCount() >= otherHandler.getSlotLimit(destinationSlot))
+                                            continue;
+                                        ItemStack simulated = otherHandler.insertItem(destinationSlot, pulledStack, true);
+                                        if (simulated.getCount() <= pulledStack.getCount()) {
+                                            otherHandler.insertItem(destinationSlot, getStorage().extractItem(drawerSlot, pulledStack.getCount() - simulated.getCount(), false), false);
+                                            hasWorked = true;
+                                            break;
                                         }
-                                        if (hasWorked) break;
                                     }
-                                });
-                            });
-                        }
-                        if (item.equals(FunctionalStorage.COLLECTOR_UPGRADE.get())) {
+                                    if (hasWorked) break;
+                                }
+                            }
+                        } else if (item.equals(FunctionalStorage.COLLECTOR_UPGRADE.get())) {
                             Direction direction = UpgradeItem.getDirection(stack);
                             AABB box = new AABB(pos.relative(direction));
                             for (ItemEntity entitiesOfClass : level.getEntitiesOfClass(ItemEntity.class, box)) {
-                                ItemStack pulledStack = ItemHandlerHelper.copyStackWithSize(entitiesOfClass.getItem(), Math.min(entitiesOfClass.getItem().getCount(), FunctionalStorageConfig.UPGRADE_COLLECTOR_ITEMS));
+                                ItemStack pulledStack = entitiesOfClass.getItem().copyWithCount(Math.min(entitiesOfClass.getItem().getCount(), FunctionalStorageConfig.UPGRADE_COLLECTOR_ITEMS));
                                 if (pulledStack.isEmpty()) continue;
                                 boolean hasWorked = false;
                                 for (int ourSlot = 0; ourSlot < this.getStorage().getSlots(); ourSlot++) {
                                     ItemStack simulated = getStorage().insertItem(ourSlot, pulledStack, true);
                                     if (simulated.getCount() != pulledStack.getCount()) {
-                                        getStorage().insertItem(ourSlot, ItemHandlerHelper.copyStackWithSize(entitiesOfClass.getItem(), pulledStack.getCount() - simulated.getCount()), false);
+                                        getStorage().insertItem(ourSlot, entitiesOfClass.getItem().copyWithCount(pulledStack.getCount() - simulated.getCount()), false);
                                         entitiesOfClass.getItem().shrink(pulledStack.getCount() - simulated.getCount());
                                         hasWorked = true;
                                         break;
@@ -135,7 +128,7 @@ public abstract class ItemControllableDrawerTile<T extends ItemControllableDrawe
     @Override
     public InteractionResult onSlotActivated(Player playerIn, InteractionHand hand, Direction facing, double hitX, double hitY, double hitZ, int slot) {
         ItemStack stack = playerIn.getItemInHand(hand);
-        if (super.onActivated(playerIn, hand, facing, hitX, hitY, hitZ) == InteractionResult.SUCCESS) {
+        if (super.onActivated(playerIn, hand, facing, hitX, hitY, hitZ) == ItemInteractionResult.SUCCESS) {
             return InteractionResult.SUCCESS;
         }
         if (slot != -1 && isServer()) {
@@ -175,15 +168,7 @@ public abstract class ItemControllableDrawerTile<T extends ItemControllableDrawe
 
     public abstract IItemHandler getStorage();
 
-    public abstract LazyOptional<IItemHandler> getOptional();
-
     public abstract int getBaseSize(int lost);
-
-    @Override
-    public void invalidateCaps() {
-        super.invalidateCaps();
-        getOptional().invalidate();
-    }
 
     @Override
     public InventoryComponent<ControllableDrawerTile<T>> getStorageUpgradesConstructor() {
@@ -249,9 +234,22 @@ public abstract class ItemControllableDrawerTile<T extends ItemControllableDrawe
         return true;
     }
 
+    public boolean isInventoryEmpty() {
+        for (int i = 0; i < getStorage().getSlots(); i++) {
+            if (!getStorage().getStackInSlot(i).isEmpty()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     @Override
     public int getTitleColor() {
         return ChatFormatting.DARK_GRAY.getColor();
     }
 
+    @Override
+    public IItemHandler getItemHandler(@Nullable Direction direction) {
+        return getStorage();
+    }
 }

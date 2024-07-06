@@ -2,42 +2,40 @@ package com.buuz135.functionalstorage.block;
 
 import com.buuz135.functionalstorage.FunctionalStorage;
 import com.buuz135.functionalstorage.block.tile.FramedControllerExtensionTile;
-import com.buuz135.functionalstorage.block.tile.FramedDrawerControllerTile;
+import com.buuz135.functionalstorage.item.FSAttachments;
 import com.buuz135.functionalstorage.util.StorageTags;
 import com.hrznstudio.titanium.recipe.generator.TitaniumShapedRecipeBuilder;
 import com.hrznstudio.titanium.util.TileUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
-import net.minecraft.data.recipes.FinishedRecipe;
+import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.HitResult;
-import net.minecraftforge.common.Tags;
+import net.neoforged.neoforge.common.Tags;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
-import java.util.function.Consumer;
 
-public class FramedControllerExtensionBlock extends StorageControllerExtensionBlock<FramedControllerExtensionTile>{
+public class FramedControllerExtensionBlock extends StorageControllerExtensionBlock<FramedControllerExtensionTile> implements FramedBlock {
 
     public FramedControllerExtensionBlock() {
-        super("framed_controller_extension", Properties.copy(Blocks.IRON_BLOCK).noOcclusion().isViewBlocking(((p_61036_, p_61037_, p_61038_) -> false)), FramedControllerExtensionTile.class);
+        super("framed_controller_extension", Properties.ofFullCopy(Blocks.IRON_BLOCK).noOcclusion().isViewBlocking(((p_61036_, p_61037_, p_61038_) -> false)), FramedControllerExtensionTile.class);
     }
 
     @Override
     public BlockEntityType.BlockEntitySupplier<?> getTileEntityFactory() {
-        return ((p_155268_, p_155269_) -> new FramedControllerExtensionTile(this, (BlockEntityType<FramedControllerExtensionTile>) FunctionalStorage.FRAMED_CONTROLLER_EXTENSION.getRight().get(), p_155268_, p_155269_));
+        return ((p_155268_, p_155269_) -> new FramedControllerExtensionTile(this, (BlockEntityType<FramedControllerExtensionTile>) FunctionalStorage.FRAMED_CONTROLLER_EXTENSION.type().get(), p_155268_, p_155269_));
     }
 
     @Override
@@ -54,11 +52,9 @@ public class FramedControllerExtensionBlock extends StorageControllerExtensionBl
         ItemStack stack = new ItemStack(this);
         BlockEntity blockEntity = builder.getOptionalParameter(LootContextParams.BLOCK_ENTITY);
 
-        if(blockEntity instanceof FramedControllerExtensionTile framedControllerExtensionTile)
-        {
-            if(framedControllerExtensionTile.getFramedDrawerModelData() != null)
-            {
-                stack.getOrCreateTag().put("Style", framedControllerExtensionTile.getFramedDrawerModelData().serializeNBT());
+        if (blockEntity instanceof FramedControllerExtensionTile framedControllerExtensionTile) {
+            if (framedControllerExtensionTile.getFramedDrawerModelData() != null) {
+                stack.set(FSAttachments.STYLE, framedControllerExtensionTile.getFramedDrawerModelData().serializeNBT(blockEntity.getLevel().registryAccess()));
             }
         }
 
@@ -67,16 +63,13 @@ public class FramedControllerExtensionBlock extends StorageControllerExtensionBl
     }
 
     @Override
-    public ItemStack getCloneItemStack(BlockState state, HitResult target, BlockGetter level, BlockPos pos, Player player) {
+    public ItemStack getCloneItemStack(BlockState state, HitResult target, LevelReader level, BlockPos pos, Player player) {
         BlockEntity blockEntity = level.getBlockEntity(pos);
-        if(blockEntity instanceof FramedControllerExtensionTile framedControllerExtensionTile)
-        {
-            if(framedControllerExtensionTile.getFramedDrawerModelData() != null)
-            {
-                if(!framedControllerExtensionTile.getFramedDrawerModelData().getDesign().isEmpty())
-                {
+        if (blockEntity instanceof FramedControllerExtensionTile framedControllerExtensionTile) {
+            if (framedControllerExtensionTile.getFramedDrawerModelData() != null) {
+                if (!framedControllerExtensionTile.getFramedDrawerModelData().getDesign().isEmpty()) {
                     ItemStack stack = new ItemStack(this);
-                    stack.getOrCreateTag().put("Style", framedControllerExtensionTile.getFramedDrawerModelData().serializeNBT());
+                    stack.set(FSAttachments.STYLE, framedControllerExtensionTile.getFramedDrawerModelData().serializeNBT(level.registryAccess()));
                     return stack;
                 }
             }
@@ -85,11 +78,11 @@ public class FramedControllerExtensionBlock extends StorageControllerExtensionBl
     }
 
     @Override
-    public void registerRecipe(Consumer<FinishedRecipe> consumer) {
-        TitaniumShapedRecipeBuilder.shapedRecipe(FunctionalStorage.FRAMED_CONTROLLER_EXTENSION.getLeft().get())
+    public void registerRecipe(RecipeOutput consumer) {
+        TitaniumShapedRecipeBuilder.shapedRecipe(FunctionalStorage.FRAMED_CONTROLLER_EXTENSION.block().get())
                 .pattern("IBI").pattern("CDC").pattern("IBI")
                 .define('I', Items.IRON_NUGGET)
-                .define('B', Tags.Items.STORAGE_BLOCKS_QUARTZ)
+                .define('B', Items.QUARTZ_BLOCK)
                 .define('C', StorageTags.DRAWER)
                 .define('D', Items.REPEATER)
                 .save(consumer);

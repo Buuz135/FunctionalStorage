@@ -3,54 +3,38 @@ package com.buuz135.functionalstorage.item;
 import com.buuz135.functionalstorage.FunctionalStorage;
 import com.buuz135.functionalstorage.block.tile.ControllableDrawerTile;
 import com.hrznstudio.titanium.item.BasicItem;
+import com.mojang.serialization.Codec;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import org.jetbrains.annotations.Nullable;
 
-import java.awt.*;
+import java.awt.Color;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
 public class ConfigurationToolItem extends BasicItem {
 
-    public static final String NBT_MODE = "Mode";
-
     public static ConfigurationAction getAction(ItemStack stack) {
-        if (stack.hasTag()) {
-            return ConfigurationAction.valueOf(stack.getOrCreateTag().getString(NBT_MODE));
-        }
-        return ConfigurationAction.LOCKING;
+        return stack.getOrDefault(FSAttachments.CONFIGURATION_ACTION, ConfigurationAction.LOCKING);
     }
 
     public ConfigurationToolItem() {
         super(new Properties().stacksTo(1));
         setItemGroup(FunctionalStorage.TAB);
-    }
-
-    @Override
-    public void onCraftedBy(ItemStack p_41447_, Level p_41448_, Player p_41449_) {
-        super.onCraftedBy(p_41447_, p_41448_, p_41449_);
-        initNbt(p_41447_);
-    }
-
-    private ItemStack initNbt(ItemStack stack) {
-        stack.getOrCreateTag().putString(NBT_MODE, ConfigurationAction.LOCKING.name());
-        return stack;
     }
 
     @Override
@@ -82,7 +66,7 @@ public class ConfigurationToolItem extends BasicItem {
             if (player.isShiftKeyDown()) {
                 ConfigurationAction action = getAction(stack);
                 ConfigurationAction newAction = ConfigurationAction.values()[(Arrays.asList(ConfigurationAction.values()).indexOf(action) + 1) % ConfigurationAction.values().length];
-                stack.getOrCreateTag().putString(NBT_MODE, newAction.name());
+                stack.set(FSAttachments.CONFIGURATION_ACTION, newAction);
                 player.displayClientMessage(Component.literal("Swapped mode to ").setStyle(Style.EMPTY.withColor(newAction.getColor()))
                         .append(Component.translatable("configurationtool.configmode." + newAction.name().toLowerCase(Locale.ROOT))), true);
                 player.playSound(SoundEvents.ITEM_FRAME_REMOVE_ITEM, 0.5f, 1);
@@ -109,7 +93,7 @@ public class ConfigurationToolItem extends BasicItem {
         return key == null;
     }
 
-    public enum ConfigurationAction {
+    public enum ConfigurationAction implements StringRepresentable {
         LOCKING(TextColor.fromRgb(new Color(40, 131, 250).getRGB()), 1),
         TOGGLE_NUMBERS(TextColor.fromRgb(new Color(250, 145, 40).getRGB()), 1),
         TOGGLE_RENDER(TextColor.fromRgb(new Color(100, 250, 40).getRGB()), 1),
@@ -117,6 +101,7 @@ public class ConfigurationToolItem extends BasicItem {
         INDICATOR(TextColor.fromRgb(new Color(255, 40, 40).getRGB()), 3); //0 NO , 1 - PROGRESS, 2 - ONLY FULL, 3 - ONLY FULL WITHOUT BG
 
 
+        public static final Codec<ConfigurationAction> CODEC = StringRepresentable.fromValues(ConfigurationAction::values);
         private final TextColor color;
         private final int max;
 
@@ -131,6 +116,11 @@ public class ConfigurationToolItem extends BasicItem {
 
         public int getMax() {
             return max;
+        }
+
+        @Override
+        public String getSerializedName() {
+            return name().toLowerCase(Locale.ROOT);
         }
     }
 }

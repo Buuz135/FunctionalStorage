@@ -1,10 +1,13 @@
 package com.buuz135.functionalstorage.fluid;
 
+import com.buuz135.functionalstorage.util.Utils;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraftforge.common.util.INBTSerializable;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.fluids.capability.templates.FluidTank;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.resources.RegistryOps;
+import net.neoforged.neoforge.common.util.INBTSerializable;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
@@ -24,7 +27,7 @@ public abstract class BigFluidHandler implements IFluidHandler, INBTSerializable
             int finalI = i;
             this.tanks[i] = new CustomFluidTank(capacity, fluidStack -> {
                 if (isDrawerLocked()) {
-                    return fluidStack.isFluidEqual(this.filterStack[finalI]);
+                    return FluidStack.isSameFluidSameComponents(fluidStack, this.filterStack[finalI]);
                 }
                 return true;
             });
@@ -79,7 +82,7 @@ public abstract class BigFluidHandler implements IFluidHandler, INBTSerializable
     @Override
     public FluidStack drain(FluidStack resource, FluidAction action) {
         for (CustomFluidTank tank : tanks) {
-            if (!tank.getFluid().isEmpty() && tank.getFluid().isFluidEqual(resource) && !tank.drain(resource, FluidAction.SIMULATE).isEmpty()) {
+            if (!tank.getFluid().isEmpty() && FluidStack.isSameFluidSameComponents(tank.getFluid(), resource) && !tank.drain(resource, FluidAction.SIMULATE).isEmpty()) {
                 FluidStack ret = tank.drain(resource, action);
                 if (action == FluidAction.EXECUTE) onChange();
                 return ret;
@@ -117,23 +120,23 @@ public abstract class BigFluidHandler implements IFluidHandler, INBTSerializable
     }
 
     @Override
-    public CompoundTag serializeNBT() {
+    public CompoundTag serializeNBT(net.minecraft.core.HolderLookup.Provider provider) {
         CompoundTag compoundTag = new CompoundTag();
         for (int i = 0; i < this.tanks.length; i++) {
-            compoundTag.put(i + "", this.tanks[i].writeToNBT(new CompoundTag()));
-            compoundTag.put("Locked" + i, this.filterStack[i].writeToNBT(new CompoundTag()));
+            compoundTag.put(i + "", this.tanks[i].writeToNBT(provider, new CompoundTag()));
+            compoundTag.put("Locked" + i, FluidStack.OPTIONAL_CODEC.encodeStart(RegistryOps.create(NbtOps.INSTANCE, provider), this.filterStack[i]).getOrThrow());
         }
         compoundTag.putInt("Capacity", this.capacity);
         return compoundTag;
     }
 
     @Override
-    public void deserializeNBT(CompoundTag nbt) {
+    public void deserializeNBT(net.minecraft.core.HolderLookup.Provider provider, CompoundTag nbt) {
         this.capacity = nbt.getInt("Capacity");
         for (int i = 0; i < this.tanks.length; i++) {
-            this.tanks[i].readFromNBT(nbt.getCompound(i + ""));
+            this.tanks[i].readFromNBT(provider, nbt.getCompound(i + ""));
             this.tanks[i].setCapacity(this.capacity);
-            this.filterStack[i] = FluidStack.loadFluidStackFromNBT(nbt.getCompound("Locked" + i));
+            this.filterStack[i] = Utils.deserializeFluid(provider, nbt.getCompound("Locked" + i));
         }
     }
 
@@ -171,7 +174,7 @@ public abstract class BigFluidHandler implements IFluidHandler, INBTSerializable
         public int fill(FluidStack resource, FluidAction action) {
             int amount = super.fill(resource, action);
             if (isDrawerVoid()
-                    && ((isDrawerLocked() && isFluidValid(resource)) || (!getFluid().isEmpty() && getFluid().isFluidEqual(resource))))
+                    && ((isDrawerLocked() && isFluidValid(resource)) || (!getFluid().isEmpty() && FluidStack.isSameFluidSameComponents(getFluid(), resource))))
                 return resource.getAmount();
             return amount;
         }

@@ -12,12 +12,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.IItemHandler;
+import net.neoforged.neoforge.items.IItemHandler;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Optional;
 
 public abstract class StorageControllerExtensionTile<T extends StorageControllerExtensionTile<T>> extends ItemControllableDrawerTile<T> {
@@ -47,11 +43,6 @@ public abstract class StorageControllerExtensionTile<T extends StorageController
     }
 
     @Override
-    public LazyOptional<IItemHandler> getOptional() {
-        return getControllerInstance().map(StorageControllerTile::getOptional).orElse(null);
-    }
-
-    @Override
     public int getBaseSize(int lost) {
         return 1;
     }
@@ -72,20 +63,9 @@ public abstract class StorageControllerExtensionTile<T extends StorageController
         }
     }
 
-    @Nonnull
-    @Override
-    public <U> LazyOptional<U> getCapability(@Nonnull Capability<U> cap, @Nullable Direction side) {
-        return getControllerInstance().map(drawerControllerTile -> drawerControllerTile.getCapability(cap, side)).orElse(super.getCapability(cap, side));
-    }
-
     private Optional<StorageControllerTile> getControllerInstance() {
         if (getControllerPos() == null) return Optional.empty();
         if (level == null || !level.isLoaded(getControllerPos())) return Optional.empty();
         return TileUtil.getTileEntity(this.level, getControllerPos(), StorageControllerTile.class);
-    }
-
-    @Override
-    public void invalidateCaps() {
-
     }
 }

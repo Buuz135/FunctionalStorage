@@ -1,0 +1,33 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:item_exists",
+      "item": "functionalstorage:configuration_tool"
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "D": {
+      "tag": "functionalstorage:drawer"
+    },
+    "E": {
+      "item": "minecraft:emerald"
+    },
+    "G": {
+      "tag": "c:ingots/gold"
+    },
+    "P": {
+      "item": "minecraft:paper"
+    }
+  },
+  "pattern": [
+    "PPG",
+    "PDG",
+    "PEP"
+  ],
+  "result": {
+    "count": 1,
+    "id": "functionalstorage:configuration_tool"
+  }
+}

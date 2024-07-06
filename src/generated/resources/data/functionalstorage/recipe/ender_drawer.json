@@ -1,0 +1,30 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:item_exists",
+      "item": "functionalstorage:ender_drawer"
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "C": {
+      "tag": "c:chests/ender"
+    },
+    "L": {
+      "tag": "functionalstorage:drawer"
+    },
+    "P": {
+      "tag": "minecraft:planks"
+    }
+  },
+  "pattern": [
+    "PPP",
+    "LCL",
+    "PPP"
+  ],
+  "result": {
+    "count": 1,
+    "id": "functionalstorage:ender_drawer"
+  }
+}

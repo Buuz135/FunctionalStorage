@@ -21,16 +21,17 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.phys.AABB;
-import net.minecraftforge.client.extensions.common.IClientFluidTypeExtensions;
-import net.minecraftforge.fluids.FluidStack;
+import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
+import net.neoforged.neoforge.fluids.FluidStack;
 import org.joml.Matrix4f;
 
 
 public class FluidDrawerRenderer implements BlockEntityRenderer<FluidDrawerTile> {
 
     public static void renderFluidStack(PoseStack matrixStack, MultiBufferSource bufferIn, int combinedLight, int combinedOverlay, FluidStack stack, int amount, int maxAmount, float scale, ControllableDrawerTile.DrawerOptions options, AABB bounds, boolean halfText, boolean isSmallBar) {
-        matrixStack.pushPose();
-        if (options.isActive(ConfigurationToolItem.ConfigurationAction.TOGGLE_RENDER)){
+        if (options.isActive(ConfigurationToolItem.ConfigurationAction.TOGGLE_RENDER)) {
+            matrixStack.pushPose();
+
             IClientFluidTypeExtensions renderProperties = IClientFluidTypeExtensions.of(stack.getFluid());
             ResourceLocation texture = renderProperties.getStillTexture(stack);
             TextureAtlasSprite still = Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(texture);
@@ -48,43 +49,43 @@ public class FluidDrawerRenderer implements BlockEntityRenderer<FluidDrawerTile>
             float y2 = (float) bounds.maxY;
             float z1 = (float) bounds.minZ;
             float z2 = (float) bounds.maxZ;
-            double bx1 = bounds.minX * 16;
-            double bx2 = bounds.maxX * 16;
-            double by1 = bounds.minY * 16;
-            double by2 = bounds.maxY * 16;
-            double bz1 = bounds.minZ * 16;
-            double bz2 = bounds.maxZ * 16;
+            float bx1 = (float) bounds.minX * 1.0f;
+            float bx2 = (float) bounds.maxX * 1.0f;
+            float by1 = (float) bounds.minY * 1.0f;
+            float by2 = (float) bounds.maxY * 1.0f;
+            float bz1 = (float) bounds.minZ * 1.0f;
+            float bz2 = (float) bounds.maxZ * 1.0f;
 
 
             Matrix4f posMat = matrixStack.last().pose();
 
             //TOP
 
-            if (true) {
+            {
                 float u1 = still.getU(bx1);
                 float u2 = still.getU(bx2);
                 float v1 = still.getV(bz1);
                 float v2 = still.getV(bz2);
-                builder.vertex(posMat, x1, y2, z2).color(red, green, blue, alpha).uv(u1, v2).overlayCoords(combinedOverlay).uv2(combinedLight).normal(0f, 1f, 0f).endVertex();
-                builder.vertex(posMat, x2, y2, z2).color(red, green, blue, alpha).uv(u2, v2).overlayCoords(combinedOverlay).uv2(combinedLight).normal(0f, 1f, 0f).endVertex();
-                builder.vertex(posMat, x2, y2, z1).color(red, green, blue, alpha).uv(u2, v1).overlayCoords(combinedOverlay).uv2(combinedLight).normal(0f, 1f, 0f).endVertex();
-                builder.vertex(posMat, x1, y2, z1).color(red, green, blue, alpha).uv(u1, v1).overlayCoords(combinedOverlay).uv2(combinedLight).normal(0f, 1f, 0f).endVertex();
+                builder.addVertex(posMat, x1, y2, z2).setColor(red, green, blue, alpha).setUv(u1, v2).setOverlay(combinedOverlay).setLight(combinedLight).setNormal(0f, 1f, 0f);
+                builder.addVertex(posMat, x2, y2, z2).setColor(red, green, blue, alpha).setUv(u2, v2).setOverlay(combinedOverlay).setLight(combinedLight).setNormal(0f, 1f, 0f);
+                builder.addVertex(posMat, x2, y2, z1).setColor(red, green, blue, alpha).setUv(u2, v1).setOverlay(combinedOverlay).setLight(combinedLight).setNormal(0f, 1f, 0f);
+                builder.addVertex(posMat, x1, y2, z1).setColor(red, green, blue, alpha).setUv(u1, v1).setOverlay(combinedOverlay).setLight(combinedLight).setNormal(0f, 1f, 0f);
             }
+
             //FRONT
-            if (true) {
+            {
                 float u1 = still.getU(bx1);
                 float u2 = still.getU(bx2);
                 float v1 = still.getV(by1);
                 float v2 = still.getV(by2);
-                builder.vertex(posMat, x2, y1, z2).color(red, green, blue, alpha).uv(u2, v1).overlayCoords(combinedOverlay).uv2(combinedLight).normal(0f, 0f, 1f).endVertex();
-                builder.vertex(posMat, x2, y2, z2).color(red, green, blue, alpha).uv(u2, v2).overlayCoords(combinedOverlay).uv2(combinedLight).normal(0f, 0f, 1f).endVertex();
-                builder.vertex(posMat, x1, y2, z2).color(red, green, blue, alpha).uv(u1, v2).overlayCoords(combinedOverlay).uv2(combinedLight).normal(0f, 0f, 1f).endVertex();
-                builder.vertex(posMat, x1, y1, z2).color(red, green, blue, alpha).uv(u1, v1).overlayCoords(combinedOverlay).uv2(combinedLight).normal(0f, 0f, 1f).endVertex();
+                builder.addVertex(posMat, x2, y1, z2).setColor(red, green, blue, alpha).setUv(u2, v1).setOverlay(combinedOverlay).setLight(combinedLight).setNormal(0f, 0f, 1f);
+                builder.addVertex(posMat, x2, y2, z2).setColor(red, green, blue, alpha).setUv(u2, v2).setOverlay(combinedOverlay).setLight(combinedLight).setNormal(0f, 0f, 1f);
+                builder.addVertex(posMat, x1, y2, z2).setColor(red, green, blue, alpha).setUv(u1, v2).setOverlay(combinedOverlay).setLight(combinedLight).setNormal(0f, 0f, 1f);
+                builder.addVertex(posMat, x1, y1, z2).setColor(red, green, blue, alpha).setUv(u1, v1).setOverlay(combinedOverlay).setLight(combinedLight).setNormal(0f, 0f, 1f);
             }
+            matrixStack.popPose();
         }
 
-
-        matrixStack.popPose();
         if (options.isActive(ConfigurationToolItem.ConfigurationAction.TOGGLE_NUMBERS)) {
             matrixStack.pushPose();
             matrixStack.translate(0.5, 0.84, 0.97);

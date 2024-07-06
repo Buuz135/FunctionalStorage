@@ -16,21 +16,14 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.IItemHandler;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.items.IItemHandler;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 public class SimpleCompactingDrawerTile extends ItemControllableDrawerTile<SimpleCompactingDrawerTile> {
 
-    private final LazyOptional<IItemHandler> lazyStorage;
     @Save
     public CompactingInventoryHandler handler;
     private boolean hasCheckedRecipes;
@@ -69,7 +62,6 @@ public class SimpleCompactingDrawerTile extends ItemControllableDrawerTile<Simpl
             }
 
         };
-        lazyStorage = LazyOptional.of(() -> this.handler);
         this.hasCheckedRecipes = false;
     }
 
@@ -78,7 +70,7 @@ public class SimpleCompactingDrawerTile extends ItemControllableDrawerTile<Simpl
     public void initClient() {
         super.initClient();
         addGuiAddonFactory(() -> new DrawerInfoGuiAddon(64, 16,
-                new ResourceLocation(FunctionalStorage.MOD_ID, "textures/block/simple_compacting_drawer_front.png"),
+                com.buuz135.functionalstorage.util.Utils.resourceLocation(FunctionalStorage.MOD_ID, "textures/block/simple_compacting_drawer_front.png"),
                 2,
                 integer -> {
                     if (integer == 0) return Pair.of(16, 28);
@@ -133,23 +125,10 @@ public class SimpleCompactingDrawerTile extends ItemControllableDrawerTile<Simpl
         return handler;
     }
 
-    @Override
-    public LazyOptional<IItemHandler> getOptional() {
-        return lazyStorage;
-    }
 
     @Override
     public int getBaseSize(int slot) {
         return handler.getSlotLimitBase(slot);
-    }
-
-    @Nonnull
-    @Override
-    public <U> LazyOptional<U> getCapability(@Nonnull Capability<U> cap, @Nullable Direction side) {
-        if (cap == ForgeCapabilities.ITEM_HANDLER) {
-            return lazyStorage.cast();
-        }
-        return super.getCapability(cap, side);
     }
 
     @NotNull

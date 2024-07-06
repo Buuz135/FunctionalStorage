@@ -2,6 +2,7 @@ package com.buuz135.functionalstorage.block;
 
 import com.buuz135.functionalstorage.FunctionalStorage;
 import com.buuz135.functionalstorage.block.tile.ArmoryCabinetTile;
+import com.buuz135.functionalstorage.item.FSAttachments;
 import com.hrznstudio.titanium.block.RotatableBlock;
 import com.hrznstudio.titanium.datagenerator.loot.block.BasicBlockLootTables;
 import net.minecraft.core.BlockPos;
@@ -13,7 +14,6 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
@@ -26,13 +26,13 @@ import java.util.List;
 public class ArmoryCabinetBlock extends RotatableBlock<ArmoryCabinetTile> {
 
     public ArmoryCabinetBlock() {
-        super("armory_cabinet", Properties.copy(Blocks.IRON_BLOCK), ArmoryCabinetTile.class);
+        super("armory_cabinet", Properties.ofFullCopy(Blocks.IRON_BLOCK), ArmoryCabinetTile.class);
         //setItemGroup(FunctionalStorage.TAB);
     }
 
     @Override
     public BlockEntityType.BlockEntitySupplier<?> getTileEntityFactory() {
-        return (p_155268_, p_155269_) -> new ArmoryCabinetTile(this, FunctionalStorage.ARMORY_CABINET.getRight().get(), p_155268_, p_155269_);
+        return (p_155268_, p_155269_) -> new ArmoryCabinetTile(this, FunctionalStorage.ARMORY_CABINET.type().get(), p_155268_, p_155269_);
     }
 
     @NotNull
@@ -58,7 +58,7 @@ public class ArmoryCabinetBlock extends RotatableBlock<ArmoryCabinetTile> {
         BlockEntity drawerTile = builder.getOptionalParameter(LootContextParams.BLOCK_ENTITY);
         if (drawerTile instanceof ArmoryCabinetTile) {
             if (!((ArmoryCabinetTile) drawerTile).isEverythingEmpty()) {
-                stack.getOrCreateTag().put("Tile", drawerTile.saveWithoutMetadata());
+                stack.set(FSAttachments.TILE, drawerTile.saveWithoutMetadata(drawerTile.getLevel().registryAccess()));
             }
         }
         stacks.add(stack);
@@ -73,11 +73,11 @@ public class ArmoryCabinetBlock extends RotatableBlock<ArmoryCabinetTile> {
     @Override
     public void setPlacedBy(Level level, BlockPos pos, BlockState p_49849_, @Nullable LivingEntity p_49850_, ItemStack stack) {
         super.setPlacedBy(level, pos, p_49849_, p_49850_, stack);
-        if (stack.hasTag() && stack.getTag().contains("Tile")) {
+        if (stack.has(FSAttachments.TILE)) {
             BlockEntity entity = level.getBlockEntity(pos);
-            if (entity instanceof ArmoryCabinetTile) {
-                entity.load(stack.getTag().getCompound("Tile"));
-                ((ArmoryCabinetTile) entity).markForUpdate();
+            if (entity instanceof ArmoryCabinetTile et) {
+                et.loadAdditional(stack.get(FSAttachments.TILE), entity.getLevel().registryAccess());
+                et.markForUpdate();
             }
         }
     }

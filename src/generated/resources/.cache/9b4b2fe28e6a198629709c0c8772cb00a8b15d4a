@@ -1,3 +1,3 @@
-// 1.20.1	2024-05-26T12:09:04.1995405	Tags for minecraft:block mod id functionalstorage
-e72c53e88ffb2ff0aed4d46bafae940a49fe9e97 data/minecraft/tags/blocks/mineable/axe.json
-4b6fc75faca16170a17220f0e301b16866f4bc5c data/minecraft/tags/blocks/mineable/pickaxe.json
+// 1.21	2024-07-03T14:10:47.9953066	Tags for minecraft:block mod id functionalstorage
+e72c53e88ffb2ff0aed4d46bafae940a49fe9e97 data/minecraft/tags/block/mineable/axe.json
+4b6fc75faca16170a17220f0e301b16866f4bc5c data/minecraft/tags/block/mineable/pickaxe.json
