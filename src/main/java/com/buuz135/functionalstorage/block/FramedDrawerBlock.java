@@ -55,7 +55,7 @@ public class FramedDrawerBlock extends DrawerBlock implements FramedBlock {
 
     public static FramedDrawerModelData getDrawerModelData(ItemStack stack){
         if (stack.has(FSAttachments.STYLE)) {
-            CompoundTag tag = stack.get(FSAttachments.STYLE);
+            CompoundTag tag = stack.getOrDefault(FSAttachments.STYLE, new CompoundTag());
             if (tag.isEmpty()) return null;
             HashMap<String, Item> data = new HashMap<>();
             data.put("particle", BuiltInRegistries.ITEM.get(com.buuz135.functionalstorage.util.Utils.resourceLocation(tag.getString("particle"))));
@@ -69,7 +69,7 @@ public class FramedDrawerBlock extends DrawerBlock implements FramedBlock {
 
     public static ItemStack fill(ItemStack first, ItemStack second, ItemStack drawer, ItemStack divider){
         drawer = drawer.copyWithCount(1);
-        CompoundTag style = drawer.get(FSAttachments.STYLE);
+        CompoundTag style = drawer.getOrDefault(FSAttachments.STYLE, new CompoundTag());
         style.putString("particle", BuiltInRegistries.ITEM.getKey(first.getItem()).toString());
         style.putString("side", BuiltInRegistries.ITEM.getKey(first.getItem()).toString());
         style.putString("front", BuiltInRegistries.ITEM.getKey(second.getItem()).toString());

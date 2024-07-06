@@ -1,6 +1,7 @@
 package com.buuz135.functionalstorage.recipe;
 
 
+import com.buuz135.functionalstorage.FunctionalStorage;
 import com.buuz135.functionalstorage.block.CompactingFramedDrawerBlock;
 import com.buuz135.functionalstorage.block.FramedControllerExtensionBlock;
 import com.buuz135.functionalstorage.block.FramedDrawerBlock;
@@ -20,7 +21,6 @@ import net.minecraft.world.level.Level;
 
 public class FramedDrawerRecipe extends CustomRecipe {
 
-    public static RecipeSerializer<FramedDrawerRecipe> SERIALIZER = new SimpleCraftingRecipeSerializer<>((c) -> new FramedDrawerRecipe());
 
     public FramedDrawerRecipe() {
         super(CraftingBookCategory.MISC);
@@ -52,6 +52,7 @@ public class FramedDrawerRecipe extends CustomRecipe {
 
     @Override
     public boolean matches(CraftingInput inv, Level worldIn) {
+        if (inv.size() < 3) return false;
         return matches(inv.getItem(0), inv.getItem(1), inv.getItem(2)) ||
                 matchesCompacting(inv.getItem(0), inv.getItem(1), inv.getItem(2)) ||
                 matchesSimpleCompacting(inv.getItem(0), inv.getItem(1), inv.getItem(2)) ||
@@ -65,9 +66,8 @@ public class FramedDrawerRecipe extends CustomRecipe {
                 matchesCompacting(inv.getItem(0), inv.getItem(1), inv.getItem(2)) ||
                 matchesSimpleCompacting(inv.getItem(0), inv.getItem(1), inv.getItem(2)) ||
                 matchesController(inv.getItem(0), inv.getItem(1), inv.getItem(2)) ||
-                matchesControllerExtension(inv.getItem(0), inv.getItem(1), inv.getItem(2)))
-        {
-            return FramedDrawerBlock.fill(inv.getItem(0), inv.getItem(1), inv.getItem(2).copy(), inv.getItem(3));
+                matchesControllerExtension(inv.getItem(0), inv.getItem(1), inv.getItem(2))) {
+            return FramedDrawerBlock.fill(inv.getItem(0), inv.getItem(1), inv.getItem(2).copy(), inv.size() >= 4 ? inv.getItem(3) : ItemStack.EMPTY);
         }
 
         return ItemStack.EMPTY;
@@ -80,6 +80,6 @@ public class FramedDrawerRecipe extends CustomRecipe {
 
     @Override
     public RecipeSerializer<?> getSerializer() {
-        return SERIALIZER;
+        return FunctionalStorage.FRAMED_RECIPE_SERIALIZER.value();
     }
 }

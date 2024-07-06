@@ -75,6 +75,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.item.crafting.SimpleCraftingRecipeSerializer;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -164,9 +165,11 @@ public class FunctionalStorage extends ModuleController {
     public static DeferredHolder<Item, Item> CREATIVE_UPGRADE;
 
     public static TitaniumTab TAB = new TitaniumTab(com.buuz135.functionalstorage.util.Utils.resourceLocation(MOD_ID, "main"));
+
     public static Holder<RecipeSerializer<?>> CUSTOM_COMPACTING_RECIPE_SERIALIZER;
     public static Holder<RecipeType<?>> CUSTOM_COMPACTING_RECIPE_TYPE;
-
+    public static Holder<RecipeSerializer<?>> FRAMED_RECIPE_SERIALIZER;
+    public static Holder<RecipeType<?>> FRAMED_RECIPE_TYPE;
 
     public FunctionalStorage(Dist dist, IEventBus modBus, ModContainer container) {
         super(container);
@@ -274,13 +277,16 @@ public class FunctionalStorage extends ModuleController {
         });
         DrawerlessWoodIngredient.TYPE = getRegistries().registerGeneric(NeoForgeRegistries.Keys.INGREDIENT_TYPES, DrawerlessWoodIngredient.NAME.getPath(), () -> new IngredientType<>(DrawerlessWoodIngredient.CODEC));
 
-        getRegistries().registerGeneric(Registries.RECIPE_SERIALIZER, "framed_recipe", () -> FramedDrawerRecipe.SERIALIZER);
 
         this.addCreativeTab("main", () -> new ItemStack(DRAWER_CONTROLLER), MOD_ID, TAB);
 
         CUSTOM_COMPACTING_RECIPE_TYPE = getRegistries().registerGeneric(Registries.RECIPE_TYPE, "custom_compacting", () -> RecipeType.simple(com.buuz135.functionalstorage.util.Utils.resourceLocation(MOD_ID, "custom_compacting")));
 
         CUSTOM_COMPACTING_RECIPE_SERIALIZER = getRegistries().registerGeneric(Registries.RECIPE_SERIALIZER, "custom_compacting", () -> new GenericSerializer<>(CustomCompactingRecipe.class, CUSTOM_COMPACTING_RECIPE_TYPE::value, CustomCompactingRecipe.CODEC));
+
+        FRAMED_RECIPE_TYPE = getRegistries().registerGeneric(Registries.RECIPE_TYPE, "framed_recipe", () -> RecipeType.simple(com.buuz135.functionalstorage.util.Utils.resourceLocation(MOD_ID, "framed_recipe")));
+
+        FRAMED_RECIPE_SERIALIZER = getRegistries().registerGeneric(Registries.RECIPE_SERIALIZER, "framed_recipe", () -> new SimpleCraftingRecipeSerializer<>((c) -> new FramedDrawerRecipe()));
 
         ModLoadingContext.get().getActiveContainer().getEventBus()
                 .addListener(EventPriority.LOWEST, (final RegisterEvent regEvent) -> {
