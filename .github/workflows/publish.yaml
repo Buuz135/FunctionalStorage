@@ -34,9 +34,9 @@ jobs:
           files-secondary: build/libs/*-@(dev|sources).jar
           version-type: beta
           version: ${{ github.ref_name }}
-          loaders: forge
-          game-versions: 1.20.1
-          java: 17
+          loaders: neoforge
+          game-versions: 1.21
+          java: 21
           name: ""
           changelog: "https://github.com/Buuz135/FunctionalStorage/blob/main/CHANGELOG.md"
           dependencies: |

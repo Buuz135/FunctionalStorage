@@ -61,6 +61,9 @@ neoForge {
         functionalstorage {
             sourceSet sourceSets.main
         }
+        titanium {
+            sourceSet sourceSets.main
+        }
     }
 }
 
@@ -68,9 +71,7 @@ dependencies {
 	compileOnly "mezz.jei:jei-1.21-common-api:$jei_version"
     compileOnly "mezz.jei:jei-1.21-neoforge-api:$jei_version"
     runtimeOnly "mezz.jei:jei-1.21-neoforge:$jei_version"
-	implementation('com.hrznstudio:titanium') {
-        transitive = false
-    }
+    implementation project.dependencies.create('com.hrznstudio:titanium:1.21-4.0.12')
     implementation "curse.maven:jade-324717:5444008"
     compileOnly "curse.maven:the-one-probe-245211:5475189"
 }
