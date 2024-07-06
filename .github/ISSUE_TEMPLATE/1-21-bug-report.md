@@ -1,5 +1,5 @@
 ---
-name: 1.20 Bug report
+name: 1.21 Bug report
 about: Create a report to help us improve
 title: "[1.21] Issue Title"
 labels: 'type: bug, version: 1.21'
