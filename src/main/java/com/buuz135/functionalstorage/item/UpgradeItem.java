@@ -5,6 +5,7 @@ import com.buuz135.functionalstorage.block.tile.ControllableDrawerTile;
 import com.buuz135.functionalstorage.block.tile.FluidDrawerTile;
 import com.hrznstudio.titanium.block.RotatableBlock;
 import com.hrznstudio.titanium.item.BasicItem;
+import com.hrznstudio.titanium.util.FacingUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
@@ -138,18 +139,8 @@ public class UpgradeItem extends BasicItem {
     }
 
     public static MutableComponent getRelativeDirection(Direction upgrade, Direction facing) {
-        if (upgrade == facing) {
-            return Component.translatable("drawer_upgrade.functionalstorage.sides.front");
-        } else if (upgrade == facing.getOpposite()) {
-            return Component.translatable("drawer_upgrade.functionalstorage.sides.back");
-        } else if (upgrade == Direction.UP) {
-            return Component.translatable("drawer_upgrade.functionalstorage.sides.up");
-        } else if (upgrade == Direction.DOWN) {
-            return Component.translatable("drawer_upgrade.functionalstorage.sides.down");
-        } else if (upgrade == facing.getClockWise()) {
-            return Component.translatable("drawer_upgrade.functionalstorage.sides.left");
-        }
-        return Component.translatable("drawer_upgrade.functionalstorage.sides.right");
+        return Component.translatable(
+                "tooltip.titanium.facing_handler." + FacingUtil.getFacingRelative(upgrade, facing).name().toLowerCase()).withStyle(ChatFormatting.WHITE);
     }
 
     @Override

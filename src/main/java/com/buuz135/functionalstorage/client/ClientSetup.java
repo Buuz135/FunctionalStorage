@@ -6,6 +6,7 @@ import com.buuz135.functionalstorage.item.UpgradeItem;
 import com.hrznstudio.titanium.block.RotatableBlock;
 import com.hrznstudio.titanium.client.screen.container.BasicAddonScreen;
 import com.hrznstudio.titanium.event.handler.EventManager;
+import com.hrznstudio.titanium.util.FacingUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
@@ -19,9 +20,7 @@ public class ClientSetup {
             .process(event -> {
                 var sc = (BasicAddonScreen) Minecraft.getInstance().screen;
                 var direction = ((ItemControllableDrawerTile<?>) sc.getMenu().getObject()).getBlockState().getValue(RotatableBlock.FACING_HORIZONTAL);
-                event.getToolTip().add(Component.translatable("drawer_upgrade.functionalstorage.relative_direction", UpgradeItem.getRelativeDirection(
-                        UpgradeItem.getDirection(event.getItemStack()), direction
-                ).withStyle(ChatFormatting.GOLD)));
+                event.getToolTip().add(3, Component.translatable("drawer_upgrade.functionalstorage.relative_direction", UpgradeItem.getRelativeDirection(direction, UpgradeItem.getDirection(event.getItemStack()))).withStyle(ChatFormatting.YELLOW));
             }).subscribe();
     }
 }
