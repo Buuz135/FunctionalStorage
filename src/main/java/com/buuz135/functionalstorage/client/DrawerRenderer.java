@@ -82,31 +82,31 @@ public class DrawerRenderer extends BaseDrawerRenderer<DrawerTile> {
             float y1 = -6.65F / 16F;
             float y2 = y1 + 1.25f / 16F;
             float z2 = 0;
-            float bx1 = 0;
-            float bx2 = 8;
-            float bz1 = 0;
-            float bz2 = 2;
+            float bx1 = 0 / 16F;
+            float bx2 = 8 / 16F;
+            float bz1 = 0 / 16F;
+            float bz2 = 2 / 16F;
             float u1 = still.getU(bx1);
             float u2 = still.getU(bx2);
             float v1 = still.getV(bz1);
             float v2 = still.getV(bz2);
-            if (indicatiorValue != 3) { //HIDE IN MODE 3 NO BG
-                builder.addVertex(posMat, x2, y1, z2).setColor(red, green, blue, alpha).setUv(u2, v1).setOverlay(combinedOverlayIn).setNormal(0f, 0f, 1f);
-                builder.addVertex(posMat, x2, y2, z2).setColor(red, green, blue, alpha).setUv(u2, v2).setOverlay(combinedOverlayIn).setNormal(0f, 0f, 1f);
-                builder.addVertex(posMat, x1, y2, z2).setColor(red, green, blue, alpha).setUv(u1, v2).setOverlay(combinedOverlayIn).setNormal(0f, 0f, 1f);
-                builder.addVertex(posMat, x1, y1, z2).setColor(red, green, blue, alpha).setUv(u1, v1).setOverlay(combinedOverlayIn).setNormal(0f, 0f, 1f);
+            if (indicatiorValue != 3 ) { //HIDE IN MODE 3 NO BG
+                builder.addVertex(posMat, x2, y1, z2).setColor(red, green, blue, alpha).setUv(u2, v1).setOverlay(combinedOverlayIn).setLight(combinedLightIn).setNormal(0f, 0f, 1f);
+                builder.addVertex(posMat, x2, y2, z2).setColor(red, green, blue, alpha).setUv(u2, v2).setOverlay(combinedOverlayIn).setLight(combinedLightIn).setNormal(0f, 0f, 1f);
+                builder.addVertex(posMat, x1, y2, z2).setColor(red, green, blue, alpha).setUv(u1, v2).setOverlay(combinedOverlayIn).setLight(combinedLightIn).setNormal(0f, 0f, 1f);
+                builder.addVertex(posMat, x1, y1, z2).setColor(red, green, blue, alpha).setUv(u1, v1).setOverlay(combinedOverlayIn).setLight(combinedLightIn).setNormal(0f, 0f, 1f);
             }
 
             u2 = still.getU((bx2 * progress));
             x2 = x1 + 0.5f * progress;
             z2 = 0.0001f;
-            v1 = still.getV(8);
-            v2 = still.getV(10);
+            v1 = still.getV(8 / 16F);
+            v2 = still.getV(10 / 16F);
             if (indicatiorValue == 1 || progress >= 1) {
-                builder.addVertex(posMat, x2, y1, z2).setColor(red, green, blue, alpha).setUv(u2, v1).setOverlay(combinedOverlayIn).setNormal(0f, 0f, 1f);
-                builder.addVertex(posMat, x2, y2, z2).setColor(red, green, blue, alpha).setUv(u2, v2).setOverlay(combinedOverlayIn).setNormal(0f, 0f, 1f);
-                builder.addVertex(posMat, x1, y2, z2).setColor(red, green, blue, alpha).setUv(u1, v2).setOverlay(combinedOverlayIn).setNormal(0f, 0f, 1f);
-                builder.addVertex(posMat, x1, y1, z2).setColor(red, green, blue, alpha).setUv(u1, v1).setOverlay(combinedOverlayIn).setNormal(0f, 0f, 1f);
+                builder.addVertex(posMat, x2, y1, z2).setColor(red, green, blue, alpha).setUv(u2, v1).setOverlay(combinedOverlayIn).setLight(combinedLightIn).setNormal(0f, 0f, 1f);
+                builder.addVertex(posMat, x2, y2, z2).setColor(red, green, blue, alpha).setUv(u2, v2).setOverlay(combinedOverlayIn).setLight(combinedLightIn).setNormal(0f, 0f, 1f);
+                builder.addVertex(posMat, x1, y2, z2).setColor(red, green, blue, alpha).setUv(u1, v2).setOverlay(combinedOverlayIn).setLight(combinedLightIn).setNormal(0f, 0f, 1f);
+                builder.addVertex(posMat, x1, y1, z2).setColor(red, green, blue, alpha).setUv(u1, v1).setOverlay(combinedOverlayIn).setLight(combinedLightIn).setNormal(0f, 0f, 1f);
             }
         }
     }
