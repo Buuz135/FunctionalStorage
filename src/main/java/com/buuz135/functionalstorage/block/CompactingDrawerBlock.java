@@ -61,7 +61,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-public class CompactingDrawerBlock extends RotatableBlock<CompactingDrawerTile> {
+public class CompactingDrawerBlock extends RotatableBlock<CompactingDrawerTile> implements Drawer {
 
     public static Multimap<Direction, VoxelShape> CACHED_SHAPES = MultimapBuilder.hashKeys().arrayListValues().build();
 
@@ -143,6 +143,7 @@ public class CompactingDrawerBlock extends RotatableBlock<CompactingDrawerTile> 
        TileUtil.getTileEntity(worldIn, pos, CompactingDrawerTile.class).ifPresent(drawerTile -> drawerTile.onClicked(player, getHit(state, worldIn, pos, player)));
     }
 
+    @Override
     public int getHit(BlockState state, Level worldIn, BlockPos pos, Player player) {
         HitResult result = RayTraceUtils.rayTraceSimple(worldIn, player, 32, 0);
         if (result instanceof BlockHitResult) {
