@@ -41,11 +41,12 @@ public abstract class ArmoryCabinetInventoryHandler implements IItemHandler, INB
     @Override
     public ItemStack insertItem(int slot, @NotNull ItemStack stack, boolean simulate) {
         if (isValid(slot, stack)) {
-            if (!simulate){
-                this.stackList.set(slot, stack);
+            if (!simulate) {
+                this.stackList.set(slot, stack.copyWithCount(1));
                 onChange();
             }
-            return ItemStack.EMPTY;
+
+            return stack.getCount() > 1 ? stack.copyWithCount(stack.getCount() - 1) : ItemStack.EMPTY;
         }
         return stack;
     }
@@ -55,12 +56,13 @@ public abstract class ArmoryCabinetInventoryHandler implements IItemHandler, INB
     @NotNull
     @Override
     public ItemStack extractItem(int slot, int amount, boolean simulate) {
-        if (!simulate){
-            ItemStack stack = this.stackList.set(slot, ItemStack.EMPTY);
+        var inSlot = this.stackList.get(slot).copy();
+        if (amount == 0 || inSlot.isEmpty()) return inSlot;
+        if (!simulate) {
+            stackList.set(slot, ItemStack.EMPTY);
             onChange();
-            return stack;
         }
-        return this.stackList.get(slot);
+        return inSlot;
     }
 
     @Override
