@@ -1,0 +1,31 @@
+{
+  "type": "functionalstorage:copy_components",
+  "category": "misc",
+  "components": [
+    "functionalstorage:tile"
+  ],
+  "copyIndex": 4,
+  "key": {
+    "C": {
+      "type": "neoforge:difference",
+      "base": {
+        "tag": "functionalstorage:drawer_1x2"
+      },
+      "subtracted": {
+        "item": "functionalstorage:framed_2"
+      }
+    },
+    "P": {
+      "tag": "c:nuggets/iron"
+    }
+  },
+  "pattern": [
+    " P ",
+    "PCP",
+    " P "
+  ],
+  "result": {
+    "count": 1,
+    "id": "functionalstorage:framed_2"
+  }
+}

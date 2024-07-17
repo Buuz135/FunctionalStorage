@@ -12,7 +12,7 @@
       "tag": "c:chests/wooden"
     },
     "P": {
-      "item": "minecraft:iron_nugget"
+      "tag": "c:nuggets/iron"
     }
   },
   "pattern": [

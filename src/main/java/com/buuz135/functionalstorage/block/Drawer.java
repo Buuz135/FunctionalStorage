@@ -2,9 +2,6 @@ package com.buuz135.functionalstorage.block;
 
 import com.buuz135.functionalstorage.FunctionalStorage;
 import com.buuz135.functionalstorage.block.tile.ControllableDrawerTile;
-import com.buuz135.functionalstorage.block.tile.DrawerTile;
-import com.buuz135.functionalstorage.block.tile.FramedDrawerTile;
-import com.buuz135.functionalstorage.block.tile.FramedSimpleCompactingDrawerTile;
 import com.buuz135.functionalstorage.block.tile.FramedTile;
 import com.buuz135.functionalstorage.block.tile.ItemControllableDrawerTile;
 import com.buuz135.functionalstorage.block.tile.StorageControllerTile;

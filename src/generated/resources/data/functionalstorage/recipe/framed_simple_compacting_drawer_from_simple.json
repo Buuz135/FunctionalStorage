@@ -1,0 +1,25 @@
+{
+  "type": "functionalstorage:copy_components",
+  "category": "misc",
+  "components": [
+    "functionalstorage:tile"
+  ],
+  "copyIndex": 4,
+  "key": {
+    "D": {
+      "item": "functionalstorage:simple_compacting_drawer"
+    },
+    "S": {
+      "tag": "c:nuggets/iron"
+    }
+  },
+  "pattern": [
+    "SSS",
+    "SDS",
+    " S "
+  ],
+  "result": {
+    "count": 1,
+    "id": "functionalstorage:framed_simple_compacting_drawer"
+  }
+}

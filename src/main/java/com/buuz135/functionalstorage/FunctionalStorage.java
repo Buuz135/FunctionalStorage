@@ -47,6 +47,7 @@ import com.buuz135.functionalstorage.item.LinkingToolItem;
 import com.buuz135.functionalstorage.item.StorageUpgradeItem;
 import com.buuz135.functionalstorage.item.UpgradeItem;
 import com.buuz135.functionalstorage.network.EnderDrawerSyncMessage;
+import com.buuz135.functionalstorage.recipe.CopyComponentsRecipe;
 import com.buuz135.functionalstorage.recipe.CustomCompactingRecipe;
 import com.buuz135.functionalstorage.recipe.DrawerlessWoodIngredient;
 import com.buuz135.functionalstorage.recipe.FramedDrawerRecipe;
@@ -63,12 +64,16 @@ import com.hrznstudio.titanium.nbthandler.NBTManager;
 import com.hrznstudio.titanium.network.NetworkHandler;
 import com.hrznstudio.titanium.recipe.serializer.GenericSerializer;
 import com.hrznstudio.titanium.tab.TitaniumTab;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
 import net.minecraft.util.FastColor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -169,6 +174,7 @@ public class FunctionalStorage extends ModuleController {
     public static Holder<RecipeSerializer<?>> CUSTOM_COMPACTING_RECIPE_SERIALIZER;
     public static Holder<RecipeType<?>> CUSTOM_COMPACTING_RECIPE_TYPE;
     public static Holder<RecipeSerializer<?>> FRAMED_RECIPE_SERIALIZER;
+    public static Holder<RecipeSerializer<?>> COPY_COMPONENTS_SERIALIZER;
     public static Holder<RecipeType<?>> FRAMED_RECIPE_TYPE;
 
     public FunctionalStorage(Dist dist, IEventBus modBus, ModContainer container) {
@@ -287,6 +293,17 @@ public class FunctionalStorage extends ModuleController {
         FRAMED_RECIPE_TYPE = getRegistries().registerGeneric(Registries.RECIPE_TYPE, "framed_recipe", () -> RecipeType.simple(com.buuz135.functionalstorage.util.Utils.resourceLocation(MOD_ID, "framed_recipe")));
 
         FRAMED_RECIPE_SERIALIZER = getRegistries().registerGeneric(Registries.RECIPE_SERIALIZER, "framed_recipe", () -> new SimpleCraftingRecipeSerializer<>((c) -> new FramedDrawerRecipe()));
+        COPY_COMPONENTS_SERIALIZER = getRegistries().registerGeneric(Registries.RECIPE_SERIALIZER, "copy_components", () -> new RecipeSerializer<CopyComponentsRecipe>() {
+            @Override
+            public MapCodec<CopyComponentsRecipe> codec() {
+                return CopyComponentsRecipe.CODEC;
+            }
+
+            @Override
+            public StreamCodec<RegistryFriendlyByteBuf, CopyComponentsRecipe> streamCodec() {
+                return CopyComponentsRecipe.STREAM_CODEC;
+            }
+        });
 
         ModLoadingContext.get().getActiveContainer().getEventBus()
                 .addListener(EventPriority.LOWEST, (final RegisterEvent regEvent) -> {
@@ -316,6 +333,7 @@ public class FunctionalStorage extends ModuleController {
         private final int slots;
         private final int slotAmount;
         private final String displayName;
+        private final TagKey<Item> tag;
         private final Function<Integer, Pair<Integer, Integer>> slotPosition;
 
         private DrawerType(int slots, int slotAmount, String displayName, Function<Integer, Pair<Integer, Integer>> slotPosition) {
@@ -323,6 +341,7 @@ public class FunctionalStorage extends ModuleController {
             this.slotAmount = slotAmount;
             this.displayName = displayName;
             this.slotPosition = slotPosition;
+            this.tag = TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(MOD_ID, "drawer_" + displayName));
         }
 
         public int getSlots() {
@@ -339,6 +358,10 @@ public class FunctionalStorage extends ModuleController {
 
         public Function<Integer, Pair<Integer, Integer>> getSlotPosition() {
             return slotPosition;
+        }
+
+        public TagKey<Item> getTag() {
+            return tag;
         }
     }
 

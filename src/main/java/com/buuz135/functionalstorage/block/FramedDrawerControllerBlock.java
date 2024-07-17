@@ -80,7 +80,7 @@ public class FramedDrawerControllerBlock extends StorageControllerBlock<FramedDr
     public void registerRecipe(RecipeOutput consumer) {
         TitaniumShapedRecipeBuilder.shapedRecipe(FunctionalStorage.FRAMED_DRAWER_CONTROLLER.block().get())
                 .pattern("IBI").pattern("CDC").pattern("IBI")
-                .define('I', Items.IRON_NUGGET)
+                .define('I', Tags.Items.NUGGETS_IRON)
                 .define('B', Items.QUARTZ_BLOCK)
                 .define('C', StorageTags.DRAWER)
                 .define('D', Items.COMPARATOR)

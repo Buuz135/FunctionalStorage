@@ -3,6 +3,8 @@ package com.buuz135.functionalstorage.block;
 import com.buuz135.functionalstorage.FunctionalStorage;
 import com.buuz135.functionalstorage.block.tile.FramedSimpleCompactingDrawerTile;
 import com.buuz135.functionalstorage.block.tile.SimpleCompactingDrawerTile;
+import com.buuz135.functionalstorage.item.FSAttachments;
+import com.buuz135.functionalstorage.recipe.CopyComponentsRecipe;
 import com.buuz135.functionalstorage.util.StorageTags;
 import com.hrznstudio.titanium.recipe.generator.TitaniumShapedRecipeBuilder;
 import net.minecraft.data.recipes.RecipeOutput;
@@ -25,11 +27,19 @@ public class FramedSimpleCompactingDrawerBlock extends SimpleCompactingDrawerBlo
     public void registerRecipe(RecipeOutput consumer) {
         TitaniumShapedRecipeBuilder.shapedRecipe(this)
                 .pattern("SSS").pattern("SDP").pattern("SIS")
-                .define('S', Items.IRON_NUGGET)
+                .define('S', Tags.Items.NUGGETS_IRON)
                 .define('P', Blocks.PISTON)
                 .define('D', StorageTags.DRAWER)
                 .define('I', Tags.Items.INGOTS_IRON)
                 .save(consumer);
+
+        TitaniumShapedRecipeBuilder.shapedRecipe(this)
+                .pattern("SSS").pattern("SDS").pattern(" S ")
+                .define('S', Tags.Items.NUGGETS_IRON)
+                .define('D', FunctionalStorage.SIMPLE_COMPACTING_DRAWER)
+                .save(CopyComponentsRecipe.output(
+                        consumer, 4, FSAttachments.TILE.get()
+                ), builtInRegistryHolder().unwrapKey().get().location().withSuffix("_from_simple"));
     }
 
     
