@@ -18,7 +18,7 @@
       "item": "minecraft:comparator"
     },
     "I": {
-      "item": "minecraft:iron_nugget"
+      "tag": "c:nuggets/iron"
     }
   },
   "pattern": [

@@ -5,6 +5,7 @@ import com.buuz135.functionalstorage.block.tile.CompactingDrawerTile;
 import com.buuz135.functionalstorage.block.tile.CompactingFramedDrawerTile;
 import com.buuz135.functionalstorage.block.tile.FramedDrawerTile;
 import com.buuz135.functionalstorage.item.FSAttachments;
+import com.buuz135.functionalstorage.recipe.CopyComponentsRecipe;
 import com.buuz135.functionalstorage.util.StorageTags;
 import com.hrznstudio.titanium.recipe.generator.TitaniumShapedRecipeBuilder;
 import com.hrznstudio.titanium.util.TileUtil;
@@ -52,6 +53,14 @@ public class CompactingFramedDrawerBlock extends CompactingDrawerBlock implement
                 .define('D', StorageTags.DRAWER)
                 .define('I', Tags.Items.INGOTS_IRON)
                 .save(consumer);
+
+        TitaniumShapedRecipeBuilder.shapedRecipe(this)
+                .pattern("S S").pattern("SDS").pattern(" S ")
+                .define('S', Tags.Items.NUGGETS_IRON)
+                .define('D', FunctionalStorage.COMPACTING_DRAWER)
+                .save(CopyComponentsRecipe.output(
+                        consumer, 4, FSAttachments.TILE.get()
+                ), builtInRegistryHolder().unwrapKey().get().location().withSuffix("_from_simple"));
     }
     
 }

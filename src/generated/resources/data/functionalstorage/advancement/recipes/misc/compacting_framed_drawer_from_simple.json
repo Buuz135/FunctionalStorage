@@ -1,10 +1,4 @@
 {
-  "neoforge:conditions": [
-    {
-      "type": "neoforge:item_exists",
-      "item": "functionalstorage:framed_storage_controller"
-    }
-  ],
   "parent": "minecraft:recipes/root",
   "criteria": {
     "has_item": {
@@ -19,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "functionalstorage:framed_storage_controller"
+        "recipe": "functionalstorage:compacting_framed_drawer_from_simple"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -32,7 +26,7 @@
   ],
   "rewards": {
     "recipes": [
-      "functionalstorage:framed_storage_controller"
+      "functionalstorage:compacting_framed_drawer_from_simple"
     ]
   }
 }

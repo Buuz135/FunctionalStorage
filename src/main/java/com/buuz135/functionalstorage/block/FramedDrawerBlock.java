@@ -1,46 +1,27 @@
 package com.buuz135.functionalstorage.block;
 
 import com.buuz135.functionalstorage.FunctionalStorage;
-import com.buuz135.functionalstorage.block.tile.CompactingDrawerTile;
-import com.buuz135.functionalstorage.block.tile.CompactingFramedDrawerTile;
 import com.buuz135.functionalstorage.block.tile.DrawerTile;
 import com.buuz135.functionalstorage.block.tile.FramedDrawerTile;
 import com.buuz135.functionalstorage.client.model.FramedDrawerModelData;
 import com.buuz135.functionalstorage.item.FSAttachments;
+import com.buuz135.functionalstorage.recipe.CopyComponentsRecipe;
 import com.buuz135.functionalstorage.util.DrawerWoodType;
 import com.hrznstudio.titanium.module.BlockWithTile;
 import com.hrznstudio.titanium.recipe.generator.TitaniumShapedRecipeBuilder;
-import com.hrznstudio.titanium.util.TileUtil;
-import net.minecraft.ChatFormatting;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.NonNullList;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.recipes.RecipeOutput;
+import net.minecraft.data.recipes.ShapedRecipeBuilder;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.storage.loot.LootParams;
-import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
-import net.minecraft.world.phys.HitResult;
 import net.neoforged.neoforge.common.Tags;
-import net.neoforged.neoforge.items.ItemHandlerHelper;
-import org.jetbrains.annotations.Nullable;
+import net.neoforged.neoforge.common.crafting.DifferenceIngredient;
 
 import java.util.HashMap;
-import java.util.List;
 
 public class FramedDrawerBlock extends DrawerBlock implements FramedBlock {
 
@@ -87,26 +68,42 @@ public class FramedDrawerBlock extends DrawerBlock implements FramedBlock {
         if (this.getType() == FunctionalStorage.DrawerType.X_1) {
             TitaniumShapedRecipeBuilder.shapedRecipe(this)
                     .pattern("PPP").pattern("PCP").pattern("PPP")
-                    .define('P', Items.IRON_NUGGET)
+                    .define('P', Tags.Items.NUGGETS_IRON)
                     .define('C', Tags.Items.CHESTS_WOODEN)
                     .save(consumer);
-        }
-        if (this.getType() == FunctionalStorage.DrawerType.X_2){
+
+            simpleToFramed(consumer, TitaniumShapedRecipeBuilder.shapedRecipe(this)
+                    .pattern("PPP").pattern("PCP").pattern("PPP")
+                    .define('P', Tags.Items.NUGGETS_IRON));
+        } else if (this.getType() == FunctionalStorage.DrawerType.X_2){
             TitaniumShapedRecipeBuilder.shapedRecipe(this, 2)
                     .pattern("PCP").pattern("PPP").pattern("PCP")
-                    .define('P', Items.IRON_NUGGET)
+                    .define('P', Tags.Items.NUGGETS_IRON)
                     .define('C', Tags.Items.CHESTS_WOODEN)
                     .save(consumer);
 
-        }
-        if (this.getType() == FunctionalStorage.DrawerType.X_4){
+            simpleToFramed(consumer, TitaniumShapedRecipeBuilder.shapedRecipe(this)
+                    .pattern(" P ").pattern("PCP").pattern(" P ")
+                    .define('P', Tags.Items.NUGGETS_IRON));
+        } else if (this.getType() == FunctionalStorage.DrawerType.X_4){
             TitaniumShapedRecipeBuilder.shapedRecipe(this, 4)
                     .pattern("CPC").pattern("PPP").pattern("CPC")
-                    .define('P', Items.IRON_NUGGET)
+                    .define('P', Tags.Items.NUGGETS_IRON)
                     .define('C', Tags.Items.CHESTS_WOODEN)
                     .save(consumer);
 
+            simpleToFramed(consumer, TitaniumShapedRecipeBuilder.shapedRecipe(this)
+                    .pattern("PCP")
+                    .define('P', Tags.Items.NUGGETS_IRON));
         }
+    }
+
+    private void simpleToFramed(RecipeOutput output, ShapedRecipeBuilder recipe) {
+        recipe.define('C', DifferenceIngredient.of(
+                Ingredient.of(getType().getTag()),
+                Ingredient.of(this)
+        ))
+                .save(CopyComponentsRecipe.output(output, 4, FSAttachments.TILE.get()), builtInRegistryHolder().unwrapKey().get().location().withSuffix("_from_simple"));
     }
 
 }
