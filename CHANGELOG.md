@@ -1,3 +1,12 @@
+# VERSION 1.3.1
+* Fixed Oak Drawer recipe
+* Added examples for how to craft framed drawers
+* Fixed Armory Cabinet extracting more than expected
+* Fixed interacting with drawers in creative
+
+# VERSION 1.3.0
+* Updated to 1.21
+
 # VERSION 1.2.10
 
 * Added drawer renders to items
