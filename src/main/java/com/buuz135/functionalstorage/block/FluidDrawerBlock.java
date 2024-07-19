@@ -63,7 +63,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-public class FluidDrawerBlock extends RotatableBlock<FluidDrawerTile> {
+public class FluidDrawerBlock extends RotatableBlock<FluidDrawerTile> implements Drawer {
 
     /**
      * Framed version
@@ -144,6 +144,7 @@ public class FluidDrawerBlock extends RotatableBlock<FluidDrawerTile> {
         TileUtil.getTileEntity(worldIn, pos, FluidDrawerTile.class).ifPresent(drawerTile -> drawerTile.onClicked(player, getHit(state, worldIn, pos, player)));
     }
 
+    @Override
     public int getHit(BlockState state, Level worldIn, BlockPos pos, Player player) {
         HitResult result = RayTraceUtils.rayTraceSimple(worldIn, player, 32, 0);
         if (result instanceof BlockHitResult) {

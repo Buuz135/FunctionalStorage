@@ -31,6 +31,7 @@ import com.hrznstudio.titanium.recipe.generator.IJSONGenerator;
 import com.hrznstudio.titanium.recipe.generator.IJsonFile;
 import com.hrznstudio.titanium.recipe.generator.TitaniumSerializableProvider;
 import com.hrznstudio.titanium.recipe.serializer.GenericSerializer;
+import com.hrznstudio.titanium.util.TileUtil;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.data.recipes.FinishedRecipe;
@@ -62,6 +63,7 @@ import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.common.util.NonNullLazy;
 import net.minecraftforge.data.event.GatherDataEvent;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
@@ -178,6 +180,22 @@ public class FunctionalStorage extends ModuleController {
         NBTManager.getInstance().scanTileClassForAnnotations(FluidDrawerTile.class);
         NBTManager.getInstance().scanTileClassForAnnotations(SimpleCompactingDrawerTile.class);
         NBTManager.getInstance().scanTileClassForAnnotations(FramedSimpleCompactingDrawerTile.class);
+
+        EventManager.forge(PlayerInteractEvent.LeftClickBlock.class)
+                .process(event -> {
+                    var state = event.getLevel().getBlockState(event.getPos());
+                    if (event.getLevel().getBlockState(event.getPos()).getBlock() instanceof Drawer drawer) {
+                        final int hit = drawer.getHit(state, event.getLevel(), event.getPos(), event.getEntity());
+                        if (hit != -1) {
+                            TileUtil.getTileEntity(event.getLevel(), event.getPos(), ControllableDrawerTile.class)
+                                    .ifPresent(be -> {
+                                        be.onClicked(event.getEntity(), hit);
+                                        event.setCanceled(true);
+                                    });
+                        }
+                    }
+                })
+                .subscribe();
     }
 
 

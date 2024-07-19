@@ -52,7 +52,7 @@ import java.util.stream.Collectors;
 
 import static com.buuz135.functionalstorage.block.DrawerBlock.LOCKED;
 
-public class EnderDrawerBlock extends RotatableBlock<EnderDrawerTile> {
+public class EnderDrawerBlock extends RotatableBlock<EnderDrawerTile> implements Drawer {
 
     public EnderDrawerBlock() {
         super("ender_drawer", Properties.copy(Blocks.ENDER_CHEST), EnderDrawerTile.class);
@@ -125,6 +125,7 @@ public class EnderDrawerBlock extends RotatableBlock<EnderDrawerTile> {
        TileUtil.getTileEntity(worldIn, pos, EnderDrawerTile.class).ifPresent(drawerTile -> drawerTile.onClicked(player, getHit(state, worldIn, pos, player)));
     }
 
+    @Override
     public int getHit(BlockState state, Level worldIn, BlockPos pos, Player player) {
         HitResult result = RayTraceUtils.rayTraceSimple(worldIn, player, 32, 0);
         if (result instanceof BlockHitResult) {
