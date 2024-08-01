@@ -32,7 +32,9 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.items.IItemHandler;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -156,6 +158,11 @@ public abstract class StorageControllerTile<T extends StorageControllerTile<T>> 
     @Override
     public IItemHandler getStorage() {
         return inventoryHandler;
+    }
+
+    @Override
+    public IFluidHandler getFluidHandler(@Nullable Direction direction) {
+        return fluidHandler;
     }
 
     @Override
