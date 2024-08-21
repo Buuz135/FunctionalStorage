@@ -1,3 +1,6 @@
+# VERSION 1.3.2
+* Fix fluid drawers not being accessible through controllers, closes #301
+
 # VERSION 1.3.1
 * Fixed Oak Drawer recipe
 * Added examples for how to craft framed drawers
@@ -18,7 +21,6 @@
 * Added Max Storage Upgrade closes #279
 
 # VERSION 1.2.9
-
 * Fixed creative vending upgrades using the base stack, closes #239
 
 # VERSION 1.2.8
