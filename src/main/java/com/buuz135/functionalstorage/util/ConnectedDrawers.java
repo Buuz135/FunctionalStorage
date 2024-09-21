@@ -83,8 +83,23 @@ public class ConnectedDrawers implements INBTSerializable<CompoundTag> {
 
     public void rebuildShapes() {
         this.cachedVoxelShape = Shapes.create(new AABB(controllerTile.getBlockPos()));
-        for (Long connectedDrawer : this.connectedDrawers) {
-            this.cachedVoxelShape = Shapes.joinUnoptimized(this.cachedVoxelShape, Shapes.create(new AABB(BlockPos.of(connectedDrawer))), BooleanOp.OR);
+        var currentShapes = this.connectedDrawers.stream().map(connectedDrawer -> Shapes.create(new AABB(BlockPos.of(connectedDrawer)))).toList();
+        do {
+            List<VoxelShape> mergedShapes = new ArrayList<>();
+            for (int i = 0; i < currentShapes.size(); i += 2) {
+                var shape1 = currentShapes.get(i);
+                var mergedShape = shape1;
+                if (i + 1 < currentShapes.size()) {
+                    var shape2 = currentShapes.get(i + 1);
+                    // Notice: DO NOT use `Shapes.join`, `join` function will 'optimize' the joined shape, it traversals all exist boxes each time.
+                    mergedShape = Shapes.joinUnoptimized(shape1, shape2, BooleanOp.OR);
+                }
+                mergedShapes.add(mergedShape);
+            }
+            currentShapes = mergedShapes;
+        } while (currentShapes.size() > 1);
+        if (currentShapes.size() == 1) {
+            this.cachedVoxelShape = Shapes.joinUnoptimized(this.cachedVoxelShape, currentShapes.get(0), BooleanOp.OR);
         }
         this.cachedVoxelShape = this.cachedVoxelShape.optimize();
     }
