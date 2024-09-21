@@ -1,6 +1,7 @@
 # VERSION 1.3.3
 * Added dripping upgrade that will fill fluid drawers with lava
 * Added water source upgrade that will fill fluid drawers with water
+* Fix rebuild voxel shape cost too much time, close #314
 
 # VERSION 1.3.2
 * Fix fluid drawers not being accessible through controllers, closes #301
