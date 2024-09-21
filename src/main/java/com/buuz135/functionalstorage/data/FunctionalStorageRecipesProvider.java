@@ -23,16 +23,7 @@ import net.neoforged.neoforge.common.util.Lazy;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-import static com.buuz135.functionalstorage.FunctionalStorage.ARMORY_CABINET;
-import static com.buuz135.functionalstorage.FunctionalStorage.COLLECTOR_UPGRADE;
-import static com.buuz135.functionalstorage.FunctionalStorage.CONFIGURATION_TOOL;
-import static com.buuz135.functionalstorage.FunctionalStorage.ENDER_DRAWER;
-import static com.buuz135.functionalstorage.FunctionalStorage.LINKING_TOOL;
-import static com.buuz135.functionalstorage.FunctionalStorage.PULLING_UPGRADE;
-import static com.buuz135.functionalstorage.FunctionalStorage.PUSHING_UPGRADE;
-import static com.buuz135.functionalstorage.FunctionalStorage.REDSTONE_UPGRADE;
-import static com.buuz135.functionalstorage.FunctionalStorage.STORAGE_UPGRADES;
-import static com.buuz135.functionalstorage.FunctionalStorage.VOID_UPGRADE;
+import static com.buuz135.functionalstorage.FunctionalStorage.*;
 
 public class FunctionalStorageRecipesProvider extends RecipeProvider {
 
@@ -121,6 +112,13 @@ public class FunctionalStorageRecipesProvider extends RecipeProvider {
                 .define('B', Tags.Items.DUSTS_REDSTONE)
                 .define('R', Items.HOPPER)
                 .define('D', StorageTags.DRAWER)
+                .save(output);
+        TitaniumShapedRecipeBuilder.shapedRecipe(DRIPPING_FUNCTIONAL_UPGRADE.get())
+                .pattern("IBI").pattern("IDI").pattern("IRI")
+                .define('I', Tags.Items.STONES)
+                .define('B', Items.POINTED_DRIPSTONE)
+                .define('R', Items.LAVA_BUCKET)
+                .define('D', Items.CAULDRON)
                 .save(output);
         TitaniumShapedRecipeBuilder.shapedRecipe(COLLECTOR_UPGRADE.get())
                 .pattern("IBI").pattern("RDR").pattern("IBI")

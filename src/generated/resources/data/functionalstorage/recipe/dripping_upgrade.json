@@ -1,0 +1,33 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:item_exists",
+      "item": "functionalstorage:dripping_upgrade"
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "B": {
+      "item": "minecraft:pointed_dripstone"
+    },
+    "D": {
+      "item": "minecraft:cauldron"
+    },
+    "I": {
+      "tag": "c:stones"
+    },
+    "R": {
+      "item": "minecraft:lava_bucket"
+    }
+  },
+  "pattern": [
+    "IBI",
+    "IDI",
+    "IRI"
+  ],
+  "result": {
+    "count": 1,
+    "id": "functionalstorage:dripping_upgrade"
+  }
+}

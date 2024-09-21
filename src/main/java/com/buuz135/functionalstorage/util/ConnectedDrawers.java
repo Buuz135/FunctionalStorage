@@ -84,8 +84,9 @@ public class ConnectedDrawers implements INBTSerializable<CompoundTag> {
     public void rebuildShapes() {
         this.cachedVoxelShape = Shapes.create(new AABB(controllerTile.getBlockPos()));
         for (Long connectedDrawer : this.connectedDrawers) {
-            this.cachedVoxelShape = Shapes.join(this.cachedVoxelShape, Shapes.create(new AABB(BlockPos.of(connectedDrawer))), BooleanOp.OR);
+            this.cachedVoxelShape = Shapes.joinUnoptimized(this.cachedVoxelShape, Shapes.create(new AABB(BlockPos.of(connectedDrawer))), BooleanOp.OR);
         }
+        this.cachedVoxelShape = this.cachedVoxelShape.optimize();
     }
 
     @Override

@@ -46,6 +46,7 @@ import com.buuz135.functionalstorage.item.FSAttachments;
 import com.buuz135.functionalstorage.item.LinkingToolItem;
 import com.buuz135.functionalstorage.item.StorageUpgradeItem;
 import com.buuz135.functionalstorage.item.UpgradeItem;
+import com.buuz135.functionalstorage.item.functional_upgrade.DrippingFunctionalUpgradeItem;
 import com.buuz135.functionalstorage.network.EnderDrawerSyncMessage;
 import com.buuz135.functionalstorage.recipe.CopyComponentsRecipe;
 import com.buuz135.functionalstorage.recipe.CustomCompactingRecipe;
@@ -168,6 +169,8 @@ public class FunctionalStorage extends ModuleController {
     public static DeferredHolder<Item, Item> CONFIGURATION_TOOL;
     public static DeferredHolder<Item, Item> REDSTONE_UPGRADE;
     public static DeferredHolder<Item, Item> CREATIVE_UPGRADE;
+
+    public static DeferredHolder<Item, Item> DRIPPING_FUNCTIONAL_UPGRADE;
 
     public static TitaniumTab TAB = new TitaniumTab(com.buuz135.functionalstorage.util.Utils.resourceLocation(MOD_ID, "main"));
 
@@ -304,6 +307,8 @@ public class FunctionalStorage extends ModuleController {
                 return CopyComponentsRecipe.STREAM_CODEC;
             }
         });
+
+        DRIPPING_FUNCTIONAL_UPGRADE = getRegistries().registerGeneric(Registries.ITEM, "dripping_upgrade", DrippingFunctionalUpgradeItem::new);
 
         ModLoadingContext.get().getActiveContainer().getEventBus()
                 .addListener(EventPriority.LOWEST, (final RegisterEvent regEvent) -> {
@@ -476,7 +481,7 @@ public class FunctionalStorage extends ModuleController {
                         .collect(Collectors.toList())
         );
         if (true) {
-            event.getGenerator().addProvider(true, new BlockItemModelGeneratorProvider(event.getGenerator(), MOD_ID, blocksToProcess));
+            //event.getGenerator().addProvider(true, new BlockItemModelGeneratorProvider(event.getGenerator(), MOD_ID, blocksToProcess));
             event.getGenerator().addProvider(true, new FunctionalStorageBlockstateProvider(event.getGenerator(), event.getExistingFileHelper(), blocksToProcess));
             event.getGenerator().addProvider(true, new TitaniumLootTableProvider(event.getGenerator(), blocksToProcess, event.getLookupProvider()));
 
@@ -504,6 +509,7 @@ public class FunctionalStorage extends ModuleController {
                     item(VOID_UPGRADE.get());
                     item(REDSTONE_UPGRADE.get());
                     item(CREATIVE_UPGRADE.get());
+                    item(DRIPPING_FUNCTIONAL_UPGRADE.get());
                 }
 
                 private void item(Item item) {

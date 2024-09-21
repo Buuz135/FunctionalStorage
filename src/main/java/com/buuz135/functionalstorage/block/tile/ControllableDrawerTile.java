@@ -2,10 +2,7 @@ package com.buuz135.functionalstorage.block.tile;
 
 import com.buuz135.functionalstorage.FunctionalStorage;
 import com.buuz135.functionalstorage.block.DrawerBlock;
-import com.buuz135.functionalstorage.item.ConfigurationToolItem;
-import com.buuz135.functionalstorage.item.LinkingToolItem;
-import com.buuz135.functionalstorage.item.StorageUpgradeItem;
-import com.buuz135.functionalstorage.item.UpgradeItem;
+import com.buuz135.functionalstorage.item.*;
 import com.hrznstudio.titanium.annotation.Save;
 import com.hrznstudio.titanium.block.BasicTileBlock;
 import com.hrznstudio.titanium.block.tile.ActiveTile;
@@ -71,7 +68,7 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
                                         }
                                     }
                                 }
-                                return stack.getItem() instanceof UpgradeItem && ((UpgradeItem) stack.getItem()).getType() == UpgradeItem.Type.UTILITY;
+                                return (stack.getItem() instanceof UpgradeItem && ((UpgradeItem) stack.getItem()).getType() == UpgradeItem.Type.UTILITY) || stack.getItem() instanceof FunctionalUpgradeItem;
                             })
                             .setSlotLimit(1)
                             .setOnSlotChanged((itemStack, integer) -> {
@@ -127,6 +124,9 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
                         if (item.equals(FunctionalStorage.REDSTONE_UPGRADE.get())) {
                             level.updateNeighborsAt(this.getBlockPos(), this.getBasicTileBlock());
                             break;
+                        }
+                        if (item instanceof FunctionalUpgradeItem functionalUpgradeItem){
+                            functionalUpgradeItem.work(this.level, this.getBlockPos());
                         }
                     }
                 }
