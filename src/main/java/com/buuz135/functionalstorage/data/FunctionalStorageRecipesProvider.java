@@ -113,12 +113,18 @@ public class FunctionalStorageRecipesProvider extends RecipeProvider {
                 .define('R', Items.HOPPER)
                 .define('D', StorageTags.DRAWER)
                 .save(output);
-        TitaniumShapedRecipeBuilder.shapedRecipe(DRIPPING_FUNCTIONAL_UPGRADE.get())
+        TitaniumShapedRecipeBuilder.shapedRecipe(DRIPPING_UPGRADE.get())
                 .pattern("IBI").pattern("IDI").pattern("IRI")
                 .define('I', Tags.Items.STONES)
                 .define('B', Items.POINTED_DRIPSTONE)
                 .define('R', Items.LAVA_BUCKET)
                 .define('D', Items.CAULDRON)
+                .save(output);
+        TitaniumShapedRecipeBuilder.shapedRecipe(WATER_GENERATOR_UPGRADE.get())
+                .pattern("IBI").pattern("IDI").pattern("IBI")
+                .define('I', Tags.Items.STONES)
+                .define('B', Items.WATER_BUCKET)
+                .define('D', Items.BUCKET)
                 .save(output);
         TitaniumShapedRecipeBuilder.shapedRecipe(COLLECTOR_UPGRADE.get())
                 .pattern("IBI").pattern("RDR").pattern("IBI")

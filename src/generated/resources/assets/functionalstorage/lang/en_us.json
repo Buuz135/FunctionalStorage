@@ -99,6 +99,7 @@
   "item.functionalstorage.pusher_upgrade": "Pusher Upgrade",
   "item.functionalstorage.redstone_upgrade": "Redstone Upgrade",
   "item.functionalstorage.void_upgrade": "Void Upgrade",
+  "item.functionalstorage.water_generator_upgrade": "Water Generator Upgrade",
   "item.utility.direction": "Direction: ",
   "item.utility.direction.desc": "Right click in a GUI to change direction",
   "item.utility.downgrade": "Downgrades the slots to a max of 64 items",

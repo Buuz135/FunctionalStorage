@@ -1,3 +1,7 @@
+# VERSION 1.3.3
+* Added dripping upgrade that will fill fluid drawers with lava
+* Added water source upgrade that will fill fluid drawers with water
+
 # VERSION 1.3.2
 * Fix fluid drawers not being accessible through controllers, closes #301
 

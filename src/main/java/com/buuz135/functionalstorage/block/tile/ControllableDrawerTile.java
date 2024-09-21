@@ -132,6 +132,17 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
                 }
             }
         }
+        if (getUtilitySlotAmount() > 0){
+            for (int i = 0; i < this.utilityUpgrades.getSlots(); i++) {
+                ItemStack stack = this.utilityUpgrades.getStackInSlot(i);
+                if (!stack.isEmpty()) {
+                    Item item = stack.getItem();
+                    if (item instanceof FunctionalUpgradeItem functionalUpgradeItem){
+                        functionalUpgradeItem.work(this.level, this.getBlockPos());
+                    }
+                }
+            }
+        }
     }
 
     public BlockPos getControllerPos() {
@@ -207,6 +218,15 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
                         playerIn.setItemInHand(hand, component.insertItem(i, stack, false));
                         return InteractionResult.SUCCESS;
                     }
+                }
+            }
+        }
+        if (stack.getItem() instanceof FunctionalUpgradeItem) {
+            InventoryComponent component = utilityUpgrades;
+            for (int i = 0; i < component.getSlots(); i++) {
+                if (component.getStackInSlot(i).isEmpty() && component.isItemValid(i, stack)) {
+                    playerIn.setItemInHand(hand, component.insertItem(i, stack, false));
+                    return InteractionResult.SUCCESS;
                 }
             }
         }

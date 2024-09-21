@@ -1,4 +1,4 @@
-// 1.21.1	2024-09-21T14:04:15.9540283	Recipes
+// 1.21.1	2024-09-21T15:08:52.320402	Recipes
 f07485f3ee5257c2b12fcf149c60ddd20ed73fe1 data/functionalstorage/advancement/recipes/misc/acacia_1.json
 8cce3aada48266b5e41df6e04b01ab1fd2224a4c data/functionalstorage/advancement/recipes/misc/acacia_2.json
 8bc6f134a188d7ec701a472feeb93bccc9a115f3 data/functionalstorage/advancement/recipes/misc/acacia_4.json
@@ -63,6 +63,7 @@ f027778cf8a284a14c37206d901a52505afa850f data/functionalstorage/advancement/reci
 8c783bd51358da44000a9ff76926f571e2cea6c4 data/functionalstorage/advancement/recipes/misc/warped_1.json
 daddde4854e12f609b8978359fee6bd4a01c632d data/functionalstorage/advancement/recipes/misc/warped_2.json
 cb190e17de37c04d062208b29909c3dfef672896 data/functionalstorage/advancement/recipes/misc/warped_4.json
+db8b64f413c082973019920fff1196ed2189c308 data/functionalstorage/advancement/recipes/misc/water_generator_upgrade.json
 bdc03a25608cf678230392d53e0976692728adca data/functionalstorage/recipe/acacia_1.json
 a44a7f2f4eaf7543c623f5dfdbe06739365cc347 data/functionalstorage/recipe/acacia_2.json
 0921e7c354a8f9b028371313ae49bf6cfb864aaa data/functionalstorage/recipe/acacia_4.json
@@ -127,6 +128,7 @@ a6d66aa0d1ffc4d10f6f695573708948ec0c077b data/functionalstorage/recipe/simple_co
 ded5cf48ed485115fc2eec2d9f680177ebeb4d5b data/functionalstorage/recipe/warped_1.json
 1496ac044b8b31511ee9485c8c646ec8a1770410 data/functionalstorage/recipe/warped_2.json
 5594b0b140f29bea952395137cf4dfbd5f4d1154 data/functionalstorage/recipe/warped_4.json
+5584ee1c6afc48c3110e6081765f52e7fa6b15f8 data/functionalstorage/recipe/water_generator_upgrade.json
 74158cbf025bacbd94985a450dac448945a3adda data/minecraft/recipe/functionalstorage/compacting/amethyst.json
 b67f9d3568b5f9fde9b6b5b40cc88b2b1e1de9ac data/minecraft/recipe/functionalstorage/compacting/glowstone.json
 f9faeb313babf7bea8ec73a9c72ca8d14d1604e3 data/minecraft/recipe/functionalstorage/compacting/ice.json

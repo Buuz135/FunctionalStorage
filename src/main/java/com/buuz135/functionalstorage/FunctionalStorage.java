@@ -47,6 +47,7 @@ import com.buuz135.functionalstorage.item.LinkingToolItem;
 import com.buuz135.functionalstorage.item.StorageUpgradeItem;
 import com.buuz135.functionalstorage.item.UpgradeItem;
 import com.buuz135.functionalstorage.item.functional_upgrade.DrippingFunctionalUpgradeItem;
+import com.buuz135.functionalstorage.item.functional_upgrade.WaterGeneratorFunctionalUpgrade;
 import com.buuz135.functionalstorage.network.EnderDrawerSyncMessage;
 import com.buuz135.functionalstorage.recipe.CopyComponentsRecipe;
 import com.buuz135.functionalstorage.recipe.CustomCompactingRecipe;
@@ -57,7 +58,6 @@ import com.buuz135.functionalstorage.util.IWoodType;
 import com.buuz135.functionalstorage.util.NumberUtils;
 import com.buuz135.functionalstorage.util.TooltipUtil;
 import com.hrznstudio.titanium.datagenerator.loot.TitaniumLootTableProvider;
-import com.hrznstudio.titanium.datagenerator.model.BlockItemModelGeneratorProvider;
 import com.hrznstudio.titanium.event.handler.EventManager;
 import com.hrznstudio.titanium.module.BlockWithTile;
 import com.hrznstudio.titanium.module.ModuleController;
@@ -170,7 +170,8 @@ public class FunctionalStorage extends ModuleController {
     public static DeferredHolder<Item, Item> REDSTONE_UPGRADE;
     public static DeferredHolder<Item, Item> CREATIVE_UPGRADE;
 
-    public static DeferredHolder<Item, Item> DRIPPING_FUNCTIONAL_UPGRADE;
+    public static DeferredHolder<Item, Item> DRIPPING_UPGRADE;
+    public static DeferredHolder<Item, Item> WATER_GENERATOR_UPGRADE;
 
     public static TitaniumTab TAB = new TitaniumTab(com.buuz135.functionalstorage.util.Utils.resourceLocation(MOD_ID, "main"));
 
@@ -308,7 +309,8 @@ public class FunctionalStorage extends ModuleController {
             }
         });
 
-        DRIPPING_FUNCTIONAL_UPGRADE = getRegistries().registerGeneric(Registries.ITEM, "dripping_upgrade", DrippingFunctionalUpgradeItem::new);
+        DRIPPING_UPGRADE = getRegistries().registerGeneric(Registries.ITEM, "dripping_upgrade", DrippingFunctionalUpgradeItem::new);
+        WATER_GENERATOR_UPGRADE = getRegistries().registerGeneric(Registries.ITEM, "water_generator_upgrade", WaterGeneratorFunctionalUpgrade::new);
 
         ModLoadingContext.get().getActiveContainer().getEventBus()
                 .addListener(EventPriority.LOWEST, (final RegisterEvent regEvent) -> {
@@ -509,7 +511,8 @@ public class FunctionalStorage extends ModuleController {
                     item(VOID_UPGRADE.get());
                     item(REDSTONE_UPGRADE.get());
                     item(CREATIVE_UPGRADE.get());
-                    item(DRIPPING_FUNCTIONAL_UPGRADE.get());
+                    item(DRIPPING_UPGRADE.get());
+                    item(WATER_GENERATOR_UPGRADE.get());
                 }
 
                 private void item(Item item) {

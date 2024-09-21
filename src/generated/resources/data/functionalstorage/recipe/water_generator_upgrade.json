@@ -1,0 +1,30 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:item_exists",
+      "item": "functionalstorage:water_generator_upgrade"
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "B": {
+      "item": "minecraft:water_bucket"
+    },
+    "D": {
+      "item": "minecraft:bucket"
+    },
+    "I": {
+      "tag": "c:stones"
+    }
+  },
+  "pattern": [
+    "IBI",
+    "IDI",
+    "IBI"
+  ],
+  "result": {
+    "count": 1,
+    "id": "functionalstorage:water_generator_upgrade"
+  }
+}
