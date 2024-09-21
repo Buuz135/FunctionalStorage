@@ -10,6 +10,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.util.FastColor;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -92,23 +93,12 @@ public class ConfigurationToolItem extends BasicItem {
         return key == null;
     }
 
-    private static int getIntColorFromRgba(int r, int g, int b, int a) {
-        return ((a & 0xFF) << 24) |
-                ((r & 0xFF) << 16) |
-                ((g & 0xFF) << 8)  |
-                ((b & 0xFF));
-    }
-
-    private static int getIntColorFromRgb(int r, int g, int b) {
-        return getIntColorFromRgba(r, g, b, 255);
-    }
-
-    public enum ConfigurationAction {
-        LOCKING(TextColor.fromRgb(getIntColorFromRgb(40, 131, 250)), 1),
-        TOGGLE_NUMBERS(TextColor.fromRgb(getIntColorFromRgb(250, 145, 40)), 1),
-        TOGGLE_RENDER(TextColor.fromRgb(getIntColorFromRgb(100, 250, 40)), 1),
-        TOGGLE_UPGRADES(TextColor.fromRgb(getIntColorFromRgb(166, 40, 250)), 1),
-        INDICATOR(TextColor.fromRgb(getIntColorFromRgb(255, 40, 40)), 3); //0 NO , 1 - PROGRESS, 2 - ONLY FULL, 3 - ONLY FULL WITHOUT BG
+    public enum ConfigurationAction implements StringRepresentable{
+        LOCKING(TextColor.fromRgb(FastColor.ARGB32.color(40, 131, 250)), 1),
+        TOGGLE_NUMBERS(TextColor.fromRgb(FastColor.ARGB32.color(250, 145, 40)), 1),
+        TOGGLE_RENDER(TextColor.fromRgb(FastColor.ARGB32.color(100, 250, 40)), 1),
+        TOGGLE_UPGRADES(TextColor.fromRgb(FastColor.ARGB32.color(166, 40, 250)), 1),
+        INDICATOR(TextColor.fromRgb(FastColor.ARGB32.color(255, 40, 40)), 3); //0 NO , 1 - PROGRESS, 2 - ONLY FULL, 3 - ONLY FULL WITHOUT BG
 
 
         public static final Codec<ConfigurationAction> CODEC = StringRepresentable.fromValues(ConfigurationAction::values);
