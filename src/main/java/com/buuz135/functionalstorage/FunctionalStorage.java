@@ -491,13 +491,14 @@ public class FunctionalStorage extends ModuleController {
         event.getGenerator().addProvider(true, new TitaniumSerializableProvider(event.getGenerator(), MOD_ID) {
 
             public void add(Map<IJsonFile, IJSONGenerator> serializables) {
-                new CustomCompactingRecipe(new ResourceLocation("clay"), new ItemStack(Items.CLAY_BALL, 4), new ItemStack(Items.CLAY));
-                new CustomCompactingRecipe(new ResourceLocation("glowstone"), new ItemStack(Items.GLOWSTONE_DUST, 4), new ItemStack(Items.GLOWSTONE));
-                new CustomCompactingRecipe(new ResourceLocation("melon"), new ItemStack(Items.MELON_SLICE, 9), new ItemStack(Items.MELON));
-                new CustomCompactingRecipe(new ResourceLocation("quartz"), new ItemStack(Items.QUARTZ, 4), new ItemStack(Items.QUARTZ_BLOCK));
-                new CustomCompactingRecipe(new ResourceLocation("ice"), new ItemStack(Items.ICE, 9), new ItemStack(Items.PACKED_ICE));
-                new CustomCompactingRecipe(new ResourceLocation("packed_ice"), new ItemStack(Items.PACKED_ICE, 9), new ItemStack(Items.BLUE_ICE));
                 new CustomCompactingRecipe(new ResourceLocation("amethyst"), new ItemStack(Items.AMETHYST_SHARD, 4), new ItemStack(Items.AMETHYST_BLOCK));
+                new CustomCompactingRecipe(new ResourceLocation("clay"), new ItemStack(Items.CLAY_BALL, 4), new ItemStack(Items.CLAY));
+                new CustomCompactingRecipe(new ResourceLocation("dripstone"), new ItemStack(Items.POINTED_DRIPSTONE, 4), new ItemStack(Items.DRIPSTONE_BLOCK));
+                new CustomCompactingRecipe(new ResourceLocation("glowstone"), new ItemStack(Items.GLOWSTONE_DUST, 4), new ItemStack(Items.GLOWSTONE));
+                new CustomCompactingRecipe(new ResourceLocation("ice"), new ItemStack(Items.ICE, 9), new ItemStack(Items.PACKED_ICE));
+                new CustomCompactingRecipe(new ResourceLocation("melon"), new ItemStack(Items.MELON_SLICE, 9), new ItemStack(Items.MELON));
+                new CustomCompactingRecipe(new ResourceLocation("packed_ice"), new ItemStack(Items.PACKED_ICE, 9), new ItemStack(Items.BLUE_ICE));
+                new CustomCompactingRecipe(new ResourceLocation("quartz"), new ItemStack(Items.QUARTZ, 4), new ItemStack(Items.QUARTZ_BLOCK));
 
                 CustomCompactingRecipe.RECIPES.forEach(customCompactingRecipe -> serializables.put(customCompactingRecipe, customCompactingRecipe));
             }
