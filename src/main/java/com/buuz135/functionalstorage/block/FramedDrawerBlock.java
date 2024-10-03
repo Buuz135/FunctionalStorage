@@ -94,16 +94,19 @@ public class FramedDrawerBlock extends DrawerBlock implements FramedBlock {
 
             simpleToFramed(consumer, TitaniumShapedRecipeBuilder.shapedRecipe(this)
                     .pattern("PCP")
-                    .define('P', Tags.Items.NUGGETS_IRON));
+                    .define('P', Tags.Items.NUGGETS_IRON),1);
         }
     }
 
-    private void simpleToFramed(RecipeOutput output, ShapedRecipeBuilder recipe) {
+    private void simpleToFramed(RecipeOutput output, ShapedRecipeBuilder recipe,int copyIndex) {
         recipe.define('C', DifferenceIngredient.of(
-                Ingredient.of(getType().getTag()),
-                Ingredient.of(this)
-        ))
-                .save(CopyComponentsRecipe.output(output, 4, FSAttachments.TILE.get()), builtInRegistryHolder().unwrapKey().get().location().withSuffix("_from_simple"));
+                        Ingredient.of(getType().getTag()),
+                        Ingredient.of(this)
+                ))
+                .save(CopyComponentsRecipe.output(output, copyIndex, FSAttachments.TILE.get()), builtInRegistryHolder().unwrapKey().get().location().withSuffix("_from_simple"));
+    }
+    private void simpleToFramed(RecipeOutput output, ShapedRecipeBuilder recipe) {
+        simpleToFramed(output, recipe, 4);
     }
 
 }
