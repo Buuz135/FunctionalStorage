@@ -4,7 +4,7 @@
   "components": [
     "functionalstorage:tile"
   ],
-  "copyIndex": 4,
+  "copyIndex": 1,
   "key": {
     "C": {
       "type": "neoforge:difference",
