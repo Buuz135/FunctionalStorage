@@ -5,6 +5,7 @@
 * Added obsidian generator upgrade, closes #334
 * Fixed compacting recipes generating in the wrong path
 * Added a tick for access points to update connections, closes #327
+* Fixed NBT getting readded every time drawers get placed and broken, closes #330
 
 # VERSION 1.3.3
 * Added dripping upgrade that will fill fluid drawers with lava
