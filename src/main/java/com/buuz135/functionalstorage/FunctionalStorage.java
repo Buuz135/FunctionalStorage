@@ -47,6 +47,7 @@ import com.buuz135.functionalstorage.item.LinkingToolItem;
 import com.buuz135.functionalstorage.item.StorageUpgradeItem;
 import com.buuz135.functionalstorage.item.UpgradeItem;
 import com.buuz135.functionalstorage.item.functional_upgrade.DrippingFunctionalUpgradeItem;
+import com.buuz135.functionalstorage.item.functional_upgrade.ObsidianGeneratorFunctionalUpgrade;
 import com.buuz135.functionalstorage.item.functional_upgrade.WaterGeneratorFunctionalUpgrade;
 import com.buuz135.functionalstorage.network.EnderDrawerSyncMessage;
 import com.buuz135.functionalstorage.recipe.CopyComponentsRecipe;
@@ -169,6 +170,7 @@ public class FunctionalStorage extends ModuleController {
     public static DeferredHolder<Item, Item> CONFIGURATION_TOOL;
     public static DeferredHolder<Item, Item> REDSTONE_UPGRADE;
     public static DeferredHolder<Item, Item> CREATIVE_UPGRADE;
+    public static DeferredHolder<Item, Item> OBSIDIAN_UPGRADE;
 
     public static DeferredHolder<Item, Item> DRIPPING_UPGRADE;
     public static DeferredHolder<Item, Item> WATER_GENERATOR_UPGRADE;
@@ -311,6 +313,8 @@ public class FunctionalStorage extends ModuleController {
 
         DRIPPING_UPGRADE = getRegistries().registerGeneric(Registries.ITEM, "dripping_upgrade", DrippingFunctionalUpgradeItem::new);
         WATER_GENERATOR_UPGRADE = getRegistries().registerGeneric(Registries.ITEM, "water_generator_upgrade", WaterGeneratorFunctionalUpgrade::new);
+        OBSIDIAN_UPGRADE = getRegistries().registerGeneric(Registries.ITEM, "obsidian_upgrade", ObsidianGeneratorFunctionalUpgrade::new);
+
 
         ModLoadingContext.get().getActiveContainer().getEventBus()
                 .addListener(EventPriority.LOWEST, (final RegisterEvent regEvent) -> {
@@ -513,6 +517,7 @@ public class FunctionalStorage extends ModuleController {
                     item(CREATIVE_UPGRADE.get());
                     item(DRIPPING_UPGRADE.get());
                     item(WATER_GENERATOR_UPGRADE.get());
+                    item(OBSIDIAN_UPGRADE.get());
                 }
 
                 private void item(Item item) {

@@ -67,6 +67,7 @@ public class FunctionalStorageLangProvider extends LanguageProvider {
         this.add(FunctionalStorage.CONFIGURATION_TOOL.get(), "Configuration Tool");
         this.add(FunctionalStorage.DRIPPING_UPGRADE.get(), WordUtils.capitalize(BuiltInRegistries.ITEM.getKey(FunctionalStorage.DRIPPING_UPGRADE.get()).getPath().replace('_', ' ').toLowerCase()));
         this.add(FunctionalStorage.WATER_GENERATOR_UPGRADE.get(), WordUtils.capitalize(BuiltInRegistries.ITEM.getKey(FunctionalStorage.WATER_GENERATOR_UPGRADE.get()).getPath().replace('_', ' ').toLowerCase()));
+        this.add(FunctionalStorage.OBSIDIAN_UPGRADE.get(), "Obsidian Generator Upgrade");
 
 
         this.add("item.utility.downgrade", "Downgrades the slots to a max of 64 items");

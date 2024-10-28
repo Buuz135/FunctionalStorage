@@ -5,6 +5,7 @@ import com.buuz135.functionalstorage.recipe.CustomCompactingRecipe;
 import com.buuz135.functionalstorage.util.StorageTags;
 import com.hrznstudio.titanium.block.BasicBlock;
 import com.hrznstudio.titanium.recipe.generator.TitaniumShapedRecipeBuilder;
+import com.hrznstudio.titanium.recipe.generator.TitaniumShapelessRecipeBuilder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.DataGenerator;
@@ -139,7 +140,10 @@ public class FunctionalStorageRecipesProvider extends RecipeProvider {
                 .define('C', Tags.Items.CHESTS_ENDER)
                 .define('L', StorageTags.DRAWER)
                 .save(output);
-
+        TitaniumShapelessRecipeBuilder.shapelessRecipe(OBSIDIAN_UPGRADE.get())
+                .requires(DRIPPING_UPGRADE.get(), 4)
+                .requires(WATER_GENERATOR_UPGRADE.get())
+                .save(output);
         new CustomCompactingRecipe(new ItemStack(Items.GLOWSTONE_DUST, 4), new ItemStack(Items.GLOWSTONE)).save(output, com.buuz135.functionalstorage.util.Utils.resourceLocation("functionalstorage/compacting/glowstone"));
         new CustomCompactingRecipe(new ItemStack(Items.MELON_SLICE, 9), new ItemStack(Items.MELON)).save(output, com.buuz135.functionalstorage.util.Utils.resourceLocation("functionalstorage/compacting/melon"));
         new CustomCompactingRecipe(new ItemStack(Items.QUARTZ, 4), new ItemStack(Items.QUARTZ_BLOCK)).save(output, com.buuz135.functionalstorage.util.Utils.resourceLocation("functionalstorage/compacting/quartz"));

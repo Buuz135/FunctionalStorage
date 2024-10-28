@@ -1,4 +1,4 @@
-// 1.21.1	2024-09-21T15:08:52.3249002	Item Models: functionalstorage
+// 1.21.1	2024-10-28T12:48:31.6590249	Item Models: functionalstorage
 e0f7b66a84e6588f01abbbce75b1803ffe5d46e2 assets/functionalstorage/models/item/acacia_1.json
 e0f7b66a84e6588f01abbbce75b1803ffe5d46e2 assets/functionalstorage/models/item/acacia_2.json
 e0f7b66a84e6588f01abbbce75b1803ffe5d46e2 assets/functionalstorage/models/item/acacia_4.json
@@ -46,6 +46,7 @@ ef1127c7347512f48e4d2ca93e2a7768b3d9a6e4 assets/functionalstorage/models/item/ne
 e0f7b66a84e6588f01abbbce75b1803ffe5d46e2 assets/functionalstorage/models/item/oak_1.json
 e0f7b66a84e6588f01abbbce75b1803ffe5d46e2 assets/functionalstorage/models/item/oak_2.json
 e0f7b66a84e6588f01abbbce75b1803ffe5d46e2 assets/functionalstorage/models/item/oak_4.json
+08f6f3b866abcdb1d45e8a5c456221de6342ebef assets/functionalstorage/models/item/obsidian_upgrade.json
 8ef1238f418e1a36e57cbd9526a9333bd2e2ac39 assets/functionalstorage/models/item/puller_upgrade.json
 13bc3bc5eefb72c6d119577db7d81db66fdbe286 assets/functionalstorage/models/item/pusher_upgrade.json
 fbce76325160161dbfe68ad40497c998c9095064 assets/functionalstorage/models/item/redstone_upgrade.json

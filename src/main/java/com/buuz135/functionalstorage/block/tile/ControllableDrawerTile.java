@@ -125,9 +125,6 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
                             level.updateNeighborsAt(this.getBlockPos(), this.getBasicTileBlock());
                             break;
                         }
-                        if (item instanceof FunctionalUpgradeItem functionalUpgradeItem){
-                            functionalUpgradeItem.work(this.level, this.getBlockPos());
-                        }
                     }
                 }
             }

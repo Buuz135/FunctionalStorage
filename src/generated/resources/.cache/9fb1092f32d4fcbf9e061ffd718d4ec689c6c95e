@@ -1,4 +1,4 @@
-// 1.21.1	2024-10-03T02:08:59.905816	Recipes
+// 1.21.1	2024-10-28T12:54:28.9796672	Recipes
 f07485f3ee5257c2b12fcf149c60ddd20ed73fe1 data/functionalstorage/advancement/recipes/misc/acacia_1.json
 8cce3aada48266b5e41df6e04b01ab1fd2224a4c data/functionalstorage/advancement/recipes/misc/acacia_2.json
 8bc6f134a188d7ec701a472feeb93bccc9a115f3 data/functionalstorage/advancement/recipes/misc/acacia_4.json
@@ -51,6 +51,7 @@ b0c69118acd0443bcbbfb48e430649cace0f5da4 data/functionalstorage/advancement/reci
 f74f098ece5a237a77167ea8a8e21adad7eb0ea8 data/functionalstorage/advancement/recipes/misc/oak_1.json
 9b119c96262b977f9392a974a00bdd1599f3ab4b data/functionalstorage/advancement/recipes/misc/oak_2.json
 c80f7e9dd1b842064a6022ca70252e014bcbe78d data/functionalstorage/advancement/recipes/misc/oak_4.json
+03916d94e0951dc15378cff9720a3911b9aeca21 data/functionalstorage/advancement/recipes/misc/obsidian_upgrade.json
 6ff3017bd51bb87d785d65a23659e9e94205e0ec data/functionalstorage/advancement/recipes/misc/puller_upgrade.json
 d9c6f6b3bd529a8f95e58142803ea6bb0dd3972e data/functionalstorage/advancement/recipes/misc/pusher_upgrade.json
 2c2a6f2849c070210a0a6f8d5c311b30b20203da data/functionalstorage/advancement/recipes/misc/redstone_upgrade.json
@@ -116,6 +117,7 @@ d048d2588452bf51bd73f777282a27905f27fe4c data/functionalstorage/recipe/linking_t
 5a6cf085d8d0de5e740121594a58275be75194dc data/functionalstorage/recipe/oak_1.json
 313ba2b13a47f15bade3eeb606ef5a3b74a449ba data/functionalstorage/recipe/oak_2.json
 863b7345eb9d872144eb49ee2f0d3a740e972990 data/functionalstorage/recipe/oak_4.json
+2c2629ef34b13d1cf452fbaacb9ccb588867cbf0 data/functionalstorage/recipe/obsidian_upgrade.json
 a7ec2fd7e409c9fe329a972f8caf8a2f74e31e9e data/functionalstorage/recipe/puller_upgrade.json
 0f54ff3aa2caa38c35c467783e2c6c7a449c6785 data/functionalstorage/recipe/pusher_upgrade.json
 7cf0ad077a5a1872fdd04c5b3218b8d71a6e90d8 data/functionalstorage/recipe/redstone_upgrade.json
