@@ -3,6 +3,7 @@
 * improve zh_cn.json for 1.21
 * Fixed Upgrades being accessible externally in a fluid drawer, closes #336
 * Added obsidian generator upgrade, closes #334
+* Fixed compacting recipes generating in the wrong path
 
 # VERSION 1.3.3
 * Added dripping upgrade that will fill fluid drawers with lava
