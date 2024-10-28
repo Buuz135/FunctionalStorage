@@ -1,4 +1,4 @@
-// 1.21.1	2024-09-21T15:08:52.320402	Recipes
+// 1.21.1	2024-10-03T02:08:59.905816	Recipes
 f07485f3ee5257c2b12fcf149c60ddd20ed73fe1 data/functionalstorage/advancement/recipes/misc/acacia_1.json
 8cce3aada48266b5e41df6e04b01ab1fd2224a4c data/functionalstorage/advancement/recipes/misc/acacia_2.json
 8bc6f134a188d7ec701a472feeb93bccc9a115f3 data/functionalstorage/advancement/recipes/misc/acacia_4.json
@@ -98,7 +98,7 @@ fd38720c28a543ff250af3e94f2d22337acd4c01 data/functionalstorage/recipe/framed_1.
 0895fa34e8c8911572cfdcde3282beb553764918 data/functionalstorage/recipe/framed_2.json
 44497d9cbce6636f65f7fa2134b725a54faf78f6 data/functionalstorage/recipe/framed_2_from_simple.json
 ad44f7b469f3f40e2d0ac09c3194d393d054557d data/functionalstorage/recipe/framed_4.json
-e8924bf2c1d60f9516743fb8563e21030bf23b5b data/functionalstorage/recipe/framed_4_from_simple.json
+ae0b2ad2e7a1f41cc977aa99063160d80f0887f8 data/functionalstorage/recipe/framed_4_from_simple.json
 84fc39ed6bcf643a7fe4840e5eaeff6b88331d15 data/functionalstorage/recipe/framed_controller_extension.json
 edb9e1fe3911c45ef063082efffb36b842525abc data/functionalstorage/recipe/framed_simple_compacting_drawer.json
 20de5824fa1639738d100099e9ea883d4c758089 data/functionalstorage/recipe/framed_simple_compacting_drawer_from_simple.json
