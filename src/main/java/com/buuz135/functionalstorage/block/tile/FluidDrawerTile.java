@@ -30,6 +30,7 @@ import net.neoforged.neoforge.common.util.FakePlayerFactory;
 import net.neoforged.neoforge.fluids.FluidUtil;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.capability.wrappers.BucketPickupHandlerWrapper;
+import net.neoforged.neoforge.items.IItemHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -318,5 +319,10 @@ public class FluidDrawerTile extends ControllableDrawerTile<FluidDrawerTile> {
     @Override
     public IFluidHandler getFluidHandler(@Nullable Direction direction) {
         return fluidHandler;
+    }
+
+    @Override
+    public IItemHandler getItemHandler(@Nullable Direction direction) {
+        return null;
     }
 }

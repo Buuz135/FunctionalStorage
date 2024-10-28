@@ -1,7 +1,7 @@
 # VERSION 1.3.4
 * fix: fixed #322 by making copyIndex variable
 * improve zh_cn.json for 1.21
-
+* Fixed Upgrades being accessible externally in a fluid drawer, closes #336
 
 # VERSION 1.3.3
 * Added dripping upgrade that will fill fluid drawers with lava

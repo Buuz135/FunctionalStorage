@@ -74,6 +74,7 @@ dependencies {
     implementation project.dependencies.create('com.hrznstudio:titanium:1.21-4.0.12')
     implementation "curse.maven:jade-324717:5444008"
     compileOnly "curse.maven:the-one-probe-245211:5475189"
+    runtimeOnly "curse.maven:applied-energistics-2-223794:5729094"
 }
 
 jar {
