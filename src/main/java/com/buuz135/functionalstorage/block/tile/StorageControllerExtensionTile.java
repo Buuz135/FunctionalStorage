@@ -10,6 +10,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
@@ -74,5 +75,17 @@ public abstract class StorageControllerExtensionTile<T extends StorageController
         if (getControllerPos() == null) return Optional.empty();
         if (level == null || !level.isLoaded(getControllerPos())) return Optional.empty();
         return TileUtil.getTileEntity(this.level, getControllerPos(), StorageControllerTile.class);
+    }
+
+    private boolean hasUpdated = false;
+
+    @Override
+    public void serverTick(Level level, BlockPos pos, BlockState state, T blockEntity) {
+        super.serverTick(level, pos, state, blockEntity);
+        if (!hasUpdated){
+            hasUpdated = true;
+            updateNeigh();
+            markForUpdate();
+        }
     }
 }

@@ -4,6 +4,7 @@
 * Fixed Upgrades being accessible externally in a fluid drawer, closes #336
 * Added obsidian generator upgrade, closes #334
 * Fixed compacting recipes generating in the wrong path
+* Added a tick for access points to update connections, closes #327
 
 # VERSION 1.3.3
 * Added dripping upgrade that will fill fluid drawers with lava
