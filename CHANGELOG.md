@@ -1,3 +1,6 @@
+# VERSION 1.3.5
+* Increased controller range render a bit to avoid Z-Fighting
+
 # VERSION 1.3.4
 * fix: fixed #322 by making copyIndex variable
 * improve zh_cn.json for 1.21

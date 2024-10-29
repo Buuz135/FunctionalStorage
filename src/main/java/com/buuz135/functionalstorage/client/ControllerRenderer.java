@@ -108,7 +108,7 @@ public class ControllerRenderer implements BlockEntityRenderer<StorageController
                 extraRange = 0;
             }
             var area = new AABB(tile.getBlockPos())
-                    .inflate(FunctionalStorageConfig.DRAWER_CONTROLLER_LINKING_RANGE + extraRange);
+                    .inflate(FunctionalStorageConfig.DRAWER_CONTROLLER_LINKING_RANGE + extraRange + 0.001);
             renderShape(matrixStack, bufferIn.getBuffer(TYPE), Shapes.create(area), -tile.getBlockPos().getX(), -tile.getBlockPos().getY(), -tile.getBlockPos().getZ(), 0.5f, 1, 0.5f, 1.0F);
             renderFaces(matrixStack, bufferIn, area , -tile.getBlockPos().getX(), -tile.getBlockPos().getY(), -tile.getBlockPos().getZ(), 0.5f, 1, 0.5f , 0.25f);
         }
