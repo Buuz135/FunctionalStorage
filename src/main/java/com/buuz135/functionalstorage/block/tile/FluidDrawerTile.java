@@ -1,6 +1,7 @@
 package com.buuz135.functionalstorage.block.tile;
 
 import com.buuz135.functionalstorage.FunctionalStorage;
+import com.buuz135.functionalstorage.block.FluidDrawerBlock;
 import com.buuz135.functionalstorage.block.config.FunctionalStorageConfig;
 import com.buuz135.functionalstorage.client.gui.FluidDrawerInfoGuiAddon;
 import com.buuz135.functionalstorage.fluid.BigFluidHandler;

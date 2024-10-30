@@ -1,30 +1,7 @@
 package com.buuz135.functionalstorage;
 
-import com.buuz135.functionalstorage.block.ArmoryCabinetBlock;
-import com.buuz135.functionalstorage.block.CompactingDrawerBlock;
-import com.buuz135.functionalstorage.block.CompactingFramedDrawerBlock;
-import com.buuz135.functionalstorage.block.ControllerExtensionBlock;
-import com.buuz135.functionalstorage.block.Drawer;
-import com.buuz135.functionalstorage.block.DrawerBlock;
-import com.buuz135.functionalstorage.block.DrawerControllerBlock;
-import com.buuz135.functionalstorage.block.EnderDrawerBlock;
-import com.buuz135.functionalstorage.block.FluidDrawerBlock;
-import com.buuz135.functionalstorage.block.FramedBlock;
-import com.buuz135.functionalstorage.block.FramedControllerExtensionBlock;
-import com.buuz135.functionalstorage.block.FramedDrawerBlock;
-import com.buuz135.functionalstorage.block.FramedDrawerControllerBlock;
-import com.buuz135.functionalstorage.block.FramedSimpleCompactingDrawerBlock;
-import com.buuz135.functionalstorage.block.SimpleCompactingDrawerBlock;
-import com.buuz135.functionalstorage.block.tile.CompactingDrawerTile;
-import com.buuz135.functionalstorage.block.tile.CompactingFramedDrawerTile;
-import com.buuz135.functionalstorage.block.tile.DrawerControllerTile;
-import com.buuz135.functionalstorage.block.tile.DrawerTile;
-import com.buuz135.functionalstorage.block.tile.EnderDrawerTile;
-import com.buuz135.functionalstorage.block.tile.FluidDrawerTile;
-import com.buuz135.functionalstorage.block.tile.FramedDrawerControllerTile;
-import com.buuz135.functionalstorage.block.tile.FramedDrawerTile;
-import com.buuz135.functionalstorage.block.tile.FramedSimpleCompactingDrawerTile;
-import com.buuz135.functionalstorage.block.tile.SimpleCompactingDrawerTile;
+import com.buuz135.functionalstorage.block.*;
+import com.buuz135.functionalstorage.block.tile.*;
 import com.buuz135.functionalstorage.client.ClientSetup;
 import com.buuz135.functionalstorage.client.CompactingDrawerRenderer;
 import com.buuz135.functionalstorage.client.ControllerRenderer;
@@ -161,6 +138,9 @@ public class FunctionalStorage extends ModuleController {
     public static BlockWithTile FRAMED_DRAWER_CONTROLLER;
     public static BlockWithTile FRAMED_CONTROLLER_EXTENSION;
     public static BlockWithTile FRAMED_SIMPLE_COMPACTING_DRAWER;
+    public static BlockWithTile FRAMED_FLUID_DRAWER_1;
+    public static BlockWithTile FRAMED_FLUID_DRAWER_2;
+    public static BlockWithTile FRAMED_FLUID_DRAWER_4;
 
 
     public static DeferredHolder<Item, Item> LINKING_TOOL;
@@ -193,6 +173,7 @@ public class FunctionalStorage extends ModuleController {
             Runnable runnable = this::onClient;
             runnable.run();
         }
+        NBTManager.getInstance().scanTileClassForAnnotations(FramedFluidDrawerTile.class);
         NBTManager.getInstance().scanTileClassForAnnotations(FramedDrawerTile.class);
         NBTManager.getInstance().scanTileClassForAnnotations(CompactingFramedDrawerTile.class);
         NBTManager.getInstance().scanTileClassForAnnotations(FluidDrawerTile.class);
@@ -254,6 +235,12 @@ public class FunctionalStorage extends ModuleController {
         FLUID_DRAWER_2 = getRegistries().registerBlockWithTileItem("fluid_2", () -> new FluidDrawerBlock(DrawerType.X_2, BlockBehaviour.Properties.ofFullCopy(Blocks.STONE_BRICKS)),
                 blockRegistryObject -> () -> new FluidDrawerBlock.FluidDrawerItem((FluidDrawerBlock) blockRegistryObject.get(), new Item.Properties(), TAB),TAB);
         FLUID_DRAWER_4 = getRegistries().registerBlockWithTileItem("fluid_4", () -> new FluidDrawerBlock(DrawerType.X_4, BlockBehaviour.Properties.ofFullCopy(Blocks.STONE_BRICKS)),
+                blockRegistryObject -> () -> new FluidDrawerBlock.FluidDrawerItem((FluidDrawerBlock) blockRegistryObject.get(), new Item.Properties(), TAB),TAB);
+        FRAMED_FLUID_DRAWER_1 = getRegistries().registerBlockWithTileItem("framed_fluid_1", () -> new FramedFluidDrawerBlock(DrawerType.X_1, BlockBehaviour.Properties.ofFullCopy(Blocks.STONE_BRICKS)),
+                blockRegistryObject -> () -> new FluidDrawerBlock.FluidDrawerItem((FluidDrawerBlock) blockRegistryObject.get(), new Item.Properties(), TAB),TAB);
+        FRAMED_FLUID_DRAWER_2 = getRegistries().registerBlockWithTileItem("framed_fluid_2", () -> new FramedFluidDrawerBlock(DrawerType.X_2, BlockBehaviour.Properties.ofFullCopy(Blocks.STONE_BRICKS)),
+                blockRegistryObject -> () -> new FluidDrawerBlock.FluidDrawerItem((FluidDrawerBlock) blockRegistryObject.get(), new Item.Properties(), TAB),TAB);
+        FRAMED_FLUID_DRAWER_4 = getRegistries().registerBlockWithTileItem("framed_fluid_4", () -> new FramedFluidDrawerBlock(DrawerType.X_4, BlockBehaviour.Properties.ofFullCopy(Blocks.STONE_BRICKS)),
                 blockRegistryObject -> () -> new FluidDrawerBlock.FluidDrawerItem((FluidDrawerBlock) blockRegistryObject.get(), new Item.Properties(), TAB),TAB);
         COMPACTING_DRAWER = getRegistries().registerBlockWithTileItem("compacting_drawer", () -> new CompactingDrawerBlock("compacting_drawer", BlockBehaviour.Properties.ofFullCopy(Blocks.STONE_BRICKS)),
                 blockRegistryObject -> () ->
@@ -393,6 +380,9 @@ public class FunctionalStorage extends ModuleController {
             registerRenderers.registerBlockEntityRenderer((BlockEntityType<? extends FluidDrawerTile>) FLUID_DRAWER_1.type().get(), p_173571_ -> new FluidDrawerRenderer());
             registerRenderers.registerBlockEntityRenderer((BlockEntityType<? extends FluidDrawerTile>) FLUID_DRAWER_2.type().get(), p_173571_ -> new FluidDrawerRenderer());
             registerRenderers.registerBlockEntityRenderer((BlockEntityType<? extends FluidDrawerTile>) FLUID_DRAWER_4.type().get(), p_173571_ -> new FluidDrawerRenderer());
+            registerRenderers.registerBlockEntityRenderer((BlockEntityType<? extends FluidDrawerTile>) FRAMED_FLUID_DRAWER_1.type().get(), p_173571_ -> new FluidDrawerRenderer());
+            registerRenderers.registerBlockEntityRenderer((BlockEntityType<? extends FluidDrawerTile>) FRAMED_FLUID_DRAWER_2.type().get(), p_173571_ -> new FluidDrawerRenderer());
+            registerRenderers.registerBlockEntityRenderer((BlockEntityType<? extends FluidDrawerTile>) FRAMED_FLUID_DRAWER_4.type().get(), p_173571_ -> new FluidDrawerRenderer());
             registerRenderers.registerBlockEntityRenderer((BlockEntityType<? extends SimpleCompactingDrawerTile>) SIMPLE_COMPACTING_DRAWER.type().get(), p_173571_ -> new SimpleCompactingDrawerRenderer());
 
             registerRenderers.registerBlockEntityRenderer((BlockEntityType<? extends FramedDrawerControllerTile>) FRAMED_DRAWER_CONTROLLER.type().get(), p -> new ControllerRenderer());
@@ -440,6 +430,9 @@ public class FunctionalStorage extends ModuleController {
             ItemBlockRenderTypes.setRenderLayer(FRAMED_DRAWER_CONTROLLER.getBlock(), RenderType.cutout());
             ItemBlockRenderTypes.setRenderLayer(FRAMED_CONTROLLER_EXTENSION.getBlock(), RenderType.cutout());
             ItemBlockRenderTypes.setRenderLayer(FRAMED_SIMPLE_COMPACTING_DRAWER.getBlock(), RenderType.cutout());
+            ItemBlockRenderTypes.setRenderLayer(FRAMED_FLUID_DRAWER_1.getBlock(), RenderType.cutout());
+            ItemBlockRenderTypes.setRenderLayer(FRAMED_FLUID_DRAWER_2.getBlock(), RenderType.cutout());
+            ItemBlockRenderTypes.setRenderLayer(FRAMED_FLUID_DRAWER_4.getBlock(), RenderType.cutout());
         }).subscribe();
         EventManager.forge(RenderTooltipEvent.Pre.class).process(itemTooltipEvent -> {
             if (itemTooltipEvent.getItemStack().getItem().equals(FunctionalStorage.ENDER_DRAWER.getBlock().asItem()) && itemTooltipEvent.getItemStack().has(FSAttachments.TILE)) {
@@ -553,6 +546,12 @@ public class FunctionalStorage extends ModuleController {
                     withExistingParent(BuiltInRegistries.BLOCK.getKey(FLUID_DRAWER_4.getBlock()).getPath() + "_locked", modLoc(BuiltInRegistries.BLOCK.getKey(FLUID_DRAWER_4.getBlock()).getPath()))
                             .texture("lock_icon", modLoc("block/lock"));
                     withExistingParent(BuiltInRegistries.BLOCK.getKey(SIMPLE_COMPACTING_DRAWER.getBlock()).getPath() + "_locked", modLoc(BuiltInRegistries.BLOCK.getKey(SIMPLE_COMPACTING_DRAWER.getBlock()).getPath()))
+                            .texture("lock_icon", modLoc("block/lock"));
+                    withExistingParent(BuiltInRegistries.BLOCK.getKey(FRAMED_FLUID_DRAWER_1.getBlock()).getPath() + "_locked", modLoc(BuiltInRegistries.BLOCK.getKey(FRAMED_FLUID_DRAWER_1.getBlock()).getPath()))
+                            .texture("lock_icon", modLoc("block/lock"));
+                    withExistingParent(BuiltInRegistries.BLOCK.getKey(FRAMED_FLUID_DRAWER_2.getBlock()).getPath() + "_locked", modLoc(BuiltInRegistries.BLOCK.getKey(FRAMED_FLUID_DRAWER_2.getBlock()).getPath()))
+                            .texture("lock_icon", modLoc("block/lock"));
+                    withExistingParent(BuiltInRegistries.BLOCK.getKey(FRAMED_FLUID_DRAWER_4.getBlock()).getPath() + "_locked", modLoc(BuiltInRegistries.BLOCK.getKey(FRAMED_FLUID_DRAWER_4.getBlock()).getPath()))
                             .texture("lock_icon", modLoc("block/lock"));
 //                    withExistingParent(BuiltInRegistries.BLOCK.getKey(FRAMED_COMPACTING_DRAWER.getBlock()).getPath() + "_locked", modLoc(BuiltInRegistries.BLOCK.getKey(FRAMED_COMPACTING_DRAWER.getBlock()).getPath()))
 //                            .texture("lock_icon", modLoc("block/lock"));

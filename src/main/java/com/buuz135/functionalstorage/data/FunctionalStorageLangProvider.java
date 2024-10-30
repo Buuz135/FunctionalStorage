@@ -29,7 +29,9 @@ public class FunctionalStorageLangProvider extends LanguageProvider {
         this.add(FunctionalStorage.FLUID_DRAWER_1.getBlock(), "Fluid Drawer (" + FunctionalStorage.DrawerType.X_1.getDisplayName() + ")");
         this.add(FunctionalStorage.FLUID_DRAWER_2.getBlock(), "Fluid Drawer (" + FunctionalStorage.DrawerType.X_2.getDisplayName() + ")");
         this.add(FunctionalStorage.FLUID_DRAWER_4.getBlock(), "Fluid Drawer (" + FunctionalStorage.DrawerType.X_4.getDisplayName() + ")");
-        this.add(FunctionalStorage.SIMPLE_COMPACTING_DRAWER.getBlock(), "Simple Compacting Drawer");
+        this.add(FunctionalStorage.FRAMED_FLUID_DRAWER_1.getBlock(), "Framed Fluid Drawer (" + FunctionalStorage.DrawerType.X_1.getDisplayName() + ")");
+        this.add(FunctionalStorage.FRAMED_FLUID_DRAWER_2.getBlock(), "Framed Drawer (" + FunctionalStorage.DrawerType.X_2.getDisplayName() + ")");
+        this.add(FunctionalStorage.FRAMED_FLUID_DRAWER_4.getBlock(), "Framed Drawer (" + FunctionalStorage.DrawerType.X_4.getDisplayName() + ")");
         this.add(FunctionalStorage.FRAMED_SIMPLE_COMPACTING_DRAWER.getBlock(), "Framed Simple Compacting Drawer");
         this.add(FunctionalStorage.COMPACTING_DRAWER.getBlock(), "Compacting Drawer");
         this.add(FunctionalStorage.FRAMED_COMPACTING_DRAWER.getBlock(), "Framed Compacting Drawer");

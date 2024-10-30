@@ -1,6 +1,7 @@
 package com.buuz135.functionalstorage.block;
 
 import com.buuz135.functionalstorage.FunctionalStorage;
+import com.buuz135.functionalstorage.block.tile.ControllableDrawerTile;
 import com.buuz135.functionalstorage.block.tile.FluidDrawerTile;
 import com.buuz135.functionalstorage.client.item.FluidDrawerISTER;
 import com.buuz135.functionalstorage.item.FSAttachments;
@@ -37,10 +38,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
 
-public class FluidDrawerBlock extends Drawer<FluidDrawerTile> {
+public class FluidDrawerBlock extends Drawer<FluidDrawerTile>{
 
     /**
-     * Framed version
      * Gas rendering
      */
 
@@ -124,6 +124,9 @@ public class FluidDrawerBlock extends Drawer<FluidDrawerTile> {
                     tooltip.add(Component.literal(" - " + ChatFormatting.YELLOW + NumberUtils.getFormatedFluidBigNumber(stack.getAmount()) + ChatFormatting.WHITE + " of ").append(stack.getHoverName().copy().withStyle(ChatFormatting.GOLD)));
             }
         }
+        if (this instanceof FramedBlock) {
+            tooltip.add(Component.translatable("frameddrawer.use").withStyle(ChatFormatting.GRAY));
+        }
     }
 
     @Override
@@ -142,6 +145,8 @@ public class FluidDrawerBlock extends Drawer<FluidDrawerTile> {
         }
         return 0;
     }
+
+
 
     public static class FluidDrawerItem extends BlockItem {
 

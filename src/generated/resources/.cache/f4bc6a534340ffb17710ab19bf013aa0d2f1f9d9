@@ -1,4 +1,4 @@
-// 1.21.1	2024-09-21T14:04:15.9507754	Block Models: functionalstorage
+// 1.21.1	2024-10-30T14:44:51.8912623	Block Models: functionalstorage
 9a3565a126dac6771b78fa3f5f3f2b6e3c858dd8 assets/functionalstorage/models/block/acacia_1_locked.json
 fb054b9a925853b52f05fc4402de2b58b2d3a72f assets/functionalstorage/models/block/acacia_2_locked.json
 b8c2c3e1a316d39c881a4532b04a18d19d6d9c55 assets/functionalstorage/models/block/acacia_4_locked.json
@@ -19,6 +19,9 @@ cb959dc23ee41d96246e3e398ef7024e1315aceb assets/functionalstorage/models/block/d
 538e32181db72b1d0f9849711b5a7eaed7f41682 assets/functionalstorage/models/block/fluid_1_locked.json
 25d9cab6fc436845d17a75daf7fc7de6ea326ad0 assets/functionalstorage/models/block/fluid_2_locked.json
 3b094843acbbb1317d80f37266730d63fbb1124f assets/functionalstorage/models/block/fluid_4_locked.json
+f7525efbb9a74e37c7e8fc738b933491c40e6603 assets/functionalstorage/models/block/framed_fluid_1_locked.json
+b5f88c49ca8b230878e475567f4536a63b6f5c57 assets/functionalstorage/models/block/framed_fluid_2_locked.json
+c3085519b39627444081080e0148021da1080ece assets/functionalstorage/models/block/framed_fluid_4_locked.json
 8ecb3eef0f754f28f34c94971a4679e06cf11694 assets/functionalstorage/models/block/jungle_1_locked.json
 efcb03885d4fc0d73ba446938f891e8e5a1ff919 assets/functionalstorage/models/block/jungle_2_locked.json
 684cf354dea1b5429aea7767b145ff875692eedf assets/functionalstorage/models/block/jungle_4_locked.json

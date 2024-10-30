@@ -38,7 +38,7 @@ public class FramedDrawerRecipe extends CustomRecipe {
 
     @Override
     public ItemStack assemble(CraftingInput inv, HolderLookup.Provider registryAccess) {
-        return FramedDrawerBlock.fill(inv.getItem(0), inv.getItem(1), inv.getItem(2), inv.size() >= 4 ? inv.getItem(3) : ItemStack.EMPTY);
+        return FramedDrawerBlock.fill(inv.getItem(0), inv.getItem(1), inv.getItem(2).copy(), inv.size() >= 4 ? inv.getItem(3) : ItemStack.EMPTY);
     }
 
     @Override

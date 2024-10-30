@@ -1,0 +1,27 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:item_exists",
+      "item": "functionalstorage:framed_fluid_2"
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "C": {
+      "item": "minecraft:bucket"
+    },
+    "P": {
+      "item": "minecraft:iron_nugget"
+    }
+  },
+  "pattern": [
+    "PCP",
+    "PPP",
+    "PCP"
+  ],
+  "result": {
+    "count": 2,
+    "id": "functionalstorage:framed_fluid_2"
+  }
+}

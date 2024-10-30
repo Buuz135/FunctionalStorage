@@ -1,5 +1,7 @@
 # VERSION 1.3.5
 * Increased controller range render a bit to avoid Z-Fighting
+* Fixed Framing recipe changing the original value
+* Added Fluid Framed Drawers
 
 # VERSION 1.3.4
 * fix: fixed #322 by making copyIndex variable

@@ -1,0 +1,6 @@
+{
+  "parent": "functionalstorage:block/framed_fluid_2",
+  "textures": {
+    "lock_icon": "functionalstorage:block/lock"
+  }
+}

@@ -1,4 +1,4 @@
-// 1.21.1	2024-10-28T12:48:31.6590249	Item Models: functionalstorage
+// 1.21.1	2024-10-30T13:30:53.1701181	Item Models: functionalstorage
 e0f7b66a84e6588f01abbbce75b1803ffe5d46e2 assets/functionalstorage/models/item/acacia_1.json
 e0f7b66a84e6588f01abbbce75b1803ffe5d46e2 assets/functionalstorage/models/item/acacia_2.json
 e0f7b66a84e6588f01abbbce75b1803ffe5d46e2 assets/functionalstorage/models/item/acacia_4.json
@@ -31,6 +31,9 @@ e0f7b66a84e6588f01abbbce75b1803ffe5d46e2 assets/functionalstorage/models/item/fr
 e0f7b66a84e6588f01abbbce75b1803ffe5d46e2 assets/functionalstorage/models/item/framed_2.json
 e0f7b66a84e6588f01abbbce75b1803ffe5d46e2 assets/functionalstorage/models/item/framed_4.json
 bffd40ac50ca20c358e2c93b57104a9858242e52 assets/functionalstorage/models/item/framed_controller_extension.json
+e0f7b66a84e6588f01abbbce75b1803ffe5d46e2 assets/functionalstorage/models/item/framed_fluid_1.json
+e0f7b66a84e6588f01abbbce75b1803ffe5d46e2 assets/functionalstorage/models/item/framed_fluid_2.json
+e0f7b66a84e6588f01abbbce75b1803ffe5d46e2 assets/functionalstorage/models/item/framed_fluid_4.json
 e0f7b66a84e6588f01abbbce75b1803ffe5d46e2 assets/functionalstorage/models/item/framed_simple_compacting_drawer.json
 c6248c7ce7bb9aa88c7e75b2545a40f346f112e1 assets/functionalstorage/models/item/framed_storage_controller.json
 1f165509c733e747c26d4c6a60306988b130dbee assets/functionalstorage/models/item/gold_upgrade.json
