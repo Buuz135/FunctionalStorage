@@ -31,6 +31,7 @@ import com.hrznstudio.titanium.recipe.generator.IJSONGenerator;
 import com.hrznstudio.titanium.recipe.generator.IJsonFile;
 import com.hrznstudio.titanium.recipe.generator.TitaniumSerializableProvider;
 import com.hrznstudio.titanium.recipe.serializer.GenericSerializer;
+import com.hrznstudio.titanium.util.TileUtil;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.data.recipes.FinishedRecipe;
@@ -62,6 +63,7 @@ import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.common.util.NonNullLazy;
 import net.minecraftforge.data.event.GatherDataEvent;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
@@ -178,6 +180,22 @@ public class FunctionalStorage extends ModuleController {
         NBTManager.getInstance().scanTileClassForAnnotations(FluidDrawerTile.class);
         NBTManager.getInstance().scanTileClassForAnnotations(SimpleCompactingDrawerTile.class);
         NBTManager.getInstance().scanTileClassForAnnotations(FramedSimpleCompactingDrawerTile.class);
+
+        EventManager.forge(PlayerInteractEvent.LeftClickBlock.class)
+                .process(event -> {
+                    var state = event.getLevel().getBlockState(event.getPos());
+                    if (event.getLevel().getBlockState(event.getPos()).getBlock() instanceof Drawer drawer) {
+                        final int hit = drawer.getHit(state, event.getLevel(), event.getPos(), event.getEntity());
+                        if (hit != -1) {
+                            TileUtil.getTileEntity(event.getLevel(), event.getPos(), ControllableDrawerTile.class)
+                                    .ifPresent(be -> {
+                                        be.onClicked(event.getEntity(), hit);
+                                        event.setCanceled(true);
+                                    });
+                        }
+                    }
+                })
+                .subscribe();
     }
 
 
@@ -197,9 +215,12 @@ public class FunctionalStorage extends ModuleController {
                 }
             }
         }
-        FLUID_DRAWER_1 = getRegistries().registerBlockWithTile("fluid_1", () -> new FluidDrawerBlock(DrawerType.X_1, BlockBehaviour.Properties.copy(Blocks.STONE_BRICKS)), TAB);
-        FLUID_DRAWER_2 = getRegistries().registerBlockWithTile("fluid_2", () -> new FluidDrawerBlock(DrawerType.X_2, BlockBehaviour.Properties.copy(Blocks.STONE_BRICKS)), TAB);
-        FLUID_DRAWER_4 = getRegistries().registerBlockWithTile("fluid_4", () -> new FluidDrawerBlock(DrawerType.X_4, BlockBehaviour.Properties.copy(Blocks.STONE_BRICKS)), TAB);
+        FLUID_DRAWER_1 = getRegistries().registerBlockWithTileItem("fluid_1", () -> new FluidDrawerBlock(DrawerType.X_1, BlockBehaviour.Properties.copy(Blocks.STONE_BRICKS)),
+                blockRegistryObject -> () -> new FluidDrawerBlock.FluidDrawerItem((FluidDrawerBlock) blockRegistryObject.get(), new Item.Properties(), TAB),TAB);
+        FLUID_DRAWER_2 = getRegistries().registerBlockWithTileItem("fluid_2", () -> new FluidDrawerBlock(DrawerType.X_2, BlockBehaviour.Properties.copy(Blocks.STONE_BRICKS)),
+                blockRegistryObject -> () -> new FluidDrawerBlock.FluidDrawerItem((FluidDrawerBlock) blockRegistryObject.get(), new Item.Properties(), TAB),TAB);
+        FLUID_DRAWER_4 = getRegistries().registerBlockWithTileItem("fluid_4", () -> new FluidDrawerBlock(DrawerType.X_4, BlockBehaviour.Properties.copy(Blocks.STONE_BRICKS)),
+                blockRegistryObject -> () -> new FluidDrawerBlock.FluidDrawerItem((FluidDrawerBlock) blockRegistryObject.get(), new Item.Properties(), TAB),TAB);
         COMPACTING_DRAWER = getRegistries().registerBlockWithTileItem("compacting_drawer", () -> new CompactingDrawerBlock("compacting_drawer", BlockBehaviour.Properties.copy(Blocks.STONE_BRICKS)),
                 blockRegistryObject -> () ->
                         new CompactingDrawerBlock.CompactingDrawerItem(blockRegistryObject.get(), new Item.Properties(), 3), TAB);
@@ -352,6 +373,7 @@ public class FunctionalStorage extends ModuleController {
             ItemBlockRenderTypes.setRenderLayer(FRAMED_DRAWER_CONTROLLER.getLeft().get(), RenderType.cutout());
             ItemBlockRenderTypes.setRenderLayer(FRAMED_CONTROLLER_EXTENSION.getLeft().get(), RenderType.cutout());
             ItemBlockRenderTypes.setRenderLayer(FRAMED_SIMPLE_COMPACTING_DRAWER.getLeft().get(), RenderType.cutout());
+
         }).subscribe();
         EventManager.forge(RenderTooltipEvent.Pre.class).process(itemTooltipEvent -> {
             if (itemTooltipEvent.getItemStack().getItem().equals(FunctionalStorage.ENDER_DRAWER.getLeft().get().asItem()) && itemTooltipEvent.getItemStack().hasTag()) {
@@ -410,7 +432,13 @@ public class FunctionalStorage extends ModuleController {
             event.getGenerator().addProvider(true, new ItemModelProvider(event.getGenerator().getPackOutput(), MOD_ID, event.getExistingFileHelper()) {
                 @Override
                 protected void registerModels() {
-                    blocksToProcess.get().forEach(block -> withUnchecked(ForgeRegistries.BLOCKS.getKey(block).getPath(), new ResourceLocation(FunctionalStorage.MOD_ID, "block/" + ForgeRegistries.BLOCKS.getKey(block).getPath())));
+                    blocksToProcess.get().forEach(block -> {
+                        if ((block instanceof DrawerBlock) || (block instanceof CompactingDrawerBlock) || (block instanceof SimpleCompactingDrawerBlock) || (block instanceof FluidDrawerBlock)){
+                            withUnchecked(ForgeRegistries.BLOCKS.getKey(block).getPath(), new ResourceLocation("minecraft", "builtin/entity"));
+                        } else {
+                            withUnchecked(ForgeRegistries.BLOCKS.getKey(block).getPath(), new ResourceLocation(FunctionalStorage.MOD_ID, "block/" + ForgeRegistries.BLOCKS.getKey(block).getPath()));
+                        }
+                    });
                     for (StorageUpgradeItem.StorageTier storageTier : STORAGE_UPGRADES.keySet()) {
                         item(STORAGE_UPGRADES.get(storageTier).get());
                     }

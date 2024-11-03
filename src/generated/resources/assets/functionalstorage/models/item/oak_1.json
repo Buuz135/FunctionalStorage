@@ -1,3 +1,3 @@
 {
-  "parent": "functionalstorage:block/oak_1"
+  "parent": "minecraft:builtin/entity"
 }

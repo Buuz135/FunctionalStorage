@@ -5,6 +5,7 @@ import com.buuz135.functionalstorage.block.tile.ControllableDrawerTile;
 import com.buuz135.functionalstorage.block.tile.DrawerTile;
 import com.buuz135.functionalstorage.block.tile.ItemControllableDrawerTile;
 import com.buuz135.functionalstorage.block.tile.StorageControllerTile;
+import com.buuz135.functionalstorage.client.item.DrawerISTER;
 import com.buuz135.functionalstorage.inventory.item.DrawerCapabilityProvider;
 import com.buuz135.functionalstorage.item.ConfigurationToolItem;
 import com.buuz135.functionalstorage.item.LinkingToolItem;
@@ -19,6 +20,7 @@ import com.hrznstudio.titanium.tab.TitaniumTab;
 import com.hrznstudio.titanium.util.RayTraceUtils;
 import com.hrznstudio.titanium.util.TileUtil;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
@@ -38,6 +40,7 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
@@ -55,6 +58,9 @@ import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.client.extensions.common.IClientItemExtensions;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import org.apache.commons.lang3.tuple.Pair;
@@ -68,7 +74,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-public class DrawerBlock extends RotatableBlock<DrawerTile> {
+public class DrawerBlock extends RotatableBlock<DrawerTile> implements Drawer {
 
     public static HashMap<FunctionalStorage.DrawerType, Multimap<Direction, VoxelShape>> CACHED_SHAPES = new HashMap<>();
 
@@ -188,6 +194,7 @@ public class DrawerBlock extends RotatableBlock<DrawerTile> {
        TileUtil.getTileEntity(worldIn, pos, DrawerTile.class).ifPresent(drawerTile -> drawerTile.onClicked(player, getHit(state, worldIn, pos, player)));
     }
 
+    @Override
     public int getHit(BlockState state, Level worldIn, BlockPos pos, Player player) {
         HitResult result = RayTraceUtils.rayTraceSimple(worldIn, player, 32, 0);
         if (result instanceof BlockHitResult) {
@@ -381,12 +388,14 @@ public class DrawerBlock extends RotatableBlock<DrawerTile> {
         return 0;
     }
 
+
     public static class DrawerItem extends BlockItem{
 
         private DrawerBlock drawerBlock;
-        public DrawerItem(DrawerBlock p_40565_, Properties p_40566_, TitaniumTab tab) {
-            super(p_40565_, p_40566_);
-            this.drawerBlock = p_40565_;
+
+        public DrawerItem(DrawerBlock drawerBlock, Properties properties, TitaniumTab tab) {
+            super(drawerBlock, properties);
+            this.drawerBlock = drawerBlock;
             tab.getTabList().add(this);
         }
 
@@ -400,6 +409,22 @@ public class DrawerBlock extends RotatableBlock<DrawerTile> {
         public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundTag nbt) {
             return new DrawerCapabilityProvider(stack, this.drawerBlock.getType());
         }
+
+        @OnlyIn(Dist.CLIENT)
+        @Override
+        public void initializeClient(Consumer<IClientItemExtensions> consumer) {
+            consumer.accept(new IClientItemExtensions() {
+                @Override
+                public BlockEntityWithoutLevelRenderer getCustomRenderer() {
+                    return switch (drawerBlock.getType()){
+                        case X_2 -> DrawerISTER.SLOT_2;
+                        case X_4 -> DrawerISTER.SLOT_4;
+                        default -> DrawerISTER.SLOT_1;
+                    };
+                }
+            });
+        }
+
     }
 
 

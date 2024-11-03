@@ -57,7 +57,7 @@ public class FunctionalStorageLangProvider extends LanguageProvider {
         this.add("storageupgrade.desc.fluid", "Multiplies the block fluid storage by ");
         this.add("storageupgrade.desc.range", "Increases controller radius by %s blocks");
         for (StorageUpgradeItem.StorageTier storageTier : FunctionalStorage.STORAGE_UPGRADES.keySet()) {
-            this.add(FunctionalStorage.STORAGE_UPGRADES.get(storageTier).get(), WordUtils.capitalize(storageTier.name().toLowerCase()) + (storageTier == StorageUpgradeItem.StorageTier.IRON ? " Downgrade" : " Upgrade"));
+            this.add(FunctionalStorage.STORAGE_UPGRADES.get(storageTier).get(), WordUtils.capitalize(storageTier.name().replace("_", " ").toLowerCase()) + (storageTier == StorageUpgradeItem.StorageTier.IRON ? " Downgrade" : " Upgrade"));
         }
         this.add(FunctionalStorage.COLLECTOR_UPGRADE.get(), WordUtils.capitalize(ForgeRegistries.ITEMS.getKey(FunctionalStorage.COLLECTOR_UPGRADE.get()).getPath().replace('_', ' ').toLowerCase()));
         this.add(FunctionalStorage.PULLING_UPGRADE.get(), WordUtils.capitalize(ForgeRegistries.ITEMS.getKey(FunctionalStorage.PULLING_UPGRADE.get()).getPath().replace('_', ' ').toLowerCase()));
@@ -73,7 +73,7 @@ public class FunctionalStorageLangProvider extends LanguageProvider {
         this.add("configurationtool.configmode", "Config Mode: ");
         this.add("configurationtool.configmode.locking", "Locking");
         this.add("configurationtool.configmode.toggle_numbers", "Hide/Show Amounts");
-        this.add("configurationtool.configmode.toggle_render", "Hide/Show Item Renders");
+        this.add("configurationtool.configmode.toggle_render", "Hide/Show Item/Fluid Renders");
         this.add("configurationtool.configmode.toggle_upgrades", "Hide/Show Upgrade Renders");
         this.add("configurationtool.configmode.indicator", "Swap indicator modes");
         this.add("configurationtool.configmode.indicator.mode_0", "Hidden");

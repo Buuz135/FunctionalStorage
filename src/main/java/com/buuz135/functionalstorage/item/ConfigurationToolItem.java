@@ -5,7 +5,6 @@ import com.buuz135.functionalstorage.block.tile.ControllableDrawerTile;
 import com.hrznstudio.titanium.item.BasicItem;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextColor;
@@ -14,14 +13,12 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import org.jetbrains.annotations.Nullable;
 
-import java.awt.*;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
@@ -109,12 +106,23 @@ public class ConfigurationToolItem extends BasicItem {
         return key == null;
     }
 
+    private static int getIntColorFromRgba(int r, int g, int b, int a) {
+        return ((a & 0xFF) << 24) |
+                ((r & 0xFF) << 16) |
+                ((g & 0xFF) << 8)  |
+                ((b & 0xFF));
+    }
+
+    private static int getIntColorFromRgb(int r, int g, int b) {
+        return getIntColorFromRgba(r, g, b, 255);
+    }
+
     public enum ConfigurationAction {
-        LOCKING(TextColor.fromRgb(new Color(40, 131, 250).getRGB()), 1),
-        TOGGLE_NUMBERS(TextColor.fromRgb(new Color(250, 145, 40).getRGB()), 1),
-        TOGGLE_RENDER(TextColor.fromRgb(new Color(100, 250, 40).getRGB()), 1),
-        TOGGLE_UPGRADES(TextColor.fromRgb(new Color(166, 40, 250).getRGB()), 1),
-        INDICATOR(TextColor.fromRgb(new Color(255, 40, 40).getRGB()), 3); //0 NO , 1 - PROGRESS, 2 - ONLY FULL, 3 - ONLY FULL WITHOUT BG
+        LOCKING(TextColor.fromRgb(getIntColorFromRgb(40, 131, 250)), 1),
+        TOGGLE_NUMBERS(TextColor.fromRgb(getIntColorFromRgb(250, 145, 40)), 1),
+        TOGGLE_RENDER(TextColor.fromRgb(getIntColorFromRgb(100, 250, 40)), 1),
+        TOGGLE_UPGRADES(TextColor.fromRgb(getIntColorFromRgb(166, 40, 250)), 1),
+        INDICATOR(TextColor.fromRgb(getIntColorFromRgb(255, 40, 40)), 3); //0 NO , 1 - PROGRESS, 2 - ONLY FULL, 3 - ONLY FULL WITHOUT BG
 
 
         private final TextColor color;
