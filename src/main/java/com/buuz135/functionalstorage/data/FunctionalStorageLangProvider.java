@@ -125,5 +125,10 @@ public class FunctionalStorageLangProvider extends LanguageProvider {
         this.add("drawer_upgrade.functionalstorage.relative_direction", "Relative direction: %s");
 
         this.add("config.jade.plugin_functionalstorage.drawer", "Functional Storage Drawers");
+
+        this.add("drawer.block.upgrades", "Upgrades:");
+        this.add("drawer.block.upgrades.is_creative", "Creative");
+        this.add("drawer.block.upgrades.is_void", "Void");
+        this.add("drawer.block.upgrades.none", "None");
     }
 }

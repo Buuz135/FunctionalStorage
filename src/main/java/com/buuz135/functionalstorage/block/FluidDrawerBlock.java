@@ -123,6 +123,20 @@ public class FluidDrawerBlock extends Drawer<FluidDrawerTile>{
                 if (!stack.isEmpty())
                     tooltip.add(Component.literal(" - " + ChatFormatting.YELLOW + NumberUtils.getFormatedFluidBigNumber(stack.getAmount()) + ChatFormatting.WHITE + " of ").append(stack.getHoverName().copy().withStyle(ChatFormatting.GOLD)));
             }
+            var tile = itemStack.get(FSAttachments.TILE);
+            tooltip.add(Component.translatable("drawer.block.upgrades").withStyle(ChatFormatting.GRAY));
+            var anyupgrade = false;
+            if (tile.contains("isCreative") && tile.getBoolean("isCreative")) {
+                tooltip.add(Component.literal("- ").withStyle(ChatFormatting.GRAY).append(Component.translatable("drawer.block.upgrades.is_creative").withStyle(ChatFormatting.LIGHT_PURPLE)));
+                anyupgrade = true;
+            }
+            if (tile.contains("isVoid") && tile.getBoolean("isVoid")) {
+                tooltip.add(Component.literal("- ").withStyle(ChatFormatting.GRAY).append(Component.translatable("drawer.block.upgrades.is_void").withStyle(ChatFormatting.BLUE)));
+                anyupgrade = true;
+            }
+            if (!anyupgrade) {
+                tooltip.add(Component.literal("- ").withStyle(ChatFormatting.GRAY).append(Component.translatable("drawer.block.upgrades.none").withStyle(ChatFormatting.GRAY)));
+            }
         }
         if (this instanceof FramedBlock) {
             tooltip.add(Component.translatable("frameddrawer.use").withStyle(ChatFormatting.GRAY));

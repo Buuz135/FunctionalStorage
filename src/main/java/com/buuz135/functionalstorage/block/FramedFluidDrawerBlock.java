@@ -3,24 +3,11 @@ package com.buuz135.functionalstorage.block;
 import com.buuz135.functionalstorage.FunctionalStorage;
 import com.buuz135.functionalstorage.block.tile.FluidDrawerTile;
 import com.buuz135.functionalstorage.block.tile.FramedFluidDrawerTile;
-import com.buuz135.functionalstorage.item.FSAttachments;
-import com.buuz135.functionalstorage.util.NumberUtils;
-import com.buuz135.functionalstorage.util.Utils;
 import com.hrznstudio.titanium.recipe.generator.TitaniumShapedRecipeBuilder;
-import net.minecraft.ChatFormatting;
 import net.minecraft.data.recipes.RecipeOutput;
-import net.minecraft.nbt.NbtOps;
-import net.minecraft.network.chat.Component;
-import net.minecraft.resources.RegistryOps;
-import net.minecraft.tags.ItemTags;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.neoforged.neoforge.fluids.FluidStack;
 
-import java.util.List;
 
 public class FramedFluidDrawerBlock extends FluidDrawerBlock implements FramedBlock{
 

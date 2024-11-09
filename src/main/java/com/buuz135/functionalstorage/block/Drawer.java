@@ -8,6 +8,7 @@ import com.buuz135.functionalstorage.block.tile.StorageControllerTile;
 import com.buuz135.functionalstorage.item.ConfigurationToolItem;
 import com.buuz135.functionalstorage.item.FSAttachments;
 import com.buuz135.functionalstorage.item.LinkingToolItem;
+import com.buuz135.functionalstorage.util.Utils;
 import com.hrznstudio.titanium.block.RotatableBlock;
 import com.hrznstudio.titanium.datagenerator.loot.block.BasicBlockLootTables;
 import com.hrznstudio.titanium.nbthandler.NBTManager;
@@ -18,6 +19,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.InteractionHand;
@@ -231,6 +234,20 @@ public abstract class Drawer<T extends ControllableDrawerTile<T>> extends Rotata
             tooltipComponents.add(text.withStyle(ChatFormatting.GRAY));
             tooltipComponents.add(Component.literal(""));
             tooltipComponents.add(Component.literal(""));
+            CompoundTag tile = stack.get(FSAttachments.TILE);
+            tooltipComponents.add(Component.translatable("drawer.block.upgrades").withStyle(ChatFormatting.GRAY));
+            var anyupgrade = false;
+            if (tile.contains("isCreative") && tile.getBoolean("isCreative")) {
+                tooltipComponents.add(Component.literal("- ").withStyle(ChatFormatting.GRAY).append(Component.translatable("drawer.block.upgrades.is_creative").withStyle(ChatFormatting.LIGHT_PURPLE)));
+                anyupgrade = true;
+            }
+            if (tile.contains("isVoid") && tile.getBoolean("isVoid")) {
+                tooltipComponents.add(Component.literal("- ").withStyle(ChatFormatting.GRAY).append(Component.translatable("drawer.block.upgrades.is_void").withStyle(ChatFormatting.BLUE)));
+                anyupgrade = true;
+            }
+            if (!anyupgrade) {
+                tooltipComponents.add(Component.literal("- ").withStyle(ChatFormatting.GRAY).append(Component.translatable("drawer.block.upgrades.none").withStyle(ChatFormatting.GRAY)));
+            }
         }
 
         if (this instanceof FramedBlock) {
