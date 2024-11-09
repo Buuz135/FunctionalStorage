@@ -49,6 +49,8 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
     @Save
     private boolean isVoid = false;
     @Save
+    private boolean isStorageUpgradeLocked = false;
+    @Save
     private int mult = 1;
 
     public ControllableDrawerTile(BasicTileBlock<T> base, BlockEntityType<T> entityType, BlockPos pos, BlockState state) {
@@ -344,6 +346,10 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
     @Override
     public int getTitleColor() {
         return ChatFormatting.DARK_GRAY.getColor();
+    }
+
+    public boolean isStorageUpgradeLocked() {
+        return isStorageUpgradeLocked;
     }
 
     public static class DrawerOptions implements INBTSerializable<CompoundTag> {

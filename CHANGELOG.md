@@ -1,3 +1,7 @@
+# VERSION 1.3.6
+* Drawers now show up if they are creative or void in their tooltip
+* Added nbt value to drawers to lock the storage upgrades slot
+
 # VERSION 1.3.5
 * Increased controller range render a bit to avoid Z-Fighting
 * Fixed Framing recipe changing the original value

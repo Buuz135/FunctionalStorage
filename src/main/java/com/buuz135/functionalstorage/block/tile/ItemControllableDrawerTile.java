@@ -176,6 +176,7 @@ public abstract class ItemControllableDrawerTile<T extends ItemControllableDrawe
             @NotNull
             @Override
             public ItemStack extractItem(int slot, int amount, boolean simulate) {
+                if (isStorageUpgradeLocked()) return ItemStack.EMPTY;
                 ItemStack stack = this.getStackInSlot(slot);
                 if (stack.getItem() instanceof StorageUpgradeItem) {
                     int mult = 1;
@@ -200,6 +201,7 @@ public abstract class ItemControllableDrawerTile<T extends ItemControllableDrawe
             }
         }
                 .setInputFilter((stack, integer) -> {
+                    if (isStorageUpgradeLocked()) return false;
                     if (stack.getItem().equals(FunctionalStorage.STORAGE_UPGRADES.get(StorageUpgradeItem.StorageTier.IRON).get())) {
                         for (int i = 0; i < getStorage().getSlots(); i++) {
                             if (getStorage().getStackInSlot(i).getCount() > 64) {

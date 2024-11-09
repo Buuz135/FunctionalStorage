@@ -279,6 +279,7 @@ public class FluidDrawerTile extends ControllableDrawerTile<FluidDrawerTile> {
             @NotNull
             @Override
             public ItemStack extractItem(int slot, int amount, boolean simulate) {
+                if (isStorageUpgradeLocked()) return ItemStack.EMPTY;
                 ItemStack stack = this.getStackInSlot(slot);
                 if (stack.getItem() instanceof StorageUpgradeItem) {
                     int mult = 1;
@@ -303,6 +304,7 @@ public class FluidDrawerTile extends ControllableDrawerTile<FluidDrawerTile> {
             }
         }
                 .setInputFilter((stack, integer) -> {
+                    if (isStorageUpgradeLocked()) return false;
                     if (stack.getItem().equals(FunctionalStorage.STORAGE_UPGRADES.get(StorageUpgradeItem.StorageTier.IRON).get())) {
                         return false;
                     }
