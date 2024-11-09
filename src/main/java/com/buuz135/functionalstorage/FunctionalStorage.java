@@ -443,11 +443,11 @@ public class FunctionalStorage extends ModuleController {
             }
             var iItemHandler = itemTooltipEvent.getItemStack().getCapability(Capabilities.ItemHandler.ITEM);
             if (iItemHandler != null) {
-                if (iItemHandler instanceof DrawerStackItemHandler) {
+                if (iItemHandler instanceof DrawerStackItemHandler drawerStackItemHandler) {
                     int i = 0;
                     for (BigInventoryHandler.BigStack storedStack : ((DrawerStackItemHandler) iItemHandler).getStoredStacks()) {
                         if (storedStack.getStack().getItem() != Items.AIR) {
-                            TooltipUtil.renderItemAdvanced(itemTooltipEvent.getGraphics(), storedStack.getStack(), itemTooltipEvent.getX() + 20 + 32 * i, itemTooltipEvent.getY() + 11, 512, NumberUtils.getFormatedBigNumber(storedStack.getAmount()) + "/" + NumberUtils.getFormatedBigNumber(iItemHandler.getSlotLimit(i)));
+                            TooltipUtil.renderItemAdvanced(itemTooltipEvent.getGraphics(), storedStack.getStack(), itemTooltipEvent.getX() + 20 + 32 * i, itemTooltipEvent.getY() + 11, 512, NumberUtils.getFormatedBigNumber(drawerStackItemHandler.isCreative() ? Integer.MAX_VALUE : storedStack.getAmount()));
                             ++i;
                         }
                     }

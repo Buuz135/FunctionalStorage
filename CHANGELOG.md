@@ -1,6 +1,7 @@
 # VERSION 1.3.6
 * Drawers now show up if they are creative or void in their tooltip
 * Added nbt value to drawers to lock the storage upgrades slot
+* Fixed a couple edge cases where the creative upgrade max value wasn't showing
 
 # VERSION 1.3.5
 * Increased controller range render a bit to avoid Z-Fighting

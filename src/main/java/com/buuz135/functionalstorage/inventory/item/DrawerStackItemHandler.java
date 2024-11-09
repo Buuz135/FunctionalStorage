@@ -28,6 +28,7 @@ public class DrawerStackItemHandler implements IItemHandler, INBTSerializable<Co
     private int multiplier;
     private boolean downgrade;
     private boolean isVoid;
+    private boolean isCreative;
 
     public DrawerStackItemHandler(ItemStack stack, FunctionalStorage.DrawerType drawerType) {
         this.stack = stack;
@@ -36,11 +37,13 @@ public class DrawerStackItemHandler implements IItemHandler, INBTSerializable<Co
         this.multiplier = 1;
         this.downgrade = false;
         this.isVoid = false;
+        this.isCreative = false;
         for (int i = 0; i < drawerType.getSlots(); i++) {
             this.storedStacks.add(i, new BigInventoryHandler.BigStack(ItemStack.EMPTY, 0));
         }
         if (stack.has(FSAttachments.TILE)) {
             var tile = stack.get(FSAttachments.TILE);
+            this.isCreative = tile.contains("isCreative") && tile.getBoolean("isCreative");
             var access = Utils.registryAccess();
             deserializeNBT(access, tile.getCompound("handler"));
             for (Tag tag : tile.getCompound("storageUpgrades").getList("Items", Tag.TAG_COMPOUND)) {
@@ -93,6 +96,9 @@ public class DrawerStackItemHandler implements IItemHandler, INBTSerializable<Co
     @Override
     public ItemStack getStackInSlot(int slot) {
         BigStack bigStack = this.storedStacks.get(slot);
+        if (isCreative) {
+            return bigStack.getStack().copyWithCount(Integer.MAX_VALUE);
+        }
         ItemStack copied = bigStack.getStack().copy();
         copied.setCount(bigStack.getAmount());
         return copied;
@@ -167,6 +173,7 @@ public class DrawerStackItemHandler implements IItemHandler, INBTSerializable<Co
 
     @Override
     public int getSlotLimit(int slot) {
+        if (isCreative) return Integer.MAX_VALUE;
         var slotAmount = type.getSlotAmount();
         if (hasDowngrade()) slotAmount = 64;
         return (int) Math.min(Integer.MAX_VALUE, slotAmount * (long) getMultiplier());
@@ -187,5 +194,9 @@ public class DrawerStackItemHandler implements IItemHandler, INBTSerializable<Co
 
     public List<BigStack> getStoredStacks() {
         return storedStacks;
+    }
+
+    public boolean isCreative() {
+        return isCreative;
     }
 }

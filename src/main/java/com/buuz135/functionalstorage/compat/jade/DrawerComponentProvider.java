@@ -65,7 +65,7 @@ public enum DrawerComponentProvider implements IBlockComponentProvider {
                     for (int slot = 0; slot < bigInv.getStoredStacks().size(); slot++) {
                         var stack = bigInv.getStoredStacks().get(slot);
                         if (stack.getStack().getItem() != Items.AIR) {
-                            stacks.add(new Pair<>(stack.getStack().copyWithCount(stack.getAmount()), bigInv.getSlotLimit(slot)));
+                            stacks.add(new Pair<>(stack.getStack().copyWithCount(bigInv.isCreative() ? Integer.MAX_VALUE : stack.getAmount()), bigInv.getSlotLimit(slot)));
                         }
                     }
                 } else if (tile.getStorage() instanceof CompactingInventoryHandler compacting) {
@@ -73,7 +73,7 @@ public enum DrawerComponentProvider implements IBlockComponentProvider {
                     for (int i = 0; i < results.size(); i++) {
                         var result = results.get(i);
                         if (result.getResult().getItem() != Items.AIR) {
-                            stacks.add(new Pair<>(result.getResult().copyWithCount(compacting.getStackInSlot(i).getCount()), compacting.getSlotLimit(i)));
+                            stacks.add(new Pair<>(result.getResult().copyWithCount(compacting.isCreative() ? Integer.MAX_VALUE :compacting.getStackInSlot(i).getCount()), compacting.getSlotLimit(i)));
                         }
                     }
                 }
