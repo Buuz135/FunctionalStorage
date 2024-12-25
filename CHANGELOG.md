@@ -1,3 +1,6 @@
+# VERSION 1.3.7
+* Add upgrade stack to `FunctionalUpgradeItem#work` by Matyrobbrt
+
 # VERSION 1.3.6
 * Drawers now show up if they are creative or void in their tooltip
 * Added nbt value to drawers to lock the storage upgrades slot
