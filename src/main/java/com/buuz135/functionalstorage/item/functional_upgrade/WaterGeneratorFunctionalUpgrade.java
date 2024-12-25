@@ -3,6 +3,7 @@ package com.buuz135.functionalstorage.item.functional_upgrade;
 import com.buuz135.functionalstorage.item.FunctionalUpgradeItem;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.capabilities.Capabilities;
@@ -16,8 +17,8 @@ public class WaterGeneratorFunctionalUpgrade extends FunctionalUpgradeItem {
     }
 
     @Override
-    public void work(Level level, BlockPos pos) {
-        super.work(level, pos);
+    public void work(Level level, BlockPos pos, ItemStack stack) {
+        super.work(level, pos, stack);
         var capability = level.getCapability(Capabilities.FluidHandler.BLOCK, pos, Direction.UP);
         if (capability != null){
             capability.fill(new FluidStack(Fluids.WATER, 2000), IFluidHandler.FluidAction.EXECUTE);

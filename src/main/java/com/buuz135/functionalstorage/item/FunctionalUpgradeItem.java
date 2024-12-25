@@ -3,6 +3,7 @@ package com.buuz135.functionalstorage.item;
 import com.buuz135.functionalstorage.FunctionalStorage;
 import com.hrznstudio.titanium.item.BasicItem;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 
 public class FunctionalUpgradeItem extends BasicItem {
@@ -12,7 +13,7 @@ public class FunctionalUpgradeItem extends BasicItem {
         setItemGroup(FunctionalStorage.TAB);
     }
 
-    public void work(Level level, BlockPos pos) {
+    public void work(Level level, BlockPos pos, ItemStack upgradeStack) {
 
     }
 }
