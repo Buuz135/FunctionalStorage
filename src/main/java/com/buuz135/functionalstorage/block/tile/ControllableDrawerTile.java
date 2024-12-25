@@ -137,7 +137,7 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
                 if (!stack.isEmpty()) {
                     Item item = stack.getItem();
                     if (item instanceof FunctionalUpgradeItem functionalUpgradeItem){
-                        functionalUpgradeItem.work(this.level, this.getBlockPos());
+                        functionalUpgradeItem.work(this.level, this.getBlockPos(), stack);
                     }
                 }
             }

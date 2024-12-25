@@ -19,8 +19,8 @@ public class ObsidianGeneratorFunctionalUpgrade extends FunctionalUpgradeItem {
     }
 
     @Override
-    public void work(Level level, BlockPos pos) {
-        super.work(level, pos);
+    public void work(Level level, BlockPos pos, ItemStack stack) {
+        super.work(level, pos, stack);
         if (level.getGameTime() % 300 == 0) {
             var capability = level.getCapability(Capabilities.ItemHandler.BLOCK, pos, Direction.UP);
             if (capability != null){
