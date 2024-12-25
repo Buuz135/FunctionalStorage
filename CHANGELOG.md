@@ -1,5 +1,6 @@
 # VERSION 1.3.7
 * Add upgrade stack to `FunctionalUpgradeItem#work` by Matyrobbrt
+* Create ja_jp.json by suthibu
 
 # VERSION 1.3.6
 * Drawers now show up if they are creative or void in their tooltip
