@@ -97,7 +97,7 @@ public interface SizeProvider {
 
         @Override
         public float applyBaseModifier(float source) {
-            return source;
+            return amount;
         }
 
         @Override

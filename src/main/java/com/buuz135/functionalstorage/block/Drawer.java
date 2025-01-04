@@ -3,12 +3,10 @@ package com.buuz135.functionalstorage.block;
 import com.buuz135.functionalstorage.FunctionalStorage;
 import com.buuz135.functionalstorage.block.tile.ControllableDrawerTile;
 import com.buuz135.functionalstorage.block.tile.FramedTile;
-import com.buuz135.functionalstorage.block.tile.ItemControllableDrawerTile;
 import com.buuz135.functionalstorage.block.tile.StorageControllerTile;
 import com.buuz135.functionalstorage.item.ConfigurationToolItem;
 import com.buuz135.functionalstorage.item.FSAttachments;
 import com.buuz135.functionalstorage.item.LinkingToolItem;
-import com.buuz135.functionalstorage.util.Utils;
 import com.hrznstudio.titanium.block.RotatableBlock;
 import com.hrznstudio.titanium.datagenerator.loot.block.BasicBlockLootTables;
 import com.hrznstudio.titanium.nbthandler.NBTManager;
@@ -19,8 +17,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.InteractionHand;
@@ -47,7 +43,6 @@ import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import org.checkerframework.checker.units.qual.C;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
@@ -200,7 +195,8 @@ public abstract class Drawer<T extends ControllableDrawerTile<T>> extends Rotata
         if (tile != null) {
             for (int i = 0; i < tile.getUtilityUpgrades().getSlots(); i++) {
                 ItemStack stack = tile.getUtilityUpgrades().getStackInSlot(i);
-                if (stack.is(FunctionalStorage.REDSTONE_UPGRADE.get())) {
+                var comp = stack.get(FSAttachments.FUNCTIONAL_BEHAVIOR);
+                if (comp != null && comp.canConnectRedstone(tile.getLevel(), pos, state, tile, direction, stack, i)) {
                     return true;
                 }
             }
@@ -209,16 +205,16 @@ public abstract class Drawer<T extends ControllableDrawerTile<T>> extends Rotata
     }
 
     @Override
-    public int getSignal(BlockState p_60483_, BlockGetter blockGetter, BlockPos blockPos, Direction p_60486_) {
-        ItemControllableDrawerTile<?> tile = TileUtil.getTileEntity(blockGetter, blockPos, ItemControllableDrawerTile.class).orElse(null);
+    public int getSignal(BlockState state, BlockGetter blockGetter, BlockPos blockPos, Direction dir) {
+        ControllableDrawerTile<?> tile = TileUtil.getTileEntity(blockGetter, blockPos, ControllableDrawerTile.class).orElse(null);
         if (tile != null){
             for (int i = 0; i < tile.getUtilityUpgrades().getSlots(); i++) {
                 ItemStack stack = tile.getUtilityUpgrades().getStackInSlot(i);
-                if (stack.getItem().equals(FunctionalStorage.REDSTONE_UPGRADE.get())){
-                    int redstoneSlot = stack.getOrDefault(FSAttachments.SLOT, 0);
-                    if (redstoneSlot < tile.getStorage().getSlots()) {
-                        int amount = tile.getStorage().getStackInSlot(redstoneSlot).getCount() * 14 / tile.getStorage().getSlotLimit(redstoneSlot);
-                        return amount + (amount > 0 ? 1 : 0);
+                var comp = stack.get(FSAttachments.FUNCTIONAL_BEHAVIOR);
+                if (comp != null) {
+                    var signal = comp.getRedstoneSignal(tile.getLevel(), blockPos, state, tile, dir, stack, i);
+                    if (signal >= 0) {
+                        return signal;
                     }
                 }
             }

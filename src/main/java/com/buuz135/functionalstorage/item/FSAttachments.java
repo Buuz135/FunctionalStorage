@@ -1,15 +1,19 @@
 package com.buuz135.functionalstorage.item;
 
 import com.buuz135.functionalstorage.FunctionalStorage;
+import com.buuz135.functionalstorage.item.component.FunctionalUpgradeBehavior;
 import com.buuz135.functionalstorage.item.component.SizeProvider;
 import com.google.common.base.Suppliers;
 import com.mojang.serialization.Codec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderSet;
+import net.minecraft.core.RegistryCodecs;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Unit;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
@@ -46,8 +50,11 @@ public class FSAttachments {
     public static final Supplier<DataComponentType<SizeProvider>> FLUID_STORAGE_MODIFIER = register("fluid_storage_modifier", SizeProvider.CODEC);
     public static final Supplier<DataComponentType<SizeProvider>> CONTROLLER_RANGE_MODIFIER = register("controller_range_modifier", SizeProvider.CODEC);
 
+    public static final Supplier<DataComponentType<FunctionalUpgradeBehavior>> FUNCTIONAL_BEHAVIOR = register("functional_upgrade_behavior", FunctionalUpgradeBehavior.CODEC);
+    public static final Supplier<DataComponentType<HolderSet<Item>>> INCOMPATIBLE_UPGRADES = register("incompatible_upgrades", RegistryCodecs.homogeneousList(Registries.ITEM));
+
     private static <T> Supplier<DataComponentType<T>> register(String name, Codec<T> codec) {
-        return DR.register(name, () -> DataComponentType.<T>builder().persistent(codec).build())::get;
+        return DR.register(name, () -> DataComponentType.<T>builder().persistent(codec).build());
     }
 
     private static <T> ComponentSupplier<T> register(String name, Supplier<T> defaultVal, UnaryOperator<DataComponentType.Builder<T>> op) {

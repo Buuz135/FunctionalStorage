@@ -1,9 +1,7 @@
 package com.buuz135.functionalstorage.block.tile;
 
 import com.buuz135.functionalstorage.FunctionalStorage;
-import com.buuz135.functionalstorage.block.config.FunctionalStorageConfig;
 import com.buuz135.functionalstorage.item.FSAttachments;
-import com.buuz135.functionalstorage.item.UpgradeItem;
 import com.buuz135.functionalstorage.item.component.SizeProvider;
 import com.hrznstudio.titanium.block.BasicTileBlock;
 import com.hrznstudio.titanium.component.inventory.InventoryComponent;
@@ -14,19 +12,15 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.ItemInteractionResult;
-import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
 import org.jetbrains.annotations.NotNull;
@@ -54,76 +48,6 @@ public abstract class ItemControllableDrawerTile<T extends ItemControllableDrawe
     public void serverTick(Level level, BlockPos pos, BlockState state, T blockEntity) {
         super.serverTick(level, pos, state, blockEntity);
         this.removeTicks = Math.max(this.removeTicks - 1, 0);
-        if (level.getGameTime() % FunctionalStorageConfig.UPGRADE_TICK == 0) {
-            if (getUtilitySlotAmount() > 0){
-                for (int i = 0; i < this.getUtilityUpgrades().getSlots(); i++) {
-                    ItemStack stack = this.getUtilityUpgrades().getStackInSlot(i);
-                    if (!stack.isEmpty()) {
-                        Item item = stack.getItem();
-                        if (item.equals(FunctionalStorage.PULLING_UPGRADE.get())) {
-                            Direction direction = UpgradeItem.getDirection(stack);
-                            var iItemHandler = level.getCapability(Capabilities.ItemHandler.BLOCK, pos.relative(direction), direction.getOpposite());
-                            if (iItemHandler != null) {
-                                for (int otherSlot = 0; otherSlot < iItemHandler.getSlots(); otherSlot++) {
-                                    ItemStack pulledStack = iItemHandler.extractItem(otherSlot, FunctionalStorageConfig.UPGRADE_PULL_ITEMS, true);
-                                    if (pulledStack.isEmpty()) continue;
-                                    boolean hasWorked = false;
-                                    for (int ourSlot = 0; ourSlot < this.getStorage().getSlots(); ourSlot++) {
-                                        ItemStack simulated = getStorage().insertItem(ourSlot, pulledStack, true);
-                                        if (!simulated.equals(pulledStack)) {
-                                            ItemStack extracted = iItemHandler.extractItem(otherSlot, pulledStack.getCount() - simulated.getCount(), false);
-                                            getStorage().insertItem(ourSlot, extracted, false);
-                                            hasWorked = true;
-                                            break;
-                                        }
-                                    }
-                                    if (hasWorked) break;
-                                }
-                            }
-                        } else if (item.equals(FunctionalStorage.PUSHING_UPGRADE.get())) {
-                            Direction direction = UpgradeItem.getDirection(stack);
-                            var otherHandler = level.getCapability(Capabilities.ItemHandler.BLOCK, pos.relative(direction), direction.getOpposite());
-                            if (otherHandler != null) {
-                                for (int drawerSlot = 0; drawerSlot < getStorage().getSlots(); drawerSlot++) {
-                                    ItemStack pulledStack = getStorage().extractItem(drawerSlot, FunctionalStorageConfig.UPGRADE_PUSH_ITEMS, true);
-                                    if (pulledStack.isEmpty()) continue;
-                                    boolean hasWorked = false;
-                                    for (int destinationSlot = 0; destinationSlot < otherHandler.getSlots(); destinationSlot++) {
-                                        if (otherHandler.getStackInSlot(destinationSlot).getCount() >= otherHandler.getSlotLimit(destinationSlot))
-                                            continue;
-                                        ItemStack simulated = otherHandler.insertItem(destinationSlot, pulledStack, true);
-                                        if (simulated.getCount() <= pulledStack.getCount()) {
-                                            otherHandler.insertItem(destinationSlot, getStorage().extractItem(drawerSlot, pulledStack.getCount() - simulated.getCount(), false), false);
-                                            hasWorked = true;
-                                            break;
-                                        }
-                                    }
-                                    if (hasWorked) break;
-                                }
-                            }
-                        } else if (item.equals(FunctionalStorage.COLLECTOR_UPGRADE.get())) {
-                            Direction direction = UpgradeItem.getDirection(stack);
-                            AABB box = new AABB(pos.relative(direction));
-                            for (ItemEntity entitiesOfClass : level.getEntitiesOfClass(ItemEntity.class, box)) {
-                                ItemStack pulledStack = entitiesOfClass.getItem().copyWithCount(Math.min(entitiesOfClass.getItem().getCount(), FunctionalStorageConfig.UPGRADE_COLLECTOR_ITEMS));
-                                if (pulledStack.isEmpty()) continue;
-                                boolean hasWorked = false;
-                                for (int ourSlot = 0; ourSlot < this.getStorage().getSlots(); ourSlot++) {
-                                    ItemStack simulated = getStorage().insertItem(ourSlot, pulledStack, true);
-                                    if (simulated.getCount() != pulledStack.getCount()) {
-                                        getStorage().insertItem(ourSlot, entitiesOfClass.getItem().copyWithCount(pulledStack.getCount() - simulated.getCount()), false);
-                                        entitiesOfClass.getItem().shrink(pulledStack.getCount() - simulated.getCount());
-                                        hasWorked = true;
-                                        break;
-                                    }
-                                }
-                                if (hasWorked) break;
-                            }
-                        }
-                    }
-                }
-            }
-        }
     }
 
     @Override
@@ -168,8 +92,6 @@ public abstract class ItemControllableDrawerTile<T extends ItemControllableDrawe
     }
 
     public abstract IItemHandler getStorage();
-
-    public abstract int getBaseSize(int lost);
 
     @Override
     public InventoryComponent<ControllableDrawerTile<T>> getStorageUpgradesConstructor() {

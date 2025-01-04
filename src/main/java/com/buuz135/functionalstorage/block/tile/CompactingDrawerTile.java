@@ -120,11 +120,6 @@ public class CompactingDrawerTile extends ItemControllableDrawerTile<CompactingD
         return handler;
     }
 
-    @Override
-    public int getBaseSize(int slot) {
-        return handler.getSlotLimitBase(slot);
-    }
-
     @NotNull
     @Override
     public CompactingDrawerTile getSelf() {

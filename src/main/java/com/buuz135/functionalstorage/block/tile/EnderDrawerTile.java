@@ -12,7 +12,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -153,11 +152,6 @@ public class EnderDrawerTile extends ItemControllableDrawerTile<EnderDrawerTile>
             }
         }
         return true;
-    }
-
-    @Override
-    public int getBaseSize(int lost) {
-        return 1;
     }
 
     public void setFrequency(String frequency) {

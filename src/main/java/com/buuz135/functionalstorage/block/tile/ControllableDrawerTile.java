@@ -3,7 +3,7 @@ package com.buuz135.functionalstorage.block.tile;
 import com.buuz135.functionalstorage.FunctionalStorage;
 import com.buuz135.functionalstorage.block.DrawerBlock;
 import com.buuz135.functionalstorage.item.ConfigurationToolItem;
-import com.buuz135.functionalstorage.item.FunctionalUpgradeItem;
+import com.buuz135.functionalstorage.item.FSAttachments;
 import com.buuz135.functionalstorage.item.LinkingToolItem;
 import com.buuz135.functionalstorage.item.UpgradeItem;
 import com.buuz135.functionalstorage.item.component.SizeProvider;
@@ -71,14 +71,15 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
         if (getUtilitySlotAmount() > 0){
             this.addInventory((InventoryComponent<T>) (this.utilityUpgrades = new InventoryComponent<ControllableDrawerTile<T>>("utility_upgrades", 114, 70, getUtilitySlotAmount())
                             .setInputFilter((stack, integer) -> {
-                                if (stack.is(FunctionalStorage.VOID_UPGRADE)) {
-                                    for (int i = 0; i < utilityUpgrades.getSlots(); i++) {
-                                        if (utilityUpgrades.getStackInSlot(i).is(FunctionalStorage.VOID_UPGRADE)) {
-                                            return false;
-                                        }
+                                var incompatIn = stack.get(FSAttachments.INCOMPATIBLE_UPGRADES);
+                                for (int i = 0; i < utilityUpgrades.getSlots(); i++) {
+                                    var upgrade = utilityUpgrades.getStackInSlot(i);
+                                    var incompatOnUpgrade = upgrade.get(FSAttachments.INCOMPATIBLE_UPGRADES);
+                                    if ((incompatIn != null && upgrade.is(incompatIn)) || (incompatOnUpgrade != null && stack.is(incompatOnUpgrade))) {
+                                        return false;
                                     }
                                 }
-                                return (stack.getItem() instanceof UpgradeItem && ((UpgradeItem) stack.getItem()).getType() == UpgradeItem.Type.UTILITY) || stack.getItem() instanceof FunctionalUpgradeItem;
+                                return (stack.getItem() instanceof UpgradeItem && ((UpgradeItem) stack.getItem()).getType() == UpgradeItem.Type.UTILITY) || stack.has(FSAttachments.FUNCTIONAL_BEHAVIOR);
                             })
                             .setSlotLimit(1)
                             .setOnSlotChanged((itemStack, integer) -> {
@@ -142,27 +143,13 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
     @Override
     public void serverTick(Level level, BlockPos pos, BlockState state, T blockEntity) {
         super.serverTick(level, pos, state, blockEntity);
-        if (level.getGameTime() % 20 == 0) {
-            if (getUtilitySlotAmount() > 0){
-                for (int i = 0; i < this.utilityUpgrades.getSlots(); i++) {
-                    ItemStack stack = this.utilityUpgrades.getStackInSlot(i);
-                    if (!stack.isEmpty()) {
-                        Item item = stack.getItem();
-                        if (item.equals(FunctionalStorage.REDSTONE_UPGRADE.get())) {
-                            level.updateNeighborsAt(this.getBlockPos(), this.getBasicTileBlock());
-                            break;
-                        }
-                    }
-                }
-            }
-        }
         if (getUtilitySlotAmount() > 0){
             for (int i = 0; i < this.utilityUpgrades.getSlots(); i++) {
                 ItemStack stack = this.utilityUpgrades.getStackInSlot(i);
                 if (!stack.isEmpty()) {
-                    Item item = stack.getItem();
-                    if (item instanceof FunctionalUpgradeItem functionalUpgradeItem){
-                        functionalUpgradeItem.work(this.level, this.getBlockPos(), stack);
+                    var comp = stack.get(FSAttachments.FUNCTIONAL_BEHAVIOR);
+                    if (comp != null) {
+                        comp.work(this.level, getBlockPos(), this, stack, i);
                     }
                 }
             }
@@ -211,41 +198,31 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
         if (stack.getItem().equals(FunctionalStorage.CONFIGURATION_TOOL.get()) || stack.getItem().equals(FunctionalStorage.LINKING_TOOL.get()))
             return InteractionResult.PASS;
 
-        var comp = stack.get(sizeUpgradeComponent);
+        var sizeComp = stack.get(sizeUpgradeComponent);
+        var funcComp = stack.get(FSAttachments.FUNCTIONAL_BEHAVIOR);
 
-        if (!stack.isEmpty() && (comp != null || stack.getItem() instanceof UpgradeItem)) {
-            if (stack.has(sizeUpgradeComponent) || stack.is(FunctionalStorage.CREATIVE_UPGRADE.get())) {
-                InventoryComponent component = storageUpgrades;
-                for (int i = 0; i < component.getSlots(); i++) {
-                    if (component.getStackInSlot(i).isEmpty() && component.isItemValid(i, stack)) {
-                        playerIn.setItemInHand(hand, component.insertItem(i, stack, false));
-                        return InteractionResult.SUCCESS;
-                    }
+        if (sizeComp != null || stack.is(FunctionalStorage.CREATIVE_UPGRADE.get())) {
+            InventoryComponent component = storageUpgrades;
+            for (int i = 0; i < component.getSlots(); i++) {
+                if (component.getStackInSlot(i).isEmpty() && component.isItemValid(i, stack)) {
+                    playerIn.setItemInHand(hand, component.insertItem(i, stack, false));
+                    return InteractionResult.SUCCESS;
                 }
+            }
 
-                if (comp != null) {
-                    for (int i = 0; i < component.getSlots(); i++) {
-                        if (!component.getStackInSlot(i).isEmpty() && component.isItemValid(i, stack) && component.getStackInSlot(i).has(sizeUpgradeComponent) && component.getStackInSlot(i).get(sizeUpgradeComponent).applyFactorModifier(1f) < comp.applyFactorModifier(1f)) {
-                            ItemHandlerHelper.giveItemToPlayer(playerIn, component.getStackInSlot(i).copy());
-                            ItemStack upgradeStack = stack.copy();
-                            upgradeStack.setCount(1);
-                            component.setStackInSlot(i, upgradeStack);
-                            stack.shrink(1);
-                            return InteractionResult.SUCCESS;
-                        }
-                    }
-                }
-            } else {
-                InventoryComponent component = utilityUpgrades;
+            if (sizeComp != null) {
                 for (int i = 0; i < component.getSlots(); i++) {
-                    if (component.getStackInSlot(i).isEmpty() && component.isItemValid(i, stack)) {
-                        playerIn.setItemInHand(hand, component.insertItem(i, stack, false));
+                    if (!component.getStackInSlot(i).isEmpty() && component.isItemValid(i, stack) && component.getStackInSlot(i).has(sizeUpgradeComponent) && component.getStackInSlot(i).get(sizeUpgradeComponent).applyFactorModifier(1f) < sizeComp.applyFactorModifier(1f)) {
+                        ItemHandlerHelper.giveItemToPlayer(playerIn, component.getStackInSlot(i).copy());
+                        ItemStack upgradeStack = stack.copy();
+                        upgradeStack.setCount(1);
+                        component.setStackInSlot(i, upgradeStack);
+                        stack.shrink(1);
                         return InteractionResult.SUCCESS;
                     }
                 }
             }
-        }
-        if (stack.getItem() instanceof FunctionalUpgradeItem) {
+        } else if (funcComp != null || (stack.getItem() instanceof UpgradeItem ui && ui.getType() == UpgradeItem.Type.UTILITY)) {
             InventoryComponent component = utilityUpgrades;
             for (int i = 0; i < component.getSlots(); i++) {
                 if (component.getStackInSlot(i).isEmpty() && component.isItemValid(i, stack)) {
@@ -272,8 +249,6 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
     public void onClicked(Player playerIn, int slot) {
 
     }
-
-    public abstract int getBaseSize(int lost);
 
     private void maybeCacheUpgrades() {
         if (needsUpgradeCache) {

@@ -160,11 +160,6 @@ public abstract class StorageControllerTile<T extends StorageControllerTile<T>> 
     }
 
     @Override
-    public int getBaseSize(int lost) {
-        return 1;
-    }
-
-    @Override
     public void toggleLocking() {
         super.toggleLocking();
         if (isServer()) {

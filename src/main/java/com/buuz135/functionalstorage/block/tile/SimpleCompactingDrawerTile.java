@@ -9,7 +9,6 @@ import com.hrznstudio.titanium.annotation.Save;
 import com.hrznstudio.titanium.block.BasicTileBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -121,11 +120,6 @@ public class SimpleCompactingDrawerTile extends ItemControllableDrawerTile<Simpl
         return handler;
     }
 
-
-    @Override
-    public int getBaseSize(int slot) {
-        return handler.getSlotLimitBase(slot);
-    }
 
     @NotNull
     @Override
