@@ -3,6 +3,7 @@ package com.buuz135.functionalstorage.block.tile;
 import com.buuz135.functionalstorage.FunctionalStorage;
 import com.buuz135.functionalstorage.client.gui.DrawerInfoGuiAddon;
 import com.buuz135.functionalstorage.inventory.EnderInventoryHandler;
+import com.buuz135.functionalstorage.item.FSAttachments;
 import com.buuz135.functionalstorage.network.EnderDrawerSyncMessage;
 import com.buuz135.functionalstorage.world.EnderSavedData;
 import com.hrznstudio.titanium.annotation.Save;
@@ -34,7 +35,7 @@ public class EnderDrawerTile extends ItemControllableDrawerTile<EnderDrawerTile>
     private IItemHandler storage;
 
     public EnderDrawerTile(BasicTileBlock<EnderDrawerTile> base, BlockEntityType<EnderDrawerTile> blockEntityType, BlockPos pos, BlockState state) {
-        super(base, blockEntityType, pos, state);
+        super(base, blockEntityType, pos, state, new DrawerProperties(32, FSAttachments.ITEM_STORAGE_MODIFIER));
         this.frequency = UUID.randomUUID().toString();
     }
 

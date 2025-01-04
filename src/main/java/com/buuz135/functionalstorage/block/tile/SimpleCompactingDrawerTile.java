@@ -3,6 +3,7 @@ package com.buuz135.functionalstorage.block.tile;
 import com.buuz135.functionalstorage.FunctionalStorage;
 import com.buuz135.functionalstorage.client.gui.DrawerInfoGuiAddon;
 import com.buuz135.functionalstorage.inventory.CompactingInventoryHandler;
+import com.buuz135.functionalstorage.item.FSAttachments;
 import com.buuz135.functionalstorage.util.CompactingUtil;
 import com.hrznstudio.titanium.annotation.Save;
 import com.hrznstudio.titanium.block.BasicTileBlock;
@@ -29,7 +30,7 @@ public class SimpleCompactingDrawerTile extends ItemControllableDrawerTile<Simpl
     private boolean hasCheckedRecipes;
 
     public SimpleCompactingDrawerTile(BasicTileBlock<SimpleCompactingDrawerTile> base, BlockEntityType<SimpleCompactingDrawerTile> blockEntityType, BlockPos pos, BlockState state) {
-        super(base, blockEntityType, pos, state);
+        super(base, blockEntityType, pos, state, new DrawerProperties(8, FSAttachments.ITEM_STORAGE_MODIFIER));
         this.handler = new CompactingInventoryHandler(2) {
             @Override
             public void onChange() {
@@ -44,11 +45,6 @@ public class SimpleCompactingDrawerTile extends ItemControllableDrawerTile<Simpl
             @Override
             public boolean isVoid() {
                 return SimpleCompactingDrawerTile.this.isVoid();
-            }
-
-            @Override
-            public boolean hasDowngrade() {
-                return SimpleCompactingDrawerTile.this.hasDowngrade();
             }
 
             @Override

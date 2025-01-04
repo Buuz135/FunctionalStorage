@@ -2,7 +2,11 @@ package com.buuz135.functionalstorage.block.tile;
 
 import com.buuz135.functionalstorage.FunctionalStorage;
 import com.buuz135.functionalstorage.block.DrawerBlock;
-import com.buuz135.functionalstorage.item.*;
+import com.buuz135.functionalstorage.item.ConfigurationToolItem;
+import com.buuz135.functionalstorage.item.FunctionalUpgradeItem;
+import com.buuz135.functionalstorage.item.LinkingToolItem;
+import com.buuz135.functionalstorage.item.UpgradeItem;
+import com.buuz135.functionalstorage.item.component.SizeProvider;
 import com.hrznstudio.titanium.annotation.Save;
 import com.hrznstudio.titanium.block.BasicTileBlock;
 import com.hrznstudio.titanium.block.tile.ActiveTile;
@@ -12,6 +16,8 @@ import com.hrznstudio.titanium.util.TileUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
@@ -29,6 +35,7 @@ import net.neoforged.neoforge.common.util.INBTSerializable;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
 
 import java.util.HashMap;
+import java.util.function.Supplier;
 
 public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>> extends ActiveTile<T> {
 
@@ -36,24 +43,25 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
 
     @Save
     private BlockPos controllerPos;
-    @Save
+    // We do not save this automatically so that we can read it first
     private InventoryComponent<ControllableDrawerTile<T>> storageUpgrades;
     @Save
     private InventoryComponent<ControllableDrawerTile<T>> utilityUpgrades;
     @Save
     private DrawerOptions drawerOptions;
     @Save
-    private boolean hasDowngrade = false;
-    @Save
     private boolean isCreative = false;
     @Save
     private boolean isVoid = false;
     @Save
     private boolean isStorageUpgradeLocked = false;
-    @Save
-    private int mult = 1;
 
-    public ControllableDrawerTile(BasicTileBlock<T> base, BlockEntityType<T> entityType, BlockPos pos, BlockState state) {
+    public final Supplier<DataComponentType<SizeProvider>> sizeUpgradeComponent;
+    @Save
+    protected int baseSize;
+    private int storageSize;
+
+    public ControllableDrawerTile(BasicTileBlock<T> base, BlockEntityType<T> entityType, BlockPos pos, BlockState state, DrawerProperties props) {
         super(base, entityType, pos, state);
         this.drawerOptions = new DrawerOptions();
         this.storageUpgrades = getStorageUpgradesConstructor();
@@ -84,6 +92,23 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
             );
         }
 
+        this.baseSize = props.baseSize();
+        this.sizeUpgradeComponent = props.upgradeComponent();
+    }
+
+    @Override
+    public void loadAdditional(CompoundTag compound, HolderLookup.Provider provider) {
+        if (compound.contains("storageUpgrades")) {
+            storageUpgrades.deserializeNBT(provider, compound.getCompound("storageUpgrades"));
+            recalculateUpgrades();
+        }
+        super.loadAdditional(compound, provider);
+    }
+
+    @Override
+    protected void saveAdditional(CompoundTag compoundTag, HolderLookup.Provider provider) {
+        compoundTag.put("storageUpgrades", storageUpgrades.serializeNBT(provider));
+        super.saveAdditional(compoundTag, provider);
     }
 
     @Override
@@ -164,7 +189,7 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
 
     public int getStorageMultiplier() {
         maybeCacheUpgrades();
-        return mult;
+        return storageSize;
     }
 
     public boolean isVoid() {
@@ -177,10 +202,6 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
         return isCreative;
     }
 
-    public double getStorageDiv() {
-        return 1;
-    }
-
     public void setNeedsUpgradeCache(boolean needsUpgradeCache) {
         this.needsUpgradeCache = needsUpgradeCache;
     }
@@ -189,8 +210,11 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
         ItemStack stack = playerIn.getItemInHand(hand);
         if (stack.getItem().equals(FunctionalStorage.CONFIGURATION_TOOL.get()) || stack.getItem().equals(FunctionalStorage.LINKING_TOOL.get()))
             return InteractionResult.PASS;
-        if (!stack.isEmpty() && stack.getItem() instanceof UpgradeItem upgradeItem) {
-            if (upgradeItem instanceof StorageUpgradeItem || upgradeItem.equals(FunctionalStorage.CREATIVE_UPGRADE.get())) {
+
+        var comp = stack.get(sizeUpgradeComponent);
+
+        if (!stack.isEmpty() && (comp != null || stack.getItem() instanceof UpgradeItem)) {
+            if (stack.has(sizeUpgradeComponent) || stack.is(FunctionalStorage.CREATIVE_UPGRADE.get())) {
                 InventoryComponent component = storageUpgrades;
                 for (int i = 0; i < component.getSlots(); i++) {
                     if (component.getStackInSlot(i).isEmpty() && component.isItemValid(i, stack)) {
@@ -198,9 +222,10 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
                         return InteractionResult.SUCCESS;
                     }
                 }
-                if (upgradeItem instanceof StorageUpgradeItem storageUpgradeItem) {
+
+                if (comp != null) {
                     for (int i = 0; i < component.getSlots(); i++) {
-                        if (!component.getStackInSlot(i).isEmpty() && component.isItemValid(i, stack) && component.getStackInSlot(i).getItem() instanceof StorageUpgradeItem instertedUpgrade && instertedUpgrade.getStorageMultiplier() < storageUpgradeItem.getStorageMultiplier()) {
+                        if (!component.getStackInSlot(i).isEmpty() && component.isItemValid(i, stack) && component.getStackInSlot(i).has(sizeUpgradeComponent) && component.getStackInSlot(i).get(sizeUpgradeComponent).applyFactorModifier(1f) < comp.applyFactorModifier(1f)) {
                             ItemHandlerHelper.giveItemToPlayer(playerIn, component.getStackInSlot(i).copy());
                             ItemStack upgradeStack = stack.copy();
                             upgradeStack.setCount(1);
@@ -252,43 +277,28 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
 
     private void maybeCacheUpgrades() {
         if (needsUpgradeCache) {
-            isCreative = false;
-            hasDowngrade = false;
-            mult = 1;
-            for (int i = 0; i < storageUpgrades.getSlots(); i++) {
-                Item upgrade = storageUpgrades.getStackInSlot(i).getItem();
-                if (upgrade.equals(FunctionalStorage.STORAGE_UPGRADES.get(StorageUpgradeItem.StorageTier.IRON).get())) {
-                    hasDowngrade = true;
-                }
-                if (upgrade.equals(FunctionalStorage.CREATIVE_UPGRADE.get())) {
-                    isCreative = true;
-                }
-                if (upgrade instanceof StorageUpgradeItem) {
-                    var calculated = ((StorageUpgradeItem) upgrade).getStorageMultiplier() / getStorageDiv();
-                    if (this instanceof StorageControllerTile<?>){
-                        if (mult == 1) mult = 0;
-                        mult += calculated;
-                    } else {
-                        mult *= calculated;
-                    }
-
-                }
-            }
-            isVoid = false;
-            if (getUtilitySlotAmount() > 0){
-                for (int i = 0; i < utilityUpgrades.getSlots(); i++) {
-                    if (utilityUpgrades.getStackInSlot(i).getItem().equals(FunctionalStorage.VOID_UPGRADE.get())) {
-                        isVoid = true;
-                    }
-                }
-            }
+            recalculateUpgrades();
             needsUpgradeCache = false;
         }
     }
 
-    public boolean hasDowngrade() {
-        maybeCacheUpgrades();
-        return hasDowngrade;
+    public void recalculateUpgrades() {
+        isCreative = false;
+        storageSize = SizeProvider.calculate(storageUpgrades, sizeUpgradeComponent, baseSize);
+        for (int i = 0; i < storageUpgrades.getSlots(); i++) {
+            Item upgrade = storageUpgrades.getStackInSlot(i).getItem();
+            if (upgrade.equals(FunctionalStorage.CREATIVE_UPGRADE.get())) {
+                isCreative = true;
+            }
+        }
+        isVoid = false;
+        if (getUtilitySlotAmount() > 0){
+            for (int i = 0; i < utilityUpgrades.getSlots(); i++) {
+                if (utilityUpgrades.getStackInSlot(i).getItem().equals(FunctionalStorage.VOID_UPGRADE.get())) {
+                    isVoid = true;
+                }
+            }
+        }
     }
 
     public void toggleLocking() {

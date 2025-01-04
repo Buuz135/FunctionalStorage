@@ -44,6 +44,7 @@ import com.hrznstudio.titanium.network.NetworkHandler;
 import com.hrznstudio.titanium.recipe.serializer.GenericSerializer;
 import com.hrznstudio.titanium.tab.TitaniumTab;
 import com.mojang.serialization.MapCodec;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.Holder;
@@ -84,6 +85,7 @@ import net.neoforged.neoforge.client.model.generators.BlockModelProvider;
 import net.neoforged.neoforge.client.model.generators.ItemModelBuilder;
 import net.neoforged.neoforge.client.model.generators.ItemModelProvider;
 import net.neoforged.neoforge.client.model.generators.ModelFile;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.common.crafting.IngredientType;
 import net.neoforged.neoforge.common.util.Lazy;
@@ -195,6 +197,24 @@ public class FunctionalStorage extends ModuleController {
                     }
                 })
                 .subscribe();
+
+        NeoForge.EVENT_BUS.addListener((final ItemTooltipEvent event) -> {
+            var stack = event.getItemStack();
+            var tooltip = event.getToolTip();
+
+            var item = stack.get(FSAttachments.ITEM_STORAGE_MODIFIER);
+            if (item != null) {
+                tooltip.add(item.getTooltip(Component.translatable("storageupgrade.obj.item_storage")).copy().withStyle(ChatFormatting.GRAY));
+            }
+            var fluid = stack.get(FSAttachments.FLUID_STORAGE_MODIFIER);
+            if (fluid != null) {
+                tooltip.add(fluid.getTooltip(Component.translatable("storageupgrade.obj.fluid_storage")).copy().withStyle(ChatFormatting.GRAY));
+            }
+            var range = stack.get(FSAttachments.CONTROLLER_RANGE_MODIFIER);
+            if (range != null) {
+                tooltip.add(range.getTooltip(Component.translatable("storageupgrade.obj.controller_range")).copy().withStyle(ChatFormatting.GRAY));
+            }
+        });
 
         modBus.addListener((final RegisterCapabilitiesEvent event) -> {
             event.registerItem(Capabilities.ItemHandler.ITEM, (object, context) -> {
@@ -318,12 +338,12 @@ public class FunctionalStorage extends ModuleController {
     }
 
     public enum DrawerType {
-        X_1(1, 32 * 64, "1x1", integer -> Pair.of(16, 16)),
-        X_2(2, 16 * 64, "1x2", integer -> {
+        X_1(1, 32, "1x1", integer -> Pair.of(16, 16)),
+        X_2(2, 16, "1x2", integer -> {
             if (integer == 0) return Pair.of(16, 28);
             return Pair.of(16, 4);
         }),
-        X_4(4, 8 * 64, "2x2", integer -> {
+        X_4(4, 8, "2x2", integer -> {
             if (integer == 0) return Pair.of(28, 28);
             if (integer == 1) return Pair.of(4, 28);
             if (integer == 2) return Pair.of(28, 4);

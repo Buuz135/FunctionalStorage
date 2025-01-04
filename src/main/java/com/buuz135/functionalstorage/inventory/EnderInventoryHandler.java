@@ -47,7 +47,7 @@ public class EnderInventoryHandler extends BigInventoryHandler implements ILocka
         if (!getStoredStacks().get(slot).getStack().isEmpty()) {
             stackSize = getStoredStacks().get(slot).getStack().getMaxStackSize() / 64D;
         }
-        return (int) Math.floor(Math.min(Integer.MAX_VALUE, FunctionalStorage.DrawerType.X_1.getSlotAmount() * 4) * stackSize);
+        return (int) Math.floor(Math.min(Integer.MAX_VALUE, FunctionalStorage.DrawerType.X_1.getSlotAmount() * 64 * 4) * stackSize);
     }
 
     @Override
@@ -58,11 +58,6 @@ public class EnderInventoryHandler extends BigInventoryHandler implements ILocka
     @Override
     public boolean isVoid() {
         return voidItems;
-    }
-
-    @Override
-    public boolean hasDowngrade() {
-        return false;
     }
 
     @Override

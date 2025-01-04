@@ -53,9 +53,17 @@ public class FunctionalStorageLangProvider extends LanguageProvider {
         this.add(FunctionalStorage.DRAWER_CONTROLLER.getBlock(), "Storage Controller");
         this.add(FunctionalStorage.FRAMED_DRAWER_CONTROLLER.getBlock(), "Framed Storage Controller");
         this.add(FunctionalStorage.FRAMED_CONTROLLER_EXTENSION.getBlock(), "Framed Controller Access Point");
-        this.add("storageupgrade.desc.item", "Multiplies the block item storage by ");
-        this.add("storageupgrade.desc.fluid", "Multiplies the block fluid storage by ");
-        this.add("storageupgrade.desc.range", "Increases controller radius by %s blocks");
+
+        this.add("storageupgrade.desc.modify_factor_mult", "Multiplies %s by %s");
+        this.add("storageupgrade.desc.modify_factor_div", "Decreases %s by %s");
+        this.add("storageupgrade.desc.set_base", "Sets the base %s to %s");
+        this.add("storageupgrade.desc.modify_base_inc", "Increases the base %s with %s");
+        this.add("storageupgrade.desc.modify_base_dec", "Decreases the base %s with %s");
+
+        this.add("storageupgrade.obj.item_storage", "the block item storage");
+        this.add("storageupgrade.obj.fluid_storage", "the block fluid storage");
+        this.add("storageupgrade.obj.controller_range", "controller radius");
+
         for (StorageUpgradeItem.StorageTier storageTier : FunctionalStorage.STORAGE_UPGRADES.keySet()) {
             this.add(FunctionalStorage.STORAGE_UPGRADES.get(storageTier).get(), WordUtils.capitalize(storageTier.name().replace("_", " ").toLowerCase()) + (storageTier == StorageUpgradeItem.StorageTier.IRON ? " Downgrade" : " Upgrade"));
         }

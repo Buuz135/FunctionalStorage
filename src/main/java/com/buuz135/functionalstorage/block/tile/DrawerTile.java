@@ -3,12 +3,12 @@ package com.buuz135.functionalstorage.block.tile;
 import com.buuz135.functionalstorage.FunctionalStorage;
 import com.buuz135.functionalstorage.client.gui.DrawerInfoGuiAddon;
 import com.buuz135.functionalstorage.inventory.BigInventoryHandler;
+import com.buuz135.functionalstorage.item.FSAttachments;
 import com.buuz135.functionalstorage.util.IWoodType;
 import com.hrznstudio.titanium.annotation.Save;
 import com.hrznstudio.titanium.block.BasicTileBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -28,7 +28,7 @@ public class DrawerTile extends ItemControllableDrawerTile<DrawerTile> {
     private IWoodType woodType;
 
     public DrawerTile(BasicTileBlock<DrawerTile> base, BlockEntityType<DrawerTile> blockEntityType, BlockPos pos, BlockState state, FunctionalStorage.DrawerType type, IWoodType woodType) {
-        super(base, blockEntityType, pos, state);
+        super(base, blockEntityType, pos, state, new DrawerProperties(type.getSlotAmount(), FSAttachments.ITEM_STORAGE_MODIFIER));
         this.type = type;
         this.woodType = woodType;
         this.handler = new BigInventoryHandler(type) {
@@ -45,11 +45,6 @@ public class DrawerTile extends ItemControllableDrawerTile<DrawerTile> {
             @Override
             public boolean isVoid() {
                 return DrawerTile.this.isVoid();
-            }
-
-            @Override
-            public boolean hasDowngrade() {
-                return DrawerTile.this.hasDowngrade();
             }
 
             @Override

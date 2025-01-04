@@ -9,7 +9,9 @@ import com.buuz135.functionalstorage.block.tile.ItemControllableDrawerTile;
 import com.buuz135.functionalstorage.inventory.BigInventoryHandler;
 import com.buuz135.functionalstorage.inventory.CompactingInventoryHandler;
 import com.buuz135.functionalstorage.inventory.EnderInventoryHandler;
+import com.buuz135.functionalstorage.item.FSAttachments;
 import com.buuz135.functionalstorage.item.UpgradeItem;
+import com.buuz135.functionalstorage.item.component.SizeProvider;
 import com.buuz135.functionalstorage.network.EnderDrawerSyncMessage;
 import com.buuz135.functionalstorage.util.NumberUtils;
 import com.buuz135.functionalstorage.world.EnderSavedData;
@@ -136,9 +138,20 @@ public enum DrawerComponentProvider implements IBlockComponentProvider {
                         iTooltip.add(ui.getDescription(stack, controllable));
                     }
                 }
-                if (controllable.getStorageMultiplier() > 1) {
+
+                float mult = 1f;
+
+                for (int i = 0; i < controllable.getStorageUpgrades().getSlots(); i++) {
+                    var stack = controllable.getStorageUpgrades().getStackInSlot(i);
+                    var prov = stack.get(controllable.sizeUpgradeComponent);
+                    if (prov != null) {
+                        mult = prov.applyFactorModifier(mult);
+                    }
+                }
+
+                if (mult > 1) {
                     iTooltip.add(Component.translatable("drawer.block.multiplier",
-                            Component.literal("x" + controllable.getStorageMultiplier()).withStyle(ChatFormatting.GOLD)));
+                            Component.literal("x" + (int) mult).withStyle(ChatFormatting.GOLD)));
                 }
             }
         }

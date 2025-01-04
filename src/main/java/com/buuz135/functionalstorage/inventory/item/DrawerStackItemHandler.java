@@ -4,13 +4,15 @@ import com.buuz135.functionalstorage.FunctionalStorage;
 import com.buuz135.functionalstorage.inventory.BigInventoryHandler;
 import com.buuz135.functionalstorage.inventory.BigInventoryHandler.BigStack;
 import com.buuz135.functionalstorage.item.FSAttachments;
-import com.buuz135.functionalstorage.item.StorageUpgradeItem;
+import com.buuz135.functionalstorage.item.component.SizeProvider;
 import com.buuz135.functionalstorage.util.Utils;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.common.util.INBTSerializable;
 import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.ItemStackHandler;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -25,8 +27,7 @@ public class DrawerStackItemHandler implements IItemHandler, INBTSerializable<Co
     private List<BigInventoryHandler.BigStack> storedStacks;
     private ItemStack stack;
     private FunctionalStorage.DrawerType type;
-    private int multiplier;
-    private boolean downgrade;
+    private int size;
     private boolean isVoid;
     private boolean isCreative;
 
@@ -34,8 +35,7 @@ public class DrawerStackItemHandler implements IItemHandler, INBTSerializable<Co
         this.stack = stack;
         this.storedStacks = new ArrayList<>();
         this.type = drawerType;
-        this.multiplier = 1;
-        this.downgrade = false;
+        this.size = drawerType.getSlotAmount();
         this.isVoid = false;
         this.isCreative = false;
         for (int i = 0; i < drawerType.getSlots(); i++) {
@@ -46,16 +46,11 @@ public class DrawerStackItemHandler implements IItemHandler, INBTSerializable<Co
             this.isCreative = tile.contains("isCreative") && tile.getBoolean("isCreative");
             var access = Utils.registryAccess();
             deserializeNBT(access, tile.getCompound("handler"));
-            for (Tag tag : tile.getCompound("storageUpgrades").getList("Items", Tag.TAG_COMPOUND)) {
-                ItemStack itemStack = Utils.deserialize(access, (CompoundTag) tag);
-                if (itemStack.getItem() instanceof StorageUpgradeItem) {
-                    if (multiplier == 1) multiplier = ((StorageUpgradeItem) itemStack.getItem()).getStorageMultiplier();
-                    else multiplier *= ((StorageUpgradeItem) itemStack.getItem()).getStorageMultiplier();
-                }
-                if (itemStack.getItem().equals(FunctionalStorage.STORAGE_UPGRADES.get(StorageUpgradeItem.StorageTier.IRON).get())) {
-                    this.downgrade = true;
-                }
-            }
+
+            var upgrades = new ItemStackHandler();
+            upgrades.deserializeNBT(access, tile.getCompound("storageUpgrades"));
+            size = SizeProvider.calculate(upgrades, FSAttachments.ITEM_STORAGE_MODIFIER, drawerType.getSlotAmount());
+
             for (Tag tag : tile.getCompound("utilityUpgrades").getList("Items", Tag.TAG_COMPOUND)) {
                 ItemStack itemStack = Utils.deserialize(access, (CompoundTag) tag);
                 if (itemStack.getItem().equals(FunctionalStorage.VOID_UPGRADE.get())) {
@@ -174,17 +169,14 @@ public class DrawerStackItemHandler implements IItemHandler, INBTSerializable<Co
     @Override
     public int getSlotLimit(int slot) {
         if (isCreative) return Integer.MAX_VALUE;
-        var slotAmount = type.getSlotAmount();
-        if (hasDowngrade()) slotAmount = 64;
-        return (int) Math.min(Integer.MAX_VALUE, slotAmount * (long) getMultiplier());
-    }
 
-    private long getMultiplier() {
-        return multiplier;
-    }
+        var stored = getStackInSlot(slot);
+        long maxSize = Item.DEFAULT_MAX_STACK_SIZE;
+        if (!stored.isEmpty()) {
+            maxSize = stored.getMaxStackSize();
+        }
 
-    private boolean hasDowngrade() {
-        return downgrade;
+        return (int) Math.min(Integer.MAX_VALUE, size * maxSize);
     }
 
     @Override

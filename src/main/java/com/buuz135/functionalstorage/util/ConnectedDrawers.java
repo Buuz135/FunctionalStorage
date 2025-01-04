@@ -53,11 +53,8 @@ public class ConnectedDrawers implements INBTSerializable<CompoundTag> {
         this.fluidHandlers = new ArrayList<>();
         this.extensions = 0;
         if (level != null && !level.isClientSide()) {
-            var extraRange = controllerTile.getStorageMultiplier();
-            if (extraRange == 1){
-                extraRange = 0;
-            }
-            var area = new AABB(controllerTile.getBlockPos()).inflate(FunctionalStorageConfig.DRAWER_CONTROLLER_LINKING_RANGE + extraRange);
+            var range = controllerTile.getStorageMultiplier();
+            var area = new AABB(controllerTile.getBlockPos()).inflate(range);
             this.connectedDrawers.removeIf(aLong -> !area.contains(Vec3.atCenterOf(BlockPos.of(aLong))));
             this.connectedDrawers.sort(Comparator.comparingDouble(value -> BlockPos.of(value).distSqr(controllerTile.getBlockPos())));
             for (Long connectedDrawer : this.connectedDrawers) {

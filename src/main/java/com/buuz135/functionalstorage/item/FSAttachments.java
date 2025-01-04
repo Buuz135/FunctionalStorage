@@ -1,6 +1,7 @@
 package com.buuz135.functionalstorage.item;
 
 import com.buuz135.functionalstorage.FunctionalStorage;
+import com.buuz135.functionalstorage.item.component.SizeProvider;
 import com.google.common.base.Suppliers;
 import com.mojang.serialization.Codec;
 import net.minecraft.core.BlockPos;
@@ -40,6 +41,14 @@ public class FSAttachments {
 
     public static final Supplier<DataComponentType<CompoundTag>> TILE = register("tile", CompoundTag::new, op -> op.persistent(CompoundTag.CODEC));
     public static final Supplier<DataComponentType<CompoundTag>> STYLE = register("style", CompoundTag::new, op -> op.persistent(CompoundTag.CODEC));
+
+    public static final Supplier<DataComponentType<SizeProvider>> ITEM_STORAGE_MODIFIER = register("item_storage_modifier", SizeProvider.CODEC);
+    public static final Supplier<DataComponentType<SizeProvider>> FLUID_STORAGE_MODIFIER = register("fluid_storage_modifier", SizeProvider.CODEC);
+    public static final Supplier<DataComponentType<SizeProvider>> CONTROLLER_RANGE_MODIFIER = register("controller_range_modifier", SizeProvider.CODEC);
+
+    private static <T> Supplier<DataComponentType<T>> register(String name, Codec<T> codec) {
+        return DR.register(name, () -> DataComponentType.<T>builder().persistent(codec).build())::get;
+    }
 
     private static <T> ComponentSupplier<T> register(String name, Supplier<T> defaultVal, UnaryOperator<DataComponentType.Builder<T>> op) {
         var registered = DR.register(name, () -> op.apply(DataComponentType.builder()).build());
