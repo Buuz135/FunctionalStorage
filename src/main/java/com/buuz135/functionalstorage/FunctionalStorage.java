@@ -15,18 +15,19 @@ import com.buuz135.functionalstorage.item.LinkingToolItem;
 import com.buuz135.functionalstorage.item.StorageUpgradeItem;
 import com.buuz135.functionalstorage.item.UpgradeItem;
 import com.buuz135.functionalstorage.network.EnderDrawerSyncMessage;
+import com.buuz135.functionalstorage.recipe.CustomCompactingRecipe;
 import com.buuz135.functionalstorage.recipe.DrawerlessWoodIngredient;
 import com.buuz135.functionalstorage.recipe.FramedDrawerRecipe;
 import com.buuz135.functionalstorage.util.*;
 import com.hrznstudio.titanium.block.BasicBlock;
 import com.hrznstudio.titanium.datagenerator.loot.TitaniumLootTableProvider;
 import com.hrznstudio.titanium.datagenerator.model.BlockItemModelGeneratorProvider;
+import com.hrznstudio.titanium.recipe.generator.*;
+import com.hrznstudio.titanium.recipe.serializer.GenericSerializer;
 import com.hrznstudio.titanium.event.handler.EventManager;
 import com.hrznstudio.titanium.module.ModuleController;
 import com.hrznstudio.titanium.nbthandler.NBTManager;
 import com.hrznstudio.titanium.network.NetworkHandler;
-import com.hrznstudio.titanium.recipe.generator.TitaniumRecipeProvider;
-import com.hrznstudio.titanium.recipe.generator.TitaniumShapedRecipeBuilder;
 import com.hrznstudio.titanium.tab.AdvancedTitaniumTab;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
@@ -157,6 +158,10 @@ public class FunctionalStorage extends ModuleController {
         EventManager.modGeneric(RegistryEvent.Register.class, RecipeSerializer.class)
                 .process(register -> ((RegistryEvent.Register) register).getRegistry()
                         .registerAll(FramedDrawerRecipe.SERIALIZER.setRegistryName(new ResourceLocation(MOD_ID, "framed_recipe")))).subscribe();
+        EventManager.modGeneric(RegistryEvent.Register.class, RecipeSerializer.class)
+                .process(register -> ((RegistryEvent.Register) register).getRegistry()
+                        .registerAll(CustomCompactingRecipe.SERIALIZER)).subscribe();
+
         NBTManager.getInstance().scanTileClassForAnnotations(FramedDrawerTile.class);
         NBTManager.getInstance().scanTileClassForAnnotations(CompactingFramedDrawerTile.class);
         NBTManager.getInstance().scanTileClassForAnnotations(FluidDrawerTile.class);
@@ -489,6 +494,20 @@ public class FunctionalStorage extends ModuleController {
                         .define('C', Tags.Items.CHESTS_ENDER)
                         .define('L', StorageTags.DRAWER)
                         .save(consumer);
+            }
+        });
+        event.getGenerator().addProvider(new TitaniumSerializableProvider(event.getGenerator(), MOD_ID) {
+            @Override
+            public void add(Map<IJsonFile, IJSONGenerator> serializables) {
+                new CustomCompactingRecipe(new ResourceLocation("clay"), new ItemStack(Items.CLAY_BALL, 4), new ItemStack(Items.CLAY));
+                new CustomCompactingRecipe(new ResourceLocation("glowstone"), new ItemStack(Items.GLOWSTONE_DUST, 4), new ItemStack(Items.GLOWSTONE));
+                new CustomCompactingRecipe(new ResourceLocation("melon"), new ItemStack(Items.MELON_SLICE, 9), new ItemStack(Items.MELON));
+                new CustomCompactingRecipe(new ResourceLocation("quartz"), new ItemStack(Items.QUARTZ, 4), new ItemStack(Items.QUARTZ_BLOCK));
+                new CustomCompactingRecipe(new ResourceLocation("ice"), new ItemStack(Items.ICE, 9), new ItemStack(Items.PACKED_ICE));
+                new CustomCompactingRecipe(new ResourceLocation("packed_ice"), new ItemStack(Items.PACKED_ICE, 9), new ItemStack(Items.BLUE_ICE));
+                new CustomCompactingRecipe(new ResourceLocation("amethyst"), new ItemStack(Items.AMETHYST_SHARD, 4), new ItemStack(Items.AMETHYST_BLOCK));
+
+                CustomCompactingRecipe.RECIPES.forEach(customCompactingRecipe -> serializables.put(customCompactingRecipe, customCompactingRecipe));
             }
         });
     }
