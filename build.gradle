@@ -1,5 +1,5 @@
 plugins {
-    id 'net.neoforged.moddev' version '0.1.120'
+    id 'net.neoforged.moddev' version '2.0.75'
     id 'maven-publish'
 }
 
@@ -67,7 +67,7 @@ neoForge {
     }
 }
 
-dependencies {    
+dependencies {
 	compileOnly "mezz.jei:jei-1.21.1-common-api:$jei_version"
     compileOnly "mezz.jei:jei-1.21.1-neoforge-api:$jei_version"
     runtimeOnly "mezz.jei:jei-1.21.1-neoforge:$jei_version"
