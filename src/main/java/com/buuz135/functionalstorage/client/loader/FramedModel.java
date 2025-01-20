@@ -42,8 +42,6 @@ import net.neoforged.neoforge.client.model.geometry.IUnbakedGeometry;
 import net.neoforged.neoforge.common.util.ConcatenatedListView;
 import org.apache.commons.lang3.tuple.ImmutableTriple;
 import org.apache.commons.lang3.tuple.Triple;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
@@ -59,20 +57,12 @@ import static com.buuz135.functionalstorage.client.loader.FramedModel.Baked.getQ
  * Using parts of <a href="https://github.com/SleepyTrousers/EnderIO-Rewrite/blob/dev/1.19.x/src/decor/java/com/enderio/decoration/client/model/painted/PaintedBlockModel.java"> Painted Block Model</a> from Ender IO.
  */
 public class FramedModel implements IUnbakedGeometry<FramedModel> {
-    private static final Logger LOGGER = LogManager.getLogger();
-
     private final ImmutableMap<String, BlockModel> children;
     private final ImmutableList<String> itemPasses;
-    private final boolean logWarning;
 
     public FramedModel(ImmutableMap<String, BlockModel> children, ImmutableList<String> itemPasses) {
-        this(children, itemPasses, false);
-    }
-
-    private FramedModel(ImmutableMap<String, BlockModel> children, ImmutableList<String> itemPasses, boolean logWarning) {
         this.children = children;
         this.itemPasses = itemPasses;
-        this.logWarning = logWarning;
     }
 
     @Override
@@ -462,7 +452,7 @@ public class FramedModel implements IUnbakedGeometry<FramedModel> {
                 }
             }
 
-            return new FramedModel(children, ImmutableList.copyOf(itemPasses), logWarning);
+            return new FramedModel(children, ImmutableList.copyOf(itemPasses));
         }
 
         private boolean readChildren(JsonObject jsonObject, String name, JsonDeserializationContext deserializationContext, ImmutableMap.Builder<String, BlockModel> children, List<String> itemPasses, boolean logWarning) {
