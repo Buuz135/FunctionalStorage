@@ -11,7 +11,7 @@
       "conditions": {
         "items": [
           {
-            "items": "minecraft:stone"
+            "items": "#c:stones"
           }
         ]
       },
