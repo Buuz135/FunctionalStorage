@@ -1,6 +1,0 @@
-{
-  "parent": "functionalstorage:block/mangrove_1",
-  "textures": {
-    "lock_icon": "functionalstorage:block/lock"
-  }
-}
