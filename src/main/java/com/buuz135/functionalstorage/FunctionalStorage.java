@@ -523,40 +523,6 @@ public class FunctionalStorage extends ModuleController {
                     return getBuilder(name).parent(new ModelFile.UncheckedModelFile(parent));
                 }
             });
-            event.getGenerator().addProvider(true, new BlockModelProvider(event.getGenerator().getPackOutput(), MOD_ID, event.getExistingFileHelper()) {
-                @Override
-                protected void registerModels() {
-                    for (DrawerType value : DrawerType.values()) {
-                        for (var blockRegistryObject : DRAWER_TYPES.get(value).stream().map(BlockWithTile::block).toList()) {
-                            if (blockRegistryObject.get() instanceof FramedDrawerBlock) {
-                                continue;
-                            }
-                            withExistingParent(BuiltInRegistries.BLOCK.getKey(blockRegistryObject.get()).getPath() + "_locked", modLoc(BuiltInRegistries.BLOCK.getKey(blockRegistryObject.get()).getPath()))
-                                    .texture("lock_icon", modLoc("block/lock"));
-                        }
-                    }
-                    withExistingParent(BuiltInRegistries.BLOCK.getKey(COMPACTING_DRAWER.getBlock()).getPath() + "_locked", modLoc(BuiltInRegistries.BLOCK.getKey(COMPACTING_DRAWER.getBlock()).getPath()))
-                            .texture("lock_icon", modLoc("block/lock"));
-                    withExistingParent(BuiltInRegistries.BLOCK.getKey(ENDER_DRAWER.getBlock()).getPath() + "_locked", modLoc(BuiltInRegistries.BLOCK.getKey(ENDER_DRAWER.getBlock()).getPath()))
-                            .texture("lock_icon", modLoc("block/lock"));
-                    withExistingParent(BuiltInRegistries.BLOCK.getKey(FLUID_DRAWER_1.getBlock()).getPath() + "_locked", modLoc(BuiltInRegistries.BLOCK.getKey(FLUID_DRAWER_1.getBlock()).getPath()))
-                            .texture("lock_icon", modLoc("block/lock"));
-                    withExistingParent(BuiltInRegistries.BLOCK.getKey(FLUID_DRAWER_2.getBlock()).getPath() + "_locked", modLoc(BuiltInRegistries.BLOCK.getKey(FLUID_DRAWER_2.getBlock()).getPath()))
-                            .texture("lock_icon", modLoc("block/lock"));
-                    withExistingParent(BuiltInRegistries.BLOCK.getKey(FLUID_DRAWER_4.getBlock()).getPath() + "_locked", modLoc(BuiltInRegistries.BLOCK.getKey(FLUID_DRAWER_4.getBlock()).getPath()))
-                            .texture("lock_icon", modLoc("block/lock"));
-                    withExistingParent(BuiltInRegistries.BLOCK.getKey(SIMPLE_COMPACTING_DRAWER.getBlock()).getPath() + "_locked", modLoc(BuiltInRegistries.BLOCK.getKey(SIMPLE_COMPACTING_DRAWER.getBlock()).getPath()))
-                            .texture("lock_icon", modLoc("block/lock"));
-                    withExistingParent(BuiltInRegistries.BLOCK.getKey(FRAMED_FLUID_DRAWER_1.getBlock()).getPath() + "_locked", modLoc(BuiltInRegistries.BLOCK.getKey(FRAMED_FLUID_DRAWER_1.getBlock()).getPath()))
-                            .texture("lock_icon", modLoc("block/lock"));
-                    withExistingParent(BuiltInRegistries.BLOCK.getKey(FRAMED_FLUID_DRAWER_2.getBlock()).getPath() + "_locked", modLoc(BuiltInRegistries.BLOCK.getKey(FRAMED_FLUID_DRAWER_2.getBlock()).getPath()))
-                            .texture("lock_icon", modLoc("block/lock"));
-                    withExistingParent(BuiltInRegistries.BLOCK.getKey(FRAMED_FLUID_DRAWER_4.getBlock()).getPath() + "_locked", modLoc(BuiltInRegistries.BLOCK.getKey(FRAMED_FLUID_DRAWER_4.getBlock()).getPath()))
-                            .texture("lock_icon", modLoc("block/lock"));
-//                    withExistingParent(BuiltInRegistries.BLOCK.getKey(FRAMED_COMPACTING_DRAWER.getBlock()).getPath() + "_locked", modLoc(BuiltInRegistries.BLOCK.getKey(FRAMED_COMPACTING_DRAWER.getBlock()).getPath()))
-//                            .texture("lock_icon", modLoc("block/lock"));
-                }
-            });
         }
         event.getGenerator().addProvider(true, new FunctionalStorageRecipesProvider(event.getGenerator(), blocksToProcess, event.getLookupProvider()));
     }
