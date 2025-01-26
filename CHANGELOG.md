@@ -2,6 +2,7 @@
 * Reworked all the upgrades to use the component system so modpack makers can create custom upgrades by Matyrobbrt
 * Added missing lang entry for simple compacting drawer, closes #343, #356 by kylev
 * Allow compacting drawers to be crafted with any type of stone, closes #284 by kylev
+* Fixed framed fluid drawers not having the locked indicator, closes #364 by kylev
 
 # VERSION 1.3.7
 * Add upgrade stack to `FunctionalUpgradeItem#work` by Matyrobbrt
