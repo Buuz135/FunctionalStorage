@@ -1,6 +1,0 @@
-{
-  "parent": "functionalstorage:block/spruce_4",
-  "textures": {
-    "lock_icon": "functionalstorage:block/lock"
-  }
-}

@@ -1,6 +1,0 @@
-{
-  "parent": "functionalstorage:block/dark_oak_2",
-  "textures": {
-    "lock_icon": "functionalstorage:block/lock"
-  }
-}

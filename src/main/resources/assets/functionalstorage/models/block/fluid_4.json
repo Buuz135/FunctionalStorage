@@ -3,7 +3,6 @@
 	"textures": {
 		"3": "functionalstorage:block/fluid_top",
 		"5": "functionalstorage:block/fluid_inner",
-		"lock_icon": "functionalstorage:block/unlock",
 		"front": "functionalstorage:block/fluid_front_4",
 		"particle": "functionalstorage:block/fluid_side",
 		"side": "functionalstorage:block/fluid_side"
@@ -134,13 +133,6 @@
 				"east": {"uv": [1, 0, 15, 1], "rotation": 90, "texture": "#side", "cullface": "east"},
 				"south": {"uv": [0, 1, 16, 15], "texture": "#side", "cullface": "south"},
 				"west": {"uv": [1, 15, 15, 16], "rotation": 90, "texture": "#side", "cullface": "west"}
-			}
-		},
-		{
-			"from": [7.5, 15, -0.01],
-			"to": [8.5, 16, 16],
-			"faces": {
-				"north": {"uv": [0, 0, 16, 16], "texture": "#lock_icon", "cullface": "north"}
 			}
 		}
 	],

@@ -1,6 +1,0 @@
-{
-  "parent": "functionalstorage:block/simple_compacting_drawer",
-  "textures": {
-    "lock_icon": "functionalstorage:block/lock"
-  }
-}
