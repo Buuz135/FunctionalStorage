@@ -78,6 +78,7 @@ import com.hrznstudio.titanium.nbthandler.NBTManager;
 import com.hrznstudio.titanium.network.NetworkHandler;
 import com.hrznstudio.titanium.recipe.serializer.GenericSerializer;
 import com.hrznstudio.titanium.tab.TitaniumTab;
+import com.mojang.logging.LogUtils;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
@@ -136,8 +137,6 @@ import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import net.neoforged.neoforge.registries.NewRegistryEvent;
 import net.neoforged.neoforge.registries.RegisterEvent;
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.awt.Color;
 import java.util.ArrayList;
@@ -160,8 +159,8 @@ public class FunctionalStorage extends ModuleController {
         NETWORK.registerMessage("ender_drawer_sync", EnderDrawerSyncMessage.class);
     }
 
-    // Directly reference a log4j logger.
-    private static final Logger LOGGER = LogManager.getLogger();
+    // Directly reference a Mojang's logger.
+    private static final org.slf4j.Logger LOGGER = LogUtils.getLogger();
 
     public static ConcurrentLinkedQueue<IWoodType> WOOD_TYPES = new ConcurrentLinkedQueue<>();
 
@@ -183,7 +182,6 @@ public class FunctionalStorage extends ModuleController {
     public static BlockWithTile FRAMED_FLUID_DRAWER_1;
     public static BlockWithTile FRAMED_FLUID_DRAWER_2;
     public static BlockWithTile FRAMED_FLUID_DRAWER_4;
-
 
     public static DeferredHolder<Item, Item> LINKING_TOOL;
     public static HashMap<StorageUpgradeItem.StorageTier, DeferredHolder<Item, Item>> STORAGE_UPGRADES = new HashMap<>();
@@ -287,6 +285,7 @@ public class FunctionalStorage extends ModuleController {
         for (DrawerType value : DrawerType.values()) {
             for (IWoodType woodType : WOOD_TYPES) {
                 var name = woodType.getName() + "_" + value.getSlots();
+                LOGGER.debug("Registering drawer {}", name);
                 if (woodType == DrawerWoodType.FRAMED){
                     var pair = getRegistries().registerBlockWithTileItem(name, () -> new FramedDrawerBlock(value), blockRegistryObject -> () ->
                             new DrawerBlock.DrawerItem((DrawerBlock) blockRegistryObject.get(), new Item.Properties(), TAB),TAB);
