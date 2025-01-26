@@ -18,7 +18,7 @@
       "item": "minecraft:piston"
     },
     "S": {
-      "item": "minecraft:stone"
+      "tag": "c:stones"
     }
   },
   "pattern": [
