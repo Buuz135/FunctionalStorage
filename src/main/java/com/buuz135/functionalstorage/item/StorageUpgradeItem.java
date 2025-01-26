@@ -23,7 +23,7 @@ public class StorageUpgradeItem extends UpgradeItem {
     private static Properties getProps(StorageTier tier) {
         var props = new Properties();
         if (tier == StorageTier.IRON) {
-            props = props.component(FSAttachments.ITEM_STORAGE_MODIFIER, new SizeProvider.SetBase(1));
+            props = props.component(FSAttachments.ITEM_STORAGE_MODIFIER, new SizeProvider.SetBase(1)).component(FSAttachments.FLUID_STORAGE_MODIFIER, new SizeProvider.SetBase(1));
         } else {
             var level = (float) FunctionalStorageConfig.getLevelMult(tier.getLevel());
             props = props
