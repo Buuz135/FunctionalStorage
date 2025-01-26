@@ -27,6 +27,9 @@
     "IBI"
   ],
   "result": {
+    "components": {
+      "functionalstorage:slot": 0
+    },
     "count": 1,
     "id": "functionalstorage:redstone_upgrade"
   }

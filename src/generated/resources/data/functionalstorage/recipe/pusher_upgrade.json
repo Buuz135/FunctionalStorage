@@ -27,6 +27,9 @@
     "IRI"
   ],
   "result": {
+    "components": {
+      "functionalstorage:direction": "north"
+    },
     "count": 1,
     "id": "functionalstorage:pusher_upgrade"
   }

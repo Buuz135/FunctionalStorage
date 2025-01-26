@@ -7,6 +7,7 @@ import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Registry;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -14,6 +15,9 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.registries.RegistryBuilder;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public interface FunctionalUpgradeBehavior {
 
@@ -33,6 +37,10 @@ public interface FunctionalUpgradeBehavior {
 
     default boolean canConnectRedstone(Level level, BlockPos blockPos, BlockState state, ControllableDrawerTile<?> drawer, Direction direction, ItemStack upgradeStack, int upgradeSlot) {
         return false;
+    }
+
+    default public List<Component> getTooltip(){
+        return new ArrayList<>();
     }
 
     MapCodec<? extends FunctionalUpgradeBehavior> codec();

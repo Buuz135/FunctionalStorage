@@ -255,6 +255,11 @@ public class FunctionalStorage extends ModuleController {
             if (range != null) {
                 tooltip.add(range.getTooltip(Component.translatable("storageupgrade.obj.controller_range")).copy().withStyle(ChatFormatting.GRAY));
             }
+            var functional = stack.get(FSAttachments.FUNCTIONAL_BEHAVIOR);
+            if (functional != null) {
+                tooltip.add(Component.translatable("upgrade.type").withStyle(ChatFormatting.YELLOW).append(Component.translatable("upgrade.type.utility").withStyle(ChatFormatting.WHITE)));
+                tooltip.addAll(functional.getTooltip());
+            }
         });
 
         modBus.addListener((final RegisterCapabilitiesEvent event) -> {
@@ -391,7 +396,7 @@ public class FunctionalStorage extends ModuleController {
         DRIPPING_UPGRADE = getRegistries().registerGeneric(Registries.ITEM, "dripping_upgrade", () -> new FSItem(new Item.Properties()
                 .component(FSAttachments.FUNCTIONAL_BEHAVIOR, new ExecuteEveryBehavior(20, new GenerateFluidBehavior(new FluidStack(Fluids.LAVA, 20))))));
         WATER_GENERATOR_UPGRADE = getRegistries().registerGeneric(Registries.ITEM, "water_generator_upgrade", () -> new FSItem(new Item.Properties()
-                .component(FSAttachments.FUNCTIONAL_BEHAVIOR, new GenerateFluidBehavior(new FluidStack(Fluids.WATER, 2000)))));
+                .component(FSAttachments.FUNCTIONAL_BEHAVIOR, new ExecuteEveryBehavior(1,new GenerateFluidBehavior(new FluidStack(Fluids.WATER, 2000))))));
         OBSIDIAN_UPGRADE = getRegistries().registerGeneric(Registries.ITEM, "obsidian_upgrade", () -> new FSItem(new Item.Properties()
                 .component(FSAttachments.FUNCTIONAL_BEHAVIOR, new ExecuteEveryBehavior(300, new GenerateItemBehavior(new ItemStack(Items.OBSIDIAN))))));
 

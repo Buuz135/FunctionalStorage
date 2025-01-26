@@ -6,10 +6,13 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
+
+import java.util.List;
 
 public record GenerateItemBehavior(ItemStack item) implements FunctionalUpgradeBehavior {
     public static final MapCodec<GenerateItemBehavior> CODEC = RecordCodecBuilder.mapCodec(in -> in.group(
@@ -28,4 +31,12 @@ public record GenerateItemBehavior(ItemStack item) implements FunctionalUpgradeB
     public MapCodec<? extends FunctionalUpgradeBehavior> codec() {
         return CODEC;
     }
+
+    @Override
+    public List<Component> getTooltip() {
+        var list = FunctionalUpgradeBehavior.super.getTooltip();
+        list.add(Component.translatable("functionalupgrade.desc.generate_item", item.getCount(), Component.translatable(item.getDescriptionId())));
+        return list;
+    }
 }
+

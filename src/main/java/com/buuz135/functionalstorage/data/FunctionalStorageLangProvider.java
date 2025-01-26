@@ -59,6 +59,10 @@ public class FunctionalStorageLangProvider extends LanguageProvider {
         this.add("storageupgrade.desc.set_base", "Sets the base %s to %s");
         this.add("storageupgrade.desc.modify_base_inc", "Increases the base %s with %s");
         this.add("storageupgrade.desc.modify_base_dec", "Decreases the base %s with %s");
+        this.add("functionalupgrade.desc.execute_every_tick", "Every %s ticks:");
+        this.add("functionalupgrade.desc.generate_fluid", "Generates %s mb of %s");
+        this.add("functionalupgrade.desc.generate_item", "Generates %s %s");
+
 
         this.add("storageupgrade.obj.item_storage", "the block item storage");
         this.add("storageupgrade.obj.fluid_storage", "the block fluid storage");

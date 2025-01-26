@@ -5,11 +5,14 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+
+import java.util.List;
 
 public record GenerateFluidBehavior(FluidStack fluid) implements FunctionalUpgradeBehavior {
     public static final MapCodec<GenerateFluidBehavior> CODEC = RecordCodecBuilder.mapCodec(in -> in.group(
@@ -27,5 +30,12 @@ public record GenerateFluidBehavior(FluidStack fluid) implements FunctionalUpgra
     @Override
     public MapCodec<? extends FunctionalUpgradeBehavior> codec() {
         return CODEC;
+    }
+
+    @Override
+    public List<Component> getTooltip() {
+        var list = FunctionalUpgradeBehavior.super.getTooltip();
+        list.add(Component.translatable("functionalupgrade.desc.generate_fluid", fluid.getAmount(), fluid.getHoverName().getString()));
+        return list;
     }
 }

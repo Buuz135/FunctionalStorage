@@ -4,11 +4,15 @@ import com.buuz135.functionalstorage.block.tile.ControllableDrawerTile;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+
+import java.util.List;
 
 public record ExecuteEveryBehavior(int ticks, FunctionalUpgradeBehavior behavior) implements FunctionalUpgradeBehavior {
     public static final MapCodec<ExecuteEveryBehavior> CODEC = RecordCodecBuilder.mapCodec(in -> in.group(
@@ -36,5 +40,16 @@ public record ExecuteEveryBehavior(int ticks, FunctionalUpgradeBehavior behavior
     @Override
     public MapCodec<? extends FunctionalUpgradeBehavior> codec() {
         return CODEC;
+    }
+
+    @Override
+    public List<Component> getTooltip() {
+        var list = FunctionalUpgradeBehavior.super.getTooltip();
+        list.add(Component.translatable("functionalupgrade.desc.execute_every_tick", ticks).withStyle(ChatFormatting.YELLOW));
+        for (Component component : behavior.getTooltip()) {
+            list.add(Component.literal(" ").append(component));
+        }
+
+        return list;
     }
 }
