@@ -68,6 +68,18 @@ public class UpgradeItem extends FSItem {
         return stack;
     }
 
+    @Override
+    public void verifyComponentsAfterLoad(ItemStack stack) {
+        super.verifyComponentsAfterLoad(stack);
+        Item item = stack.getItem();
+        if (item.equals(FunctionalStorage.PULLING_UPGRADE.get()) || item.equals(FunctionalStorage.PUSHING_UPGRADE.get()) || item.equals(FunctionalStorage.COLLECTOR_UPGRADE.get())){
+            stack.set(FSAttachments.DIRECTION, Direction.NORTH);
+        }
+        if (item.equals(FunctionalStorage.REDSTONE_UPGRADE.get())){
+            stack.set(FSAttachments.SLOT, 0);
+        }
+    }
+
     public Type getType() {
         return type;
     }
