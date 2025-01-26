@@ -257,7 +257,6 @@ public class FunctionalStorage extends ModuleController {
             }
             var functional = stack.get(FSAttachments.FUNCTIONAL_BEHAVIOR);
             if (functional != null) {
-                tooltip.add(Component.translatable("upgrade.type").withStyle(ChatFormatting.YELLOW).append(Component.translatable("upgrade.type.utility").withStyle(ChatFormatting.WHITE)));
                 tooltip.addAll(functional.getTooltip());
             }
         });
