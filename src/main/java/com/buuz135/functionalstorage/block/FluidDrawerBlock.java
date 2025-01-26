@@ -1,7 +1,6 @@
 package com.buuz135.functionalstorage.block;
 
 import com.buuz135.functionalstorage.FunctionalStorage;
-import com.buuz135.functionalstorage.block.tile.ControllableDrawerTile;
 import com.buuz135.functionalstorage.block.tile.FluidDrawerTile;
 import com.buuz135.functionalstorage.client.item.FluidDrawerISTER;
 import com.buuz135.functionalstorage.item.FSAttachments;
@@ -10,7 +9,6 @@ import com.buuz135.functionalstorage.util.Utils;
 import com.hrznstudio.titanium.block.RotatableBlock;
 import com.hrznstudio.titanium.recipe.generator.TitaniumShapedRecipeBuilder;
 import com.hrznstudio.titanium.tab.TitaniumTab;
-import com.hrznstudio.titanium.util.TileUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.core.BlockPos;
@@ -142,25 +140,6 @@ public class FluidDrawerBlock extends Drawer<FluidDrawerTile>{
             tooltip.add(Component.translatable("frameddrawer.use").withStyle(ChatFormatting.GRAY));
         }
     }
-
-    @Override
-    public int getSignal(BlockState p_60483_, BlockGetter blockGetter, BlockPos blockPos, Direction p_60486_) {
-        FluidDrawerTile tile = TileUtil.getTileEntity(blockGetter, blockPos, FluidDrawerTile.class).orElse(null);
-        if (tile != null) {
-            for (int i = 0; i < tile.getUtilityUpgrades().getSlots(); i++) {
-                ItemStack stack = tile.getUtilityUpgrades().getStackInSlot(i);
-                if (stack.getItem().equals(FunctionalStorage.REDSTONE_UPGRADE.get())) {
-                    int redstoneSlot = stack.getOrDefault(FSAttachments.SLOT, 0);
-                    if (redstoneSlot < tile.getFluidHandler().getTanks()) {
-                        return tile.getFluidHandler().getFluidInTank(redstoneSlot).getAmount() * 15 / tile.getFluidHandler().getTankCapacity(redstoneSlot);
-                    }
-                }
-            }
-        }
-        return 0;
-    }
-
-
 
     public static class FluidDrawerItem extends BlockItem {
 

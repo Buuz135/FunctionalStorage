@@ -1,4 +1,4 @@
-// 1.21.1	2024-10-30T14:38:49.291684	Recipes
+// 1.21.1	2025-01-26T16:47:05.8232997	Recipes
 f07485f3ee5257c2b12fcf149c60ddd20ed73fe1 data/functionalstorage/advancement/recipes/misc/acacia_1.json
 8cce3aada48266b5e41df6e04b01ab1fd2224a4c data/functionalstorage/advancement/recipes/misc/acacia_2.json
 8bc6f134a188d7ec701a472feeb93bccc9a115f3 data/functionalstorage/advancement/recipes/misc/acacia_4.json
@@ -78,7 +78,7 @@ a00048cee88ed3b56c964639f356a61293bb6feb data/functionalstorage/recipe/birch_1.j
 dd7232feb8b5861f983c3e8ab764b8451c00d86e data/functionalstorage/recipe/cherry_1.json
 7993db743da0bf8eff4d532e3b8e8a02eee3ec6a data/functionalstorage/recipe/cherry_2.json
 908796ef8c4b9ccf5c6c4c6a2c46d745785902b7 data/functionalstorage/recipe/cherry_4.json
-aa6bc43b316c906bb4bed3a937cd741e96707e6c data/functionalstorage/recipe/collector_upgrade.json
+50460dbeb3c194bf8f39bd7a3418b8c440602da7 data/functionalstorage/recipe/collector_upgrade.json
 74158cbf025bacbd94985a450dac448945a3adda data/functionalstorage/recipe/compacting/amethyst.json
 b67f9d3568b5f9fde9b6b5b40cc88b2b1e1de9ac data/functionalstorage/recipe/compacting/glowstone.json
 f9faeb313babf7bea8ec73a9c72ca8d14d1604e3 data/functionalstorage/recipe/compacting/ice.json
@@ -130,9 +130,9 @@ d048d2588452bf51bd73f777282a27905f27fe4c data/functionalstorage/recipe/linking_t
 313ba2b13a47f15bade3eeb606ef5a3b74a449ba data/functionalstorage/recipe/oak_2.json
 863b7345eb9d872144eb49ee2f0d3a740e972990 data/functionalstorage/recipe/oak_4.json
 2c2629ef34b13d1cf452fbaacb9ccb588867cbf0 data/functionalstorage/recipe/obsidian_upgrade.json
-a7ec2fd7e409c9fe329a972f8caf8a2f74e31e9e data/functionalstorage/recipe/puller_upgrade.json
-0f54ff3aa2caa38c35c467783e2c6c7a449c6785 data/functionalstorage/recipe/pusher_upgrade.json
-7cf0ad077a5a1872fdd04c5b3218b8d71a6e90d8 data/functionalstorage/recipe/redstone_upgrade.json
+1827a6c81c6eb090fd342f0d65819b7f36510bc8 data/functionalstorage/recipe/puller_upgrade.json
+f0f6481ded2cac041032b94e7b6836aa76104665 data/functionalstorage/recipe/pusher_upgrade.json
+2ec4a0984ff84620da85c40c0ee7dfd56acea9fa data/functionalstorage/recipe/redstone_upgrade.json
 a6d66aa0d1ffc4d10f6f695573708948ec0c077b data/functionalstorage/recipe/simple_compacting_drawer.json
 0b8fa429a17312ccdc2c90a4dc4ba5dd44ab06c9 data/functionalstorage/recipe/spruce_1.json
 7b796d2070a9d994e52da67e9bb4eb5e57f9504d data/functionalstorage/recipe/spruce_2.json

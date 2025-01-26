@@ -3,6 +3,7 @@ package com.buuz135.functionalstorage.block.tile;
 import com.buuz135.functionalstorage.FunctionalStorage;
 import com.buuz135.functionalstorage.client.gui.DrawerInfoGuiAddon;
 import com.buuz135.functionalstorage.inventory.EnderInventoryHandler;
+import com.buuz135.functionalstorage.item.FSAttachments;
 import com.buuz135.functionalstorage.network.EnderDrawerSyncMessage;
 import com.buuz135.functionalstorage.world.EnderSavedData;
 import com.hrznstudio.titanium.annotation.Save;
@@ -11,7 +12,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -34,7 +34,7 @@ public class EnderDrawerTile extends ItemControllableDrawerTile<EnderDrawerTile>
     private IItemHandler storage;
 
     public EnderDrawerTile(BasicTileBlock<EnderDrawerTile> base, BlockEntityType<EnderDrawerTile> blockEntityType, BlockPos pos, BlockState state) {
-        super(base, blockEntityType, pos, state);
+        super(base, blockEntityType, pos, state, new DrawerProperties(32, FSAttachments.ITEM_STORAGE_MODIFIER));
         this.frequency = UUID.randomUUID().toString();
     }
 
@@ -152,11 +152,6 @@ public class EnderDrawerTile extends ItemControllableDrawerTile<EnderDrawerTile>
             }
         }
         return true;
-    }
-
-    @Override
-    public int getBaseSize(int lost) {
-        return 1;
     }
 
     public void setFrequency(String frequency) {

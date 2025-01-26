@@ -1,7 +1,9 @@
 package com.buuz135.functionalstorage.block.tile;
 
 import com.buuz135.functionalstorage.FunctionalStorage;
+import com.buuz135.functionalstorage.block.config.FunctionalStorageConfig;
 import com.buuz135.functionalstorage.item.ConfigurationToolItem;
+import com.buuz135.functionalstorage.item.FSAttachments;
 import com.hrznstudio.titanium.block.BasicTileBlock;
 import com.hrznstudio.titanium.util.TileUtil;
 import net.minecraft.core.BlockPos;
@@ -22,7 +24,7 @@ import java.util.Optional;
 public abstract class StorageControllerExtensionTile<T extends StorageControllerExtensionTile<T>> extends ItemControllableDrawerTile<T> {
 
     public StorageControllerExtensionTile(BasicTileBlock<T> base, BlockEntityType<T> entityType, BlockPos pos, BlockState state) {
-        super(base, entityType, pos, state);
+        super(base, entityType, pos, state, new DrawerProperties(FunctionalStorageConfig.DRAWER_CONTROLLER_LINKING_RANGE, FSAttachments.CONTROLLER_RANGE_MODIFIER));
     }
 
     @Override
@@ -48,11 +50,6 @@ public abstract class StorageControllerExtensionTile<T extends StorageController
     @Override
     public IFluidHandler getFluidHandler(@Nullable Direction direction) {
         return getControllerInstance().map(c -> c.getFluidHandler(direction)).orElse(null);
-    }
-
-    @Override
-    public int getBaseSize(int lost) {
-        return 1;
     }
 
     @Override

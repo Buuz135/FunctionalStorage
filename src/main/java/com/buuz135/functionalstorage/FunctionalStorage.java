@@ -1,7 +1,33 @@
 package com.buuz135.functionalstorage;
 
-import com.buuz135.functionalstorage.block.*;
-import com.buuz135.functionalstorage.block.tile.*;
+import com.buuz135.functionalstorage.block.ArmoryCabinetBlock;
+import com.buuz135.functionalstorage.block.CompactingDrawerBlock;
+import com.buuz135.functionalstorage.block.CompactingFramedDrawerBlock;
+import com.buuz135.functionalstorage.block.ControllerExtensionBlock;
+import com.buuz135.functionalstorage.block.Drawer;
+import com.buuz135.functionalstorage.block.DrawerBlock;
+import com.buuz135.functionalstorage.block.DrawerControllerBlock;
+import com.buuz135.functionalstorage.block.EnderDrawerBlock;
+import com.buuz135.functionalstorage.block.FluidDrawerBlock;
+import com.buuz135.functionalstorage.block.FramedBlock;
+import com.buuz135.functionalstorage.block.FramedControllerExtensionBlock;
+import com.buuz135.functionalstorage.block.FramedDrawerBlock;
+import com.buuz135.functionalstorage.block.FramedDrawerControllerBlock;
+import com.buuz135.functionalstorage.block.FramedFluidDrawerBlock;
+import com.buuz135.functionalstorage.block.FramedSimpleCompactingDrawerBlock;
+import com.buuz135.functionalstorage.block.SimpleCompactingDrawerBlock;
+import com.buuz135.functionalstorage.block.config.FunctionalStorageConfig;
+import com.buuz135.functionalstorage.block.tile.CompactingDrawerTile;
+import com.buuz135.functionalstorage.block.tile.CompactingFramedDrawerTile;
+import com.buuz135.functionalstorage.block.tile.DrawerControllerTile;
+import com.buuz135.functionalstorage.block.tile.DrawerTile;
+import com.buuz135.functionalstorage.block.tile.EnderDrawerTile;
+import com.buuz135.functionalstorage.block.tile.FluidDrawerTile;
+import com.buuz135.functionalstorage.block.tile.FramedDrawerControllerTile;
+import com.buuz135.functionalstorage.block.tile.FramedDrawerTile;
+import com.buuz135.functionalstorage.block.tile.FramedFluidDrawerTile;
+import com.buuz135.functionalstorage.block.tile.FramedSimpleCompactingDrawerTile;
+import com.buuz135.functionalstorage.block.tile.SimpleCompactingDrawerTile;
 import com.buuz135.functionalstorage.client.ClientSetup;
 import com.buuz135.functionalstorage.client.CompactingDrawerRenderer;
 import com.buuz135.functionalstorage.client.ControllerRenderer;
@@ -20,12 +46,21 @@ import com.buuz135.functionalstorage.inventory.item.CompactingStackItemHandler;
 import com.buuz135.functionalstorage.inventory.item.DrawerStackItemHandler;
 import com.buuz135.functionalstorage.item.ConfigurationToolItem;
 import com.buuz135.functionalstorage.item.FSAttachments;
+import com.buuz135.functionalstorage.item.FSItem;
 import com.buuz135.functionalstorage.item.LinkingToolItem;
 import com.buuz135.functionalstorage.item.StorageUpgradeItem;
 import com.buuz135.functionalstorage.item.UpgradeItem;
-import com.buuz135.functionalstorage.item.functional_upgrade.DrippingFunctionalUpgradeItem;
-import com.buuz135.functionalstorage.item.functional_upgrade.ObsidianGeneratorFunctionalUpgrade;
-import com.buuz135.functionalstorage.item.functional_upgrade.WaterGeneratorFunctionalUpgrade;
+import com.buuz135.functionalstorage.item.component.AndBehavior;
+import com.buuz135.functionalstorage.item.component.CollectFluidsBehavior;
+import com.buuz135.functionalstorage.item.component.CollectItemEntitiesBehavior;
+import com.buuz135.functionalstorage.item.component.DelegateToItemBehavior;
+import com.buuz135.functionalstorage.item.component.EmitRedstoneBehavior;
+import com.buuz135.functionalstorage.item.component.ExecuteEveryBehavior;
+import com.buuz135.functionalstorage.item.component.FunctionalUpgradeBehavior;
+import com.buuz135.functionalstorage.item.component.GenerateFluidBehavior;
+import com.buuz135.functionalstorage.item.component.GenerateItemBehavior;
+import com.buuz135.functionalstorage.item.component.MoveFluidsBehavior;
+import com.buuz135.functionalstorage.item.component.MoveItemsBehavior;
 import com.buuz135.functionalstorage.network.EnderDrawerSyncMessage;
 import com.buuz135.functionalstorage.recipe.CopyComponentsRecipe;
 import com.buuz135.functionalstorage.recipe.CustomCompactingRecipe;
@@ -44,9 +79,11 @@ import com.hrznstudio.titanium.network.NetworkHandler;
 import com.hrznstudio.titanium.recipe.serializer.GenericSerializer;
 import com.hrznstudio.titanium.tab.TitaniumTab;
 import com.mojang.serialization.MapCodec;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.Holder;
+import net.minecraft.core.HolderSet;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -66,6 +103,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.material.Fluids;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.EventPriority;
@@ -84,14 +122,18 @@ import net.neoforged.neoforge.client.model.generators.BlockModelProvider;
 import net.neoforged.neoforge.client.model.generators.ItemModelBuilder;
 import net.neoforged.neoforge.client.model.generators.ItemModelProvider;
 import net.neoforged.neoforge.client.model.generators.ModelFile;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.common.crafting.IngredientType;
 import net.neoforged.neoforge.common.util.Lazy;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
+import net.neoforged.neoforge.event.ModifyDefaultComponentsEvent;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
+import net.neoforged.neoforge.registries.NewRegistryEvent;
 import net.neoforged.neoforge.registries.RegisterEvent;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
@@ -152,6 +194,7 @@ public class FunctionalStorage extends ModuleController {
     public static DeferredHolder<Item, Item> CONFIGURATION_TOOL;
     public static DeferredHolder<Item, Item> REDSTONE_UPGRADE;
     public static DeferredHolder<Item, Item> CREATIVE_UPGRADE;
+
     public static DeferredHolder<Item, Item> OBSIDIAN_UPGRADE;
 
     public static DeferredHolder<Item, Item> DRIPPING_UPGRADE;
@@ -196,6 +239,28 @@ public class FunctionalStorage extends ModuleController {
                 })
                 .subscribe();
 
+        NeoForge.EVENT_BUS.addListener((final ItemTooltipEvent event) -> {
+            var stack = event.getItemStack();
+            var tooltip = event.getToolTip();
+
+            var item = stack.get(FSAttachments.ITEM_STORAGE_MODIFIER);
+            if (item != null) {
+                tooltip.add(item.getTooltip(Component.translatable("storageupgrade.obj.item_storage")).copy().withStyle(ChatFormatting.GRAY));
+            }
+            var fluid = stack.get(FSAttachments.FLUID_STORAGE_MODIFIER);
+            if (fluid != null) {
+                tooltip.add(fluid.getTooltip(Component.translatable("storageupgrade.obj.fluid_storage")).copy().withStyle(ChatFormatting.GRAY));
+            }
+            var range = stack.get(FSAttachments.CONTROLLER_RANGE_MODIFIER);
+            if (range != null) {
+                tooltip.add(range.getTooltip(Component.translatable("storageupgrade.obj.controller_range")).copy().withStyle(ChatFormatting.GRAY));
+            }
+            var functional = stack.get(FSAttachments.FUNCTIONAL_BEHAVIOR);
+            if (functional != null) {
+                tooltip.addAll(functional.getTooltip());
+            }
+        });
+
         modBus.addListener((final RegisterCapabilitiesEvent event) -> {
             event.registerItem(Capabilities.ItemHandler.ITEM, (object, context) -> {
                 if (object.getItem() instanceof DrawerBlock.DrawerItem di) {
@@ -211,6 +276,8 @@ public class FunctionalStorage extends ModuleController {
                 return null;
             }, COMPACTING_DRAWER.asItem(), SIMPLE_COMPACTING_DRAWER.asItem(), FRAMED_COMPACTING_DRAWER.asItem(), FRAMED_SIMPLE_COMPACTING_DRAWER.asItem());
         });
+
+        modBus.addListener((final NewRegistryEvent event) -> event.register(FunctionalUpgradeBehavior.REGISTRY));
     }
 
 
@@ -263,13 +330,25 @@ public class FunctionalStorage extends ModuleController {
         FRAMED_SIMPLE_COMPACTING_DRAWER = getRegistries().registerBlockWithTileItem("framed_simple_compacting_drawer", () -> new FramedSimpleCompactingDrawerBlock("framed_simple_compacting_drawer"),
                 blockRegistryObject -> () ->
                         new CompactingDrawerBlock.CompactingDrawerItem(blockRegistryObject.get(), new Item.Properties(), 2), TAB);
-        COLLECTOR_UPGRADE = getRegistries().registerGeneric(Registries.ITEM, "collector_upgrade", () -> new UpgradeItem(new Item.Properties(), UpgradeItem.Type.UTILITY));
-        PULLING_UPGRADE = getRegistries().registerGeneric(Registries.ITEM, "puller_upgrade", () -> new UpgradeItem(new Item.Properties(), UpgradeItem.Type.UTILITY));
-        PUSHING_UPGRADE = getRegistries().registerGeneric(Registries.ITEM, "pusher_upgrade", () -> new UpgradeItem(new Item.Properties(), UpgradeItem.Type.UTILITY));
+        COLLECTOR_UPGRADE = getRegistries().registerGeneric(Registries.ITEM, "collector_upgrade", () -> new UpgradeItem(
+                new AndBehavior(List.of(
+                        new ExecuteEveryBehavior(FunctionalStorageConfig.UPGRADE_TICK, CollectItemEntitiesBehavior.INSTANCE),
+                        new ExecuteEveryBehavior(FunctionalStorageConfig.UPGRADE_TICK * 3, CollectFluidsBehavior.INSTANCE)
+                ))));
+        PULLING_UPGRADE = getRegistries().registerGeneric(Registries.ITEM, "puller_upgrade", () -> new UpgradeItem(
+                new ExecuteEveryBehavior(FunctionalStorageConfig.UPGRADE_TICK, new AndBehavior(List.of(
+                        new MoveItemsBehavior(false, FunctionalStorageConfig.UPGRADE_PULL_ITEMS),
+                        new MoveFluidsBehavior(false, FunctionalStorageConfig.UPGRADE_PULL_FLUID)
+                )))));
+        PUSHING_UPGRADE = getRegistries().registerGeneric(Registries.ITEM, "pusher_upgrade", () -> new UpgradeItem(
+                new ExecuteEveryBehavior(FunctionalStorageConfig.UPGRADE_TICK, new AndBehavior(List.of(
+                        new MoveItemsBehavior(true, FunctionalStorageConfig.UPGRADE_PUSH_ITEMS),
+                        new MoveFluidsBehavior(true, FunctionalStorageConfig.UPGRADE_PUSH_FLUID)
+                )))));
         VOID_UPGRADE = getRegistries().registerGeneric(Registries.ITEM, "void_upgrade", () -> new UpgradeItem(new Item.Properties(), UpgradeItem.Type.UTILITY));
         ARMORY_CABINET = getRegistries().registerBlockWithTile("armory_cabinet", ArmoryCabinetBlock::new, TAB);
         ENDER_DRAWER = getRegistries().registerBlockWithTile("ender_drawer", EnderDrawerBlock::new, TAB);
-        REDSTONE_UPGRADE = getRegistries().registerGeneric(Registries.ITEM, "redstone_upgrade", () -> new UpgradeItem(new Item.Properties(), UpgradeItem.Type.UTILITY));
+        REDSTONE_UPGRADE = getRegistries().registerGeneric(Registries.ITEM, "redstone_upgrade", () -> new UpgradeItem(EmitRedstoneBehavior.INSTANCE));
         CREATIVE_UPGRADE = getRegistries().registerGeneric(Registries.ITEM, "creative_vending_upgrade", () -> new UpgradeItem(new Item.Properties(), UpgradeItem.Type.STORAGE) {
             @Override
             public boolean isFoil(ItemStack p_41453_) {
@@ -300,13 +379,35 @@ public class FunctionalStorage extends ModuleController {
             }
         });
 
-        DRIPPING_UPGRADE = getRegistries().registerGeneric(Registries.ITEM, "dripping_upgrade", DrippingFunctionalUpgradeItem::new);
-        WATER_GENERATOR_UPGRADE = getRegistries().registerGeneric(Registries.ITEM, "water_generator_upgrade", WaterGeneratorFunctionalUpgrade::new);
-        OBSIDIAN_UPGRADE = getRegistries().registerGeneric(Registries.ITEM, "obsidian_upgrade", ObsidianGeneratorFunctionalUpgrade::new);
+        // TODO - remove in next lifecycle
+        getRegistries().registerGeneric(FunctionalUpgradeBehavior.REGISTRY_KEY, "delegate_to_item", () -> DelegateToItemBehavior.CODEC);
 
+        getRegistries().registerGeneric(FunctionalUpgradeBehavior.REGISTRY_KEY, "execute_every", () -> ExecuteEveryBehavior.CODEC);
+        getRegistries().registerGeneric(FunctionalUpgradeBehavior.REGISTRY_KEY, "generate_item", () -> GenerateItemBehavior.CODEC);
+        getRegistries().registerGeneric(FunctionalUpgradeBehavior.REGISTRY_KEY, "generate_fluid", () -> GenerateFluidBehavior.CODEC);
+        getRegistries().registerGeneric(FunctionalUpgradeBehavior.REGISTRY_KEY, "move_items", () -> MoveItemsBehavior.CODEC);
+        getRegistries().registerGeneric(FunctionalUpgradeBehavior.REGISTRY_KEY, "move_fluids", () -> MoveFluidsBehavior.CODEC);
+        getRegistries().registerGeneric(FunctionalUpgradeBehavior.REGISTRY_KEY, "collect_item_entities", () -> CollectItemEntitiesBehavior.CODEC);
+        getRegistries().registerGeneric(FunctionalUpgradeBehavior.REGISTRY_KEY, "collect_fluids", () -> CollectFluidsBehavior.CODEC);
+        getRegistries().registerGeneric(FunctionalUpgradeBehavior.REGISTRY_KEY, "emit_redstone", () -> EmitRedstoneBehavior.CODEC);
+        getRegistries().registerGeneric(FunctionalUpgradeBehavior.REGISTRY_KEY, "and", () -> AndBehavior.CODEC);
 
-        ModLoadingContext.get().getActiveContainer().getEventBus()
-                .addListener(EventPriority.LOWEST, (final RegisterEvent regEvent) -> {
+        DRIPPING_UPGRADE = getRegistries().registerGeneric(Registries.ITEM, "dripping_upgrade", () -> new FSItem(new Item.Properties()
+                .component(FSAttachments.FUNCTIONAL_BEHAVIOR, new ExecuteEveryBehavior(20, new GenerateFluidBehavior(new FluidStack(Fluids.LAVA, 20))))));
+        WATER_GENERATOR_UPGRADE = getRegistries().registerGeneric(Registries.ITEM, "water_generator_upgrade", () -> new FSItem(new Item.Properties()
+                .component(FSAttachments.FUNCTIONAL_BEHAVIOR, new ExecuteEveryBehavior(1,new GenerateFluidBehavior(new FluidStack(Fluids.WATER, 2000))))));
+        OBSIDIAN_UPGRADE = getRegistries().registerGeneric(Registries.ITEM, "obsidian_upgrade", () -> new FSItem(new Item.Properties()
+                .component(FSAttachments.FUNCTIONAL_BEHAVIOR, new ExecuteEveryBehavior(300, new GenerateItemBehavior(new ItemStack(Items.OBSIDIAN))))));
+
+        var eventBus = ModLoadingContext.get().getActiveContainer().getEventBus();
+
+        eventBus.addListener((final ModifyDefaultComponentsEvent event) -> {
+            // We modify the component here to make sure we have a reference to the correct holder
+            // The void upgrade can only be installed at most once
+            event.modify(VOID_UPGRADE.get(), b -> b.set(FSAttachments.INCOMPATIBLE_UPGRADES.get(), HolderSet.direct(VOID_UPGRADE.get().builtInRegistryHolder())));
+        });
+
+        eventBus.addListener(EventPriority.LOWEST, (final RegisterEvent regEvent) -> {
                     if (regEvent.getRegistryKey() == Registries.BLOCK) {
                         FRAMED_BLOCKS = getRegistries().getRegistry(Registries.BLOCK)
                                 .getEntries().stream()
@@ -318,12 +419,12 @@ public class FunctionalStorage extends ModuleController {
     }
 
     public enum DrawerType {
-        X_1(1, 32 * 64, "1x1", integer -> Pair.of(16, 16)),
-        X_2(2, 16 * 64, "1x2", integer -> {
+        X_1(1, 32, "1x1", integer -> Pair.of(16, 16)),
+        X_2(2, 16, "1x2", integer -> {
             if (integer == 0) return Pair.of(16, 28);
             return Pair.of(16, 4);
         }),
-        X_4(4, 8 * 64, "2x2", integer -> {
+        X_4(4, 8, "2x2", integer -> {
             if (integer == 0) return Pair.of(28, 28);
             if (integer == 1) return Pair.of(4, 28);
             if (integer == 2) return Pair.of(28, 4);

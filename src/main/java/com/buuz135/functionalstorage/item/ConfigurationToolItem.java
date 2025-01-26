@@ -1,6 +1,5 @@
 package com.buuz135.functionalstorage.item;
 
-import com.buuz135.functionalstorage.FunctionalStorage;
 import com.buuz135.functionalstorage.block.tile.ControllableDrawerTile;
 import com.hrznstudio.titanium.item.BasicItem;
 import com.mojang.serialization.Codec;
@@ -26,7 +25,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
-public class ConfigurationToolItem extends BasicItem {
+public class ConfigurationToolItem extends FSItem {
 
     public static ConfigurationAction getAction(ItemStack stack) {
         return stack.getOrDefault(FSAttachments.CONFIGURATION_ACTION, ConfigurationAction.LOCKING);
@@ -34,7 +33,6 @@ public class ConfigurationToolItem extends BasicItem {
 
     public ConfigurationToolItem() {
         super(new Properties().stacksTo(1));
-        setItemGroup(FunctionalStorage.TAB);
     }
 
     @Override

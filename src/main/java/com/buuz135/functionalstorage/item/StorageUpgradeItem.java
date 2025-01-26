@@ -1,8 +1,7 @@
 package com.buuz135.functionalstorage.item;
 
 import com.buuz135.functionalstorage.block.config.FunctionalStorageConfig;
-import com.hrznstudio.titanium.item.BasicItem;
-import net.minecraft.ChatFormatting;
+import com.buuz135.functionalstorage.item.component.SizeProvider;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -11,43 +10,28 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import org.jetbrains.annotations.Nullable;
-
-import java.text.DecimalFormat;
-import java.util.List;
 
 public class StorageUpgradeItem extends UpgradeItem {
 
     private final StorageTier storageTier;
 
     public StorageUpgradeItem(StorageTier tier) {
-        super(new Properties(), Type.STORAGE);
+        super(getProps(tier), Type.STORAGE);
         this.storageTier = tier;
     }
 
-    public int getStorageMultiplier() {
-        return FunctionalStorageConfig.getLevelMult(storageTier.getLevel());
-    }
-
-    public StorageTier getStorageTier() {
-        return storageTier;
-    }
-
-    @Override
-    public void addTooltipDetails(@Nullable BasicItem.Key key, ItemStack stack, List<Component> tooltip, boolean advanced) {
-        super.addTooltipDetails(key, stack, tooltip, advanced);
-        if (storageTier == StorageTier.IRON){
-            tooltip.add(Component.translatable("item.utility.downgrade").withStyle(ChatFormatting.GRAY));
+    private static Properties getProps(StorageTier tier) {
+        var props = new Properties();
+        if (tier == StorageTier.IRON) {
+            props = props.component(FSAttachments.ITEM_STORAGE_MODIFIER, new SizeProvider.SetBase(1)).component(FSAttachments.FLUID_STORAGE_MODIFIER, new SizeProvider.SetBase(1));
         } else {
-            tooltip.add(Component.translatable("storageupgrade.desc.item").withStyle(ChatFormatting.GRAY).append(new DecimalFormat().format(FunctionalStorageConfig.getLevelMult(this.storageTier.getLevel()))));
-            tooltip.add(Component.translatable("storageupgrade.desc.fluid").withStyle(ChatFormatting.GRAY).append(new DecimalFormat().format(FunctionalStorageConfig.getLevelMult(this.storageTier.getLevel()) / FunctionalStorageConfig.FLUID_DIVISOR)));
-            tooltip.add(Component.translatable("storageupgrade.desc.range", new DecimalFormat().format(FunctionalStorageConfig.getLevelMult(this.storageTier.getLevel()) / FunctionalStorageConfig.RANGE_DIVISOR)).withStyle(ChatFormatting.GRAY));
+            var level = (float) FunctionalStorageConfig.getLevelMult(tier.getLevel());
+            props = props
+                    .component(FSAttachments.ITEM_STORAGE_MODIFIER, new SizeProvider.ModifyFactor(level))
+                    .component(FSAttachments.FLUID_STORAGE_MODIFIER, new SizeProvider.ModifyFactor(level / FunctionalStorageConfig.FLUID_DIVISOR))
+                    .component(FSAttachments.CONTROLLER_RANGE_MODIFIER, new SizeProvider.ModifyFactor(level / FunctionalStorageConfig.RANGE_DIVISOR));
         }
-    }
-
-    @Override
-    public boolean hasTooltipDetails(@Nullable BasicItem.Key key) {
-        return key == null;
+        return props;
     }
 
     @Override
@@ -65,7 +49,7 @@ public class StorageUpgradeItem extends UpgradeItem {
         return component;
     }
 
-    public static enum StorageTier {
+    public enum StorageTier {
         COPPER(1, Mth.color(204/255f, 109/255f, 81/255f)),
         GOLD(2, Mth.color(233/255f, 177/255f, 21/255f)),
         DIAMOND(3, Mth.color(32/255f, 197/255f, 181/255f)),

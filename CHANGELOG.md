@@ -1,3 +1,6 @@
+# VERSION 1.4.0
+* Reworked all the upgrades to use the component system so modpack makers can create custom upgrades by Matyrobbrt
+
 # VERSION 1.3.7
 * Add upgrade stack to `FunctionalUpgradeItem#work` by Matyrobbrt
 * Create ja_jp.json by suthibu

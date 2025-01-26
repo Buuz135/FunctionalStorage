@@ -28,10 +28,6 @@ public abstract class CompactingInventoryHandler implements IItemHandler, INBTSe
     public CompactingInventoryHandler(int slots) {
         this.resultList = new ArrayList<>();
         this.slots = slots;
-        this.totalAmount = 512;
-        for (int i = 0; i < slots - 1; i++) {
-            this.totalAmount *= 9;
-        }
         for (int i = 0; i < slots; i++) {
             this.resultList.add(i, new CompactingUtil.Result(ItemStack.EMPTY, 1));
         }
@@ -64,7 +60,7 @@ public abstract class CompactingInventoryHandler implements IItemHandler, INBTSe
             int inserted = Math.min(getSlotLimit(slot) * result.getNeeded() - amount, stack.getCount() * result.getNeeded());
             inserted = (int) (Math.floor(inserted / result.getNeeded()) * result.getNeeded());
             if (!simulate) {
-                this.amount = Math.min(this.amount + inserted, totalAmount * getMultiplier());
+                this.amount = Math.min(this.amount + inserted, (int)Math.floor(getTotalAmount()));
                 onChange();
             }
             if (inserted == stack.getCount() * result.getNeeded() || isVoid()) return ItemStack.EMPTY;
@@ -144,22 +140,12 @@ public abstract class CompactingInventoryHandler implements IItemHandler, INBTSe
     public int getSlotLimit(int slot) {
         if (isCreative()) return Integer.MAX_VALUE;
         if (slot == this.slots) return Integer.MAX_VALUE;
-        int total = totalAmount;
-        if (hasDowngrade()) {
-            if (this.slots == 2){
-                total = 64 * 9;
-            } else {
-                total = 64 * 9 * 9;
-            }
-        }
-        return (int) Math.min(Integer.MAX_VALUE, Math.floor((total * getMultiplier()) / this.resultList.get(slot).getNeeded()));
+        return (int) Math.min(Integer.MAX_VALUE, Math.floor(getTotalAmount() / this.resultList.get(slot).getNeeded()));
     }
 
     public int getSlotLimitBase(int slot) {
         if (slot == this.slots) return Integer.MAX_VALUE;
-        int total = totalAmount;
-        if (hasDowngrade()) total = 64 * 9 * 9;
-        return (int) Math.min(Integer.MAX_VALUE, Math.floor(total / this.resultList.get(slot).getNeeded()));
+        return (int) Math.min(Integer.MAX_VALUE, Math.floor(64 * 9 * 9f / this.resultList.get(slot).getNeeded()));
     }
 
     @Override
@@ -202,6 +188,10 @@ public abstract class CompactingInventoryHandler implements IItemHandler, INBTSe
         }
     }
 
+    public double getTotalAmount() {
+        return slots == 2 ? 64 * 9d * getMultiplier() : 64 * 9d * 9 * getMultiplier();
+    }
+
     public abstract void onChange();
 
     public abstract int getMultiplier();
@@ -215,8 +205,6 @@ public abstract class CompactingInventoryHandler implements IItemHandler, INBTSe
     public ItemStack getParent() {
         return parent;
     }
-
-    public abstract boolean hasDowngrade();
 
     public abstract boolean isCreative();
 }

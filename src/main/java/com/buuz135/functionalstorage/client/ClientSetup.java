@@ -6,7 +6,6 @@ import com.buuz135.functionalstorage.item.UpgradeItem;
 import com.hrznstudio.titanium.block.RotatableBlock;
 import com.hrznstudio.titanium.client.screen.container.BasicAddonScreen;
 import com.hrznstudio.titanium.event.handler.EventManager;
-import com.hrznstudio.titanium.util.FacingUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
