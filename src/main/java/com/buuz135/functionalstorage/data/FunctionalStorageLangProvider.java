@@ -32,9 +32,12 @@ public class FunctionalStorageLangProvider extends LanguageProvider {
         this.add(FunctionalStorage.FRAMED_FLUID_DRAWER_1.getBlock(), "Framed Fluid Drawer (" + FunctionalStorage.DrawerType.X_1.getDisplayName() + ")");
         this.add(FunctionalStorage.FRAMED_FLUID_DRAWER_2.getBlock(), "Framed Fluid Drawer (" + FunctionalStorage.DrawerType.X_2.getDisplayName() + ")");
         this.add(FunctionalStorage.FRAMED_FLUID_DRAWER_4.getBlock(), "Framed Fluid Drawer (" + FunctionalStorage.DrawerType.X_4.getDisplayName() + ")");
-        this.add(FunctionalStorage.FRAMED_SIMPLE_COMPACTING_DRAWER.getBlock(), "Framed Simple Compacting Drawer");
+
+        this.add(FunctionalStorage.SIMPLE_COMPACTING_DRAWER.getBlock(), "Simple Compacting Drawer");
         this.add(FunctionalStorage.COMPACTING_DRAWER.getBlock(), "Compacting Drawer");
+        this.add(FunctionalStorage.FRAMED_SIMPLE_COMPACTING_DRAWER.getBlock(), "Framed Simple Compacting Drawer");
         this.add(FunctionalStorage.FRAMED_COMPACTING_DRAWER.getBlock(), "Framed Compacting Drawer");
+
         this.add(FunctionalStorage.ENDER_DRAWER.getBlock(), "Ender Drawer");
         this.add(FunctionalStorage.CONTROLLER_EXTENSION.getBlock(), "Controller Access Point");
         this.add("linkingtool.linkingmode", "Linking Mode: ");
