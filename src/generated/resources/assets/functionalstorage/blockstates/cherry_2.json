@@ -1,42 +1,86 @@
 {
-  "variants": {
-    "locked=false,subfacing=east": {
-      "model": "functionalstorage:block/cherry_2",
-      "uvlock": true,
-      "y": 90
+  "multipart": [
+    {
+      "apply": {
+        "model": "functionalstorage:block/cherry_2",
+        "uvlock": true
+      },
+      "when": {
+        "subfacing": "north"
+      }
     },
-    "locked=false,subfacing=north": {
-      "model": "functionalstorage:block/cherry_2",
-      "uvlock": true
+    {
+      "apply": {
+        "model": "functionalstorage:block/lock",
+        "uvlock": true
+      },
+      "when": {
+        "locked": "true",
+        "subfacing": "north"
+      }
     },
-    "locked=false,subfacing=south": {
-      "model": "functionalstorage:block/cherry_2",
-      "uvlock": true,
-      "y": 180
+    {
+      "apply": {
+        "model": "functionalstorage:block/cherry_2",
+        "uvlock": true,
+        "y": 180
+      },
+      "when": {
+        "subfacing": "south"
+      }
     },
-    "locked=false,subfacing=west": {
-      "model": "functionalstorage:block/cherry_2",
-      "uvlock": true,
-      "y": 270
+    {
+      "apply": {
+        "model": "functionalstorage:block/lock",
+        "uvlock": true,
+        "y": 180
+      },
+      "when": {
+        "locked": "true",
+        "subfacing": "south"
+      }
     },
-    "locked=true,subfacing=east": {
-      "model": "functionalstorage:block/cherry_2_locked",
-      "uvlock": true,
-      "y": 90
+    {
+      "apply": {
+        "model": "functionalstorage:block/cherry_2",
+        "uvlock": true,
+        "y": 270
+      },
+      "when": {
+        "subfacing": "west"
+      }
     },
-    "locked=true,subfacing=north": {
-      "model": "functionalstorage:block/cherry_2_locked",
-      "uvlock": true
+    {
+      "apply": {
+        "model": "functionalstorage:block/lock",
+        "uvlock": true,
+        "y": 270
+      },
+      "when": {
+        "locked": "true",
+        "subfacing": "west"
+      }
     },
-    "locked=true,subfacing=south": {
-      "model": "functionalstorage:block/cherry_2_locked",
-      "uvlock": true,
-      "y": 180
+    {
+      "apply": {
+        "model": "functionalstorage:block/cherry_2",
+        "uvlock": true,
+        "y": 90
+      },
+      "when": {
+        "subfacing": "east"
+      }
     },
-    "locked=true,subfacing=west": {
-      "model": "functionalstorage:block/cherry_2_locked",
-      "uvlock": true,
-      "y": 270
+    {
+      "apply": {
+        "model": "functionalstorage:block/lock",
+        "uvlock": true,
+        "y": 90
+      },
+      "when": {
+        "locked": "true",
+        "subfacing": "east"
+      }
     }
-  }
+  ]
 }

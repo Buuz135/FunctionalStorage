@@ -5,7 +5,6 @@
 		"4": "functionalstorage:block/fluid_top",
 		"6": "functionalstorage:block/fluid_front",
 		"8": "functionalstorage:block/fluid_inner",
-		"lock_icon": "functionalstorage:block/unlock",
 		"particle": "functionalstorage:block/fluid_side"
 	},
 	"elements": [
@@ -80,13 +79,6 @@
 				"west": {"uv": [1, 15, 15, 16], "rotation": 90, "texture": "#3", "cullface": "west"},
 				"up": {"uv": [0, 0, 0, 0], "texture": "#3"},
 				"down": {"uv": [0, 0, 0, 0], "texture": "#3"}
-			}
-		},
-		{
-			"from": [7.5, 15, -0.01],
-			"to": [8.5, 16, 16],
-			"faces": {
-				"north": {"uv": [0, 0, 16, 16], "texture": "#lock_icon", "cullface": "north"}
 			}
 		}
 	],

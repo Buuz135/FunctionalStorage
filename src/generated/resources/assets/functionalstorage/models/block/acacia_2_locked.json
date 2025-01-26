@@ -1,6 +1,0 @@
-{
-  "parent": "functionalstorage:block/acacia_2",
-  "textures": {
-    "lock_icon": "functionalstorage:block/lock"
-  }
-}
