@@ -3,7 +3,6 @@
 	"textures": {
 		"3": "functionalstorage:block/fluid_front_2",
 		"8": "functionalstorage:block/fluid_inner",
-		"front": "functionalstorage:block/fluid_front_4",
 		"particle": "functionalstorage:block/unlock"
 	},
 	"elements": [
