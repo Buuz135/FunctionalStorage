@@ -2,8 +2,7 @@
   "multipart": [
     {
       "apply": {
-        "model": "functionalstorage:block/fluid_2",
-        "uvlock": true
+        "model": "functionalstorage:block/fluid_2"
       },
       "when": {
         "subfacing": "north"
@@ -11,8 +10,7 @@
     },
     {
       "apply": {
-        "model": "functionalstorage:block/lock",
-        "uvlock": true
+        "model": "functionalstorage:block/lock"
       },
       "when": {
         "locked": "true",
@@ -22,7 +20,6 @@
     {
       "apply": {
         "model": "functionalstorage:block/fluid_2",
-        "uvlock": true,
         "y": 180
       },
       "when": {
@@ -32,7 +29,6 @@
     {
       "apply": {
         "model": "functionalstorage:block/lock",
-        "uvlock": true,
         "y": 180
       },
       "when": {
@@ -43,7 +39,6 @@
     {
       "apply": {
         "model": "functionalstorage:block/fluid_2",
-        "uvlock": true,
         "y": 270
       },
       "when": {
@@ -53,7 +48,6 @@
     {
       "apply": {
         "model": "functionalstorage:block/lock",
-        "uvlock": true,
         "y": 270
       },
       "when": {
@@ -64,7 +58,6 @@
     {
       "apply": {
         "model": "functionalstorage:block/fluid_2",
-        "uvlock": true,
         "y": 90
       },
       "when": {
@@ -74,7 +67,6 @@
     {
       "apply": {
         "model": "functionalstorage:block/lock",
-        "uvlock": true,
         "y": 90
       },
       "when": {
