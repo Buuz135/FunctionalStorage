@@ -5,8 +5,7 @@
 		"front": "functionalstorage:block/compacting_drawer_front",
 		"particle": "functionalstorage:block/compacting_drawer_side",
 		"side": "functionalstorage:block/compacting_drawer_side",
-		"top": "functionalstorage:block/compacting_drawer_top",
-		"lock_icon": "functionalstorage:block/unlock"
+		"top": "functionalstorage:block/compacting_drawer_top"
 	},
 	"elements": [
 		{
@@ -111,30 +110,6 @@
 				"east": {"uv": [7, 9, 8, 15], "texture": "#front"},
 				"south": {"uv": [0, 0, 2, 6], "texture": "#front"},
 				"west": {"uv": [8, 9, 9, 15], "texture": "#front"}
-			}
-		},
-		{
-			"from": [
-				7.5,
-				15,
-				-0.01
-			],
-			"to": [
-				8.5,
-				16,
-				16
-			],
-			"faces": {
-				"north": {
-					"texture": "#lock_icon",
-					"uv": [
-						0.0,
-						0.0,
-						16.0,
-						16.0
-					],
-					"cullface": "north"
-				}
 			}
 		}
 	],

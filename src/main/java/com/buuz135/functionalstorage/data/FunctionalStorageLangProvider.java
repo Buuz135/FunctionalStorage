@@ -30,11 +30,14 @@ public class FunctionalStorageLangProvider extends LanguageProvider {
         this.add(FunctionalStorage.FLUID_DRAWER_2.getBlock(), "Fluid Drawer (" + FunctionalStorage.DrawerType.X_2.getDisplayName() + ")");
         this.add(FunctionalStorage.FLUID_DRAWER_4.getBlock(), "Fluid Drawer (" + FunctionalStorage.DrawerType.X_4.getDisplayName() + ")");
         this.add(FunctionalStorage.FRAMED_FLUID_DRAWER_1.getBlock(), "Framed Fluid Drawer (" + FunctionalStorage.DrawerType.X_1.getDisplayName() + ")");
-        this.add(FunctionalStorage.FRAMED_FLUID_DRAWER_2.getBlock(), "Framed Drawer (" + FunctionalStorage.DrawerType.X_2.getDisplayName() + ")");
-        this.add(FunctionalStorage.FRAMED_FLUID_DRAWER_4.getBlock(), "Framed Drawer (" + FunctionalStorage.DrawerType.X_4.getDisplayName() + ")");
-        this.add(FunctionalStorage.FRAMED_SIMPLE_COMPACTING_DRAWER.getBlock(), "Framed Simple Compacting Drawer");
+        this.add(FunctionalStorage.FRAMED_FLUID_DRAWER_2.getBlock(), "Framed Fluid Drawer (" + FunctionalStorage.DrawerType.X_2.getDisplayName() + ")");
+        this.add(FunctionalStorage.FRAMED_FLUID_DRAWER_4.getBlock(), "Framed Fluid Drawer (" + FunctionalStorage.DrawerType.X_4.getDisplayName() + ")");
+
+        this.add(FunctionalStorage.SIMPLE_COMPACTING_DRAWER.getBlock(), "Simple Compacting Drawer");
         this.add(FunctionalStorage.COMPACTING_DRAWER.getBlock(), "Compacting Drawer");
+        this.add(FunctionalStorage.FRAMED_SIMPLE_COMPACTING_DRAWER.getBlock(), "Framed Simple Compacting Drawer");
         this.add(FunctionalStorage.FRAMED_COMPACTING_DRAWER.getBlock(), "Framed Compacting Drawer");
+
         this.add(FunctionalStorage.ENDER_DRAWER.getBlock(), "Ender Drawer");
         this.add(FunctionalStorage.CONTROLLER_EXTENSION.getBlock(), "Controller Access Point");
         this.add("linkingtool.linkingmode", "Linking Mode: ");
@@ -53,9 +56,21 @@ public class FunctionalStorageLangProvider extends LanguageProvider {
         this.add(FunctionalStorage.DRAWER_CONTROLLER.getBlock(), "Storage Controller");
         this.add(FunctionalStorage.FRAMED_DRAWER_CONTROLLER.getBlock(), "Framed Storage Controller");
         this.add(FunctionalStorage.FRAMED_CONTROLLER_EXTENSION.getBlock(), "Framed Controller Access Point");
-        this.add("storageupgrade.desc.item", "Multiplies the block item storage by ");
-        this.add("storageupgrade.desc.fluid", "Multiplies the block fluid storage by ");
-        this.add("storageupgrade.desc.range", "Increases controller radius by %s blocks");
+
+        this.add("storageupgrade.desc.modify_factor_mult", "Multiplies %s by %s");
+        this.add("storageupgrade.desc.modify_factor_div", "Decreases %s by %s");
+        this.add("storageupgrade.desc.set_base", "Sets the base %s to %s");
+        this.add("storageupgrade.desc.modify_base_inc", "Increases the base %s with %s");
+        this.add("storageupgrade.desc.modify_base_dec", "Decreases the base %s with %s");
+        this.add("functionalupgrade.desc.execute_every_tick", "Every %s ticks:");
+        this.add("functionalupgrade.desc.generate_fluid", "Generates %s mb of %s");
+        this.add("functionalupgrade.desc.generate_item", "Generates %s %s");
+
+
+        this.add("storageupgrade.obj.item_storage", "the block item storage");
+        this.add("storageupgrade.obj.fluid_storage", "the block fluid storage");
+        this.add("storageupgrade.obj.controller_range", "controller radius");
+
         for (StorageUpgradeItem.StorageTier storageTier : FunctionalStorage.STORAGE_UPGRADES.keySet()) {
             this.add(FunctionalStorage.STORAGE_UPGRADES.get(storageTier).get(), WordUtils.capitalize(storageTier.name().replace("_", " ").toLowerCase()) + (storageTier == StorageUpgradeItem.StorageTier.IRON ? " Downgrade" : " Upgrade"));
         }

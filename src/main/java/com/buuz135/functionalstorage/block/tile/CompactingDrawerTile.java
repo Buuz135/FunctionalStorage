@@ -3,12 +3,12 @@ package com.buuz135.functionalstorage.block.tile;
 import com.buuz135.functionalstorage.FunctionalStorage;
 import com.buuz135.functionalstorage.client.gui.DrawerInfoGuiAddon;
 import com.buuz135.functionalstorage.inventory.CompactingInventoryHandler;
+import com.buuz135.functionalstorage.item.FSAttachments;
 import com.buuz135.functionalstorage.util.CompactingUtil;
 import com.hrznstudio.titanium.annotation.Save;
 import com.hrznstudio.titanium.block.BasicTileBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -29,7 +29,7 @@ public class CompactingDrawerTile extends ItemControllableDrawerTile<CompactingD
     private boolean hasCheckedRecipes;
 
     public CompactingDrawerTile(BasicTileBlock<CompactingDrawerTile> base, BlockEntityType<CompactingDrawerTile> blockEntityType, BlockPos pos, BlockState state) {
-        super(base, blockEntityType, pos, state);
+        super(base, blockEntityType, pos, state, new DrawerProperties(8, FSAttachments.ITEM_STORAGE_MODIFIER));
         this.handler = new CompactingInventoryHandler(3) {
             @Override
             public void onChange() {
@@ -44,11 +44,6 @@ public class CompactingDrawerTile extends ItemControllableDrawerTile<CompactingD
             @Override
             public boolean isVoid() {
                 return CompactingDrawerTile.this.isVoid();
-            }
-
-            @Override
-            public boolean hasDowngrade() {
-                return CompactingDrawerTile.this.hasDowngrade();
             }
 
             @Override
@@ -123,11 +118,6 @@ public class CompactingDrawerTile extends ItemControllableDrawerTile<CompactingD
     @Override
     public IItemHandler getStorage() {
         return handler;
-    }
-
-    @Override
-    public int getBaseSize(int slot) {
-        return handler.getSlotLimitBase(slot);
     }
 
     @NotNull

@@ -103,12 +103,8 @@ public class ControllerRenderer implements BlockEntityRenderer<StorageController
                 float f4 = 1;
                 renderShape(matrixStack, bufferIn.getBuffer(TYPE), Shapes.create(aabb.move(0.0D, 0.0D, 0.0D)), -tile.getBlockPos().getX(), -tile.getBlockPos().getY(), -tile.getBlockPos().getZ(), f2, f3, f4, 1.0F);
             }
-            var extraRange = tile.getStorageMultiplier();
-            if (extraRange == 1){
-                extraRange = 0;
-            }
             var area = new AABB(tile.getBlockPos())
-                    .inflate(FunctionalStorageConfig.DRAWER_CONTROLLER_LINKING_RANGE + extraRange + 0.001);
+                    .inflate(tile.getStorageMultiplier() + 0.001);
             renderShape(matrixStack, bufferIn.getBuffer(TYPE), Shapes.create(area), -tile.getBlockPos().getX(), -tile.getBlockPos().getY(), -tile.getBlockPos().getZ(), 0.5f, 1, 0.5f, 1.0F);
             renderFaces(matrixStack, bufferIn, area , -tile.getBlockPos().getX(), -tile.getBlockPos().getY(), -tile.getBlockPos().getZ(), 0.5f, 1, 0.5f , 0.25f);
         }

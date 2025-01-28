@@ -3,6 +3,7 @@ package com.buuz135.functionalstorage.item;
 import com.buuz135.functionalstorage.FunctionalStorage;
 import com.buuz135.functionalstorage.block.tile.ControllableDrawerTile;
 import com.buuz135.functionalstorage.block.tile.FluidDrawerTile;
+import com.buuz135.functionalstorage.item.component.FunctionalUpgradeBehavior;
 import com.hrznstudio.titanium.block.RotatableBlock;
 import com.hrznstudio.titanium.item.BasicItem;
 import com.hrznstudio.titanium.util.FacingUtil;
@@ -25,7 +26,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
-public class UpgradeItem extends BasicItem {
+public class UpgradeItem extends FSItem {
 
     public static final int MAX_SLOT = 4;
 
@@ -43,8 +44,11 @@ public class UpgradeItem extends BasicItem {
 
     public UpgradeItem(Properties properties, Type type) {
         super(properties);
-        setItemGroup(FunctionalStorage.TAB);
         this.type = type;
+    }
+
+    public UpgradeItem(FunctionalUpgradeBehavior behavior) {
+        this(new Properties().component(FSAttachments.FUNCTIONAL_BEHAVIOR, behavior), Type.UTILITY);
     }
 
     @Override
@@ -64,10 +68,21 @@ public class UpgradeItem extends BasicItem {
         return stack;
     }
 
+    @Override
+    public void verifyComponentsAfterLoad(ItemStack stack) {
+        super.verifyComponentsAfterLoad(stack);
+        Item item = stack.getItem();
+        if (item.equals(FunctionalStorage.PULLING_UPGRADE.get()) || item.equals(FunctionalStorage.PUSHING_UPGRADE.get()) || item.equals(FunctionalStorage.COLLECTOR_UPGRADE.get())){
+            stack.set(FSAttachments.DIRECTION, Direction.NORTH);
+        }
+        if (item.equals(FunctionalStorage.REDSTONE_UPGRADE.get())){
+            stack.set(FSAttachments.SLOT, 0);
+        }
+    }
+
     public Type getType() {
         return type;
     }
-
 
     @Override
     public boolean overrideOtherStackedOnMe(ItemStack first, ItemStack second, Slot p_150894_, ClickAction clickAction, Player p_150896_, SlotAccess p_150897_) {
@@ -148,7 +163,7 @@ public class UpgradeItem extends BasicItem {
         return key == null;
     }
 
-    public static enum Type{
+    public enum Type{
         STORAGE,
         UTILITY
     }

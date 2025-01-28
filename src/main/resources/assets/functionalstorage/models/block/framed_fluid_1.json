@@ -3,12 +3,6 @@
 	"parent": "minecraft:block/block",
 	"loader": "functionalstorage:framedblock",
 	"children": {
-		"lock": {
-			"parent": "functionalstorage:block/lock",
-			"textures": {
-				"lock_icon": "functionalstorage:block/unlock"
-			}
-		},
 		"side": {
 			"parent": "functionalstorage:block/side",
 			"textures": {
@@ -26,7 +20,6 @@
 		}
 	},
 	"item_render_order": [
-		"lock",
 		"front",
 		"side"
 	],

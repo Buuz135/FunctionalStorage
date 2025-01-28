@@ -37,7 +37,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-public class LinkingToolItem extends BasicItem {
+public class LinkingToolItem extends FSItem {
 
     public static LinkingMode getLinkingMode(ItemStack stack) {
         return stack.getOrDefault(FSAttachments.LINKING_MODE, LinkingMode.SINGLE);
@@ -61,7 +61,6 @@ public class LinkingToolItem extends BasicItem {
 
     public LinkingToolItem() {
         super(new Properties().stacksTo(1));
-        setItemGroup(FunctionalStorage.TAB);
     }
 
     @Override

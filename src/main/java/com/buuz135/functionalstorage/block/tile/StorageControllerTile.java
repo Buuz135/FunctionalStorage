@@ -7,9 +7,8 @@ import com.buuz135.functionalstorage.fluid.ControllerFluidHandler;
 import com.buuz135.functionalstorage.inventory.ControllerInventoryHandler;
 import com.buuz135.functionalstorage.inventory.ILockable;
 import com.buuz135.functionalstorage.item.ConfigurationToolItem;
+import com.buuz135.functionalstorage.item.FSAttachments;
 import com.buuz135.functionalstorage.item.LinkingToolItem;
-import com.buuz135.functionalstorage.item.StorageUpgradeItem;
-import com.buuz135.functionalstorage.item.UpgradeItem;
 import com.buuz135.functionalstorage.util.ConnectedDrawers;
 import com.hrznstudio.titanium.annotation.Save;
 import com.hrznstudio.titanium.block.BasicTileBlock;
@@ -50,7 +49,7 @@ public abstract class StorageControllerTile<T extends StorageControllerTile<T>> 
     public ControllerFluidHandler fluidHandler;
 
     public StorageControllerTile(BasicTileBlock<T> base, BlockEntityType<T> entityType, BlockPos pos, BlockState state) {
-        super(base, entityType, pos, state);
+        super(base, entityType, pos, state, new DrawerProperties(FunctionalStorageConfig.DRAWER_CONTROLLER_LINKING_RANGE, FSAttachments.CONTROLLER_RANGE_MODIFIER));
         this.connectedDrawers = new ConnectedDrawers(null, this);
         this.inventoryHandler = new ControllerInventoryHandler() {
             @Override
@@ -69,11 +68,6 @@ public abstract class StorageControllerTile<T extends StorageControllerTile<T>> 
     @Override
     public int getStorageSlotAmount() {
         return 4;
-    }
-
-    @Override
-    public double getStorageDiv() {
-        return FunctionalStorageConfig.RANGE_DIVISOR;
     }
 
     @Override
@@ -166,11 +160,6 @@ public abstract class StorageControllerTile<T extends StorageControllerTile<T>> 
     }
 
     @Override
-    public int getBaseSize(int lost) {
-        return 1;
-    }
-
-    @Override
     public void toggleLocking() {
         super.toggleLocking();
         if (isServer()) {
@@ -213,12 +202,9 @@ public abstract class StorageControllerTile<T extends StorageControllerTile<T>> 
     }
 
     public boolean addConnectedDrawers(LinkingToolItem.ActionMode action, BlockPos... positions) {
-        var extraRange = getStorageMultiplier();
-        if (extraRange == 1){
-            extraRange = 0;
-        }
+        var range = getStorageMultiplier();
         var didWork = false;
-        var area = new AABB(this.getBlockPos()).inflate(FunctionalStorageConfig.DRAWER_CONTROLLER_LINKING_RANGE + extraRange);
+        var area = new AABB(this.getBlockPos()).inflate(range);
         for (BlockPos position : positions) {
             if (level.getBlockState(position).getBlock() instanceof StorageControllerBlock) continue;
             if (area.contains(Vec3.atCenterOf(position)) && this.getLevel().getBlockEntity(position) instanceof ControllableDrawerTile<?> controllableDrawerTile) {
@@ -251,16 +237,7 @@ public abstract class StorageControllerTile<T extends StorageControllerTile<T>> 
     @Override
     public InventoryComponent<ControllableDrawerTile<T>> getStorageUpgradesConstructor() {
         return new InventoryComponent<ControllableDrawerTile<T>>("storage_upgrades", 10, 70, getStorageSlotAmount())
-                .setInputFilter((stack, integer) -> {
-                    if (stack.getItem().equals(FunctionalStorage.STORAGE_UPGRADES.get(StorageUpgradeItem.StorageTier.IRON).get())) {
-                        for (int i = 0; i < getStorage().getSlots(); i++) {
-                            if (getStorage().getStackInSlot(i).getCount() > 64) {
-                                return false;
-                            }
-                        }
-                    }
-                    return stack.getItem() instanceof UpgradeItem && ((UpgradeItem) stack.getItem()).getType() == UpgradeItem.Type.STORAGE;
-                })
+                .setInputFilter((stack, integer) -> stack.has(FSAttachments.CONTROLLER_RANGE_MODIFIER))
                 .setOnSlotChanged((stack, integer) -> {
                     setNeedsUpgradeCache(true);
                     this.connectedDrawers.rebuild();

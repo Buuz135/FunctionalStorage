@@ -17,9 +17,11 @@ out
 logs
 build
 .gradle
+.cache
 
 # other
 eclipse
+.vscode
 run
 runs
 classes

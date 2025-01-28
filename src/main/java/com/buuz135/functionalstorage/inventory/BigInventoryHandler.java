@@ -6,7 +6,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.common.util.INBTSerializable;
 import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.ItemHandlerHelper;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -102,9 +101,7 @@ public abstract class BigInventoryHandler implements IItemHandler, INBTSerializa
         if (!getStoredStacks().get(slot).getStack().isEmpty()) {
             stackSize = getStoredStacks().get(slot).getStack().getMaxStackSize() / 64D;
         }
-        var slotAmount = type.getSlotAmount();
-        if (hasDowngrade()) slotAmount = 64;
-        return (int) Math.floor(Math.min(Integer.MAX_VALUE, slotAmount * (long) getMultiplier()) * stackSize);
+        return (int) Math.floor(getTotalAmount() * stackSize);
     }
 
     @Override
@@ -155,9 +152,11 @@ public abstract class BigInventoryHandler implements IItemHandler, INBTSerializa
 
     public abstract int getMultiplier();
 
-    public abstract boolean isVoid();
+    public double getTotalAmount() {
+        return 64d * getMultiplier();
+    }
 
-    public abstract boolean hasDowngrade();
+    public abstract boolean isVoid();
 
     public abstract boolean isLocked();
 

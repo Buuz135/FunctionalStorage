@@ -84,7 +84,7 @@ public class CompactingDrawerBlock extends Drawer<CompactingDrawerTile> {
     public void registerRecipe(RecipeOutput consumer) {
         TitaniumShapedRecipeBuilder.shapedRecipe(this)
                 .pattern("SSS").pattern("PDP").pattern("SIS")
-                .define('S', Blocks.STONE)
+                .define('S', Tags.Items.STONES)
                 .define('P', Blocks.PISTON)
                 .define('D', StorageTags.DRAWER)
                 .define('I', Tags.Items.INGOTS_IRON)

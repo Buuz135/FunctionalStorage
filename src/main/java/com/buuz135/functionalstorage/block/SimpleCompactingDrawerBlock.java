@@ -12,7 +12,6 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.neoforge.common.Tags;
@@ -57,7 +56,7 @@ public class SimpleCompactingDrawerBlock extends Drawer<SimpleCompactingDrawerTi
     public void registerRecipe(RecipeOutput consumer) {
         TitaniumShapedRecipeBuilder.shapedRecipe(this)
                 .pattern("SSS").pattern("SDP").pattern("SIS")
-                .define('S', Blocks.STONE)
+                .define('S', Tags.Items.STONES)
                 .define('P', Blocks.PISTON)
                 .define('D', StorageTags.DRAWER)
                 .define('I', Tags.Items.INGOTS_IRON)

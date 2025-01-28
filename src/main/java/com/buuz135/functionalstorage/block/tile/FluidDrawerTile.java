@@ -1,36 +1,28 @@
 package com.buuz135.functionalstorage.block.tile;
 
 import com.buuz135.functionalstorage.FunctionalStorage;
-import com.buuz135.functionalstorage.block.FluidDrawerBlock;
-import com.buuz135.functionalstorage.block.config.FunctionalStorageConfig;
 import com.buuz135.functionalstorage.client.gui.FluidDrawerInfoGuiAddon;
 import com.buuz135.functionalstorage.fluid.BigFluidHandler;
+import com.buuz135.functionalstorage.item.FSAttachments;
 import com.buuz135.functionalstorage.item.StorageUpgradeItem;
-import com.buuz135.functionalstorage.item.UpgradeItem;
+import com.buuz135.functionalstorage.item.component.SizeProvider;
 import com.hrznstudio.titanium.annotation.Save;
 import com.hrznstudio.titanium.block.BasicTileBlock;
 import com.hrznstudio.titanium.component.inventory.InventoryComponent;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.BucketPickup;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.common.util.FakePlayerFactory;
 import net.neoforged.neoforge.fluids.FluidUtil;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
-import net.neoforged.neoforge.fluids.capability.wrappers.BucketPickupHandlerWrapper;
 import net.neoforged.neoforge.items.IItemHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -40,13 +32,12 @@ import java.util.Optional;
 import java.util.UUID;
 
 public class FluidDrawerTile extends ControllableDrawerTile<FluidDrawerTile> {
-    public static final GameProfile FP = new GameProfile(UUID.nameUUIDFromBytes("FunctionalStorage-Pickup".getBytes(StandardCharsets.UTF_8)), "FunctionalStorage-Pickp");
     @Save
     public BigFluidHandler fluidHandler;
     private final FunctionalStorage.DrawerType type;
 
     public FluidDrawerTile(BasicTileBlock<FluidDrawerTile> base, BlockEntityType<FluidDrawerTile> blockEntityType, BlockPos pos, BlockState state, FunctionalStorage.DrawerType type) {
-        super(base, blockEntityType, pos, state);
+        super(base, blockEntityType, pos, state, new DrawerProperties(type.getSlotAmount(), FSAttachments.FLUID_STORAGE_MODIFIER));
         this.type = type;
         this.fluidHandler = new BigFluidHandler(type.getSlots(), getTankCapacity(getStorageMultiplier())) {
             @Override
@@ -72,8 +63,7 @@ public class FluidDrawerTile extends ControllableDrawerTile<FluidDrawerTile> {
     }
 
     private int getTankCapacity(int storageMultiplier) {
-        long maxCap = ((type.getSlotAmount() / 64)) * 1000L * storageMultiplier;
-        return (int) Math.min(Integer.MAX_VALUE, maxCap);
+        return (int) Math.min(Integer.MAX_VALUE, storageMultiplier * 1000L);
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -97,86 +87,6 @@ public class FluidDrawerTile extends ControllableDrawerTile<FluidDrawerTile> {
         ));
     }
 
-    @Override
-    public double getStorageDiv() {
-        return FunctionalStorageConfig.FLUID_DIVISOR;
-    }
-
-    @Override
-    public void serverTick(Level level, BlockPos pos, BlockState stateOwn, FluidDrawerTile blockEntity) {
-        super.serverTick(level, pos, stateOwn, blockEntity);
-        if (level.getGameTime() % FunctionalStorageConfig.UPGRADE_TICK == 0) {
-            for (int i = 0; i < this.getUtilityUpgrades().getSlots(); i++) {
-                var stack = this.getUtilityUpgrades().getStackInSlot(i);
-                if (!stack.isEmpty()) {
-                    var item = stack.getItem();
-                    if (item.equals(FunctionalStorage.PUSHING_UPGRADE.get())) {
-                        var direction = UpgradeItem.getDirection(stack);
-                        var otherFluidHandler = level.getCapability(Capabilities.FluidHandler.BLOCK, pos.relative(direction), direction.getOpposite());
-                        if (otherFluidHandler != null) {
-                            for (int tankId = 0; tankId < this.getFluidHandler().getTanks(); tankId++) {
-                                var fluidTank = this.fluidHandler.getTankList()[tankId];
-                                if (fluidTank.getFluid().isEmpty()) continue;
-                                var extracted = fluidTank.drain(FunctionalStorageConfig.UPGRADE_PUSH_FLUID, IFluidHandler.FluidAction.SIMULATE);
-                                if (extracted.isEmpty()) continue;
-                                var insertedAmount = otherFluidHandler.fill(extracted, IFluidHandler.FluidAction.EXECUTE);
-                                if (insertedAmount > 0) {
-                                    fluidTank.drain(insertedAmount, IFluidHandler.FluidAction.EXECUTE);
-                                    this.fluidHandler.onChange();
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                    if (item.equals(FunctionalStorage.PULLING_UPGRADE.get())) {
-                        var direction = UpgradeItem.getDirection(stack);
-                        var otherFluidHandler = level.getCapability(Capabilities.FluidHandler.BLOCK, pos.relative(direction), direction.getOpposite());
-                        if (otherFluidHandler != null) {
-                            for (int tankId = 0; tankId < this.getFluidHandler().getTanks(); tankId++) {
-                                var fluidTank = this.fluidHandler.getTankList()[tankId];
-                                var extracted = otherFluidHandler.drain(FunctionalStorageConfig.UPGRADE_PULL_FLUID, IFluidHandler.FluidAction.SIMULATE);
-                                if (extracted.isEmpty()) continue;
-                                var insertedAmount = fluidTank.fill(extracted, IFluidHandler.FluidAction.EXECUTE);
-                                if (insertedAmount > 0) {
-                                    otherFluidHandler.drain(insertedAmount, IFluidHandler.FluidAction.EXECUTE);
-                                    this.fluidHandler.onChange();
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                    if (item.equals(FunctionalStorage.COLLECTOR_UPGRADE.get()) && level.getGameTime() % (FunctionalStorageConfig.UPGRADE_TICK * 3) == 0) {
-                        var direction = UpgradeItem.getDirection(stack);
-                        var fluidstate = this.level.getFluidState(this.getBlockPos().relative(direction));
-                        if (!fluidstate.isEmpty() && fluidstate.isSource()) {
-                            BlockState state = level.getBlockState(pos.relative(direction));
-                            Block block = state.getBlock();
-                            IFluidHandler targetFluidHandler = null;
-                            if (block instanceof BucketPickup) {
-                                targetFluidHandler = new BucketPickupHandlerWrapper(FakePlayerFactory.get((ServerLevel) level, FP), (BucketPickup) block, level, pos.relative(direction));
-                            }
-                            if (targetFluidHandler != null) {
-                                var drained = targetFluidHandler.drain(Integer.MAX_VALUE, IFluidHandler.FluidAction.SIMULATE);
-                                if (!drained.isEmpty()) {
-                                    for (int tankId = 0; tankId < this.getFluidHandler().getTanks(); tankId++) {
-                                        var fluidTank = this.fluidHandler.getTankList()[tankId];
-                                        var insertedAmount = fluidTank.fill(drained, IFluidHandler.FluidAction.SIMULATE);
-                                        if (insertedAmount == drained.getAmount()) {
-                                            fluidTank.fill(drained, IFluidHandler.FluidAction.EXECUTE);
-                                            if (!fluidstate.getType().canConvertToSource(fluidstate, level, this.getBlockPos().relative(direction)))
-                                                targetFluidHandler.drain(insertedAmount, IFluidHandler.FluidAction.EXECUTE);
-                                            this.fluidHandler.onChange();
-                                            break;
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
     @Override
     public InteractionResult onSlotActivated(Player playerIn, InteractionHand hand, Direction facing, double hitX, double hitY, double hitZ, int slot) {
         ItemStack stack = playerIn.getItemInHand(hand);
@@ -228,11 +138,6 @@ public class FluidDrawerTile extends ControllableDrawerTile<FluidDrawerTile> {
         return 4;
     }
 
-    @Override
-    public int getBaseSize(int lost) {
-        return type.getSlotAmount();
-    }
-
     public BigFluidHandler getFluidHandler() {
         return fluidHandler;
     }
@@ -281,21 +186,14 @@ public class FluidDrawerTile extends ControllableDrawerTile<FluidDrawerTile> {
             public ItemStack extractItem(int slot, int amount, boolean simulate) {
                 if (isStorageUpgradeLocked()) return ItemStack.EMPTY;
                 ItemStack stack = this.getStackInSlot(slot);
-                if (stack.getItem() instanceof StorageUpgradeItem) {
-                    int mult = 1;
-                    for (int i = 0; i < getStorageUpgrades().getSlots(); i++) {
-                        if (getStorageUpgrades().getStackInSlot(i).getItem() instanceof StorageUpgradeItem) {
-                            if (i == slot) continue;
-                            var calculated = ((StorageUpgradeItem) getStorageUpgrades().getStackInSlot(i).getItem()).getStorageMultiplier() / getStorageDiv();
-                            if (mult == 1)
-                                mult = (int) calculated;
-                            else
-                                mult *= calculated;
-                        }
-                    }
+                if (stack.has(FSAttachments.FLUID_STORAGE_MODIFIER)) {
+                    var replacement = new ItemStack[this.getSlots()];
+                    replacement[slot] = stack;
+
+                    var newSize = SizeProvider.calculate(this, FSAttachments.FLUID_STORAGE_MODIFIER, baseSize, replacement);
                     for (int i = 0; i < getFluidHandler().getTanks(); i++) {
-                        if (getFluidHandler().getFluidInTank(i).isEmpty()) continue;
-                        if (getFluidHandler().getFluidInTank(i).getAmount() > getTankCapacity(mult)) {
+                        var stored = getFluidHandler().getFluidInTank(i);
+                        if (stored.getAmount() > Math.min(Integer.MAX_VALUE, getTankCapacity(newSize))) {
                             return ItemStack.EMPTY;
                         }
                     }
@@ -306,9 +204,9 @@ public class FluidDrawerTile extends ControllableDrawerTile<FluidDrawerTile> {
                 .setInputFilter((stack, integer) -> {
                     if (isStorageUpgradeLocked()) return false;
                     if (stack.getItem().equals(FunctionalStorage.STORAGE_UPGRADES.get(StorageUpgradeItem.StorageTier.IRON).get())) {
-                        return false;
+                        return true;
                     }
-                    return stack.getItem() instanceof UpgradeItem && ((UpgradeItem) stack.getItem()).getType() == UpgradeItem.Type.STORAGE;
+                    return stack.has(FSAttachments.FLUID_STORAGE_MODIFIER) || stack.is(FunctionalStorage.CREATIVE_UPGRADE);
                 })
                 .setOnSlotChanged((stack, integer) -> {
                     setNeedsUpgradeCache(true);

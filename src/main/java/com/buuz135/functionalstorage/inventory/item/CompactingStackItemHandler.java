@@ -2,7 +2,7 @@ package com.buuz135.functionalstorage.inventory.item;
 
 import com.buuz135.functionalstorage.FunctionalStorage;
 import com.buuz135.functionalstorage.item.FSAttachments;
-import com.buuz135.functionalstorage.item.StorageUpgradeItem;
+import com.buuz135.functionalstorage.item.component.SizeProvider;
 import com.buuz135.functionalstorage.util.CompactingUtil;
 import com.buuz135.functionalstorage.util.Utils;
 import net.minecraft.nbt.CompoundTag;
@@ -10,7 +10,8 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.common.util.INBTSerializable;
 import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.ItemHandlerHelper;
+import net.neoforged.neoforge.items.ItemStackHandler;
+
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,46 +23,36 @@ public class CompactingStackItemHandler implements IItemHandler, INBTSerializabl
     public static String STACK = "Stack";
     public static String AMOUNT = "Amount";
 
-    public int totalAmount;
-
     private int amount;
     private ItemStack parent;
     private List<CompactingUtil.Result> resultList;
-    private int slots;
-    private int multiplier;
-    private boolean downgrade;
+    private final int slots;
+    private int size;
     private boolean isVoid;
     private boolean isCreative;
-    private ItemStack stack;
+    private final ItemStack stack;
 
     public CompactingStackItemHandler(ItemStack stack, int slots) {
         this.stack = stack;
         this.resultList = new ArrayList<>();
         this.slots = slots;
-        this.totalAmount = 512;
-        for (int i = 0; i < slots - 1; i++) {
-            this.totalAmount *= 9;
-        }
+        this.size = 512;
         for (int i = 0; i < slots; i++) {
             this.resultList.add(i, new CompactingUtil.Result(ItemStack.EMPTY, 1));
         }
         this.parent = ItemStack.EMPTY;
-        this.multiplier = 1;
-        this.downgrade = false;
         this.isVoid = false;
         this.isCreative = false;
         if (stack.has(FSAttachments.TILE)) {
             var tile = stack.get(FSAttachments.TILE);
             deserializeNBT(Utils.registryAccess(), tile.getCompound("handler"));
+
+            var upgrades = new ItemStackHandler();
+            upgrades.deserializeNBT(Utils.registryAccess(), tile.getCompound("storageUpgrades"));
+            size = SizeProvider.calculate(upgrades, FSAttachments.ITEM_STORAGE_MODIFIER, size);
+
             for (Tag tag : tile.getCompound("storageUpgrades").getList("Items", Tag.TAG_COMPOUND)) {
                 ItemStack itemStack = Utils.deserialize(Utils.registryAccess(), (CompoundTag) tag);
-                if (itemStack.getItem() instanceof StorageUpgradeItem) {
-                    if (multiplier == 1) multiplier = ((StorageUpgradeItem) itemStack.getItem()).getStorageMultiplier();
-                    else multiplier *= ((StorageUpgradeItem) itemStack.getItem()).getStorageMultiplier();
-                }
-                if (itemStack.getItem().equals(FunctionalStorage.STORAGE_UPGRADES.get(StorageUpgradeItem.StorageTier.IRON).get())) {
-                    this.downgrade = true;
-                }
                 if (itemStack.getItem().equals(FunctionalStorage.CREATIVE_UPGRADE.get())) {
                     this.isCreative = true;
                 }
@@ -101,7 +92,7 @@ public class CompactingStackItemHandler implements IItemHandler, INBTSerializabl
             int inserted = Math.min(getSlotLimit(slot) * result.getNeeded() - amount, stack.getCount() * result.getNeeded());
             inserted = (int) (Math.floor(inserted / result.getNeeded()) * result.getNeeded());
             if (!simulate) {
-                this.amount = Math.min(this.amount + inserted, totalAmount * getMultiplier());
+                this.amount = Math.min(this.amount + inserted, size * 64 * 9 * 9);
                 onChange();
             }
             if (inserted == stack.getCount() * result.getNeeded() || isVoid()) return ItemStack.EMPTY;
@@ -176,16 +167,12 @@ public class CompactingStackItemHandler implements IItemHandler, INBTSerializabl
     public int getSlotLimit(int slot) {
         if (isCreative()) return Integer.MAX_VALUE;
         if (slot == this.slots) return Integer.MAX_VALUE;
-        int total = totalAmount;
-        if (hasDowngrade()) total = 64 * 9 * 9;
-        return (int) Math.min(Integer.MAX_VALUE, Math.floor((total * getMultiplier()) / this.resultList.get(slot).getNeeded()));
+        return (int) Math.min(Integer.MAX_VALUE, Math.floor((size * 64 * 9 * 9) / this.resultList.get(slot).getNeeded()));
     }
 
     public int getSlotLimitBase(int slot) {
         if (slot == this.slots) return Integer.MAX_VALUE;
-        int total = totalAmount;
-        if (hasDowngrade()) total = 64 * 9 * 9;
-        return (int) Math.min(Integer.MAX_VALUE, Math.floor(total / this.resultList.get(slot).getNeeded()));
+        return (int) Math.min(Integer.MAX_VALUE, Math.floor((size * 64 * 9 * 9) / this.resultList.get(slot).getNeeded()));
     }
 
     @Override
@@ -233,10 +220,6 @@ public class CompactingStackItemHandler implements IItemHandler, INBTSerializabl
         stack.get(FSAttachments.TILE).put("handler", serializeNBT(Utils.registryAccess()));
     }
 
-    public int getMultiplier() {
-        return this.multiplier;
-    }
-
     public boolean isVoid() {
         return isVoid;
     }
@@ -249,13 +232,7 @@ public class CompactingStackItemHandler implements IItemHandler, INBTSerializabl
         return parent;
     }
 
-    public boolean hasDowngrade() {
-        return downgrade;
-    }
-
     public boolean isCreative() {
         return isCreative;
     }
-
-    ;
 }

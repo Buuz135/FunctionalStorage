@@ -3,7 +3,6 @@
 	"textures": {
 		"3": "functionalstorage:block/fluid_front_2",
 		"8": "functionalstorage:block/fluid_inner",
-		"particle": "functionalstorage:block/unlock",
 		"front": "functionalstorage:block/fluid_front_4"
 	},
 	"elements": [
@@ -19,8 +18,8 @@
 			}
 		},
 		{
-			"from": [0, 15, 0.5],
-			"to": [16, 15, 16],
+			"from": [0, 14.95, 0.5],
+			"to": [16, 14.95, 16],
 			"rotation": {"angle": 0, "axis": "y", "origin": [-8, 0, -8]},
 			"faces": {
 				"down": {"uv": [0, 0, 16, 16], "texture": "#8"}
