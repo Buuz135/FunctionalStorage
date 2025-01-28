@@ -83,7 +83,7 @@
   "drawer_upgrade.functionalstorage.void.fluid": "虚空销毁多余的流体",
   "drawer_upgrade.functionalstorage.void.item": "虚空销毁多余的物品",
   "frameddrawer.use": "如何更改纹理：\n在合成网格内，第一个槽位放置用于定义抽屉外部纹理的方块，第二个槽位放置用于定义抽屉内部纹理的方块，第三个槽位放置镶框抽屉。\n",
-  "functionalupgrade.desc.execute_every_tick": "每%s ticks：",
+  "functionalupgrade.desc.execute_every_tick": "每 %s ticks：",
   "functionalupgrade.desc.generate_fluid": "生成 %s mb %s",
   "functionalupgrade.desc.generate_item": "生成 %s %s",
   "gui.functionalstorage.amount": "数量：",
