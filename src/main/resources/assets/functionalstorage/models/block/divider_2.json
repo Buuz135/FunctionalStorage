@@ -1,16 +1,19 @@
 {
-  "credit": "Made with Blockbench",
-  "elements": [
-    {
-      "name": "divider",
-      "from": [1, 7, 0],
-      "to": [15, 9, 2],
-      "rotation": {"angle": 0, "axis": "y", "origin": [-8, 0, -8]},
-      "faces": {
-        "north": {"uv": [1, 7, 15, 9], "texture": "#front_divider", "cullface": "north"},
-        "up": {"uv": [15, 7, 1, 9], "texture": "#front_divider"},
-        "down": {"uv": [1, 9, 15, 7], "texture": "#front_divider"}
-      }
-    }
-  ]
+	"credit": "Made with Blockbench",
+	"textures": {
+		"particle": "functionalstorage:block/placeholder",
+		"front_divider": "functionalstorage:block/placeholder"
+	},
+	"elements": [
+		{
+			"name": "hdiv",
+			"from": [1, 7, 0],
+			"to": [15, 9, 1],
+			"faces": {
+				"north": {"uv": [1, 7, 15, 9], "texture": "#front_divider", "cullface": "north"},
+				"up": {"uv": [1, 7, 15, 8], "texture": "#front_divider", "cullface": "north"},
+				"down": {"uv": [1, 8, 15, 9], "texture": "#front_divider", "cullface": "north"}
+			}
+		}
+	]
 }

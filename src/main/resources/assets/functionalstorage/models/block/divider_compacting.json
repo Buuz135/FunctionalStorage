@@ -1,26 +1,29 @@
 {
-  "credit": "Made with Blockbench",
-  "elements": [
-    {
-      "name": "divider",
-      "from": [1, 7, 0],
-      "to": [15, 9, 1],
-      "faces": {
-        "north": {"uv": [1, 7, 15, 9], "texture": "#front_divider", "cullface": "north"},
-        "up": {"uv": [15, 8, 1, 7], "texture": "#front_divider"},
-        "down": {"uv": [15, 8, 1, 9], "texture": "#front_divider"}
-      }
-    },
-    {
-      "name": "divider",
-      "from": [7, 1, 0],
-      "to": [9, 7, 1],
-      "faces": {
-        "north": {"uv": [7, 9, 9, 15], "texture": "#front_divider", "cullface": "north"},
-        "east": {"uv": [7, 9, 8, 15], "texture": "#front_divider"},
-        "south": {"uv": [0, 0, 2, 6], "texture": "#front_divider"},
-        "west": {"uv": [8, 9, 9, 15], "texture": "#front_divider"}
-      }
-    }
-  ]
+	"credit": "Made with Blockbench",
+	"textures": {
+		"particle": "functionalstorage:block/compacting_drawer_front",
+		"front_divider": "functionalstorage:block/compacting_drawer_front"
+	},
+	"elements": [
+		{
+			"name": "hdiv",
+			"from": [1, 7, 0],
+			"to": [15, 9, 1],
+			"faces": {
+				"north": {"uv": [1, 7, 15, 9], "texture": "#front_divider", "cullface": "north"},
+				"up": {"uv": [1, 7, 15, 8], "texture": "#front_divider", "cullface": "north"},
+				"down": {"uv": [1, 8, 15, 9], "texture": "#front_divider", "cullface": "north"}
+			}
+		},
+		{
+			"name": "vdivLower",
+			"from": [7, 1, 0],
+			"to": [9, 7, 1],
+			"faces": {
+				"north": {"uv": [7, 9, 9, 15], "texture": "#front_divider", "cullface": "north"},
+				"east": {"uv": [7, 9, 8, 15], "rotation": 180, "texture": "#front_divider", "cullface": "north"},
+				"west": {"uv": [8, 9, 9, 15], "rotation": 180, "texture": "#front_divider", "cullface": "north"}
+			}
+		}
+	]
 }
