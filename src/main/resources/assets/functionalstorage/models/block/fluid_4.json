@@ -17,10 +17,7 @@
 			"parent": "functionalstorage:block/fluid_front_4"
 		},
 		"front_divider" : {
-			"parent": "functionalstorage:block/divider_4",
-			"textures": {
-				"front_divider": "functionalstorage:block/fluid_front_4"
-			}
+			"parent": "functionalstorage:block/divider_4"
 		},
 		"tank": {
 			"parent": "functionalstorage:block/fluid_inner_4"

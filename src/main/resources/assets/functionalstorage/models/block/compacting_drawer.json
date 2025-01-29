@@ -15,10 +15,7 @@
 			"parent": "functionalstorage:block/side_machine"
 		},
 		"front_divider" : {
-			"parent": "functionalstorage:block/divider_compacting",
-			"textures": {
-				"front_divider": "functionalstorage:block/compacting_drawer_front"
-			}
+			"parent": "functionalstorage:block/divider_compacting"
 		}
 	}
 }

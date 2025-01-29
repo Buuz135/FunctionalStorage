@@ -1,8 +1,8 @@
 {
 	"credit": "Made with Blockbench",
 	"textures": {
-		"particle": "functionalstorage:block/placeholder",
-		"front_divider": "functionalstorage:block/placeholder"
+		"particle": "functionalstorage:block/machine_divider",
+		"front_divider": "functionalstorage:block/machine_divider"
 	},
 	"elements": [
 		{

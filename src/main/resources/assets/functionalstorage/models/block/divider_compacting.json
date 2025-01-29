@@ -1,8 +1,8 @@
 {
 	"credit": "Made with Blockbench",
 	"textures": {
-		"particle": "functionalstorage:block/compacting_drawer_front",
-		"front_divider": "functionalstorage:block/compacting_drawer_front"
+		"particle": "functionalstorage:block/machine_divider",
+		"front_divider": "functionalstorage:block/machine_divider"
 	},
 	"elements": [
 		{
@@ -11,8 +11,8 @@
 			"to": [15, 9, 1],
 			"faces": {
 				"north": {"uv": [1, 7, 15, 9], "texture": "#front_divider", "cullface": "north"},
-				"up": {"uv": [1, 7, 15, 8], "texture": "#front_divider", "cullface": "north"},
-				"down": {"uv": [1, 8, 15, 9], "texture": "#front_divider", "cullface": "north"}
+				"up": {"uv": [1, 15, 15, 16], "texture": "#front_divider", "cullface": "north"},
+				"down": {"uv": [1, 0, 15, 1], "texture": "#front_divider", "cullface": "north"}
 			}
 		},
 		{
