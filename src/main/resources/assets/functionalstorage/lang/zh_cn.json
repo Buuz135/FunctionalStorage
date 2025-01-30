@@ -61,7 +61,7 @@
   "configurationtool.configmode.toggle_upgrades": "隐藏/显示升级渲染",
   "configurationtool.use": "潜行+右击可更改模式。右击抽屉可开关所选项。",
   "drawer.block.contents": "内容：",
-  "drawer.block.multiplier": "存储乘数：%s",
+  "drawer.block.multiplier": "存储倍率：%s",
   "drawer.block.upgrades": "升级：",
   "drawer.block.upgrades.is_creative": "创造",
   "drawer.block.upgrades.is_void": "虚空",
