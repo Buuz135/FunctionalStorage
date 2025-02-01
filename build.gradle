@@ -21,7 +21,7 @@ repositories {
         url = "https://maven.blamejared.com/"
     }
     maven {
-        url "https://www.cursemaven.com"
+        url = "https://www.cursemaven.com"
         content {
             includeGroup "curse.maven"
         }
@@ -104,8 +104,8 @@ publishing {
   }
   repositories {
     maven {
-      name 'repo'
-      url(file('repo'))
+      name = 'repo'
+      url = file('repo')
     }
   }
 }
