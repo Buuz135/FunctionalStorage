@@ -1,8 +1,8 @@
 {
 	"credit": "Made with Blockbench",
 	"textures": {
-		"particle": "functionalstorage:block/fluid_front_2",
-		"front": "functionalstorage:block/fluid_front_2"
+		"particle": "functionalstorage:block/fluid_front_4",
+		"front": "functionalstorage:block/fluid_front_4"
 	},
 	"elements": [
 		{
@@ -11,7 +11,7 @@
 			"to": [15, 15, 1],
 			"faces": {
 				"north": {"uv": [1, 1, 15, 2], "texture": "#front", "cullface": "north"},
-				"down": {"uv": [1, 0.5, 15, 0], "texture": "#front", "cullface": "north"}
+				"down": {"uv": [1, 1.5, 15, 1], "texture": "#front", "cullface": "north"}
 			}
 		},
 		{
@@ -20,7 +20,7 @@
 			"to": [15, 2, 1],
 			"faces": {
 				"north": {"uv": [1, 14, 15, 15], "texture": "#front", "cullface": "north"},
-				"up": {"uv": [1, 15, 15, 15.5], "texture": "#front", "cullface": "north"}
+				"up": {"uv": [1, 14, 15, 14.5], "texture": "#front", "cullface": "north"}
 			}
 		},
 		{
@@ -47,8 +47,28 @@
 			"to": [14, 10, 1],
 			"faces": {
 				"north": {"uv": [2, 6, 14, 10], "texture": "#front", "cullface": "north"},
-				"up": {"uv": [2, 0, 14, 0.5], "texture": "#front", "cullface": "north"},
-				"down": {"uv": [2, 15, 14, 15.5], "texture": "#front", "cullface": "north"}
+				"up": {"uv": [2, 6, 14, 6.5], "texture": "#front", "cullface": "north"},
+				"down": {"uv": [2, 9, 14, 9.5], "texture": "#front", "cullface": "north"}
+			}
+		},
+		{
+			"name": "vdivLower",
+			"from": [6, 2, 0.5],
+			"to": [10, 6, 1],
+			"faces": {
+				"north": {"uv": [6, 10, 10, 14], "texture": "#front", "cullface": "north"},
+				"east": {"uv": [6, 10, 6.5, 14], "texture": "#front", "cullface": "north"},
+				"west": {"uv": [9, 10, 9.5, 14], "texture": "#front", "cullface": "north"}
+			}
+		},
+		{
+			"name": "vdivUpper",
+			"from": [6, 10, 0.5],
+			"to": [10, 14, 1],
+			"faces": {
+				"north": {"uv": [6, 2, 10, 6], "texture": "#front", "cullface": "north"},
+				"east": {"uv": [6, 2, 6.5, 6], "texture": "#front", "cullface": "north"},
+				"west": {"uv": [9, 2, 9.5, 6], "texture": "#front", "cullface": "north"}
 			}
 		}
 	]

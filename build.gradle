@@ -1,5 +1,5 @@
 plugins {
-    id 'net.neoforged.moddev' version '0.1.120'
+    id 'net.neoforged.moddev' version '2.0.75'
     id 'maven-publish'
 }
 
@@ -21,7 +21,7 @@ repositories {
         url = "https://maven.blamejared.com/"
     }
     maven {
-        url "https://www.cursemaven.com"
+        url = "https://www.cursemaven.com"
         content {
             includeGroup "curse.maven"
         }
@@ -67,7 +67,7 @@ neoForge {
     }
 }
 
-dependencies {    
+dependencies {
 	compileOnly "mezz.jei:jei-1.21.1-common-api:$jei_version"
     compileOnly "mezz.jei:jei-1.21.1-neoforge-api:$jei_version"
     runtimeOnly "mezz.jei:jei-1.21.1-neoforge:$jei_version"
@@ -104,8 +104,8 @@ publishing {
   }
   repositories {
     maven {
-      name 'repo'
-      url(file('repo'))
+      name = 'repo'
+      url = file('repo')
     }
   }
 }

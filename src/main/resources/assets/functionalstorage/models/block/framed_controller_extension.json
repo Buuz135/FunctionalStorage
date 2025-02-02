@@ -1,22 +1,21 @@
 {
-  "credit": "Made with Blockbench",
+	"parent": "minecraft:block/block",
   "loader": "functionalstorage:framedblock",
+  "textures": {
+    "particle": "functionalstorage:block/framed_controller_extension"
+  },
   "children": {
-    "lock": {
-    },
     "front": {
-      "parent": "functionalstorage:block/framed_controller_front",
+      "parent": "functionalstorage:block/front",
       "textures": {
         "front": "functionalstorage:block/framed_side"
       }
     },
     "side": {
-      "parent": "functionalstorage:block/framed_controller_side",
+      "parent": "functionalstorage:block/side_machine",
       "textures": {
         "side": "functionalstorage:block/framed_side"
       }
-    },
-    "front_divider" : {
     },
     "display": {
       "parent": "functionalstorage:block/framed_controller_front",
@@ -28,39 +27,5 @@
   "item_render_order": [
     "front",
     "side"
-  ],
-  "textures": {
-    "particle": "functionalstorage:block/framed_side"
-  },
-  "display": {
-    "thirdperson_righthand": {
-      "rotation": [75, 45, 0],
-      "translation": [0, 2.5, 0],
-      "scale": [0.375, 0.375, 0.375]
-    },
-    "thirdperson_lefthand": {
-      "rotation": [75, 45, 0],
-      "translation": [0, 2.5, 0],
-      "scale": [0.375, 0.375, 0.375]
-    },
-    "firstperson_righthand": {
-      "rotation": [0, 135, 0],
-      "scale": [0.4, 0.4, 0.4]
-    },
-    "firstperson_lefthand": {
-      "rotation": [0, 135, 0],
-      "scale": [0.4, 0.4, 0.4]
-    },
-    "ground": {
-      "translation": [0, 3, 0],
-      "scale": [0.25, 0.25, 0.25]
-    },
-    "gui": {
-      "rotation": [30, 225, 0],
-      "scale": [0.625, 0.625, 0.625]
-    },
-    "fixed": {
-      "scale": [0.5, 0.5, 0.5]
-    }
-  }
+  ]
 }
