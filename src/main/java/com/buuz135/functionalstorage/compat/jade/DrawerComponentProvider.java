@@ -58,6 +58,7 @@ public enum DrawerComponentProvider implements IBlockComponentProvider {
                 if (tile instanceof EnderDrawerTile ed && ed.getFrequency() != null) {
                     var inv = EnderSavedData.getInstance(Minecraft.getInstance().level).getFrequency(ed.getFrequency());
                     for (int slot = 0; slot < inv.getSlots(); slot++) {
+                        if (inv.isVoid() && slot + 1 == inv.getSlots()) continue;
                         var stack = inv.getStoredStacks().get(slot);
                         if (stack.getStack().getItem() != Items.AIR) {
                             stacks.add(new Pair<>(stack.getStack().copyWithCount(stack.getAmount()), inv.getSlotLimit(slot)));

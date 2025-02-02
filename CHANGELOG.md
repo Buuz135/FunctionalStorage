@@ -7,6 +7,7 @@
 * Override getViewDistance() to get render decisions in constant time by kylev
 * Model and textures changes to fluid drawers by kylev
 * Chinese localization update by ZHAY10086
+* Fixed void upgrade not working properly in Ender Drawers, closes #358
 
 # VERSION 1.3.7
 * Add upgrade stack to `FunctionalUpgradeItem#work` by Matyrobbrt
