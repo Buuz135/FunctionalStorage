@@ -18,9 +18,11 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Fluids;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidUtil;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.items.IItemHandler;
@@ -93,6 +95,11 @@ public class FluidDrawerTile extends ControllableDrawerTile<FluidDrawerTile> {
         if (stack.getItem().equals(FunctionalStorage.CONFIGURATION_TOOL.get()) || stack.getItem().equals(FunctionalStorage.LINKING_TOOL.get()))
             return InteractionResult.PASS;
         if (slot != -1 && !playerIn.getItemInHand(hand).isEmpty()) {
+            var fluidStack = FluidUtil.getFluidContained(stack);
+            if (fluidStack.isPresent() && this.fluidHandler.isDrawerLocked() && this.fluidHandler.isFluidValid(slot, new FluidStack(Fluids.EMPTY, 0))){
+                this.fluidHandler.getFilterStack()[slot] = fluidStack.get();
+                markForUpdate();
+            }
             var interactionResult = Optional.ofNullable(stack.getCapability(Capabilities.FluidHandler.ITEM)).map(iFluidHandlerItem -> Optional.ofNullable(playerIn.getCapability(Capabilities.ItemHandler.ENTITY)).map(iItemHandler -> {
                 var result = FluidUtil.tryEmptyContainerAndStow(stack, this.fluidHandler.getTankList()[slot], iItemHandler, Integer.MAX_VALUE, playerIn, true);
                 if (result.isSuccess()) {
