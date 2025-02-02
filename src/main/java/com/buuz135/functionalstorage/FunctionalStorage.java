@@ -237,28 +237,6 @@ public class FunctionalStorage extends ModuleController {
                 })
                 .subscribe();
 
-        NeoForge.EVENT_BUS.addListener((final ItemTooltipEvent event) -> {
-            var stack = event.getItemStack();
-            var tooltip = event.getToolTip();
-
-            var item = stack.get(FSAttachments.ITEM_STORAGE_MODIFIER);
-            if (item != null) {
-                tooltip.add(item.getTooltip(Component.translatable("storageupgrade.obj.item_storage")).copy().withStyle(ChatFormatting.GRAY));
-            }
-            var fluid = stack.get(FSAttachments.FLUID_STORAGE_MODIFIER);
-            if (fluid != null) {
-                tooltip.add(fluid.getTooltip(Component.translatable("storageupgrade.obj.fluid_storage")).copy().withStyle(ChatFormatting.GRAY));
-            }
-            var range = stack.get(FSAttachments.CONTROLLER_RANGE_MODIFIER);
-            if (range != null) {
-                tooltip.add(range.getTooltip(Component.translatable("storageupgrade.obj.controller_range")).copy().withStyle(ChatFormatting.GRAY));
-            }
-            var functional = stack.get(FSAttachments.FUNCTIONAL_BEHAVIOR);
-            if (functional != null) {
-                tooltip.addAll(functional.getTooltip());
-            }
-        });
-
         modBus.addListener((final RegisterCapabilitiesEvent event) -> {
             event.registerItem(Capabilities.ItemHandler.ITEM, (object, context) -> {
                 if (object.getItem() instanceof DrawerBlock.DrawerItem di) {

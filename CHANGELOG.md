@@ -3,6 +3,10 @@
 * Added missing lang entry for simple compacting drawer, closes #343, #356 by kylev
 * Allow compacting drawers to be crafted with any type of stone, closes #284 by kylev
 * Fixed framed fluid drawers not having the locked indicator, closes #364 by kylev
+* Fixed relative direction not showing in Fluid Drawers, closes #357
+* Override getViewDistance() to get render decisions in constant time by kylev
+* Model and textures changes to fluid drawers by kylev
+* Chinese localization update by ZHAY10086
 
 # VERSION 1.3.7
 * Add upgrade stack to `FunctionalUpgradeItem#work` by Matyrobbrt

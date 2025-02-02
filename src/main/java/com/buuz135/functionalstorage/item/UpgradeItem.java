@@ -11,6 +11,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.SlotAccess;
 import net.minecraft.world.entity.player.Player;
@@ -73,10 +74,10 @@ public class UpgradeItem extends FSItem {
         super.verifyComponentsAfterLoad(stack);
         Item item = stack.getItem();
         if (item.equals(FunctionalStorage.PULLING_UPGRADE.get()) || item.equals(FunctionalStorage.PUSHING_UPGRADE.get()) || item.equals(FunctionalStorage.COLLECTOR_UPGRADE.get())){
-            stack.set(FSAttachments.DIRECTION, Direction.NORTH);
+            if (!stack.has(FSAttachments.DIRECTION)) stack.set(FSAttachments.DIRECTION, Direction.NORTH);
         }
         if (item.equals(FunctionalStorage.REDSTONE_UPGRADE.get())){
-            stack.set(FSAttachments.SLOT, 0);
+            if (!stack.has(FSAttachments.SLOT)) stack.set(FSAttachments.SLOT, 0);
         }
     }
 
