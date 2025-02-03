@@ -71,7 +71,7 @@ dependencies {
 	compileOnly "mezz.jei:jei-1.21.1-common-api:$jei_version"
     compileOnly "mezz.jei:jei-1.21.1-neoforge-api:$jei_version"
     runtimeOnly "mezz.jei:jei-1.21.1-neoforge:$jei_version"
-    implementation project.dependencies.create('com.hrznstudio:titanium:1.21-4.0.12')
+    implementation project.dependencies.create('com.hrznstudio:titanium:1.21-4.0.33')
     implementation "curse.maven:jade-324717:5444008"
     compileOnly "curse.maven:the-one-probe-245211:5475189"
     runtimeOnly "curse.maven:applied-energistics-2-223794:5729094"

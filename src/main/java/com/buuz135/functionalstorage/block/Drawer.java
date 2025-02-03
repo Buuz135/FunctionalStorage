@@ -139,7 +139,9 @@ public abstract class Drawer<T extends ControllableDrawerTile<T>> extends Rotata
 
     protected void copyTo(T tile, ItemStack stack) {
         if (!tile.isEverythingEmpty()) {
-            stack.set(FSAttachments.TILE, NBTManager.getInstance().writeTileEntity(tile, new CompoundTag()));
+            var compound = NBTManager.getInstance().writeTileEntity(tile, new CompoundTag());
+            compound.put("storageUpgrades", tile.getStorageUpgrades().serializeNBT(tile.getLevel().registryAccess()));
+            stack.set(FSAttachments.TILE, compound);
         }
         if (tile.isLocked()) {
             stack.set(FSAttachments.LOCKED, tile.isLocked());

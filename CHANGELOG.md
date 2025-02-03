@@ -1,3 +1,6 @@
+# VERSION 1.4.1
+* Fixed drawers not saving storage upgrades when broken
+
 # VERSION 1.4.0
 * Reworked all the upgrades to use the component system so modpack makers can create custom upgrades by Matyrobbrt
 * Added missing lang entry for simple compacting drawer, closes #343, #356 by kylev
