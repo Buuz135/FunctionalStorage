@@ -106,11 +106,8 @@ public abstract class ItemControllableDrawerTile<T extends ItemControllableDrawe
                     replacement[slot] = stack;
 
                     var newSize = (long) SizeProvider.calculate(this, FSAttachments.ITEM_STORAGE_MODIFIER, baseSize, replacement);
-                    for (int i = 0; i < getStorage().getSlots(); i++) {
-                        var stored = getStorage().getStackInSlot(i);
-                        if (stored.getCount() > Math.min(Integer.MAX_VALUE, newSize * stored.getMaxStackSize())) {
-                            return ItemStack.EMPTY;
-                        }
+                    if (!canChangeMultiplier(newSize)) {
+                        return ItemStack.EMPTY;
                     }
                 }
                 return super.extractItem(slot, amount, simulate);
@@ -125,11 +122,8 @@ public abstract class ItemControllableDrawerTile<T extends ItemControllableDrawe
                     replacement[integer] = stack;
 
                     var newSize = (long) SizeProvider.calculate(getStorageUpgrades(), FSAttachments.ITEM_STORAGE_MODIFIER, baseSize, replacement);
-                    for (int i = 0; i < getStorage().getSlots(); i++) {
-                        var stored = getStorage().getStackInSlot(i);
-                        if (stored.getCount() > Math.min(Integer.MAX_VALUE, newSize * stored.getMaxStackSize())) {
-                            return false;
-                        }
+                    if (!canChangeMultiplier(newSize)) {
+                        return false;
                     }
 
                     return true;
@@ -138,6 +132,16 @@ public abstract class ItemControllableDrawerTile<T extends ItemControllableDrawe
                     setNeedsUpgradeCache(true);
                 })
                 .setSlotLimit(1);
+    }
+
+    protected boolean canChangeMultiplier(long newSizeMultiplier) {
+        for (int i = 0; i < getStorage().getSlots(); i++) {
+            var stored = getStorage().getStackInSlot(i);
+            if (!stored.isEmpty() && stored.getCount() > Math.min(Integer.MAX_VALUE, newSizeMultiplier * stored.getMaxStackSize())) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public boolean isEverythingEmpty() {
