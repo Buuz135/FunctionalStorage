@@ -1,3 +1,6 @@
+# VERSION 1.4.2
+* Fix upgrades not being insertable/extractable in compacting drawers by Matyrobbrt
+
 # VERSION 1.4.1
 * Fixed drawers not saving storage upgrades when broken
 
