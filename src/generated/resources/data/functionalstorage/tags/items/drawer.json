@@ -1,4 +1,5 @@
 {
+  "replace": false,
   "values": [
     "functionalstorage:oak_2",
     "functionalstorage:spruce_2",

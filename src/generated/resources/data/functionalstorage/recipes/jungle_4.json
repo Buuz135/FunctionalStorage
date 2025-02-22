@@ -4,33 +4,33 @@
     {
       "conditions": [
         {
-          "type": "forge:and",
           "values": [
             {
-              "type": "forge:item_exists",
-              "item": "functionalstorage:jungle_4"
+              "item": "functionalstorage:jungle_4",
+              "type": "forge:item_exists"
             }
-          ]
+          ],
+          "type": "forge:and"
         }
       ],
       "recipe": {
         "type": "minecraft:crafting_shaped",
-        "key": {
-          "C": {
-            "tag": "forge:chests/wooden"
-          },
-          "P": {
-            "item": "minecraft:jungle_planks"
-          }
-        },
         "pattern": [
           "CPC",
           "PPP",
           "CPC"
         ],
+        "key": {
+          "P": {
+            "item": "minecraft:jungle_planks"
+          },
+          "C": {
+            "tag": "forge:chests/wooden"
+          }
+        },
         "result": {
-          "count": 4,
-          "item": "functionalstorage:jungle_4"
+          "item": "functionalstorage:jungle_4",
+          "count": 4
         }
       }
     }

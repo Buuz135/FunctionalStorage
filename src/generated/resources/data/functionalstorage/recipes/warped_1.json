@@ -4,30 +4,30 @@
     {
       "conditions": [
         {
-          "type": "forge:and",
           "values": [
             {
-              "type": "forge:item_exists",
-              "item": "functionalstorage:warped_1"
+              "item": "functionalstorage:warped_1",
+              "type": "forge:item_exists"
             }
-          ]
+          ],
+          "type": "forge:and"
         }
       ],
       "recipe": {
         "type": "minecraft:crafting_shaped",
-        "key": {
-          "C": {
-            "tag": "forge:chests/wooden"
-          },
-          "P": {
-            "item": "minecraft:warped_planks"
-          }
-        },
         "pattern": [
           "PPP",
           "PCP",
           "PPP"
         ],
+        "key": {
+          "P": {
+            "item": "minecraft:warped_planks"
+          },
+          "C": {
+            "tag": "forge:chests/wooden"
+          }
+        },
         "result": {
           "item": "functionalstorage:warped_1"
         }

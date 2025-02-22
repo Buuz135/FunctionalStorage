@@ -1,42 +1,42 @@
 {
   "variants": {
-    "locked=false,subfacing=east": {
-      "model": "functionalstorage:block/jungle_1",
-      "uvlock": true,
-      "y": 90
-    },
     "locked=false,subfacing=north": {
       "model": "functionalstorage:block/jungle_1",
       "uvlock": true
-    },
-    "locked=false,subfacing=south": {
-      "model": "functionalstorage:block/jungle_1",
-      "uvlock": true,
-      "y": 180
-    },
-    "locked=false,subfacing=west": {
-      "model": "functionalstorage:block/jungle_1",
-      "uvlock": true,
-      "y": 270
-    },
-    "locked=true,subfacing=east": {
-      "model": "functionalstorage:block/jungle_1_locked",
-      "uvlock": true,
-      "y": 90
     },
     "locked=true,subfacing=north": {
       "model": "functionalstorage:block/jungle_1_locked",
       "uvlock": true
     },
+    "locked=false,subfacing=south": {
+      "model": "functionalstorage:block/jungle_1",
+      "y": 180,
+      "uvlock": true
+    },
     "locked=true,subfacing=south": {
       "model": "functionalstorage:block/jungle_1_locked",
-      "uvlock": true,
-      "y": 180
+      "y": 180,
+      "uvlock": true
+    },
+    "locked=false,subfacing=west": {
+      "model": "functionalstorage:block/jungle_1",
+      "y": 270,
+      "uvlock": true
     },
     "locked=true,subfacing=west": {
       "model": "functionalstorage:block/jungle_1_locked",
-      "uvlock": true,
-      "y": 270
+      "y": 270,
+      "uvlock": true
+    },
+    "locked=false,subfacing=east": {
+      "model": "functionalstorage:block/jungle_1",
+      "y": 90,
+      "uvlock": true
+    },
+    "locked=true,subfacing=east": {
+      "model": "functionalstorage:block/jungle_1_locked",
+      "y": 90,
+      "uvlock": true
     }
   }
 }
