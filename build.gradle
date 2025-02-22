@@ -92,13 +92,15 @@ repositories {
 
 dependencies {
 
-    minecraft 'net.minecraftforge:forge:1.19.2-43.2.3'
+    minecraft 'net.minecraftforge:forge:1.19.2-43.4.0'
     implementation fg.deobf(project.dependencies.create('com.hrznstudio:titanium:1.19.2-3.7.3-27'))
     compileOnly(fg.deobf("mezz.jei:jei-${mc_version}-common-api:${jei_version}"))
     compileOnly(fg.deobf("mezz.jei:jei-${mc_version}-forge-api:${jei_version}"))
     runtimeOnly(fg.deobf("mezz.jei:jei-${mc_version}-forge:${jei_version}"))
     runtimeOnly fg.deobf("curse.maven:refined-storage-243076:4216398")
+    compileOnly fg.deobf("curse.maven:jade-324717:4914105")
     implementation fg.deobf("curse.maven:the-one-probe-245211:3965693")
+    runtimeOnly fg.deobf("curse.maven:applied-energistics-2-223794:5014801")
     //implementation fg.deobf("curse.maven:allthecompressed-514045:3723881")
     runtimeOnly fg.deobf("curse.maven:create-328085:4174330")
     //runtimeOnly fg.deobf("curse.maven:flywheel-486392:3600401")
