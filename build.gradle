@@ -87,14 +87,15 @@ repositories {
 }
 
 dependencies {
-
-    minecraft 'net.minecraftforge:forge:1.20.1-47.1.1'
+    minecraft 'net.minecraftforge:forge:1.20.1-47.3.0'
     implementation fg.deobf(project.dependencies.create('com.hrznstudio:titanium:1.20.1-3.8.1-9'))
     compileOnly fg.deobf("mezz.jei:jei-1.20.1-common-api:15.2.0.23")
     compileOnly fg.deobf("mezz.jei:jei-1.20.1-forge-api:15.2.0.23")
     // at runtime, use the full JEI jar for Forge
     runtimeOnly fg.deobf("mezz.jei:jei-1.20.1-forge:15.2.0.23")
-    implementation fg.deobf("curse.maven:the-one-probe-245211:4613250")
+    compileOnly fg.deobf("curse.maven:jade-324717:6106101")
+    implementation fg.deobf("curse.maven:the-one-probe-245211:6106996")
+    runtimeOnly fg.deobf("curse.maven:applied-energistics-2-223794:6091401")
     implementation fg.deobf("curse.maven:mekanism-268560:4866575")
     annotationProcessor "org.spongepowered:mixin:0.8.5:processor"
 }
