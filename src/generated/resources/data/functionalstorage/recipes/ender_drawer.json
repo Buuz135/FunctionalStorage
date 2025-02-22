@@ -4,33 +4,33 @@
     {
       "conditions": [
         {
-          "type": "forge:and",
           "values": [
             {
-              "type": "forge:item_exists",
-              "item": "functionalstorage:ender_drawer"
+              "item": "functionalstorage:ender_drawer",
+              "type": "forge:item_exists"
             }
-          ]
+          ],
+          "type": "forge:and"
         }
       ],
       "recipe": {
         "type": "minecraft:crafting_shaped",
-        "key": {
-          "C": {
-            "tag": "forge:chests/ender"
-          },
-          "L": {
-            "tag": "functionalstorage:drawer"
-          },
-          "P": {
-            "tag": "minecraft:planks"
-          }
-        },
         "pattern": [
           "PPP",
           "LCL",
           "PPP"
         ],
+        "key": {
+          "P": {
+            "tag": "minecraft:planks"
+          },
+          "C": {
+            "tag": "forge:chests/ender"
+          },
+          "L": {
+            "tag": "functionalstorage:drawer"
+          }
+        },
         "result": {
           "item": "functionalstorage:ender_drawer"
         }

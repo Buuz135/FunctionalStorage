@@ -85,5 +85,6 @@ public class FunctionalStorageLangProvider extends LanguageProvider {
         this.add("gui.functionalstorage.amount", "Amount: ");
         this.add("gui.functionalstorage.slot", "Slot: ");
         this.add("gui.functionalstorage.fluid", "Fluid: ");
+        this.add("config.jade.plugin_functionalstorage.armory", "Functional Storage Armory");
     }
 }

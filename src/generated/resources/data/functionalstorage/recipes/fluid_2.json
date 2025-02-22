@@ -4,33 +4,33 @@
     {
       "conditions": [
         {
-          "type": "forge:and",
           "values": [
             {
-              "type": "forge:item_exists",
-              "item": "functionalstorage:fluid_2"
+              "item": "functionalstorage:fluid_2",
+              "type": "forge:item_exists"
             }
-          ]
+          ],
+          "type": "forge:and"
         }
       ],
       "recipe": {
         "type": "minecraft:crafting_shaped",
-        "key": {
-          "C": {
-            "item": "minecraft:bucket"
-          },
-          "P": {
-            "tag": "minecraft:planks"
-          }
-        },
         "pattern": [
           "PCP",
           "PPP",
           "PCP"
         ],
+        "key": {
+          "P": {
+            "tag": "minecraft:planks"
+          },
+          "C": {
+            "item": "minecraft:bucket"
+          }
+        },
         "result": {
-          "count": 2,
-          "item": "functionalstorage:fluid_2"
+          "item": "functionalstorage:fluid_2",
+          "count": 2
         }
       }
     }

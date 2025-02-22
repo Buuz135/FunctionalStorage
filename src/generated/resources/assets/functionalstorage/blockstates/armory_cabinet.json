@@ -1,23 +1,23 @@
 {
   "variants": {
-    "subfacing=east": {
-      "model": "functionalstorage:block/armory_cabinet",
-      "uvlock": true,
-      "y": 90
-    },
     "subfacing=north": {
       "model": "functionalstorage:block/armory_cabinet",
       "uvlock": true
     },
     "subfacing=south": {
       "model": "functionalstorage:block/armory_cabinet",
-      "uvlock": true,
-      "y": 180
+      "y": 180,
+      "uvlock": true
     },
     "subfacing=west": {
       "model": "functionalstorage:block/armory_cabinet",
-      "uvlock": true,
-      "y": 270
+      "y": 270,
+      "uvlock": true
+    },
+    "subfacing=east": {
+      "model": "functionalstorage:block/armory_cabinet",
+      "y": 90,
+      "uvlock": true
     }
   }
 }

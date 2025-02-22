@@ -1,5 +1,5 @@
 {
-  "parent": "functionalstorage:block/mangrove_4",
+  "parent": "functionalstorage:block/framed_4",
   "textures": {
     "lock_icon": "functionalstorage:blocks/lock"
   }

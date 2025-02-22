@@ -4,18 +4,26 @@
     {
       "conditions": [
         {
-          "type": "forge:and",
           "values": [
             {
-              "type": "forge:item_exists",
-              "item": "functionalstorage:gold_upgrade"
+              "item": "functionalstorage:gold_upgrade",
+              "type": "forge:item_exists"
             }
-          ]
+          ],
+          "type": "forge:and"
         }
       ],
       "recipe": {
         "type": "minecraft:crafting_shaped",
+        "pattern": [
+          "IBI",
+          "CDC",
+          "BIB"
+        ],
         "key": {
+          "I": {
+            "tag": "forge:ingots/gold"
+          },
           "B": {
             "tag": "forge:storage_blocks/gold"
           },
@@ -24,16 +32,8 @@
           },
           "D": {
             "item": "functionalstorage:copper_upgrade"
-          },
-          "I": {
-            "tag": "forge:ingots/gold"
           }
         },
-        "pattern": [
-          "IBI",
-          "CDC",
-          "BIB"
-        ],
         "result": {
           "item": "functionalstorage:gold_upgrade"
         }

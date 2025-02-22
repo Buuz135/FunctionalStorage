@@ -4,33 +4,33 @@
     {
       "conditions": [
         {
-          "type": "forge:and",
           "values": [
             {
-              "type": "forge:item_exists",
-              "item": "functionalstorage:framed_2"
+              "item": "functionalstorage:framed_2",
+              "type": "forge:item_exists"
             }
-          ]
+          ],
+          "type": "forge:and"
         }
       ],
       "recipe": {
         "type": "minecraft:crafting_shaped",
-        "key": {
-          "C": {
-            "tag": "forge:chests/wooden"
-          },
-          "P": {
-            "item": "minecraft:iron_nugget"
-          }
-        },
         "pattern": [
           "PCP",
           "PPP",
           "PCP"
         ],
+        "key": {
+          "P": {
+            "item": "minecraft:iron_nugget"
+          },
+          "C": {
+            "tag": "forge:chests/wooden"
+          }
+        },
         "result": {
-          "count": 2,
-          "item": "functionalstorage:framed_2"
+          "item": "functionalstorage:framed_2",
+          "count": 2
         }
       }
     }

@@ -4,18 +4,26 @@
     {
       "conditions": [
         {
-          "type": "forge:and",
           "values": [
             {
-              "type": "forge:item_exists",
-              "item": "functionalstorage:copper_upgrade"
+              "item": "functionalstorage:copper_upgrade",
+              "type": "forge:item_exists"
             }
-          ]
+          ],
+          "type": "forge:and"
         }
       ],
       "recipe": {
         "type": "minecraft:crafting_shaped",
+        "pattern": [
+          "IBI",
+          "CDC",
+          "IBI"
+        ],
         "key": {
+          "I": {
+            "item": "minecraft:copper_ingot"
+          },
           "B": {
             "item": "minecraft:copper_block"
           },
@@ -24,16 +32,8 @@
           },
           "D": {
             "tag": "functionalstorage:drawer"
-          },
-          "I": {
-            "item": "minecraft:copper_ingot"
           }
         },
-        "pattern": [
-          "IBI",
-          "CDC",
-          "IBI"
-        ],
         "result": {
           "item": "functionalstorage:copper_upgrade"
         }

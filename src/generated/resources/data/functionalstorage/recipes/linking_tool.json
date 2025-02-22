@@ -4,36 +4,36 @@
     {
       "conditions": [
         {
-          "type": "forge:and",
           "values": [
             {
-              "type": "forge:item_exists",
-              "item": "functionalstorage:linking_tool"
+              "item": "functionalstorage:linking_tool",
+              "type": "forge:item_exists"
             }
-          ]
+          ],
+          "type": "forge:and"
         }
       ],
       "recipe": {
         "type": "minecraft:crafting_shaped",
-        "key": {
-          "D": {
-            "tag": "functionalstorage:drawer"
-          },
-          "E": {
-            "item": "minecraft:diamond"
-          },
-          "G": {
-            "tag": "forge:ingots/gold"
-          },
-          "P": {
-            "item": "minecraft:paper"
-          }
-        },
         "pattern": [
           "PPG",
           "PDG",
           "PEP"
         ],
+        "key": {
+          "P": {
+            "item": "minecraft:paper"
+          },
+          "G": {
+            "tag": "forge:ingots/gold"
+          },
+          "D": {
+            "tag": "functionalstorage:drawer"
+          },
+          "E": {
+            "item": "minecraft:diamond"
+          }
+        },
         "result": {
           "item": "functionalstorage:linking_tool"
         }
