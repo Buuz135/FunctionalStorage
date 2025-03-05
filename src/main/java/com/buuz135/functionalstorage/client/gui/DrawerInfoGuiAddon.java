@@ -78,7 +78,7 @@ public class DrawerInfoGuiAddon extends BasicScreenAddon {
                 var componentList = new ArrayList<Component>();
                 var over = slotStack.apply(i);
                 if (over.isEmpty()) {
-                    componentList.add(Component.translatable("gui.functionalstorage.item").withStyle(ChatFormatting.GOLD).append(Component.literal("Empty").withStyle(ChatFormatting.WHITE)));
+                    componentList.add(Component.translatable("gui.functionalstorage.item").withStyle(ChatFormatting.GOLD).append(Component.translatable("gui.functionalstorage.empty").withStyle(ChatFormatting.WHITE)));
                 } else {
                     componentList.add(Component.translatable("gui.functionalstorage.item").withStyle(ChatFormatting.GOLD).append(over.getHoverName().copy().withStyle(ChatFormatting.WHITE)));
                     var amount = NumberUtils.getFormatedBigNumber(over.getCount()) + "/" + NumberUtils.getFormatedBigNumber(slotMaxAmount.apply(i));

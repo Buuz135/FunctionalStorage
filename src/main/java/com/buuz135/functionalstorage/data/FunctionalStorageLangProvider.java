@@ -92,6 +92,7 @@ public class FunctionalStorageLangProvider extends LanguageProvider {
         this.add("item.utility.direction.desc", "Right click in a GUI to change direction");
         this.add("configurationtool.configmode", "Config Mode: ");
         this.add("configurationtool.configmode.locking", "Locking");
+        this.add("configurationtool.configmode.swapped", "Swapped mode to ");
         this.add("configurationtool.configmode.toggle_numbers", "Hide/Show Amounts");
         this.add("configurationtool.configmode.toggle_render", "Hide/Show Item/Fluid Renders");
         this.add("configurationtool.configmode.toggle_upgrades", "Hide/Show Upgrade Renders");
@@ -106,6 +107,17 @@ public class FunctionalStorageLangProvider extends LanguageProvider {
         this.add("upgrade.type.utility", "Utility");
         this.add("linkingtool.ender.frequency", "Frequency: ");
         this.add("linkingtool.ender.clear", "Sneak + Right Click in the air to clear frequency.");
+        this.add("linkingtool.multiple_drawer.linked", "Linked drawers to the controller");
+        this.add("linkingtool.multiple_drawer.removed", "Removed drawers from the controller");
+        this.add("linkingtool.single_drawer.linked", "Linked drawer to the controller");
+        this.add("linkingtool.single_drawer.removed", "Removed drawer from the controller");
+        this.add("linkingtool.controller.configured", "Controller configured to the tool");
+        this.add("linkingtool.drawer.clear", "Cleared drawer frequency");
+        this.add("linkingtool.ender.changed", "Changed drawer frequency");
+        this.add("linkingtool.ender.stored", "Stored frequency in the tool");
+        this.add("linkingtool.ender.warning", "Cannot change frequency, there are items in the drawer. Sneak + Right Click again to ignore this safety");
+        this.add("linkingtool.linkingaction.swapped", "Swapped action to %s");
+        this.add("linkingtool.linkingmode.swapped", "Swapped mode to %s");
         this.add("drawer.block.contents", "Contents: ");
         this.add("drawer.block.multiplier", "Storage multiplier: %s");
         this.add("frameddrawer.use", "How 2 Change Texture: \nInside a crafting window place the block you want use the texture of for the outside of the drawer in the first slot of the crafting window, on the second slot put the block that will be used for the texture on the inside of the framed drawer and on the third slot put a framed drawer. You can change the drawer divider texture by adding a block into the 4th slot\n");
@@ -119,6 +131,7 @@ public class FunctionalStorageLangProvider extends LanguageProvider {
         this.add("gui.functionalstorage.storage", "Storage");
         this.add("gui.functionalstorage.utility", "Utility");
         this.add("gui.functionalstorage.storage_range", "Range");
+        this.add("gui.functionalstorage.empty", "Empty");
 
         this.add("drawer_upgrade.functionalstorage.sides.up", "up");
         this.add("drawer_upgrade.functionalstorage.sides.down", "down");
