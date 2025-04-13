@@ -64,7 +64,7 @@ public class LinkingToolItem extends BasicItem {
             BlockEntity blockEntity = leftClickBlock.getLevel().getBlockEntity(leftClickBlock.getPos());
             if (blockEntity instanceof EnderDrawerTile){
                 stack.getOrCreateTag().putString(NBT_ENDER, ((EnderDrawerTile) blockEntity).getFrequency());
-                leftClickBlock.getEntity().displayClientMessage(Component.literal("Stored frequency in the tool").setStyle(Style.EMPTY.withColor(LinkingMode.SINGLE.color)), true);
+                leftClickBlock.getEntity().displayClientMessage(Component.translatable("linkingtool.ender.stored").setStyle(Style.EMPTY.withColor(LinkingMode.SINGLE.color)), true);
                 leftClickBlock.setCanceled(true);
             }
         }).subscribe();
@@ -98,7 +98,7 @@ public class LinkingToolItem extends BasicItem {
         BlockEntity blockEntity = level.getBlockEntity(pos);
         if (blockEntity instanceof EnderDrawerTile){
             stack.getOrCreateTag().putString(NBT_ENDER, ((EnderDrawerTile) blockEntity).getFrequency());
-            player.displayClientMessage(Component.literal("Stored frequency in the tool").setStyle(Style.EMPTY.withColor(LinkingMode.SINGLE.color)), true);
+            player.displayClientMessage(Component.translatable("linkingtool.ender.stored").setStyle(Style.EMPTY.withColor(LinkingMode.SINGLE.color)), true);
             return false;
         }
         return super.canAttackBlock(state,level, pos, player);
@@ -118,10 +118,10 @@ public class LinkingToolItem extends BasicItem {
                 EnderInventoryHandler inventory = EnderSavedData.getInstance(context.getLevel()).getFrequency(((EnderDrawerTile) blockEntity).getFrequency());
                 if (inventory.getStackInSlot(0).isEmpty() || (context.getPlayer().isShiftKeyDown() && stack.getOrCreateTag().contains(NBT_ENDER))){
                     ((EnderDrawerTile) blockEntity).setFrequency(frequency);
-                    context.getPlayer().displayClientMessage(Component.literal("Changed drawer frequency").setStyle(Style.EMPTY.withColor(linkingMode.color)), true);
+                    context.getPlayer().displayClientMessage(Component.translatable("linkingtool.ender.changed").setStyle(Style.EMPTY.withColor(linkingMode.color)), true);
                     stack.getOrCreateTag().remove(NBT_ENDER_SAFETY);
                 } else {
-                    context.getPlayer().displayClientMessage(Component.literal("Cannot change frequency, there are items in the drawer. Sneak + Right Click again to ignore this safety").withStyle(ChatFormatting.RED), true);
+                    context.getPlayer().displayClientMessage(Component.translatable("linkingtool.ender.warning").withStyle(ChatFormatting.RED), true);
                     stack.getOrCreateTag().putBoolean(NBT_ENDER_SAFETY, true);
                 }
                 return InteractionResult.SUCCESS;
@@ -134,7 +134,7 @@ public class LinkingToolItem extends BasicItem {
             controller.putInt("Z", pos.getZ());
             stack.getOrCreateTag().put(NBT_CONTROLLER, controller);
             context.getPlayer().playSound(SoundEvents.ITEM_FRAME_ADD_ITEM, 0.5f, 1);
-            context.getPlayer().displayClientMessage(Component.literal("Controller configured to the tool").withStyle(ChatFormatting.GREEN), true);
+            context.getPlayer().displayClientMessage(Component.translatable("linkingtool.controller.configured").withStyle(ChatFormatting.GREEN), true);
             stack.getOrCreateTag().remove(NBT_ENDER);
             return InteractionResult.SUCCESS;
         } else if (blockEntity instanceof ControllableDrawerTile && stack.getOrCreateTag().contains(NBT_CONTROLLER)) {
@@ -144,9 +144,9 @@ public class LinkingToolItem extends BasicItem {
                 if (linkingMode == LinkingMode.SINGLE) {
                     if (((StorageControllerTile) controller).addConnectedDrawers(linkingAction, pos)){
                         if (linkingAction == ActionMode.ADD){
-                            context.getPlayer().displayClientMessage(Component.literal("Linked drawer to the controller").setStyle(Style.EMPTY.withColor(linkingMode.color)), true);
+                            context.getPlayer().displayClientMessage(Component.translatable("linkingtool.single_drawer.linked").setStyle(Style.EMPTY.withColor(linkingMode.color)), true);
                         }else {
-                            context.getPlayer().displayClientMessage(Component.literal("Removed drawer from the controller").setStyle(Style.EMPTY.withColor(linkingMode.color)), true);
+                            context.getPlayer().displayClientMessage(Component.translatable("linkingtool.single_drawer.removed").setStyle(Style.EMPTY.withColor(linkingMode.color)), true);
                         }
                     }
                 } else {
@@ -156,9 +156,9 @@ public class LinkingToolItem extends BasicItem {
                         AABB aabb = new AABB(Math.min(firstPos.getX(), pos.getX()), Math.min(firstPos.getY(), pos.getY()), Math.min(firstPos.getZ(), pos.getZ()), Math.max(firstPos.getX(), pos.getX()) + 1, Math.max(firstPos.getY(), pos.getY()) + 1, Math.max(firstPos.getZ(), pos.getZ()) + 1);
                         if (((StorageControllerTile) controller).addConnectedDrawers(linkingAction, getBlockPosInAABB(aabb).toArray(BlockPos[]::new))){
                             if (linkingAction == ActionMode.ADD){
-                                context.getPlayer().displayClientMessage(Component.literal("Linked drawers to the controller").setStyle(Style.EMPTY.withColor(linkingMode.color)), true);
+                                context.getPlayer().displayClientMessage(Component.translatable("linkingtool.multiple_drawer.linked").setStyle(Style.EMPTY.withColor(linkingMode.color)), true);
                             }else {
-                                context.getPlayer().displayClientMessage(Component.literal("Removed drawers from the controller").setStyle(Style.EMPTY.withColor(linkingMode.color)), true);
+                                context.getPlayer().displayClientMessage(Component.translatable("linkingtool.multiple_drawer.removed").setStyle(Style.EMPTY.withColor(linkingMode.color)), true);
                             }
                         }
                         stack.getOrCreateTag().remove(NBT_FIRST);
@@ -184,27 +184,27 @@ public class LinkingToolItem extends BasicItem {
             if (stack.getOrCreateTag().contains(NBT_ENDER)){
                 if (player.isShiftKeyDown()){
                     stack.getOrCreateTag().remove(NBT_ENDER);
-                    player.displayClientMessage(Component.literal("Cleared drawer frequency").setStyle(Style.EMPTY.withColor(ActionMode.ADD.getColor())), true);
+                    player.displayClientMessage(Component.translatable("linkingtool.drawer.clear").setStyle(Style.EMPTY.withColor(ActionMode.ADD.getColor())), true);
                 }
             } else {
                 if (player.isShiftKeyDown()) {
                     LinkingMode linkingMode = getLinkingMode(stack);
                     if (linkingMode == LinkingMode.SINGLE) {
                         stack.getOrCreateTag().putString(NBT_MODE, LinkingMode.MULTIPLE.name());
-                        player.displayClientMessage(Component.literal("Swapped mode to " + LinkingMode.MULTIPLE.name().toLowerCase(Locale.ROOT)).setStyle(Style.EMPTY.withColor(LinkingMode.MULTIPLE.getColor())), true);
+                        player.displayClientMessage(Component.translatable("linkingtool.linkingmode.swapped",Component.translatable("linkingtool.linkingmode." + LinkingMode.MULTIPLE.name().toLowerCase(Locale.ROOT))).setStyle(Style.EMPTY.withColor(LinkingMode.MULTIPLE.getColor())), true);
                     } else {
                         stack.getOrCreateTag().putString(NBT_MODE, LinkingMode.SINGLE.name());
-                        player.displayClientMessage(Component.literal("Swapped mode to " + LinkingMode.SINGLE.name().toLowerCase(Locale.ROOT)).setStyle(Style.EMPTY.withColor(LinkingMode.SINGLE.getColor())), true);
+                        player.displayClientMessage(Component.translatable("linkingtool.linkingmode.swapped",Component.translatable("linkingtool.linkingmode." + LinkingMode.SINGLE.name().toLowerCase(Locale.ROOT))).setStyle(Style.EMPTY.withColor(LinkingMode.SINGLE.getColor())), true);
                     }
                     stack.getOrCreateTag().remove(NBT_FIRST);
                 } else {
                     ActionMode linkingMode = getActionMode(stack);
                     if (linkingMode == ActionMode.ADD) {
                         stack.getOrCreateTag().putString(NBT_ACTION, ActionMode.REMOVE.name());
-                        player.displayClientMessage(Component.literal("Swapped action to " + ActionMode.REMOVE.name().toLowerCase(Locale.ROOT)).setStyle(Style.EMPTY.withColor(ActionMode.REMOVE.getColor())), true);
+                        player.displayClientMessage(Component.translatable("linkingtool.linkingaction.swapped",Component.translatable("linkingtool.linkingaction." + ActionMode.REMOVE.name().toLowerCase(Locale.ROOT))).setStyle(Style.EMPTY.withColor(ActionMode.REMOVE.getColor())), true);
                     } else {
                         stack.getOrCreateTag().putString(NBT_ACTION, ActionMode.ADD.name());
-                        player.displayClientMessage(Component.literal("Swapped action to " + ActionMode.ADD.name().toLowerCase(Locale.ROOT)).setStyle(Style.EMPTY.withColor(ActionMode.ADD.getColor())), true);
+                        player.displayClientMessage(Component.translatable("linkingtool.linkingaction.swapped",Component.translatable("linkingtool.linkingaction." + ActionMode.ADD.name().toLowerCase(Locale.ROOT))).setStyle(Style.EMPTY.withColor(ActionMode.ADD.getColor())), true);
                     }
                 }
             }

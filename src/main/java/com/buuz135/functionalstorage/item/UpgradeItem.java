@@ -94,7 +94,7 @@ public class UpgradeItem extends BasicItem {
         tooltip.add(Component.translatable("upgrade.type").withStyle(ChatFormatting.YELLOW).append(Component.translatable("upgrade.type." + getType().name().toLowerCase(Locale.ROOT)).withStyle(ChatFormatting.WHITE)));
         Item item = stack.getItem();
         if (item.equals(FunctionalStorage.PULLING_UPGRADE.get()) || item.equals(FunctionalStorage.PUSHING_UPGRADE.get()) || item.equals(FunctionalStorage.COLLECTOR_UPGRADE.get())) {
-            tooltip.add(Component.translatable("item.utility.direction").withStyle(ChatFormatting.YELLOW).append(Component.translatable(WordUtils.capitalize(getDirection(stack).getName().toLowerCase(Locale.ROOT))).withStyle(ChatFormatting.WHITE)));
+            tooltip.add(Component.translatable("item.utility.direction").withStyle(ChatFormatting.YELLOW).append(Component.translatable("direction.titanium." + getDirection(stack).getName().toLowerCase(Locale.ROOT)).withStyle(ChatFormatting.WHITE)));
             tooltip.add(Component.literal(""));
             tooltip.add(Component.translatable("item.utility.direction.desc").withStyle(ChatFormatting.GRAY));
         }
