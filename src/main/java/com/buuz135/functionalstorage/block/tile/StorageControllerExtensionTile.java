@@ -79,10 +79,13 @@ public abstract class StorageControllerExtensionTile<T extends StorageController
     @Override
     public void serverTick(Level level, BlockPos pos, BlockState state, T blockEntity) {
         super.serverTick(level, pos, state, blockEntity);
-        if (!hasUpdated){
+        if (this.level.getGameTime() % 4 == 0 && !hasUpdated && getControllerInstance().isPresent()){
             hasUpdated = true;
             updateNeigh();
             markForUpdate();
+        }
+        if (hasUpdated) {
+            hasUpdated = getControllerInstance().isPresent();
         }
     }
 }
