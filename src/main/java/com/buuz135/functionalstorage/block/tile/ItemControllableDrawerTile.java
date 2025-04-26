@@ -103,7 +103,7 @@ public abstract class ItemControllableDrawerTile<T extends ItemControllableDrawe
                 ItemStack stack = this.getStackInSlot(slot);
                 if (stack.has(FSAttachments.ITEM_STORAGE_MODIFIER)) {
                     var replacement = new ItemStack[this.getSlots()];
-                    replacement[slot] = stack;
+                    replacement[slot] = ItemStack.EMPTY;
 
                     var newSize = (long) SizeProvider.calculate(this, FSAttachments.ITEM_STORAGE_MODIFIER, baseSize, replacement);
                     if (!canChangeMultiplier(newSize)) {
