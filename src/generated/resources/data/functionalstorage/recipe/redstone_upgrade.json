@@ -15,6 +15,7 @@
       "item": "minecraft:comparator"
     },
     "D": {
+      "type": "functionalstorage:tag_without_component",
       "tag": "functionalstorage:drawer"
     },
     "I": {

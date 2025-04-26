@@ -2,6 +2,7 @@ package com.buuz135.functionalstorage.block;
 
 import com.buuz135.functionalstorage.FunctionalStorage;
 import com.buuz135.functionalstorage.block.tile.SimpleCompactingDrawerTile;
+import com.buuz135.functionalstorage.recipe.TagWithoutComponentIngredient;
 import com.buuz135.functionalstorage.util.StorageTags;
 import com.hrznstudio.titanium.block.RotatableBlock;
 import com.hrznstudio.titanium.recipe.generator.TitaniumShapedRecipeBuilder;
@@ -58,7 +59,7 @@ public class SimpleCompactingDrawerBlock extends Drawer<SimpleCompactingDrawerTi
                 .pattern("SSS").pattern("SDP").pattern("SIS")
                 .define('S', Tags.Items.STONES)
                 .define('P', Blocks.PISTON)
-                .define('D', StorageTags.DRAWER)
+                .define('D', new TagWithoutComponentIngredient(StorageTags.DRAWER).toVanilla())
                 .define('I', Tags.Items.INGOTS_IRON)
                 .save(consumer);
     }

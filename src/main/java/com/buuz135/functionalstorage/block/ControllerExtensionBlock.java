@@ -2,6 +2,7 @@ package com.buuz135.functionalstorage.block;
 
 import com.buuz135.functionalstorage.FunctionalStorage;
 import com.buuz135.functionalstorage.block.tile.ControllerExtensionTile;
+import com.buuz135.functionalstorage.recipe.TagWithoutComponentIngredient;
 import com.buuz135.functionalstorage.util.StorageTags;
 import com.hrznstudio.titanium.datagenerator.loot.block.BasicBlockLootTables;
 import com.hrznstudio.titanium.recipe.generator.TitaniumShapedRecipeBuilder;
@@ -31,7 +32,7 @@ public class ControllerExtensionBlock extends StorageControllerExtensionBlock<Co
                 .pattern("IBI").pattern("CDC").pattern("IBI")
                 .define('I', Tags.Items.STONES)
                 .define('B', Items.QUARTZ_BLOCK)
-                .define('C', StorageTags.DRAWER)
+                .define('C', new TagWithoutComponentIngredient(StorageTags.DRAWER).toVanilla())
                 .define('D', Items.REPEATER)
                 .save(consumer);
     }

@@ -62,10 +62,7 @@ import com.buuz135.functionalstorage.item.component.GenerateItemBehavior;
 import com.buuz135.functionalstorage.item.component.MoveFluidsBehavior;
 import com.buuz135.functionalstorage.item.component.MoveItemsBehavior;
 import com.buuz135.functionalstorage.network.EnderDrawerSyncMessage;
-import com.buuz135.functionalstorage.recipe.CopyComponentsRecipe;
-import com.buuz135.functionalstorage.recipe.CustomCompactingRecipe;
-import com.buuz135.functionalstorage.recipe.DrawerlessWoodIngredient;
-import com.buuz135.functionalstorage.recipe.FramedDrawerRecipe;
+import com.buuz135.functionalstorage.recipe.*;
 import com.buuz135.functionalstorage.util.DrawerWoodType;
 import com.buuz135.functionalstorage.util.IWoodType;
 import com.buuz135.functionalstorage.util.NumberUtils;
@@ -333,6 +330,7 @@ public class FunctionalStorage extends ModuleController {
             }
         });
         DrawerlessWoodIngredient.TYPE = getRegistries().registerGeneric(NeoForgeRegistries.Keys.INGREDIENT_TYPES, DrawerlessWoodIngredient.NAME.getPath(), () -> new IngredientType<>(DrawerlessWoodIngredient.CODEC));
+        TagWithoutComponentIngredient.TYPE = getRegistries().registerGeneric(NeoForgeRegistries.Keys.INGREDIENT_TYPES, TagWithoutComponentIngredient.NAME.getPath(), () -> new IngredientType<>(TagWithoutComponentIngredient.CODEC));
 
 
         this.addCreativeTab("main", () -> new ItemStack(DRAWER_CONTROLLER), MOD_ID, TAB);

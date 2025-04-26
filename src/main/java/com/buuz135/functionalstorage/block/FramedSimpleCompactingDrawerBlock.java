@@ -5,6 +5,7 @@ import com.buuz135.functionalstorage.block.tile.FramedSimpleCompactingDrawerTile
 import com.buuz135.functionalstorage.block.tile.SimpleCompactingDrawerTile;
 import com.buuz135.functionalstorage.item.FSAttachments;
 import com.buuz135.functionalstorage.recipe.CopyComponentsRecipe;
+import com.buuz135.functionalstorage.recipe.TagWithoutComponentIngredient;
 import com.buuz135.functionalstorage.util.StorageTags;
 import com.hrznstudio.titanium.recipe.generator.TitaniumShapedRecipeBuilder;
 import net.minecraft.data.recipes.RecipeOutput;
@@ -29,7 +30,7 @@ public class FramedSimpleCompactingDrawerBlock extends SimpleCompactingDrawerBlo
                 .pattern("SSS").pattern("SDP").pattern("SIS")
                 .define('S', Tags.Items.NUGGETS_IRON)
                 .define('P', Blocks.PISTON)
-                .define('D', StorageTags.DRAWER)
+                .define('D', new TagWithoutComponentIngredient(StorageTags.DRAWER).toVanilla())
                 .define('I', Tags.Items.INGOTS_IRON)
                 .save(consumer);
 

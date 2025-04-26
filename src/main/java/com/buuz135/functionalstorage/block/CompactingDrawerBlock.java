@@ -4,6 +4,7 @@ import com.buuz135.functionalstorage.FunctionalStorage;
 import com.buuz135.functionalstorage.block.tile.CompactingDrawerTile;
 import com.buuz135.functionalstorage.client.item.CompactingDrawerISTER;
 import com.buuz135.functionalstorage.inventory.item.CompactingStackItemHandler;
+import com.buuz135.functionalstorage.recipe.TagWithoutComponentIngredient;
 import com.buuz135.functionalstorage.util.StorageTags;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.MultimapBuilder;
@@ -86,7 +87,7 @@ public class CompactingDrawerBlock extends Drawer<CompactingDrawerTile> {
                 .pattern("SSS").pattern("PDP").pattern("SIS")
                 .define('S', Tags.Items.STONES)
                 .define('P', Blocks.PISTON)
-                .define('D', StorageTags.DRAWER)
+                .define('D', new TagWithoutComponentIngredient(StorageTags.DRAWER).toVanilla())
                 .define('I', Tags.Items.INGOTS_IRON)
                 .save(consumer);
     }
