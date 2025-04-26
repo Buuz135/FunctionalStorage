@@ -139,6 +139,7 @@ public class FunctionalStorageLangProvider extends LanguageProvider {
         this.add("drawer_upgrade.functionalstorage.redstone", "Emitting redstone signal for slot %s");
         this.add("drawer_upgrade.functionalstorage.relative_direction", "Relative direction: %s");
 
+        this.add("config.jade.plugin_functionalstorage.armory", "Functional Storage Armory");
         this.add("config.jade.plugin_functionalstorage.drawer", "Functional Storage Drawers");
 
         this.add("drawer.block.upgrades", "Upgrades:");

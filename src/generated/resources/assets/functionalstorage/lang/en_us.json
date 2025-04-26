@@ -48,6 +48,7 @@
   "block.functionalstorage.warped_1": "Warped Drawer (1x1)",
   "block.functionalstorage.warped_2": "Warped Drawer (1x2)",
   "block.functionalstorage.warped_4": "Warped Drawer (2x2)",
+  "config.jade.plugin_functionalstorage.armory": "Functional Storage Armory",
   "config.jade.plugin_functionalstorage.drawer": "Functional Storage Drawers",
   "configurationtool.configmode": "Config Mode: ",
   "configurationtool.configmode.indicator": "Swap indicator modes",
