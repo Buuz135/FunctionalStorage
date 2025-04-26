@@ -8,10 +8,13 @@ import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.registration.IRecipeCatalystRegistration;
 import mezz.jei.api.registration.IRecipeCategoryRegistration;
 import mezz.jei.api.registration.IRecipeRegistration;
+import mezz.jei.api.registration.ISubtypeRegistration;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeType;
+
+import java.util.Collection;
 
 @JeiPlugin
 public class JEIPlugin implements IModPlugin {
@@ -38,6 +41,11 @@ public class JEIPlugin implements IModPlugin {
         registration.addRecipeCatalyst(new ItemStack(FunctionalStorage.FRAMED_COMPACTING_DRAWER.getBlock()), CompactingRecipeCategory.TYPE);
         registration.addRecipeCatalyst(new ItemStack(FunctionalStorage.SIMPLE_COMPACTING_DRAWER.getBlock()), CompactingRecipeCategory.TYPE);
         registration.addRecipeCatalyst(new ItemStack(FunctionalStorage.FRAMED_SIMPLE_COMPACTING_DRAWER.getBlock()), CompactingRecipeCategory.TYPE);
+    }
+
+    @Override
+    public void registerItemSubtypes(ISubtypeRegistration registration) {
+        FunctionalStorage.DRAWER_TYPES.values().stream().flatMap(Collection::stream).forEach(blockWithTile -> registration.registerSubtypeInterpreter(blockWithTile.asItem(), new InventorySubtypeInterpreter()));
     }
 
     @Override
