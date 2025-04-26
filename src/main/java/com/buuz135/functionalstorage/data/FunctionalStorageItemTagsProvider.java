@@ -31,6 +31,10 @@ public class FunctionalStorageItemTagsProvider extends ItemTagsProvider {
             FunctionalStorage.DRAWER_TYPES.get(drawerType).stream().map(BlockWithTile::block)
                     .forEach(ho -> byTypeAppender.add(ho.get().asItem()));
         }
+        this.tag(FunctionalStorage.DrawerType.X_1.getTag()).add(FunctionalStorage.FLUID_DRAWER_1.getBlock().asItem());
+        this.tag(FunctionalStorage.DrawerType.X_2.getTag()).add(FunctionalStorage.FLUID_DRAWER_2.getBlock().asItem());
+        this.tag(FunctionalStorage.DrawerType.X_4.getTag()).add(FunctionalStorage.FLUID_DRAWER_4.getBlock().asItem());
+        this.tag(StorageTags.FLUID_DRAWER).add(FunctionalStorage.FLUID_DRAWER_1.getBlock().asItem(), FunctionalStorage.FLUID_DRAWER_2.getBlock().asItem(), FunctionalStorage.FLUID_DRAWER_4.getBlock().asItem());
     }
 
     @Override

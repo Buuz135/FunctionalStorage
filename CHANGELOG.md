@@ -1,3 +1,10 @@
+# VERSION 1.4.3
+
+* Added item tags to fluid drawers, closes #411
+* Add translatable strings - StarskyXIII
+* Examine all destination slots - kylev
+* Armory Cabinet providers for Jade and TOP - Christofmeg
+
 # VERSION 1.4.2
 * Fix upgrades not being insertable/extractable in compacting drawers by Matyrobbrt
 
