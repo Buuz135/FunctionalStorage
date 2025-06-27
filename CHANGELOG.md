@@ -1,3 +1,11 @@
+# VERSION 1.2.13
+
+* Armory Cabinet providers for Jade and TOP by Christofmeg
+* Add translatable strings by StarskyXIII
+* Spanish Translations by SrNadien
+* Make item movement examine all destination slots [Fixes #388] by BuddhaBuddy1
+* Duplication bug with max storage upgraded compacting drawers by TimMayr
+
 # VERSION 1.2.10
 
 * Added drawer renders to items
