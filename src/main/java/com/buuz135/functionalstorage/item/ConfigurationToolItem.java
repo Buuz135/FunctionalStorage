@@ -80,7 +80,7 @@ public class ConfigurationToolItem extends BasicItem {
                 ConfigurationAction action = getAction(stack);
                 ConfigurationAction newAction = ConfigurationAction.values()[(Arrays.asList(ConfigurationAction.values()).indexOf(action) + 1) % ConfigurationAction.values().length];
                 stack.getOrCreateTag().putString(NBT_MODE, newAction.name());
-                player.displayClientMessage(Component.literal("Swapped mode to ").setStyle(Style.EMPTY.withColor(newAction.getColor()))
+                player.displayClientMessage(Component.translatable("configurationtool.configmode.swapped").setStyle(Style.EMPTY.withColor(newAction.getColor()))
                         .append(Component.translatable("configurationtool.configmode." + newAction.name().toLowerCase(Locale.ROOT))), true);
                 player.playSound(SoundEvents.ITEM_FRAME_REMOVE_ITEM, 0.5f, 1);
                 return InteractionResultHolder.success(stack);
