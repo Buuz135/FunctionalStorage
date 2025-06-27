@@ -49,6 +49,30 @@ public abstract class ItemControllableDrawerTile<T extends ItemControllableDrawe
         super.initClient();
     }
 
+	private void processUpgrade(Level level, BlockPos pos, ItemStack stack, boolean drawerIsSource) {
+		Direction direction = UpgradeItem.getDirection(stack);
+		TileUtil.getTileEntity(level, pos.relative(direction)).ifPresent(blockEntity1 -> {
+			blockEntity1.getCapability(ForgeCapabilities.ITEM_HANDLER, direction.getOpposite()).ifPresent(otherHandler -> {
+				IItemHandler source = drawerIsSource ? getStorage() : otherHandler;
+				IItemHandler destination = drawerIsSource ? otherHandler : getStorage();
+				for (int sourceSlot = 0; sourceSlot < source.getSlots(); sourceSlot++) {
+					ItemStack pulledStack = source.extractItem(sourceSlot, FunctionalStorageConfig.UPGRADE_PULL_ITEMS, true);
+					if (pulledStack.isEmpty())
+						continue;
+					for (int destinationSlot = 0; destinationSlot < destination.getSlots(); destinationSlot++) {
+						if (destination.getStackInSlot(destinationSlot).getCount() >= destination.getSlotLimit(destinationSlot))
+							continue;
+						ItemStack remainder = destination.insertItem(destinationSlot, pulledStack, true);
+						if (remainder.getCount() < pulledStack.getCount()) {
+							destination.insertItem(destinationSlot, source.extractItem(sourceSlot, pulledStack.getCount() - remainder.getCount(), false), false);
+							break;
+						}
+					}
+				}
+			});
+		});
+	}
+    
     @Override
     public void serverTick(Level level, BlockPos pos, BlockState state, T blockEntity) {
         super.serverTick(level, pos, state, blockEntity);
@@ -59,54 +83,10 @@ public abstract class ItemControllableDrawerTile<T extends ItemControllableDrawe
                     ItemStack stack = this.getUtilityUpgrades().getStackInSlot(i);
                     if (!stack.isEmpty()) {
                         Item item = stack.getItem();
-                        if (item.equals(FunctionalStorage.PULLING_UPGRADE.get())) {
-                            Direction direction = UpgradeItem.getDirection(stack);
-                            TileUtil.getTileEntity(level, pos.relative(direction)).ifPresent(blockEntity1 -> {
-                                blockEntity1.getCapability(ForgeCapabilities.ITEM_HANDLER, direction.getOpposite()).ifPresent(iItemHandler -> {
-                                    for (int otherSlot = 0; otherSlot < iItemHandler.getSlots(); otherSlot++) {
-                                        ItemStack pulledStack = iItemHandler.extractItem(otherSlot, FunctionalStorageConfig.UPGRADE_PULL_ITEMS, true);
-                                        if (pulledStack.isEmpty()) continue;
-                                        boolean hasWorked = false;
-                                        for (int ourSlot = 0; ourSlot < this.getStorage().getSlots(); ourSlot++) {
-                                            ItemStack simulated = getStorage().insertItem(ourSlot, pulledStack, true);
-                                            if (!simulated.equals(pulledStack)) {
-                                                ItemStack extracted = iItemHandler.extractItem(otherSlot, pulledStack.getCount() - simulated.getCount(), false);
-                                                getStorage().insertItem(ourSlot, extracted, false);
-                                                hasWorked = true;
-                                                break;
-                                            }
-                                        }
-                                        if (hasWorked) break;
-                                    }
-                                });
-                            });
-                        }
-                        if (item.equals(FunctionalStorage.PUSHING_UPGRADE.get())) {
-                            Direction direction = UpgradeItem.getDirection(stack);
-                            TileUtil.getTileEntity(level, pos.relative(direction)).ifPresent(blockEntity1 -> {
-                                blockEntity1.getCapability(ForgeCapabilities.ITEM_HANDLER, direction.getOpposite()).ifPresent(otherHandler -> {
-                                    for (int drawerSlot = 0; drawerSlot < getStorage().getSlots(); drawerSlot++) {
-                                        ItemStack pulledStack = getStorage().extractItem(drawerSlot, FunctionalStorageConfig.UPGRADE_PUSH_ITEMS, true);
-                                        if (pulledStack.isEmpty()) continue;
-                                        boolean hasWorked = false;
-                                        for (int destinationSlot = 0; destinationSlot < otherHandler.getSlots(); destinationSlot++) {
-                                            ItemStack otherHandlerStackInSlot = otherHandler.getStackInSlot(destinationSlot);
-                                            if (!otherHandlerStackInSlot.isEmpty() && !ItemStack.isSameItemSameTags(pulledStack, otherHandler.getStackInSlot(destinationSlot)))
-                                                continue;
-                                            if (otherHandler.getStackInSlot(destinationSlot).getCount() >= otherHandler.getSlotLimit(destinationSlot))
-                                                continue;
-                                            ItemStack simulated = otherHandler.insertItem(destinationSlot, pulledStack, true);
-                                            if (simulated.getCount() <= pulledStack.getCount()) {
-                                                otherHandler.insertItem(destinationSlot, getStorage().extractItem(drawerSlot, pulledStack.getCount() - simulated.getCount(), false), false);
-                                                hasWorked = true;
-                                                break;
-                                            }
-                                        }
-                                        if (hasWorked) break;
-                                    }
-                                });
-                            });
-                        }
+                        if (item.equals(FunctionalStorage.PULLING_UPGRADE.get()))
+                            processUpgrade(level, pos, stack, false);
+                        if (item.equals(FunctionalStorage.PUSHING_UPGRADE.get()))
+                            processUpgrade(level, pos, stack, true);
                         if (item.equals(FunctionalStorage.COLLECTOR_UPGRADE.get())) {
                             Direction direction = UpgradeItem.getDirection(stack);
                             AABB box = new AABB(pos.relative(direction));
