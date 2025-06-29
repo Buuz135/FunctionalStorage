@@ -93,6 +93,18 @@ public abstract class CompactingInventoryHandler implements IItemHandler, INBTSe
         onChange();
     }
 
+    public void setupWithRearrangedResults(List<CompactingUtil.Result> rearrangedResults){
+        this.resultList = rearrangedResults;
+        this.parent = rearrangedResults.get(0).getResult();
+        if (this.parent.isEmpty()) {
+            this.parent = rearrangedResults.get(1).getResult();
+        }
+        if (this.parent.isEmpty() && rearrangedResults.size() >= 3) {
+            this.parent = rearrangedResults.get(2).getResult();
+        }
+        onChange();
+    }
+
     public void reset(){
         if (isLocked()) return;
         this.resultList.forEach(result -> {

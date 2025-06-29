@@ -21,6 +21,8 @@ import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.items.IItemHandler;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
+import java.util.ArrayList;
+import java.util.List;
 
 public class CompactingDrawerTile extends ItemControllableDrawerTile<CompactingDrawerTile> {
 
@@ -97,14 +99,9 @@ public class CompactingDrawerTile extends ItemControllableDrawerTile<CompactingD
             stack = playerIn.getItemInHand(hand).copy();
             stack.setCount(1);
             CompactingUtil compactingUtil = new CompactingUtil(this.level, 3);
-            compactingUtil.setup(stack);
-            handler.setup(compactingUtil);
-            for (int i = 0; i < handler.getResultList().size(); i++) {
-                if (ItemStack.isSameItem(handler.getResultList().get(i).getResult(), stack)) {
-                    slot = i;
-                    break;
-                }
-            }
+            compactingUtil.setup(stack, slot);
+            List<CompactingUtil.Result> rearrangedResults = compactingUtil.rearrangeResults(stack, slot);
+            handler.setupWithRearrangedResults(rearrangedResults);
             markForUpdate();
         }
         return super.onSlotActivated(playerIn, hand, facing, hitX, hitY, hitZ, slot);
