@@ -48,12 +48,12 @@ public class FluidDrawerBlock extends Drawer<FluidDrawerTile>{
         super("fluid_" + type.getSlots(), properties, FluidDrawerTile.class);
         this.type = type;
         setItemGroup(FunctionalStorage.TAB);
-        registerDefaultState(defaultBlockState().setValue(RotatableBlock.FACING_HORIZONTAL, Direction.NORTH).setValue(DrawerBlock.LOCKED, false));
+        registerDefaultState(defaultBlockState().setValue(Drawer.FACING_HORIZONTAL_CUSTOM, Direction.NORTH).setValue(DrawerBlock.LOCKED, false));
     }
 
     private static List<VoxelShape> getShapes(BlockState state, BlockGetter source, BlockPos pos, FunctionalStorage.DrawerType type) {
         List<VoxelShape> boxes = new ArrayList<>();
-        DrawerBlock.CACHED_SHAPES.get(type).get(state.getValue(RotatableBlock.FACING_HORIZONTAL)).forEach(boxes::add);
+        DrawerBlock.CACHED_SHAPES.get(type).get(state.getValue(Drawer.FACING_HORIZONTAL_CUSTOM)).forEach(boxes::add);
         VoxelShape total = Shapes.block();
         boxes.add(total);
         return boxes;
@@ -79,7 +79,7 @@ public class FluidDrawerBlock extends Drawer<FluidDrawerTile>{
 
     @Override
     public Collection<VoxelShape> getHitShapes(BlockState state) {
-        return DrawerBlock.CACHED_SHAPES.get(type).get(state.getValue(RotatableBlock.FACING_HORIZONTAL));
+        return DrawerBlock.getDefaultHitShapes(this.type, state);
     }
 
     @Override

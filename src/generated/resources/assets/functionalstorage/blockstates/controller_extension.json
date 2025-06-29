@@ -3,7 +3,8 @@
     {
       "apply": {
         "model": "functionalstorage:block/controller_extension",
-        "uvlock": true
+        "uvlock": true,
+        "y": 180
       },
       "when": {
         "subfacing": "north"
@@ -12,8 +13,7 @@
     {
       "apply": {
         "model": "functionalstorage:block/controller_extension",
-        "uvlock": true,
-        "y": 180
+        "uvlock": true
       },
       "when": {
         "subfacing": "south"
@@ -23,7 +23,7 @@
       "apply": {
         "model": "functionalstorage:block/controller_extension",
         "uvlock": true,
-        "y": 270
+        "y": 90
       },
       "when": {
         "subfacing": "west"
@@ -33,7 +33,7 @@
       "apply": {
         "model": "functionalstorage:block/controller_extension",
         "uvlock": true,
-        "y": 90
+        "y": 270
       },
       "when": {
         "subfacing": "east"

@@ -31,15 +31,14 @@ import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.items.IItemHandler;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.function.Consumer;
 
 public class DrawerBlock extends Drawer<DrawerTile> {
 
     public static final HashMap<FunctionalStorage.DrawerType, Multimap<Direction, VoxelShape>> CACHED_SHAPES = new HashMap<>();
+    // Cache for rotated shapes - stores shapes for X_2 type with UP/DOWN facing and different subfacings
+    public static final HashMap<Direction, HashMap<Direction, List<VoxelShape>>> CACHED_ROTATED_SHAPES = new HashMap<>();
 
     public static final BooleanProperty LOCKED = BooleanProperty.create("locked");
 
@@ -52,39 +51,90 @@ public class DrawerBlock extends Drawer<DrawerTile> {
                 .put(Direction.WEST, Shapes.box(0, 1/16D, 1/16D, 1/16D, 15/16D, 15/16D));
         CACHED_SHAPES.computeIfAbsent(FunctionalStorage.DrawerType.X_1, type1 -> MultimapBuilder.hashKeys().arrayListValues().build())
                 .put(Direction.EAST, Shapes.box(15/16D, 1/16D, 1/16D, 1, 15/16D, 15/16D));
+        CACHED_SHAPES.computeIfAbsent(FunctionalStorage.DrawerType.X_1, type1 -> MultimapBuilder.hashKeys().arrayListValues().build())
+                .put(Direction.UP, Shapes.box(1/16D, 15/16D, 1/16D, 15/16D, 1, 15/16D));
+        CACHED_SHAPES.computeIfAbsent(FunctionalStorage.DrawerType.X_1, type1 -> MultimapBuilder.hashKeys().arrayListValues().build())
+                .put(Direction.DOWN, Shapes.box(1/16D, 0, 1/16D, 15/16D, 1/16D, 15/16D));
+
+        // Initialize the rotated shapes cache
+        CACHED_ROTATED_SHAPES.put(Direction.UP, new HashMap<>());
+        CACHED_ROTATED_SHAPES.put(Direction.DOWN, new HashMap<>());
         for (Direction direction : CACHED_SHAPES.get(FunctionalStorage.DrawerType.X_1).keySet()) {
             for (VoxelShape voxelShape : CACHED_SHAPES.get(FunctionalStorage.DrawerType.X_1).get(direction)) {
                 AABB bounding = voxelShape.toAabbs().get(0);
-                CACHED_SHAPES.computeIfAbsent(FunctionalStorage.DrawerType.X_2, type1 -> MultimapBuilder.hashKeys().arrayListValues().build()).
-                        put(direction, Shapes.box(bounding.minX, bounding.minY, bounding.minZ ,bounding.maxX, 7/16D, bounding.maxZ));
-                CACHED_SHAPES.computeIfAbsent(FunctionalStorage.DrawerType.X_2, type1 -> MultimapBuilder.hashKeys().arrayListValues().build()).
-                        put(direction, Shapes.box(bounding.minX, 9/16D, bounding.minZ ,bounding.maxX, bounding.maxY, bounding.maxZ));
+                if (direction == Direction.UP || direction == Direction.DOWN) {
+                    // For vertical directions, split horizontally for X_2
+                    CACHED_SHAPES.computeIfAbsent(FunctionalStorage.DrawerType.X_2, type1 -> MultimapBuilder.hashKeys().arrayListValues().build()).
+                            put(direction, Shapes.box(bounding.minX, bounding.minY, bounding.minZ, 7/16D, bounding.maxY, bounding.maxZ));
+                    CACHED_SHAPES.computeIfAbsent(FunctionalStorage.DrawerType.X_2, type1 -> MultimapBuilder.hashKeys().arrayListValues().build()).
+                            put(direction, Shapes.box(9/16D, bounding.minY, bounding.minZ, bounding.maxX, bounding.maxY, bounding.maxZ));
+                } else {
+                    // For horizontal directions, split vertically for X_2
+                    CACHED_SHAPES.computeIfAbsent(FunctionalStorage.DrawerType.X_2, type1 -> MultimapBuilder.hashKeys().arrayListValues().build()).
+                            put(direction, Shapes.box(bounding.minX, bounding.minY, bounding.minZ, bounding.maxX, 7/16D, bounding.maxZ));
+                    CACHED_SHAPES.computeIfAbsent(FunctionalStorage.DrawerType.X_2, type1 -> MultimapBuilder.hashKeys().arrayListValues().build()).
+                            put(direction, Shapes.box(bounding.minX, 9/16D, bounding.minZ, bounding.maxX, bounding.maxY, bounding.maxZ));
+                }
             }
         }
         for (Direction direction : CACHED_SHAPES.get(FunctionalStorage.DrawerType.X_2).keySet()) {
             for (VoxelShape voxelShape : CACHED_SHAPES.get(FunctionalStorage.DrawerType.X_2).get(direction)) {
                 AABB bounding = voxelShape.toAabbs().get(0);
-                if (direction == Direction.SOUTH) {
+                if (direction == Direction.UP) {
+                    // For UP direction, create a 2x2 grid
                     CACHED_SHAPES.computeIfAbsent(FunctionalStorage.DrawerType.X_4, type1 -> MultimapBuilder.hashKeys().arrayListValues().build()).
-                            put(direction, Shapes.box(9/16D, bounding.minY, bounding.minZ ,bounding.maxX, bounding.maxY, bounding.maxZ));
+                            put(direction, Shapes.box(bounding.minX, bounding.minY, 9/16D, bounding.maxX, bounding.maxY, bounding.maxZ));
                     CACHED_SHAPES.computeIfAbsent(FunctionalStorage.DrawerType.X_4, type1 -> MultimapBuilder.hashKeys().arrayListValues().build()).
-                            put(direction, Shapes.box(bounding.minX, bounding.minY, bounding.minZ , 7/16D, bounding.maxY, bounding.maxZ));
-                }else if (direction == Direction.NORTH){
+                            put(direction, Shapes.box(bounding.minX, bounding.minY, bounding.minZ, bounding.maxX, bounding.maxY, 7/16D));
+
+                } else if (direction == Direction.DOWN) {
+                    // For DOWN direction, create a 2x2 grid
                     CACHED_SHAPES.computeIfAbsent(FunctionalStorage.DrawerType.X_4, type1 -> MultimapBuilder.hashKeys().arrayListValues().build()).
-                            put(direction, Shapes.box(bounding.minX, bounding.minY, bounding.minZ , 7/16D, bounding.maxY, bounding.maxZ));
+                            put(direction, Shapes.box(bounding.minX, bounding.minY, 9/16D, bounding.maxX, bounding.maxY, bounding.maxZ));
                     CACHED_SHAPES.computeIfAbsent(FunctionalStorage.DrawerType.X_4, type1 -> MultimapBuilder.hashKeys().arrayListValues().build()).
-                            put(direction, Shapes.box(9/16D, bounding.minY, bounding.minZ ,bounding.maxX, bounding.maxY, bounding.maxZ));
-                } else if (direction == Direction.EAST){
+                            put(direction, Shapes.box(bounding.minX, bounding.minY, bounding.minZ, bounding.maxX, bounding.maxY, 7/16D));
+                } else if (direction == Direction.SOUTH) {
                     CACHED_SHAPES.computeIfAbsent(FunctionalStorage.DrawerType.X_4, type1 -> MultimapBuilder.hashKeys().arrayListValues().build()).
-                            put(direction, Shapes.box(bounding.minX, bounding.minY, bounding.minZ , bounding.maxX, bounding.maxY, 7/16D));
+                            put(direction, Shapes.box(9/16D, bounding.minY, bounding.minZ, bounding.maxX, bounding.maxY, bounding.maxZ));
                     CACHED_SHAPES.computeIfAbsent(FunctionalStorage.DrawerType.X_4, type1 -> MultimapBuilder.hashKeys().arrayListValues().build()).
-                            put(direction, Shapes.box(bounding.minX, bounding.minY, 9/16D,bounding.maxX, bounding.maxY, bounding.maxZ));
+                            put(direction, Shapes.box(bounding.minX, bounding.minY, bounding.minZ, 7/16D, bounding.maxY, bounding.maxZ));
+                } else if (direction == Direction.NORTH) {
+                    CACHED_SHAPES.computeIfAbsent(FunctionalStorage.DrawerType.X_4, type1 -> MultimapBuilder.hashKeys().arrayListValues().build()).
+                            put(direction, Shapes.box(bounding.minX, bounding.minY, bounding.minZ, 7/16D, bounding.maxY, bounding.maxZ));
+                    CACHED_SHAPES.computeIfAbsent(FunctionalStorage.DrawerType.X_4, type1 -> MultimapBuilder.hashKeys().arrayListValues().build()).
+                            put(direction, Shapes.box(9/16D, bounding.minY, bounding.minZ, bounding.maxX, bounding.maxY, bounding.maxZ));
+                } else if (direction == Direction.EAST) {
+                    CACHED_SHAPES.computeIfAbsent(FunctionalStorage.DrawerType.X_4, type1 -> MultimapBuilder.hashKeys().arrayListValues().build()).
+                            put(direction, Shapes.box(bounding.minX, bounding.minY, bounding.minZ, bounding.maxX, bounding.maxY, 7/16D));
+                    CACHED_SHAPES.computeIfAbsent(FunctionalStorage.DrawerType.X_4, type1 -> MultimapBuilder.hashKeys().arrayListValues().build()).
+                            put(direction, Shapes.box(bounding.minX, bounding.minY, 9/16D, bounding.maxX, bounding.maxY, bounding.maxZ));
                 } else {
                     CACHED_SHAPES.computeIfAbsent(FunctionalStorage.DrawerType.X_4, type1 -> MultimapBuilder.hashKeys().arrayListValues().build()).
-                            put(direction, Shapes.box(bounding.minX, bounding.minY, 9/16D,bounding.maxX, bounding.maxY, bounding.maxZ));
+                            put(direction, Shapes.box(bounding.minX, bounding.minY, 9/16D, bounding.maxX, bounding.maxY, bounding.maxZ));
                     CACHED_SHAPES.computeIfAbsent(FunctionalStorage.DrawerType.X_4, type1 -> MultimapBuilder.hashKeys().arrayListValues().build()).
-                            put(direction, Shapes.box(bounding.minX, bounding.minY, bounding.minZ , bounding.maxX, bounding.maxY, 7/16D));
+                            put(direction, Shapes.box(bounding.minX, bounding.minY, bounding.minZ, bounding.maxX, bounding.maxY, 7/16D));
                 }
+            }
+        }
+
+        for (Direction facing : new Direction[]{Direction.UP, Direction.DOWN}) {
+
+            for (Direction subfacing : new Direction[]{Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST}) {
+                CACHED_ROTATED_SHAPES.get(facing).put(subfacing, new ArrayList<>());
+            }
+
+            Collection<VoxelShape> originalShapes = CACHED_SHAPES.get(FunctionalStorage.DrawerType.X_2).get(facing);
+            for (VoxelShape shape : originalShapes) {
+                AABB bounds = shape.toAabbs().get(0);
+
+                VoxelShape rotatedShape = Shapes.box(bounds.minZ, bounds.minY, bounds.minX, bounds.maxZ, bounds.maxY, bounds.maxX);
+
+                CACHED_ROTATED_SHAPES.get(facing).get(Direction.NORTH).add(rotatedShape);
+                CACHED_ROTATED_SHAPES.get(facing).get(Direction.SOUTH).add(rotatedShape);
+
+
+                CACHED_ROTATED_SHAPES.get(facing).get(Direction.EAST).add(shape);
+                CACHED_ROTATED_SHAPES.get(facing).get(Direction.WEST).add(shape);
             }
         }
     }
@@ -97,7 +147,7 @@ public class DrawerBlock extends Drawer<DrawerTile> {
         this.woodType = woodType;
         this.type = type;
         setItemGroup(FunctionalStorage.TAB);
-        registerDefaultState(defaultBlockState().setValue(RotatableBlock.FACING_HORIZONTAL, Direction.NORTH).setValue(LOCKED, false));
+        registerDefaultState(defaultBlockState().setValue(Drawer.FACING_HORIZONTAL_CUSTOM, Direction.NORTH).setValue(Drawer.FACING_ALL, Direction.DOWN).setValue(LOCKED, false));
     }
     @Override
     public BlockEntityType.BlockEntitySupplier<DrawerTile> getTileEntityFactory() {
@@ -111,7 +161,19 @@ public class DrawerBlock extends Drawer<DrawerTile> {
 
     private static List<VoxelShape> getShapes(BlockState state, BlockGetter source, BlockPos pos, FunctionalStorage.DrawerType type){
         List<VoxelShape> boxes = new ArrayList<>();
-        CACHED_SHAPES.get(type).get(state.getValue(RotatableBlock.FACING_HORIZONTAL)).forEach(boxes::add);
+        Direction facing = state.getValue(Drawer.FACING_HORIZONTAL_CUSTOM);
+
+        // For X_2 type, if facing is UP or DOWN, use FACING_ALL to determine rotation
+        if (type == FunctionalStorage.DrawerType.X_2 && (facing == Direction.UP || facing == Direction.DOWN)) {
+            Direction subfacing = state.getValue(RotatableBlock.FACING_ALL);
+
+            // Use cached rotated shapes
+            boxes.addAll(CACHED_ROTATED_SHAPES.get(facing).get(subfacing));
+        } else {
+            // For other types or directions, use the original shapes
+            CACHED_SHAPES.get(type).get(facing).forEach(boxes::add);
+        }
+
         VoxelShape total = Shapes.block();
         boxes.add(total);
         return boxes;
@@ -119,7 +181,52 @@ public class DrawerBlock extends Drawer<DrawerTile> {
 
     @Override
     public Collection<VoxelShape> getHitShapes(BlockState state) {
-        return DrawerBlock.CACHED_SHAPES.get(type).get(state.getValue(RotatableBlock.FACING_HORIZONTAL));
+        return getDefaultHitShapes(this.type, state);
+    }
+
+    public static Collection<VoxelShape> getDefaultHitShapes(FunctionalStorage.DrawerType type, BlockState state) {
+        Direction facing = state.getValue(Drawer.FACING_HORIZONTAL_CUSTOM);
+        if (type == FunctionalStorage.DrawerType.X_4 && (facing == Direction.UP || facing == Direction.DOWN)) {
+            Direction subfacing = state.getValue(RotatableBlock.FACING_ALL);
+            if (facing == Direction.UP){
+                var shapes = DrawerBlock.CACHED_SHAPES.get(type).get(facing).stream().toList();
+                if (subfacing == Direction.WEST) {
+                    return Arrays.asList(shapes.get(3), shapes.get(2), shapes.get(1), shapes.get(0));
+                }
+                if (subfacing == Direction.SOUTH) {
+                    return Arrays.asList(shapes.get(1), shapes.get(3), shapes.get(0), shapes.get(2));
+                }
+                if (subfacing == Direction.NORTH) {
+                    return Arrays.asList(shapes.get(2), shapes.get(0), shapes.get(3), shapes.get(1));
+                }
+            }
+            if (facing == Direction.DOWN){
+                var shapes = DrawerBlock.CACHED_SHAPES.get(type).get(facing).stream().toList();
+                if (subfacing == Direction.WEST) {
+                    return Arrays.asList(shapes.get(1), shapes.get(0), shapes.get(3), shapes.get(2));
+                }
+                if (subfacing == Direction.SOUTH) {
+                    return Arrays.asList(shapes.get(0), shapes.get(2), shapes.get(1), shapes.get(3));
+                }
+                if (subfacing == Direction.NORTH) {
+                    return Arrays.asList(shapes.get(3), shapes.get(1), shapes.get(2), shapes.get(0));
+                }
+                if (subfacing == Direction.EAST) {
+                    return Arrays.asList(shapes.get(2), shapes.get(3), shapes.get(0), shapes.get(1));
+                }
+            }
+        }
+        // For X_2 type, if facing is UP or DOWN, use FACING_ALL to determine rotation
+        if (type == FunctionalStorage.DrawerType.X_2 && (facing == Direction.UP || facing == Direction.DOWN)) {
+            Direction subfacing = state.getValue(RotatableBlock.FACING_ALL);
+            if (facing == Direction.UP && (subfacing == Direction.NORTH || subfacing == Direction.WEST)) return CACHED_ROTATED_SHAPES.get(facing).get(subfacing).reversed();
+            if (facing == Direction.DOWN && (subfacing == Direction.SOUTH || subfacing == Direction.EAST)) return CACHED_ROTATED_SHAPES.get(facing).get(subfacing).reversed();
+
+            // Use cached rotated shapes
+            return CACHED_ROTATED_SHAPES.get(facing).get(subfacing);
+        } else {
+            return DrawerBlock.CACHED_SHAPES.get(type).get(facing);
+        }
     }
 
     @Override

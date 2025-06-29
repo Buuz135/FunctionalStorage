@@ -39,12 +39,17 @@ public class FluidDrawerISTER extends FunctionalStorageISTER{
     @Override
     public void renderByItem(HolderLookup.Provider access, @NotNull ItemStack stack, @NotNull ItemDisplayContext displayContext, @NotNull PoseStack matrix, @NotNull MultiBufferSource renderer, int light, int overlayLight) {
         var modelData = getData(stack);
-        renderBlockItem(stack, displayContext, matrix, renderer, light, overlayLight, modelData);
+        renderBlockItem(stack, displayContext, matrix, renderer, light, overlayLight, modelData, (poseStack) -> {
+            poseStack.mulPose(Axis.YP.rotationDegrees(180));
+            poseStack.mulPose(Axis.XN.rotationDegrees(90));
+            poseStack.mulPose(Axis.YP.rotationDegrees(90));
+        });
         if (stack.has(FSAttachments.TILE)) {
             var options = new ControllableDrawerTile.DrawerOptions();
             options.deserializeNBT(access, stack.get(FSAttachments.TILE).getCompound("drawerOptions"));
-            matrix.mulPose(Axis.YP.rotationDegrees(180));
-            matrix.translate(-1,0,-1);
+            matrix.mulPose(Axis.YP.rotationDegrees(-90));
+            matrix.mulPose(Axis.XP.rotationDegrees(90));
+            matrix.translate(0,-1,-1);
             var tileTag = stack.get(FSAttachments.TILE).getCompound("fluidHandler");
             if (type == FunctionalStorage.DrawerType.X_1){
                 FluidStack fluidStack = deserialize(access, tileTag, 0);

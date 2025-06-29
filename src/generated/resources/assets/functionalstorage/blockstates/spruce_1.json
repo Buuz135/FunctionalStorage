@@ -3,81 +3,353 @@
     {
       "apply": {
         "model": "functionalstorage:block/spruce_1",
-        "uvlock": true
-      },
-      "when": {
-        "subfacing": "north"
-      }
-    },
-    {
-      "apply": {
-        "model": "functionalstorage:block/lock",
-        "uvlock": true
-      },
-      "when": {
-        "locked": "true",
-        "subfacing": "north"
-      }
-    },
-    {
-      "apply": {
-        "model": "functionalstorage:block/spruce_1",
-        "uvlock": true,
-        "y": 180
-      },
-      "when": {
-        "subfacing": "south"
-      }
-    },
-    {
-      "apply": {
-        "model": "functionalstorage:block/lock",
-        "uvlock": true,
-        "y": 180
-      },
-      "when": {
-        "locked": "true",
-        "subfacing": "south"
-      }
-    },
-    {
-      "apply": {
-        "model": "functionalstorage:block/spruce_1",
-        "uvlock": true,
+        "x": 90,
         "y": 270
       },
       "when": {
-        "subfacing": "west"
+        "facing": "down",
+        "subfacing": "down"
       }
     },
     {
       "apply": {
         "model": "functionalstorage:block/lock",
-        "uvlock": true,
+        "x": 90,
         "y": 270
       },
       "when": {
+        "facing": "down",
         "locked": "true",
-        "subfacing": "west"
+        "subfacing": "down"
       }
     },
     {
       "apply": {
         "model": "functionalstorage:block/spruce_1",
-        "uvlock": true,
+        "x": 90,
+        "y": 270
+      },
+      "when": {
+        "facing": "up",
+        "subfacing": "down"
+      }
+    },
+    {
+      "apply": {
+        "model": "functionalstorage:block/lock",
+        "x": 90,
+        "y": 270
+      },
+      "when": {
+        "facing": "up",
+        "locked": "true",
+        "subfacing": "down"
+      }
+    },
+    {
+      "apply": {
+        "model": "functionalstorage:block/spruce_1",
+        "x": 90
+      },
+      "when": {
+        "facing": "north",
+        "subfacing": "down"
+      }
+    },
+    {
+      "apply": {
+        "model": "functionalstorage:block/lock",
+        "x": 90
+      },
+      "when": {
+        "facing": "north",
+        "locked": "true",
+        "subfacing": "down"
+      }
+    },
+    {
+      "apply": {
+        "model": "functionalstorage:block/spruce_1",
+        "x": 90,
+        "y": 180
+      },
+      "when": {
+        "facing": "south",
+        "subfacing": "down"
+      }
+    },
+    {
+      "apply": {
+        "model": "functionalstorage:block/lock",
+        "x": 90,
+        "y": 180
+      },
+      "when": {
+        "facing": "south",
+        "locked": "true",
+        "subfacing": "down"
+      }
+    },
+    {
+      "apply": {
+        "model": "functionalstorage:block/spruce_1",
+        "x": 90,
+        "y": 270
+      },
+      "when": {
+        "facing": "west",
+        "subfacing": "down"
+      }
+    },
+    {
+      "apply": {
+        "model": "functionalstorage:block/lock",
+        "x": 90,
+        "y": 270
+      },
+      "when": {
+        "facing": "west",
+        "locked": "true",
+        "subfacing": "down"
+      }
+    },
+    {
+      "apply": {
+        "model": "functionalstorage:block/spruce_1",
+        "x": 90,
         "y": 90
       },
       "when": {
+        "facing": "east",
+        "subfacing": "down"
+      }
+    },
+    {
+      "apply": {
+        "model": "functionalstorage:block/lock",
+        "x": 90,
+        "y": 90
+      },
+      "when": {
+        "facing": "east",
+        "locked": "true",
+        "subfacing": "down"
+      }
+    },
+    {
+      "apply": {
+        "model": "functionalstorage:block/spruce_1",
+        "x": 270,
+        "y": 270
+      },
+      "when": {
+        "facing": "down",
+        "subfacing": "up"
+      }
+    },
+    {
+      "apply": {
+        "model": "functionalstorage:block/lock",
+        "x": 270,
+        "y": 270
+      },
+      "when": {
+        "facing": "down",
+        "locked": "true",
+        "subfacing": "up"
+      }
+    },
+    {
+      "apply": {
+        "model": "functionalstorage:block/spruce_1",
+        "x": 270,
+        "y": 270
+      },
+      "when": {
+        "facing": "up",
+        "subfacing": "up"
+      }
+    },
+    {
+      "apply": {
+        "model": "functionalstorage:block/lock",
+        "x": 270,
+        "y": 270
+      },
+      "when": {
+        "facing": "up",
+        "locked": "true",
+        "subfacing": "up"
+      }
+    },
+    {
+      "apply": {
+        "model": "functionalstorage:block/spruce_1",
+        "x": 270,
+        "y": 180
+      },
+      "when": {
+        "facing": "north",
+        "subfacing": "up"
+      }
+    },
+    {
+      "apply": {
+        "model": "functionalstorage:block/lock",
+        "x": 270,
+        "y": 180
+      },
+      "when": {
+        "facing": "north",
+        "locked": "true",
+        "subfacing": "up"
+      }
+    },
+    {
+      "apply": {
+        "model": "functionalstorage:block/spruce_1",
+        "x": 270
+      },
+      "when": {
+        "facing": "south",
+        "subfacing": "up"
+      }
+    },
+    {
+      "apply": {
+        "model": "functionalstorage:block/lock",
+        "x": 270
+      },
+      "when": {
+        "facing": "south",
+        "locked": "true",
+        "subfacing": "up"
+      }
+    },
+    {
+      "apply": {
+        "model": "functionalstorage:block/spruce_1",
+        "x": 270,
+        "y": 90
+      },
+      "when": {
+        "facing": "west",
+        "subfacing": "up"
+      }
+    },
+    {
+      "apply": {
+        "model": "functionalstorage:block/lock",
+        "x": 270,
+        "y": 90
+      },
+      "when": {
+        "facing": "west",
+        "locked": "true",
+        "subfacing": "up"
+      }
+    },
+    {
+      "apply": {
+        "model": "functionalstorage:block/spruce_1",
+        "x": 270,
+        "y": 270
+      },
+      "when": {
+        "facing": "east",
+        "subfacing": "up"
+      }
+    },
+    {
+      "apply": {
+        "model": "functionalstorage:block/lock",
+        "x": 270,
+        "y": 270
+      },
+      "when": {
+        "facing": "east",
+        "locked": "true",
+        "subfacing": "up"
+      }
+    },
+    {
+      "apply": {
+        "model": "functionalstorage:block/spruce_1"
+      },
+      "when": {
+        "facing": "down",
+        "subfacing": "north"
+      }
+    },
+    {
+      "apply": {
+        "model": "functionalstorage:block/lock"
+      },
+      "when": {
+        "facing": "down",
+        "locked": "true",
+        "subfacing": "north"
+      }
+    },
+    {
+      "apply": {
+        "model": "functionalstorage:block/spruce_1",
+        "y": 180
+      },
+      "when": {
+        "facing": "down",
+        "subfacing": "south"
+      }
+    },
+    {
+      "apply": {
+        "model": "functionalstorage:block/lock",
+        "y": 180
+      },
+      "when": {
+        "facing": "down",
+        "locked": "true",
+        "subfacing": "south"
+      }
+    },
+    {
+      "apply": {
+        "model": "functionalstorage:block/spruce_1",
+        "y": 270
+      },
+      "when": {
+        "facing": "down",
+        "subfacing": "west"
+      }
+    },
+    {
+      "apply": {
+        "model": "functionalstorage:block/lock",
+        "y": 270
+      },
+      "when": {
+        "facing": "down",
+        "locked": "true",
+        "subfacing": "west"
+      }
+    },
+    {
+      "apply": {
+        "model": "functionalstorage:block/spruce_1",
+        "y": 90
+      },
+      "when": {
+        "facing": "down",
         "subfacing": "east"
       }
     },
     {
       "apply": {
         "model": "functionalstorage:block/lock",
-        "uvlock": true,
         "y": 90
       },
       "when": {
+        "facing": "down",
         "locked": "true",
         "subfacing": "east"
       }

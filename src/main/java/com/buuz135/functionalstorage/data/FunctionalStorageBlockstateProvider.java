@@ -40,13 +40,47 @@ public class FunctionalStorageBlockstateProvider extends BlockStateProvider {
         var lockModel = new ModelFile.UncheckedModelFile(ResourceLocation.fromNamespaceAndPath(FunctionalStorage.MOD_ID, "block/lock"));
         var builder = getMultipartBuilder(block);
 
-        for (Direction direction : RotatableBlock.FACING_HORIZONTAL.getPossibleValues()) {
-            builder.part().modelFile(baseModel).uvLock(true).rotationY((int) direction.getOpposite().toYRot()).addModel()
-                .condition(RotatableBlock.FACING_HORIZONTAL, direction).end();
+        if (block.getRotationType() == RotatableBlock.RotationType.FOUR_WAY) {
+            for (Direction direction : Drawer.FACING_HORIZONTAL.getPossibleValues()) {
+                builder.part().modelFile(baseModel).uvLock(true).rotationY((int) direction.toYRot()).addModel()
+                        .condition(Drawer.FACING_HORIZONTAL, direction).end();
 
-            if (block instanceof Drawer) {
-                builder.part().modelFile(lockModel).uvLock(true).rotationY((int) direction.getOpposite().toYRot()).addModel()
-                    .condition(RotatableBlock.FACING_HORIZONTAL, direction).condition(DrawerBlock.LOCKED, true).end();
+                if (block instanceof Drawer) {
+                    builder.part().modelFile(lockModel).uvLock(true).rotationY((int) direction.toYRot()).addModel()
+                            .condition(Drawer.FACING_HORIZONTAL, direction).condition(DrawerBlock.LOCKED, true).end();
+                }
+            }
+        } else {
+            for (Direction direction : Direction.values()) {
+                if (direction == Direction.DOWN) {
+                    for (Direction possibleValue : Drawer.FACING_HORIZONTAL_CUSTOM.getPossibleValues()) {
+                        builder.part().modelFile(baseModel).uvLock(false).rotationX(90).rotationY((int) possibleValue.getOpposite().toYRot()).addModel()
+                                .condition(Drawer.FACING_HORIZONTAL_CUSTOM, direction).condition(RotatableBlock.FACING_ALL, possibleValue).end();
+
+                        if (block instanceof Drawer) {
+                            builder.part().modelFile(lockModel).uvLock(false).rotationX(90).rotationY((int) possibleValue.getOpposite().toYRot()).addModel()
+                                    .condition(Drawer.FACING_HORIZONTAL_CUSTOM, direction).condition(RotatableBlock.FACING_ALL, possibleValue).condition(DrawerBlock.LOCKED, true).end();
+                        }
+                    }
+                } else if (direction == Direction.UP) {
+                    for (Direction possibleValue : Drawer.FACING_HORIZONTAL_CUSTOM.getPossibleValues()) {
+                        builder.part().modelFile(baseModel).uvLock(false).rotationX(270).rotationY((int) possibleValue.toYRot()).addModel()
+                                .condition(Drawer.FACING_HORIZONTAL_CUSTOM, direction).condition(RotatableBlock.FACING_ALL, possibleValue).end();
+
+                        if (block instanceof Drawer) {
+                            builder.part().modelFile(lockModel).uvLock(false).rotationX(270).rotationY((int) possibleValue.toYRot()).addModel()
+                                    .condition(Drawer.FACING_HORIZONTAL_CUSTOM, direction).condition(RotatableBlock.FACING_ALL, possibleValue).condition(DrawerBlock.LOCKED, true).end();
+                        }
+                    }
+                } else {
+                    builder.part().modelFile(baseModel).uvLock(false).rotationY((int) direction.getOpposite().toYRot()).addModel()
+                            .condition(Drawer.FACING_HORIZONTAL_CUSTOM, direction).condition(RotatableBlock.FACING_ALL, Direction.DOWN).end();
+
+                    if (block instanceof Drawer) {
+                        builder.part().modelFile(lockModel).uvLock(false).rotationY((int) direction.getOpposite().toYRot()).addModel()
+                                .condition(Drawer.FACING_HORIZONTAL_CUSTOM, direction).condition(RotatableBlock.FACING_ALL, Direction.DOWN).condition(DrawerBlock.LOCKED, true).end();
+                    }
+                }
             }
         }
     }

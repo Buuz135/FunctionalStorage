@@ -1,3 +1,9 @@
+# VERSION 1.5.0
+
+* Added ua_ua.json for Ukrainian localization - inceon
+* Update Chinese localization #414 - ZHAY10086
+* Added support for UP and DOWN orientations in drawer blocks
+
 # VERSION 1.4.3
 
 * Added item tags to fluid drawers, closes #411

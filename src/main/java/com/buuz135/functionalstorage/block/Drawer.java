@@ -27,6 +27,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
@@ -34,6 +35,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
@@ -52,6 +54,9 @@ import java.util.Collection;
 import java.util.List;
 
 public abstract class Drawer<T extends ControllableDrawerTile<T>> extends RotatableBlock<T> {
+
+    public static final DirectionProperty FACING_HORIZONTAL_CUSTOM = DirectionProperty.create("subfacing", Direction.values());
+
     public Drawer(String name, Properties properties, Class<T> tileClass) {
         super(name, properties, tileClass);
     }
@@ -63,14 +68,33 @@ public abstract class Drawer<T extends ControllableDrawerTile<T>> extends Rotata
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> def) {
-        super.createBlockStateDefinition(def);
+        if (this.getRotationType() == RotationType.FOUR_WAY) {
+            super.createBlockStateDefinition(def);
+        } else {
+            def.add(DrawerBlock.FACING_HORIZONTAL_CUSTOM);
+            def.add(RotatableBlock.FACING_ALL);
+        }
         def.add(DrawerBlock.LOCKED);
+    }
+
+    @Override
+    public BlockState getStateForPlacement(BlockPlaceContext context) {
+        if (this.getRotationType() == RotationType.FOUR_WAY) {
+            return super.getStateForPlacement(context);
+        }
+        var direction = context.getNearestLookingDirection().getOpposite();
+        if (direction.getAxis().isHorizontal()) {
+            var blockstate = this.defaultBlockState().setValue(Drawer.FACING_HORIZONTAL_CUSTOM, direction).setValue(RotatableBlock.FACING_ALL, Direction.DOWN);
+            return blockstate;
+        }
+        var blockstate  = this.defaultBlockState().setValue(Drawer.FACING_HORIZONTAL_CUSTOM, direction).setValue(RotatableBlock.FACING_ALL, direction == Direction.DOWN ? context.getHorizontalDirection().getOpposite()  : context.getHorizontalDirection());
+        return blockstate;
     }
 
     @NotNull
     @Override
     public RotationType getRotationType() {
-        return RotationType.FOUR_WAY;
+        return RotationType.TWENTY_FOUR_WAY;
     }
 
     @Nonnull

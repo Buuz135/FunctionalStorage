@@ -9,6 +9,7 @@ import com.buuz135.functionalstorage.item.UpgradeItem;
 import com.buuz135.functionalstorage.item.component.SizeProvider;
 import com.hrznstudio.titanium.annotation.Save;
 import com.hrznstudio.titanium.block.BasicTileBlock;
+import com.hrznstudio.titanium.block.RotatableBlock;
 import com.hrznstudio.titanium.block.tile.ActiveTile;
 import com.hrznstudio.titanium.client.screen.addon.TextScreenAddon;
 import com.hrznstudio.titanium.component.inventory.InventoryComponent;
@@ -138,6 +139,11 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
                 return Component.translatable("key.categories.inventory").getString();
             }
         });
+    }
+
+    @Override
+    public Direction getFacingDirection() {
+        return this.level.getBlockState(this.worldPosition).hasProperty(DrawerBlock.FACING_HORIZONTAL_CUSTOM) ? (Direction)this.level.getBlockState(this.worldPosition).getValue(DrawerBlock.FACING_HORIZONTAL_CUSTOM) : (this.level.getBlockState(this.worldPosition).hasProperty(RotatableBlock.FACING_HORIZONTAL) ? (Direction)this.level.getBlockState(this.worldPosition).getValue(RotatableBlock.FACING_HORIZONTAL) : Direction.NORTH);
     }
 
     @Override

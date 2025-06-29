@@ -1,6 +1,7 @@
 package com.buuz135.functionalstorage.item;
 
 import com.buuz135.functionalstorage.FunctionalStorage;
+import com.buuz135.functionalstorage.block.Drawer;
 import com.buuz135.functionalstorage.block.tile.ControllableDrawerTile;
 import com.buuz135.functionalstorage.block.tile.FluidDrawerTile;
 import com.buuz135.functionalstorage.item.component.FunctionalUpgradeBehavior;
@@ -130,7 +131,7 @@ public class UpgradeItem extends FSItem {
 
     @Nullable
     public Component getDescription(ItemStack stack, ControllableDrawerTile<?> tile) {
-        var dir = tile.getBlockState().getValue(RotatableBlock.FACING_HORIZONTAL);
+        var dir = tile.getBlockState().getValue(Drawer.FACING_HORIZONTAL_CUSTOM);
         var type = tile instanceof FluidDrawerTile ? "fluid" : "item";
         if (this == FunctionalStorage.PUSHING_UPGRADE.get()) {
             return Component.translatable("drawer_upgrade.functionalstorage.push." + type, getRelativeDirection(
@@ -157,6 +158,41 @@ public class UpgradeItem extends FSItem {
     public static MutableComponent getRelativeDirection(Direction upgrade, Direction facing) {
         return Component.translatable(
                 "tooltip.titanium.facing_handler." + FacingUtil.getFacingRelative(upgrade, facing).name().toLowerCase()).withStyle(ChatFormatting.WHITE);
+    }
+
+    public static MutableComponent getRelativeDirectionVertical(Direction placedSide, Direction relative, Direction facing) {
+        return Component.translatable(
+                "tooltip.titanium.facing_handler." + getFacingRelativeVertical(placedSide, relative, facing).name().toLowerCase()).withStyle(ChatFormatting.WHITE);
+    }
+
+    public static FacingUtil.Sideness getFacingRelativeVertical(Direction placedSide, Direction relative, Direction facing) {
+        if (placedSide == Direction.DOWN) {
+            if (relative == facing) {
+                return FacingUtil.Sideness.BOTTOM;
+            }
+            if (relative == facing.getOpposite()) {
+                return FacingUtil.Sideness.TOP;
+            }
+        }
+        if (placedSide == facing) {
+            return FacingUtil.Sideness.FRONT;
+        }
+        if (placedSide == facing.getOpposite()) {
+            return FacingUtil.Sideness.BACK;
+        }
+        if (relative == facing) {
+            return FacingUtil.Sideness.TOP;
+        }
+        if (relative == facing.getOpposite()) {
+            return FacingUtil.Sideness.BACK;
+        }
+        if (relative.getClockWise() == facing) {
+            return FacingUtil.Sideness.RIGHT;
+        }
+        if (relative.getCounterClockWise() == facing) {
+            return FacingUtil.Sideness.LEFT;
+        }
+        return FacingUtil.Sideness.BACK;
     }
 
     @Override

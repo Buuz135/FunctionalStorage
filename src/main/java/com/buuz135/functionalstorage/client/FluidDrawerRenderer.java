@@ -1,6 +1,7 @@
 package com.buuz135.functionalstorage.client;
 
 import com.buuz135.functionalstorage.FunctionalStorage;
+import com.buuz135.functionalstorage.block.Drawer;
 import com.buuz135.functionalstorage.block.tile.ControllableDrawerTile;
 import com.buuz135.functionalstorage.block.tile.FluidDrawerTile;
 import com.buuz135.functionalstorage.fluid.BigFluidHandler;
@@ -24,6 +25,9 @@ import net.minecraft.world.phys.AABB;
 import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.neoforged.neoforge.fluids.FluidStack;
 import org.joml.Matrix4f;
+import org.joml.Vector3f;
+
+import static com.buuz135.functionalstorage.util.MathUtils.createTransformMatrix;
 
 
 public class FluidDrawerRenderer implements BlockEntityRenderer<FluidDrawerTile> {
@@ -121,24 +125,55 @@ public class FluidDrawerRenderer implements BlockEntityRenderer<FluidDrawerTile>
     @Override
     public void render(FluidDrawerTile tile, float partialTicks, PoseStack matrixStack, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
         matrixStack.pushPose();
+        Direction subfacing = tile.getFacingDirection();
+
+        if (tile.getBlockState().hasProperty(Drawer.FACING_ALL)) {
+            Direction facing = tile.getBlockState().getValue(Drawer.FACING_ALL);
+            if (subfacing == Direction.UP) {
+                matrixStack.mulPose(createTransformMatrix(new Vector3f(1,0,0), new Vector3f(90, 0, 0), 1));
+                if (facing == Direction.EAST) {
+                    matrixStack.mulPose(createTransformMatrix(new Vector3f(-1,0,0), new Vector3f(0, 0, -90), 1));
+                }
+                else if (facing == Direction.WEST) {
+                    matrixStack.mulPose(createTransformMatrix(new Vector3f(0,1,0), new Vector3f(0, 0, 90), 1));
+                }
+            }
+            if (subfacing == Direction.DOWN) {
+                matrixStack.mulPose(createTransformMatrix(new Vector3f(0,1,0), new Vector3f(-90, 0, -180), 1));
+                if (facing == Direction.WEST) {
+                    matrixStack.mulPose(createTransformMatrix(new Vector3f(-1,0,0), new Vector3f(0, 0, -90), 1));
+                }
+                else if (facing == Direction.EAST) {
+                    matrixStack.mulPose(createTransformMatrix(new Vector3f(0,1,0), new Vector3f(0, 0, 90), 1));
+                }
+            }
+
+
+            if (facing == Direction.NORTH) {
+                matrixStack.mulPose(createTransformMatrix(new Vector3f(-1,1,0), new Vector3f(0,0,180), 1));
+            }
+            else if (facing == Direction.SOUTH) {
+                //matrixStack.mulPose(createTransformMatrix(new Vector3f(0), new Vector3f(0, 0, 0), 1));
+            }
+        }
         Direction facing = tile.getFacingDirection();
         matrixStack.mulPose(Axis.YP.rotationDegrees(-180));
-        if (facing == Direction.NORTH) {
+        if (subfacing == Direction.NORTH) {
             //matrixStack.translate(0, 0, 1.016 / 16D);
             matrixStack.translate(-1, 0, -1);
         }
-        if (facing == Direction.EAST) {
+        if (subfacing == Direction.EAST) {
             matrixStack.translate(0, 0, -1);
             matrixStack.mulPose(Axis.YP.rotationDegrees(-90));
         }
-        if (facing == Direction.SOUTH) {
+        if (subfacing == Direction.SOUTH) {
             matrixStack.mulPose(Axis.YP.rotationDegrees(-180));
         }
-        if (facing == Direction.WEST) {
+        if (subfacing == Direction.WEST) {
             matrixStack.translate(-1, 0, 0);
             matrixStack.mulPose(Axis.YP.rotationDegrees(90));
         }
-        combinedLightIn = LevelRenderer.getLightColor(tile.getLevel(), tile.getBlockPos().relative(facing));
+        combinedLightIn = LevelRenderer.getLightColor(tile.getLevel(), tile.getBlockPos().relative(subfacing));
 
         if (tile.getDrawerType() == FunctionalStorage.DrawerType.X_1)
             render1Slot(matrixStack, bufferIn, combinedLightIn, combinedOverlayIn, tile);
