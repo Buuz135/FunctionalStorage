@@ -3,6 +3,8 @@
 * Added ua_ua.json for Ukrainian localization - inceon
 * Update Chinese localization #414 - ZHAY10086
 * Added support for UP and DOWN orientations in drawer blocks
+* Full numbers when viewing items / fluids inside the gui - Satherov
+* Allow items to be placed in any compacting slot - Satherov
 
 # VERSION 1.4.3
 
