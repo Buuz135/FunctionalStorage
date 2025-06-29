@@ -5,6 +5,15 @@ import java.text.DecimalFormat;
 public class NumberUtils {
 
     private static final DecimalFormat formatterWithUnits = new DecimalFormat("####0.#");
+    private static final DecimalFormat blankFormatter = new DecimalFormat();
+
+    public static String getFormattedNumber(int number) {
+        return blankFormatter.format(number);
+    }
+
+    public static String getFormattedFluid(int number) {
+        return blankFormatter.format(number) + "mb";
+    }
 
     public static String getFormatedBigNumber(int number) {
         if (number >= 1000000000) { //BILLION
