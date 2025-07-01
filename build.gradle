@@ -75,6 +75,11 @@ dependencies {
     implementation "curse.maven:jade-324717:5444008"
     compileOnly "curse.maven:the-one-probe-245211:5475189"
     runtimeOnly "curse.maven:applied-energistics-2-223794:5729094"
+
+    compileOnly "curse.maven:architectury-api-419699:5786327"
+    compileOnly "curse.maven:ftb-library-forge-404465:6711324"
+    compileOnly "curse.maven:ftb-teams-forge-404468:6119437"
+    compileOnly "curse.maven:ftb-chunks-forge-314906:6504893"
 }
 
 jar {
