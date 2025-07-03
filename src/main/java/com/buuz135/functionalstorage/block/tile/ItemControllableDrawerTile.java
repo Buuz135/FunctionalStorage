@@ -1,6 +1,7 @@
 package com.buuz135.functionalstorage.block.tile;
 
 import com.buuz135.functionalstorage.FunctionalStorage;
+import com.buuz135.functionalstorage.compat.ftb.FTBChunksManager;
 import com.buuz135.functionalstorage.item.FSAttachments;
 import com.buuz135.functionalstorage.item.component.SizeProvider;
 import com.hrznstudio.titanium.block.BasicTileBlock;
@@ -21,6 +22,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.fml.ModList;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
 import org.jetbrains.annotations.NotNull;
@@ -85,10 +87,18 @@ public abstract class ItemControllableDrawerTile<T extends ItemControllableDrawe
                 BlockHitResult blockResult = (BlockHitResult) rayTraceResult;
                 Direction facing = blockResult.getDirection();
                 if (facing.equals(this.getFacingDirection())) {
+                    if (preventInteraction(blockResult.getBlockPos(), playerIn)) return;
                     ItemHandlerHelper.giveItemToPlayer(playerIn, getStorage().extractItem(slot, playerIn.isShiftKeyDown() ? getStorage().getStackInSlot(slot).getMaxStackSize() : 1, false));
                 }
             }
         }
+    }
+
+    private boolean preventInteraction(BlockPos pos, Player player) {
+        if (ModList.get().isLoaded("ftbchunks")) {
+            return FTBChunksManager.preventInteraction(pos, player);
+        }
+        return false;
     }
 
     public abstract IItemHandler getStorage();
