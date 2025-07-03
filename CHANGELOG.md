@@ -1,3 +1,8 @@
+# VERSION 1.5.1
+
+* Fixed being able to override compacting drawers setup if the top slot was empty, closes #432 - Satherov
+* Improved drawer interaction in claimed chunks  - Satherov
+
 # VERSION 1.5.0
 
 * Added ua_ua.json for Ukrainian localization - inceon
