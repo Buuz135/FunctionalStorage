@@ -51,7 +51,7 @@ public class EnderInventoryHandler extends BigInventoryHandler implements ILocka
     }
 
     @Override
-    public int getMultiplier() {
+    public float getMultiplier() {
         return 1;
     }
 

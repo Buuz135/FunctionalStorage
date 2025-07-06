@@ -1,7 +1,7 @@
 package com.buuz135.functionalstorage.item.component;
 
 import com.google.common.collect.BiMap;
-import com.google.common.collect.ImmutableBiMap;
+import com.google.common.collect.HashBiMap;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.component.DataComponentType;
@@ -10,15 +10,16 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.items.IItemHandler;
 
 import java.text.DecimalFormat;
+import java.util.Map;
 import java.util.Objects;
 import java.util.function.Supplier;
 
 public interface SizeProvider {
-    BiMap<String, MapCodec<? extends SizeProvider>> REGISTRY = ImmutableBiMap.of(
+    BiMap<String, MapCodec<? extends SizeProvider>> REGISTRY = HashBiMap.create(Map.of(
             "modify_factor", ModifyFactor.CODEC,
             "set_base", SetBase.CODEC,
             "modify_base", ModifyBase.CODEC
-    );
+    ));
     Codec<SizeProvider> CODEC = Codec.STRING.dispatch(t -> REGISTRY.inverse().get(t.codec()), REGISTRY::get);
 
     default float applyBaseModifier(float source) {
@@ -33,11 +34,19 @@ public interface SizeProvider {
 
     MapCodec<? extends SizeProvider> codec();
 
-    static int calculate(IItemHandler upgrades, Supplier<DataComponentType<SizeProvider>> component, int baseIn) {
-        return calculate(upgrades, component, baseIn, new ItemStack[upgrades.getSlots()]);
+    static int calculate(IItemHandler upgrades, Supplier<DataComponentType<SizeProvider>> component, int baseIn, ItemStack[] replacements) {
+        return (int) Math.floor(calculateAsFactor(upgrades, component, baseIn, replacements));
     }
 
-    static int calculate(IItemHandler upgrades, Supplier<DataComponentType<SizeProvider>> component, int baseIn, ItemStack[] replacements) {
+    static int calculate(IItemHandler upgrades, Supplier<DataComponentType<SizeProvider>> component, int baseIn) {
+        return (int) Math.floor(calculateAsFactor(upgrades, component, baseIn));
+    }
+
+    static float calculateAsFactor(IItemHandler upgrades, Supplier<DataComponentType<SizeProvider>> component, float baseIn) {
+        return calculateAsFactor(upgrades, component, baseIn, new ItemStack[upgrades.getSlots()]);
+    }
+
+    static float calculateAsFactor(IItemHandler upgrades, Supplier<DataComponentType<SizeProvider>> component, float baseIn, ItemStack[] replacements) {
         float factor = 1f;
         float base = baseIn;
         for (int i = 0; i < upgrades.getSlots(); i++) {
@@ -55,7 +64,7 @@ public interface SizeProvider {
         base = Math.max(base, 0f);
 
         float result = base * factor;
-        return (int) Math.floor(result);
+        return (float) (Math.floor(result * 100f) / 100d);
     }
 
     record ModifyFactor(float factor) implements SizeProvider {
@@ -90,8 +99,15 @@ public interface SizeProvider {
         }
     }
 
-    record SetBase(int amount) implements SizeProvider {
-        public static final MapCodec<SetBase> CODEC = Codec.intRange(1, Integer.MAX_VALUE)
+    record SetBase(float amount) implements SizeProvider {
+        public SetBase(int amount) {
+            this((float)amount);
+        }
+
+        public static final MapCodec<SetBase> CODEC = Codec.withAlternative(
+                    Codec.floatRange(0, Float.MAX_VALUE),
+                    Codec.intRange(1, Integer.MAX_VALUE).xmap(Integer::floatValue, Float::intValue)
+                )
                 .fieldOf("amount")
                 .xmap(SetBase::new, SetBase::amount);
 
@@ -111,8 +127,14 @@ public interface SizeProvider {
         }
     }
 
-    record ModifyBase(int amount) implements SizeProvider {
-        public static final MapCodec<ModifyBase> CODEC = Codec.INT
+    record ModifyBase(float amount) implements SizeProvider {
+        public ModifyBase(int amount) {
+            this((float) amount);
+        }
+        public static final MapCodec<ModifyBase> CODEC = Codec.withAlternative(
+                    Codec.FLOAT,
+                    Codec.INT.xmap(Integer::floatValue, Float::intValue)
+                )
                 .fieldOf("amount")
                 .xmap(ModifyBase::new, ModifyBase::amount);
 

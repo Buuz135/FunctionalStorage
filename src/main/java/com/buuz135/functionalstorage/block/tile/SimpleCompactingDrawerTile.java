@@ -39,7 +39,7 @@ public class SimpleCompactingDrawerTile extends ItemControllableDrawerTile<Simpl
             }
 
             @Override
-            public int getMultiplier() {
+            public float getMultiplier() {
                 return getStorageMultiplier();
             }
 
@@ -119,10 +119,10 @@ public class SimpleCompactingDrawerTile extends ItemControllableDrawerTile<Simpl
     }
 
     @Override
-    protected boolean canChangeMultiplier(long newSizeMultiplier) {
+    protected boolean canChangeMultiplier(double newSizeMultiplier) {
         var stack = getStorage().getStackInSlot(1);
         if (stack.isEmpty()) return true;
-        return stack.getCount() <= Math.min(Integer.MAX_VALUE, stack.getMaxStackSize() * newSizeMultiplier);
+        return stack.getCount() <= Math.min(Integer.MAX_VALUE, Math.floor(stack.getMaxStackSize() * newSizeMultiplier));
     }
 
     @NotNull

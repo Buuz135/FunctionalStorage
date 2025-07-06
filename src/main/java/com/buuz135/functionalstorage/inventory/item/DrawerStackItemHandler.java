@@ -27,7 +27,7 @@ public class DrawerStackItemHandler implements IItemHandler, INBTSerializable<Co
     private List<BigInventoryHandler.BigStack> storedStacks;
     private ItemStack stack;
     private FunctionalStorage.DrawerType type;
-    private int size;
+    private float size;
     private boolean isVoid;
     private boolean isCreative;
 
@@ -49,7 +49,7 @@ public class DrawerStackItemHandler implements IItemHandler, INBTSerializable<Co
 
             var upgrades = new ItemStackHandler();
             upgrades.deserializeNBT(access, tile.getCompound("storageUpgrades"));
-            size = SizeProvider.calculate(upgrades, FSAttachments.ITEM_STORAGE_MODIFIER, drawerType.getSlotAmount());
+            size = SizeProvider.calculateAsFactor(upgrades, FSAttachments.ITEM_STORAGE_MODIFIER, drawerType.getSlotAmount());
 
             for (Tag tag : tile.getCompound("utilityUpgrades").getList("Items", Tag.TAG_COMPOUND)) {
                 ItemStack itemStack = Utils.deserialize(access, (CompoundTag) tag);
@@ -176,7 +176,7 @@ public class DrawerStackItemHandler implements IItemHandler, INBTSerializable<Co
             maxSize = stored.getMaxStackSize();
         }
 
-        return (int) Math.min(Integer.MAX_VALUE, size * maxSize);
+        return (int) Math.min(Integer.MAX_VALUE, Math.floor(size * maxSize));
     }
 
     @Override

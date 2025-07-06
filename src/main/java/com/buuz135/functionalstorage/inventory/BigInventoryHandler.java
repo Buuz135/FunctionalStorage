@@ -150,7 +150,7 @@ public abstract class BigInventoryHandler implements IItemHandler, INBTSerializa
 
     public abstract void onChange();
 
-    public abstract int getMultiplier();
+    public abstract float getMultiplier();
 
     public double getTotalAmount() {
         return 64d * getMultiplier();

@@ -38,7 +38,7 @@ public class DrawerTile extends ItemControllableDrawerTile<DrawerTile> {
             }
 
             @Override
-            public int getMultiplier() {
+            public float getMultiplier() {
                 return getStorageMultiplier();
             }
 

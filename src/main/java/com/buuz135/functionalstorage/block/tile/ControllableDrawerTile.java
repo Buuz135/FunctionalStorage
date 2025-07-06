@@ -60,7 +60,7 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
     public final Supplier<DataComponentType<SizeProvider>> sizeUpgradeComponent;
     @Save
     protected int baseSize;
-    private int storageSize;
+    private float storageSize;
 
     public ControllableDrawerTile(BasicTileBlock<T> base, BlockEntityType<T> entityType, BlockPos pos, BlockState state, DrawerProperties props) {
         super(base, entityType, pos, state);
@@ -180,7 +180,7 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
         this.controllerPos = null;
     }
 
-    public int getStorageMultiplier() {
+    public float getStorageMultiplier() {
         maybeCacheUpgrades();
         return storageSize;
     }
@@ -265,7 +265,7 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
 
     public void recalculateUpgrades() {
         isCreative = false;
-        storageSize = SizeProvider.calculate(storageUpgrades, sizeUpgradeComponent, baseSize);
+        storageSize = SizeProvider.calculateAsFactor(storageUpgrades, sizeUpgradeComponent, baseSize);
         for (int i = 0; i < storageUpgrades.getSlots(); i++) {
             Item upgrade = storageUpgrades.getStackInSlot(i).getItem();
             if (upgrade.equals(FunctionalStorage.CREATIVE_UPGRADE.get())) {

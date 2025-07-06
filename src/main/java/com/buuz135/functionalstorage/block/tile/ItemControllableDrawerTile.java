@@ -115,7 +115,7 @@ public abstract class ItemControllableDrawerTile<T extends ItemControllableDrawe
                     var replacement = new ItemStack[this.getSlots()];
                     replacement[slot] = ItemStack.EMPTY;
 
-                    var newSize = (long) SizeProvider.calculate(this, FSAttachments.ITEM_STORAGE_MODIFIER, baseSize, replacement);
+                    var newSize = (double) SizeProvider.calculateAsFactor(this, FSAttachments.ITEM_STORAGE_MODIFIER, baseSize, replacement);
                     if (!canChangeMultiplier(newSize)) {
                         return ItemStack.EMPTY;
                     }
@@ -131,7 +131,7 @@ public abstract class ItemControllableDrawerTile<T extends ItemControllableDrawe
                     var replacement = new ItemStack[getStorageUpgrades().getSlots()];
                     replacement[integer] = stack;
 
-                    var newSize = (long) SizeProvider.calculate(getStorageUpgrades(), FSAttachments.ITEM_STORAGE_MODIFIER, baseSize, replacement);
+                    var newSize = (double) SizeProvider.calculateAsFactor(getStorageUpgrades(), FSAttachments.ITEM_STORAGE_MODIFIER, baseSize, replacement);
                     if (!canChangeMultiplier(newSize)) {
                         return false;
                     }
@@ -144,10 +144,10 @@ public abstract class ItemControllableDrawerTile<T extends ItemControllableDrawe
                 .setSlotLimit(1);
     }
 
-    protected boolean canChangeMultiplier(long newSizeMultiplier) {
+    protected boolean canChangeMultiplier(double newSizeMultiplier) {
         for (int i = 0; i < getStorage().getSlots(); i++) {
             var stored = getStorage().getStackInSlot(i);
-            if (!stored.isEmpty() && stored.getCount() > Math.min(Integer.MAX_VALUE, newSizeMultiplier * stored.getMaxStackSize())) {
+            if (!stored.isEmpty() && stored.getCount() > Math.min(Integer.MAX_VALUE, Math.floor(newSizeMultiplier * stored.getMaxStackSize()))) {
                 return false;
             }
         }
