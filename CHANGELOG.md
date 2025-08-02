@@ -3,6 +3,8 @@
 * Update zh_cn.json 1.21 - Mooncywin
 * Create es_es.json and es_mx.json - ArrivedBog593
 * Support fractional factors and base amounts - Matyrobbrt
+* Fixed Controller, Access Point and Armory Cabinet having their model reversed, closes #435
+* Fixed being able to extract upgrades from Fluid Drawers, closes #437
 
 # VERSION 1.5.1
 

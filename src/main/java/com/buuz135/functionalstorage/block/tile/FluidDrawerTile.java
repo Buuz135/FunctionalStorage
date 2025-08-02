@@ -195,14 +195,11 @@ public class FluidDrawerTile extends ControllableDrawerTile<FluidDrawerTile> {
                 ItemStack stack = this.getStackInSlot(slot);
                 if (stack.has(FSAttachments.FLUID_STORAGE_MODIFIER)) {
                     var replacement = new ItemStack[this.getSlots()];
-                    replacement[slot] = stack;
+                    replacement[slot] = ItemStack.EMPTY;
 
                     var newSize = SizeProvider.calculateAsFactor(this, FSAttachments.FLUID_STORAGE_MODIFIER, baseSize, replacement);
-                    for (int i = 0; i < getFluidHandler().getTanks(); i++) {
-                        var stored = getFluidHandler().getFluidInTank(i);
-                        if (stored.getAmount() > Math.min(Integer.MAX_VALUE, getTankCapacity(newSize))) {
-                            return ItemStack.EMPTY;
-                        }
+                    if (!canChangeMultiplier(newSize)) {
+                        return ItemStack.EMPTY;
                     }
                 }
                 return super.extractItem(slot, amount, simulate);
@@ -223,6 +220,15 @@ public class FluidDrawerTile extends ControllableDrawerTile<FluidDrawerTile> {
                 .setSlotLimit(1);
     }
 
+    protected boolean canChangeMultiplier(double newSizeMultiplier) {
+        for (int i = 0; i < getFluidHandler().getTanks(); i++) {
+            var stored = getFluidHandler().getFluidInTank(i);
+            if (!stored.isEmpty() && stored.getAmount() > Math.min(Integer.MAX_VALUE, getTankCapacity(newSizeMultiplier))) {
+                return false;
+            }
+        }
+        return true;
+    }
 
     @Override
     public IFluidHandler getFluidHandler(@Nullable Direction direction) {
