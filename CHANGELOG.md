@@ -1,3 +1,9 @@
+# VERSION 1.5.2
+
+* Update zh_cn.json 1.21 - Mooncywin
+* Create es_es.json and es_mx.json - ArrivedBog593
+* Support fractional factors and base amounts - Matyrobbrt
+
 # VERSION 1.5.1
 
 * Fixed being able to override compacting drawers setup if the top slot was empty, closes #432 - Satherov
