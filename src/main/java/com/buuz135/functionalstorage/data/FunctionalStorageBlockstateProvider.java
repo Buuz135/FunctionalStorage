@@ -43,11 +43,11 @@ public class FunctionalStorageBlockstateProvider extends BlockStateProvider {
         if (block.getRotationType() == RotatableBlock.RotationType.FOUR_WAY) {
             for (Direction direction : Drawer.FACING_HORIZONTAL.getPossibleValues()) {
                 builder.part().modelFile(baseModel).uvLock(true).rotationY((int) direction.toYRot()).addModel()
-                        .condition(Drawer.FACING_HORIZONTAL, direction).end();
+                        .condition(Drawer.FACING_HORIZONTAL, direction.getOpposite()).end();
 
                 if (block instanceof Drawer) {
                     builder.part().modelFile(lockModel).uvLock(true).rotationY((int) direction.toYRot()).addModel()
-                            .condition(Drawer.FACING_HORIZONTAL, direction).condition(DrawerBlock.LOCKED, true).end();
+                            .condition(Drawer.FACING_HORIZONTAL, direction.getOpposite()).condition(DrawerBlock.LOCKED, true).end();
                 }
             }
         } else {

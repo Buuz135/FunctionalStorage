@@ -7,7 +7,7 @@
         "y": 180
       },
       "when": {
-        "subfacing": "north"
+        "subfacing": "south"
       }
     },
     {
@@ -16,7 +16,7 @@
         "uvlock": true
       },
       "when": {
-        "subfacing": "south"
+        "subfacing": "north"
       }
     },
     {
@@ -26,7 +26,7 @@
         "y": 90
       },
       "when": {
-        "subfacing": "west"
+        "subfacing": "east"
       }
     },
     {
@@ -36,7 +36,7 @@
         "y": 270
       },
       "when": {
-        "subfacing": "east"
+        "subfacing": "west"
       }
     }
   ]
