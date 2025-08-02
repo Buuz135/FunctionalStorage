@@ -64,8 +64,8 @@ public class FluidDrawerTile extends ControllableDrawerTile<FluidDrawerTile> {
         };
     }
 
-    private int getTankCapacity(int storageMultiplier) {
-        return (int) Math.min(Integer.MAX_VALUE, storageMultiplier * 1000L);
+    private int getTankCapacity(double storageMultiplier) {
+        return (int) Math.min(Integer.MAX_VALUE, Math.floor(storageMultiplier * 1000L));
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -197,7 +197,7 @@ public class FluidDrawerTile extends ControllableDrawerTile<FluidDrawerTile> {
                     var replacement = new ItemStack[this.getSlots()];
                     replacement[slot] = stack;
 
-                    var newSize = SizeProvider.calculate(this, FSAttachments.FLUID_STORAGE_MODIFIER, baseSize, replacement);
+                    var newSize = SizeProvider.calculateAsFactor(this, FSAttachments.FLUID_STORAGE_MODIFIER, baseSize, replacement);
                     for (int i = 0; i < getFluidHandler().getTanks(); i++) {
                         var stored = getFluidHandler().getFluidInTank(i);
                         if (stored.getAmount() > Math.min(Integer.MAX_VALUE, getTankCapacity(newSize))) {

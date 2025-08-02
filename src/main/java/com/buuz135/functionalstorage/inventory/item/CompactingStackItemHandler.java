@@ -27,7 +27,7 @@ public class CompactingStackItemHandler implements IItemHandler, INBTSerializabl
     private ItemStack parent;
     private List<CompactingUtil.Result> resultList;
     private final int slots;
-    private int size;
+    private float size;
     private boolean isVoid;
     private boolean isCreative;
     private final ItemStack stack;
@@ -49,7 +49,7 @@ public class CompactingStackItemHandler implements IItemHandler, INBTSerializabl
 
             var upgrades = new ItemStackHandler();
             upgrades.deserializeNBT(Utils.registryAccess(), tile.getCompound("storageUpgrades"));
-            size = SizeProvider.calculate(upgrades, FSAttachments.ITEM_STORAGE_MODIFIER, size);
+            size = SizeProvider.calculateAsFactor(upgrades, FSAttachments.ITEM_STORAGE_MODIFIER, size);
 
             for (Tag tag : tile.getCompound("storageUpgrades").getList("Items", Tag.TAG_COMPOUND)) {
                 ItemStack itemStack = Utils.deserialize(Utils.registryAccess(), (CompoundTag) tag);
@@ -92,7 +92,7 @@ public class CompactingStackItemHandler implements IItemHandler, INBTSerializabl
             int inserted = Math.min(getSlotLimit(slot) * result.getNeeded() - amount, stack.getCount() * result.getNeeded());
             inserted = (int) (Math.floor(inserted / result.getNeeded()) * result.getNeeded());
             if (!simulate) {
-                this.amount = Math.min(this.amount + inserted, size * 64 * 9 * 9);
+                this.amount = Math.min(this.amount + inserted, (int) Math.floor(size * 64 * 9 * 9));
                 onChange();
             }
             if (inserted == stack.getCount() * result.getNeeded() || isVoid()) return ItemStack.EMPTY;

@@ -18,8 +18,6 @@ public abstract class CompactingInventoryHandler implements IItemHandler, INBTSe
     public static final String STACK = "Stack";
     public static final String AMOUNT = "Amount";
 
-    public int totalAmount;
-
     private int amount;
     private ItemStack parent;
     private List<CompactingUtil.Result> resultList;
@@ -206,7 +204,7 @@ public abstract class CompactingInventoryHandler implements IItemHandler, INBTSe
 
     public abstract void onChange();
 
-    public abstract int getMultiplier();
+    public abstract float getMultiplier();
 
     public abstract boolean isVoid();
 
