@@ -119,9 +119,13 @@ public class CompactingDrawerTile extends ItemControllableDrawerTile<CompactingD
 
     @Override
     protected boolean canChangeMultiplier(double newSizeMultiplier) {
-        var stack = getStorage().getStackInSlot(2);
-        if (stack.isEmpty()) return true;
-        return stack.getCount() <= Math.min(Integer.MAX_VALUE, Math.floor(stack.getMaxStackSize() * newSizeMultiplier));
+        for (int i = 0; i < getStorage().getSlots(); i++) {
+            var stored = getStorage().getStackInSlot(i);
+            if (!stored.isEmpty() && stored.getCount() > Math.min(Integer.MAX_VALUE, Math.floor(newSizeMultiplier * getHandler().getSlotLimitBase(i)))) {
+                return false;
+            }
+        }
+        return true;
     }
 
     @NotNull

@@ -5,6 +5,7 @@
 * Support fractional factors and base amounts - Matyrobbrt
 * Fixed Controller, Access Point and Armory Cabinet having their model reversed, closes #435
 * Fixed being able to extract upgrades from Fluid Drawers, closes #437
+* Fixed upgrades not being able to be extracted properly in compacting drawers, closes #417
 
 # VERSION 1.5.1
 

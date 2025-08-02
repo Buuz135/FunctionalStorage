@@ -155,7 +155,7 @@ public abstract class CompactingInventoryHandler implements IItemHandler, INBTSe
 
     public int getSlotLimitBase(int slot) {
         if (slot == this.slots) return Integer.MAX_VALUE;
-        return (int) Math.min(Integer.MAX_VALUE, Math.floor(64 * 9 * 9f / this.resultList.get(slot).getNeeded()));
+        return (int) Math.min(Integer.MAX_VALUE, Math.floor((slots == 2 ? 64 * 9d  : 64 * 9d * 9)/ this.resultList.get(slot).getNeeded()));
     }
 
     @Override
