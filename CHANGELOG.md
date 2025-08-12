@@ -1,3 +1,7 @@
+# VERSION 1.5.3
+
+* Fixed the relative direction tooltip crashing with controllers, closes #445 
+
 # VERSION 1.5.2
 
 * Update zh_cn.json 1.21 - Mooncywin

@@ -24,14 +24,17 @@ public class ClientSetup {
             .process(event -> {
                 var sc = (BasicAddonScreen) Minecraft.getInstance().screen;
                 var blockstate = ((ControllableDrawerTile<?>) sc.getMenu().getObject()).getBlockState();
-                var direction = blockstate.getValue(Drawer.FACING_HORIZONTAL_CUSTOM);
-                if (blockstate.hasProperty(Drawer.FACING_ALL) && (direction == Direction.UP || direction == Direction.DOWN)) {
-                    var subdirection = blockstate.getValue(RotatableBlock.FACING_ALL);
-                    System.out.println(subdirection);
-                    event.getToolTip().add(3, Component.translatable("drawer_upgrade.functionalstorage.relative_direction", UpgradeItem.getRelativeDirectionVertical(direction, subdirection, UpgradeItem.getDirection(event.getItemStack()))).withStyle(ChatFormatting.YELLOW));
-                } else {
+                if (blockstate.hasProperty(Drawer.FACING_HORIZONTAL_CUSTOM)) {
+                    var direction = blockstate.getValue(Drawer.FACING_HORIZONTAL_CUSTOM);
+                    if (blockstate.hasProperty(Drawer.FACING_ALL) && (direction == Direction.UP || direction == Direction.DOWN)) {
+                        var subdirection = blockstate.getValue(RotatableBlock.FACING_ALL);
+                        event.getToolTip().add(3, Component.translatable("drawer_upgrade.functionalstorage.relative_direction", UpgradeItem.getRelativeDirectionVertical(direction, subdirection, UpgradeItem.getDirection(event.getItemStack()))).withStyle(ChatFormatting.YELLOW));
+                    } else {
+                        event.getToolTip().add(3, Component.translatable("drawer_upgrade.functionalstorage.relative_direction", UpgradeItem.getRelativeDirection(direction, UpgradeItem.getDirection(event.getItemStack()))).withStyle(ChatFormatting.YELLOW));
+                    }
+                } else if (blockstate.hasProperty(Drawer.FACING_HORIZONTAL)) {
+                    var direction = blockstate.getValue(Drawer.FACING_HORIZONTAL);
                     event.getToolTip().add(3, Component.translatable("drawer_upgrade.functionalstorage.relative_direction", UpgradeItem.getRelativeDirection(direction, UpgradeItem.getDirection(event.getItemStack()))).withStyle(ChatFormatting.YELLOW));
-
                 }
             }).subscribe();
 
