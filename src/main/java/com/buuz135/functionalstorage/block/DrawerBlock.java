@@ -62,12 +62,17 @@ public class DrawerBlock extends Drawer<DrawerTile> {
         for (Direction direction : CACHED_SHAPES.get(FunctionalStorage.DrawerType.X_1).keySet()) {
             for (VoxelShape voxelShape : CACHED_SHAPES.get(FunctionalStorage.DrawerType.X_1).get(direction)) {
                 AABB bounding = voxelShape.toAabbs().get(0);
-                if (direction == Direction.UP || direction == Direction.DOWN) {
+                if (direction == Direction.UP) {
                     // For vertical directions, split horizontally for X_2
                     CACHED_SHAPES.computeIfAbsent(FunctionalStorage.DrawerType.X_2, type1 -> MultimapBuilder.hashKeys().arrayListValues().build()).
                             put(direction, Shapes.box(bounding.minX, bounding.minY, bounding.minZ, 7/16D, bounding.maxY, bounding.maxZ));
                     CACHED_SHAPES.computeIfAbsent(FunctionalStorage.DrawerType.X_2, type1 -> MultimapBuilder.hashKeys().arrayListValues().build()).
                             put(direction, Shapes.box(9/16D, bounding.minY, bounding.minZ, bounding.maxX, bounding.maxY, bounding.maxZ));
+                } else if (direction == Direction.DOWN) {
+                    CACHED_SHAPES.computeIfAbsent(FunctionalStorage.DrawerType.X_2, type1 -> MultimapBuilder.hashKeys().arrayListValues().build()).
+                            put(direction, Shapes.box(9/16D, bounding.minY, bounding.minZ, bounding.maxX, bounding.maxY, bounding.maxZ));
+                    CACHED_SHAPES.computeIfAbsent(FunctionalStorage.DrawerType.X_2, type1 -> MultimapBuilder.hashKeys().arrayListValues().build()).
+                            put(direction, Shapes.box(bounding.minX, bounding.minY, bounding.minZ, 7/16D, bounding.maxY, bounding.maxZ));
                 } else {
                     // For horizontal directions, split vertically for X_2
                     CACHED_SHAPES.computeIfAbsent(FunctionalStorage.DrawerType.X_2, type1 -> MultimapBuilder.hashKeys().arrayListValues().build()).

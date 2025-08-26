@@ -38,7 +38,6 @@ public class SimpleCompactingDrawerBlock extends Drawer<SimpleCompactingDrawerTi
         if ((facing == Direction.UP || facing == Direction.DOWN)) {
             Direction subfacing = state.getValue(RotatableBlock.FACING_ALL);
 
-            // Use cached rotated shapes
             boxes.addAll(DrawerBlock.CACHED_ROTATED_SHAPES.get(facing).get(subfacing));
         } else {
             // For other types or directions, use the original shapes
