@@ -23,14 +23,16 @@ public class DrawerInfoGuiAddon extends BasicScreenAddon {
     private final Function<Integer, Pair<Integer, Integer>> slotPosition;
     private final Function<Integer, ItemStack> slotStack;
     private final Function<Integer, Integer> slotMaxAmount;
+    private final Function<Integer, ItemStack> slotLockedDisplay;
 
-    public DrawerInfoGuiAddon(int posX, int posY, ResourceLocation gui, int slotAmount, Function<Integer, Pair<Integer, Integer>> slotPosition, Function<Integer, ItemStack> slotStack, Function<Integer, Integer> slotMaxAmount) {
+    public DrawerInfoGuiAddon(int posX, int posY, ResourceLocation gui, int slotAmount, Function<Integer, Pair<Integer, Integer>> slotPosition, Function<Integer, ItemStack> slotStack, Function<Integer, Integer> slotMaxAmount, Function<Integer, ItemStack> slotLockedDisplay) {
         super(posX, posY);
         this.gui = gui;
         this.slotAmount = slotAmount;
         this.slotPosition = slotPosition;
         this.slotStack = slotStack;
         this.slotMaxAmount = slotMaxAmount;
+        this.slotLockedDisplay = slotLockedDisplay;
     }
 
     @Override
@@ -49,11 +51,14 @@ public class DrawerInfoGuiAddon extends BasicScreenAddon {
         guiGraphics.blit(gui, guiX + getPosX(), guiY + getPosY(), 0, 0, size, size, size, size);
         for (var i = 0; i < slotAmount; i++) {
             var itemStack = slotStack.apply(i);
+            if (itemStack.isEmpty() && !slotLockedDisplay.apply(i).isEmpty()) {
+                itemStack = slotLockedDisplay.apply(i);
+            }
             if (!itemStack.isEmpty()) {
                 var x = guiX + slotPosition.apply(i).getLeft() + getPosX();
                 var y = guiY + slotPosition.apply(i).getRight() + getPosY();
-                guiGraphics.renderItem(slotStack.apply(i), x, y);
-                var amount = NumberUtils.getFormatedBigNumber(itemStack.getCount()) + "/" + NumberUtils.getFormatedBigNumber(slotMaxAmount.apply(i));
+                guiGraphics.renderItem(itemStack, x, y);
+                var amount = NumberUtils.getFormatedBigNumber(slotStack.apply(i).getCount()) + "/" + NumberUtils.getFormatedBigNumber(slotMaxAmount.apply(i));
                 var scale = 0.5f;
                 guiGraphics.pose().translate(0, 0, 200);
                 guiGraphics.pose().scale(scale, scale, scale);
@@ -77,11 +82,14 @@ public class DrawerInfoGuiAddon extends BasicScreenAddon {
                 guiGraphics.pose().translate(0, 0, -200);
                 var componentList = new ArrayList<Component>();
                 var over = slotStack.apply(i);
+                if (over.isEmpty() && !slotLockedDisplay.apply(i).isEmpty()) {
+                    over = slotLockedDisplay.apply(i);
+                }
                 if (over.isEmpty()) {
                     componentList.add(Component.translatable("gui.functionalstorage.item").withStyle(ChatFormatting.GOLD).append(Component.translatable("gui.functionalstorage.empty").withStyle(ChatFormatting.WHITE)));
                 } else {
                     componentList.add(Component.translatable("gui.functionalstorage.item").withStyle(ChatFormatting.GOLD).append(over.getHoverName().copy().withStyle(ChatFormatting.WHITE)));
-                    var amount = NumberUtils.getFormattedNumber(over.getCount()) + "/" + NumberUtils.getFormattedNumber(slotMaxAmount.apply(i));
+                    var amount = NumberUtils.getFormattedNumber(slotStack.apply(i).getCount()) + "/" + NumberUtils.getFormattedNumber(slotMaxAmount.apply(i));
                     componentList.add(Component.translatable("gui.functionalstorage.amount").withStyle(ChatFormatting.GOLD).append(Component.literal(amount).withStyle(ChatFormatting.WHITE)));
                 }
                 componentList.add(Component.translatable("gui.functionalstorage.slot").withStyle(ChatFormatting.GOLD).append(Component.literal(i + "").withStyle(ChatFormatting.WHITE)));

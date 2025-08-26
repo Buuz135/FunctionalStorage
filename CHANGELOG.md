@@ -1,6 +1,7 @@
 # VERSION 1.5.4
 
 * Improved lag by caching the lock state of the drawer, closes #450 closes #392
+* Empty locked drawers will now show the items in the GUI, closes #419
 
 # VERSION 1.5.3
 

@@ -75,7 +75,8 @@ public class SimpleCompactingDrawerTile extends ItemControllableDrawerTile<Simpl
                     return Pair.of(16, 4);
                 },
                 integer -> getStorage().getStackInSlot(integer),
-                integer -> getStorage().getSlotLimit(integer)
+                integer -> getStorage().getSlotLimit(integer),
+                integer -> getHandler().getResultList().get(integer).getResult()
         ));
     }
 

@@ -70,7 +70,8 @@ public class DrawerTile extends ItemControllableDrawerTile<DrawerTile> {
                 type.getSlots(),
                 type.getSlotPosition(),
                 integer -> getHandler().getStackInSlot(integer),
-                integer -> getHandler().getSlotLimit(integer)
+                integer -> getHandler().getSlotLimit(integer),
+                integer -> getHandler().getStoredStacks().get(integer).getStack()
         ));
     }
 

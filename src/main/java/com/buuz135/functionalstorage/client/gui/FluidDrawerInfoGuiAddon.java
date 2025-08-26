@@ -130,11 +130,14 @@ public class FluidDrawerInfoGuiAddon extends BasicScreenAddon {
                 guiGraphics.pose().translate(0, 0, -200);
                 var componentList = new ArrayList<Component>();
                 var over = fluidHandlerSupplier.get().getFluidInTank(i);
+                if (over.isEmpty() && fluidHandlerSupplier.get().isDrawerLocked()) {
+                    over = fluidHandlerSupplier.get().getFilterStack()[i];
+                }
                 if (over.isEmpty()) {
                     componentList.add(Component.translatable("gui.functionalstorage.fluid").withStyle(ChatFormatting.GOLD).append(Component.translatable("gui.functionalstorage.empty").withStyle(ChatFormatting.WHITE)));
                 } else {
                     componentList.add(Component.translatable("gui.functionalstorage.fluid").withStyle(ChatFormatting.GOLD).append(over.getHoverName().copy().withStyle(ChatFormatting.WHITE)));
-                    var amount = NumberUtils.getFormattedFluid(over.getAmount()) + "/" + NumberUtils.getFormattedFluid(slotMaxAmount.apply(i));
+                    var amount = NumberUtils.getFormattedFluid(fluidHandlerSupplier.get().getFluidInTank(i).getAmount()) + "/" + NumberUtils.getFormattedFluid(slotMaxAmount.apply(i));
                     componentList.add(Component.translatable("gui.functionalstorage.amount").withStyle(ChatFormatting.GOLD).append(Component.literal(amount).withStyle(ChatFormatting.WHITE)));
                 }
                 componentList.add(Component.translatable("gui.functionalstorage.slot").withStyle(ChatFormatting.GOLD).append(Component.literal(i + "").withStyle(ChatFormatting.WHITE)));
