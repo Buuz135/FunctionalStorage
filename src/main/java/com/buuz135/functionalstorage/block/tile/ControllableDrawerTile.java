@@ -61,6 +61,7 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
     @Save
     protected int baseSize;
     private float storageSize;
+    private boolean isLocked;
 
     public ControllableDrawerTile(BasicTileBlock<T> base, BlockEntityType<T> entityType, BlockPos pos, BlockState state, DrawerProperties props) {
         super(base, entityType, pos, state);
@@ -280,6 +281,7 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
                 }
             }
         }
+        isLocked = this.getBlockState().hasProperty(DrawerBlock.LOCKED) && this.getBlockState().getValue(DrawerBlock.LOCKED);
     }
 
     public void toggleLocking() {
@@ -287,12 +289,14 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
     }
 
     public boolean isLocked() {
-        return this.getBlockState().hasProperty(DrawerBlock.LOCKED) && this.getBlockState().getValue(DrawerBlock.LOCKED);
+        maybeCacheUpgrades();
+        return isLocked;
     }
 
     public void setLocked(boolean locked) {
         if (this.getBlockState().hasProperty(DrawerBlock.LOCKED)) {
             this.level.setBlock(this.getBlockPos(), this.getBlockState().setValue(DrawerBlock.LOCKED, locked), 3);
+            setNeedsUpgradeCache(true);
         }
     }
 
