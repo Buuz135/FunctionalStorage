@@ -80,6 +80,9 @@ dependencies {
     compileOnly "curse.maven:ftb-library-forge-404465:6711324"
     compileOnly "curse.maven:ftb-teams-forge-404468:6119437"
     compileOnly "curse.maven:ftb-chunks-forge-314906:6504893"
+
+    runtimeOnly "curse.maven:create-328085:6641610"
+    runtimeOnly "curse.maven:pipez-443900:5757713"
 }
 
 jar {

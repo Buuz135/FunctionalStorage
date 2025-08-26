@@ -4,6 +4,7 @@
 * Empty locked drawers will now show the items in the GUI, closes #419
 * Blacklisted drawers from being moved, closes #451
 * Fixed 2 slot drawers and compacting drawers facing down having reversed interaction slots, closes #454
+* Fixed pipez extracting negative amounts when inserting into a 1 slot output and the extracting amount was greater than the max stack size, closes #452
 
 # VERSION 1.5.3
 

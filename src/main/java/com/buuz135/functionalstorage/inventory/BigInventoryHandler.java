@@ -68,10 +68,11 @@ public abstract class BigInventoryHandler implements IItemHandler, INBTSerializa
     @Nonnull
     @Override
     public ItemStack extractItem(int slot, int amount, boolean simulate) {
-        if (amount == 0 || type.getSlots() == slot) return ItemStack.EMPTY;
+        if (amount <= 0 || type.getSlots() == slot) return ItemStack.EMPTY;
         if (slot < type.getSlots()){
             BigStack bigStack = this.storedStacks.get(slot);
             if (bigStack.getStack().isEmpty()) return ItemStack.EMPTY;
+            amount = Math.min(amount, bigStack.getStack().getMaxStackSize());
             if (!isCreative() && bigStack.getAmount() <= amount) {
                 ItemStack out = bigStack.getStack().copy();
                 int newAmount = bigStack.getAmount();
