@@ -1,3 +1,8 @@
+# VERSION 1.5.5
+
+* Fixed FTB Compat memory leak - Satherov
+* Added russian translation - AlexYarym
+
 # VERSION 1.5.4
 
 * Improved lag by caching the lock state of the drawer, closes #450 closes #392
