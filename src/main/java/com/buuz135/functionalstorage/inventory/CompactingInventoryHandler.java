@@ -117,7 +117,7 @@ public abstract class CompactingInventoryHandler implements IItemHandler, INBTSe
             CompactingUtil.Result bigStack = this.resultList.get(slot);
             if (bigStack.getResult().isEmpty()) return ItemStack.EMPTY;
             int stackAmount = bigStack.getNeeded() * amount;
-            if (stackAmount >= this.amount) {
+            if (!isCreative() && stackAmount >= this.amount) {
                 ItemStack out = bigStack.getResult().copy();
                 int newAmount = (int) Math.floor(this.amount / bigStack.getNeeded());
                 if (!simulate && !isCreative()) {

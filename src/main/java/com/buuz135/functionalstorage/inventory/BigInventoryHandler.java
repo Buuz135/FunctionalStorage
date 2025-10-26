@@ -71,7 +71,7 @@ public abstract class BigInventoryHandler implements IItemHandler, INBTSerializa
         if (slot < type.getSlots()){
             BigStack bigStack = this.storedStacks.get(slot);
             if (bigStack.getStack().isEmpty()) return ItemStack.EMPTY;
-            if (bigStack.getAmount() <= amount) {
+            if (!isCreative() && bigStack.getAmount() <= amount) {
                 ItemStack out = bigStack.getStack().copy();
                 int newAmount = bigStack.getAmount();
                 if (!simulate && !isCreative()) {
