@@ -1,3 +1,8 @@
+# VERSION 1.1.12
+* Fixed creative vending upgrades using the base stack - Sanolink
+* Armory Cabinet providers for Jade and TOP - Christofmeg
+* feat: backport custom_compacting from 1.19 - Mahanmmi
+
 # VERSION 1.1.10
 * Fixed cascading loading issues, closes #243
 * Fixed Amethyst compacting dupe by Kanzaji
