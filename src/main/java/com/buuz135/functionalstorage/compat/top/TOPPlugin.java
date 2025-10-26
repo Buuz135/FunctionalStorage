@@ -1,6 +1,5 @@
-package com.buuz135.functionalstorage.compat;
+package com.buuz135.functionalstorage.compat.top;
 
-import com.buuz135.functionalstorage.compat.top.FunctionalDrawerProvider;
 import com.hrznstudio.titanium.annotation.plugin.FeaturePlugin;
 import com.hrznstudio.titanium.event.handler.EventManager;
 import com.hrznstudio.titanium.plugin.FeaturePluginInstance;
@@ -14,6 +13,7 @@ public class TOPPlugin implements FeaturePluginInstance {
     public void execute(PluginPhase phase) {
         if (phase == PluginPhase.CONSTRUCTION) {
             EventManager.mod(InterModEnqueueEvent.class).process(interModEnqueueEvent -> {
+                InterModComms.sendTo("theoneprobe", "getTheOneProbe", () -> FunctionalArmoryProvider.REGISTER);
                 InterModComms.sendTo("theoneprobe", "getTheOneProbe", () -> FunctionalDrawerProvider.REGISTER);
             }).subscribe();
         }
