@@ -255,6 +255,7 @@ public class DrawerControllerTile extends ItemControllableDrawerTile<DrawerContr
         public void rebuild() {
             this.itemHandlers = new ArrayList<>();
             this.fluidHandlers = new ArrayList<>();
+            this.extensions = 0;
             if (level != null && !level.isClientSide()) {
                 for (Long connectedDrawer : this.connectedDrawers) {
                     BlockPos pos = BlockPos.of(connectedDrawer);
@@ -262,6 +263,7 @@ public class DrawerControllerTile extends ItemControllableDrawerTile<DrawerContr
                     if (entity instanceof DrawerControllerTile) continue;
                     if (entity instanceof ControllerExtensionTile) {
                         ++extensions;
+                        continue;
                     }
                     if (entity instanceof ItemControllableDrawerTile<?> itemControllableDrawerTile) {
                         this.itemHandlers.add(itemControllableDrawerTile.getStorage());
