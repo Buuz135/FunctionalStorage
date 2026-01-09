@@ -9,6 +9,8 @@ import com.hrznstudio.titanium.annotation.Save;
 import com.hrznstudio.titanium.block.BasicTileBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -60,6 +62,18 @@ public class CompactingDrawerTile extends ItemControllableDrawerTile<CompactingD
 
         };
         this.hasCheckedRecipes = false;
+    }
+
+    @Override
+    public void loadAdditional(CompoundTag compound, HolderLookup.Provider provider) {
+        this.hasCheckedRecipes = compound.getBoolean("hasCheckedRecipes");
+        super.loadAdditional(compound, provider);
+    }
+
+    @Override
+    protected void saveAdditional(CompoundTag compoundTag, HolderLookup.Provider provider) {
+        super.saveAdditional(compoundTag, provider);
+        compoundTag.putBoolean("hasCheckedRecipes", this.hasCheckedRecipes);
     }
 
     @OnlyIn(Dist.CLIENT)
