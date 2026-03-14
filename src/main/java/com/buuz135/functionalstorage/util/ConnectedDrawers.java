@@ -60,6 +60,15 @@ public class ConnectedDrawers implements INBTSerializable<CompoundTag> {
             }
             var area = new AABB(controllerTile.getBlockPos()).inflate(FunctionalStorageConfig.DRAWER_CONTROLLER_LINKING_RANGE + extraRange);
             this.connectedDrawers.removeIf(aLong -> !area.contains(Vec3.atCenterOf(BlockPos.of(aLong))));
+
+            //Check if the Drawer is present within the range.
+            this.connectedDrawers.removeIf(aLong -> {
+                BlockEntity entity = level.getBlockEntity(BlockPos.of(aLong));
+                return !(entity instanceof ItemControllableDrawerTile<?>)
+                        && !(entity instanceof FluidDrawerTile)
+                        && !(entity instanceof StorageControllerExtensionTile);
+            });
+
             this.connectedDrawers.sort(Comparator.comparingDouble(value -> BlockPos.of(value).distSqr(controllerTile.getBlockPos())));
             for (Long connectedDrawer : this.connectedDrawers) {
                 BlockPos pos = BlockPos.of(connectedDrawer);
