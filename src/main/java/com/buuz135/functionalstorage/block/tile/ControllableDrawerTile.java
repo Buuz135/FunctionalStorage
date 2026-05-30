@@ -122,24 +122,20 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
         // Loaded at a new location after block movement
         // If controllerPos exists but current position is missing from Controller list -> Moved
         if (controllerPos != null) {
-            BlockEntity be = level.getBlockEntity(controllerPos);
-            if (be instanceof StorageControllerTile<?> controllerTile) {
-                boolean isInController = controllerTile.getConnectedDrawers()
-                        .getConnectedDrawers()
-                        .contains(this.getBlockPos().asLong());
-
-                if (!isInController) {
-                    // Moved Drawer: Remove old link + Force cache reconstruction
-                    controllerTile.getConnectedDrawers()
+            if (level.isLoaded(controllerPos)){
+                BlockEntity be = level.getBlockEntity(controllerPos);
+                if (be instanceof StorageControllerTile<?> controllerTile) {
+                    boolean isInController = controllerTile.getConnectedDrawers()
                             .getConnectedDrawers()
-                            .removeIf(aLong -> aLong == this.getBlockPos().asLong());
+                            .contains(this.getBlockPos().asLong());
+
+                    if (!isInController) {
+                        controllerTile.addConnectedDrawers(LinkingToolItem.ActionMode.ADD, getBlockPos());
+                    }
+                } else {
+                    // No Controller found
                     this.controllerPos = null;
-                    controllerTile.getConnectedDrawers().rebuild(); // selectors[] 재구성
-                    controllerTile.markForUpdate();
                 }
-            } else {
-                // No Controller found
-                this.controllerPos = null;
             }
         }
     }
@@ -203,6 +199,7 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
             });
         }
         this.controllerPos = controllerPos;
+        this.markForUpdate();
     }
 
     public void clearControllerPos()
@@ -374,6 +371,22 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
                 controllerTile.getConnectedDrawers().rebuild();
             }
         }
+    }
+
+    @Override
+    public void onChunkUnloaded() {
+        super.onChunkUnloaded();
+        if (level != null && !level.isClientSide() && controllerPos != null) {
+            BlockEntity be = level.getBlockEntity(controllerPos);
+            if (be instanceof StorageControllerTile<?> controllerTile) {
+                controllerTile.getConnectedDrawers().rebuild();
+            }
+        }
+    }
+
+    @Override
+    public void clearRemoved() {
+        super.clearRemoved();
     }
 
     public abstract InventoryComponent<ControllableDrawerTile<T>> getStorageUpgradesConstructor();

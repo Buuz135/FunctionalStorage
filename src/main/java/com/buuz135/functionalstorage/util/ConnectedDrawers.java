@@ -1,6 +1,5 @@
 package com.buuz135.functionalstorage.util;
 
-import com.buuz135.functionalstorage.block.config.FunctionalStorageConfig;
 import com.buuz135.functionalstorage.block.tile.FluidDrawerTile;
 import com.buuz135.functionalstorage.block.tile.ItemControllableDrawerTile;
 import com.buuz135.functionalstorage.block.tile.StorageControllerExtensionTile;
@@ -59,10 +58,14 @@ public class ConnectedDrawers implements INBTSerializable<CompoundTag> {
 
             //Check if the Drawer is present within the range.
             this.connectedDrawers.removeIf(aLong -> {
-                BlockEntity entity = level.getBlockEntity(BlockPos.of(aLong));
-                return !(entity instanceof ItemControllableDrawerTile<?>)
-                        && !(entity instanceof FluidDrawerTile)
-                        && !(entity instanceof StorageControllerExtensionTile);
+                var pos = BlockPos.of(aLong);
+                if (level.isLoaded(pos)){
+                    BlockEntity entity = level.getBlockEntity(pos);
+                    return !(entity instanceof ItemControllableDrawerTile<?>)
+                            && !(entity instanceof FluidDrawerTile)
+                            && !(entity instanceof StorageControllerExtensionTile);
+                }
+                return true;
             });
 
             this.connectedDrawers.sort(Comparator.comparingDouble(value -> BlockPos.of(value).distSqr(controllerTile.getBlockPos())));
