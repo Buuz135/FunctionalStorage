@@ -30,6 +30,7 @@ public class CompactingDrawerTile extends ItemControllableDrawerTile<CompactingD
 
     @Save
     public CompactingInventoryHandler handler;
+    @Save
     private boolean hasCheckedRecipes;
 
     public CompactingDrawerTile(BasicTileBlock<CompactingDrawerTile> base, BlockEntityType<CompactingDrawerTile> blockEntityType, BlockPos pos, BlockState state) {
@@ -62,18 +63,6 @@ public class CompactingDrawerTile extends ItemControllableDrawerTile<CompactingD
 
         };
         this.hasCheckedRecipes = false;
-    }
-
-    @Override
-    public void loadAdditional(CompoundTag compound, HolderLookup.Provider provider) {
-        this.hasCheckedRecipes = compound.getBoolean("hasCheckedRecipes");
-        super.loadAdditional(compound, provider);
-    }
-
-    @Override
-    protected void saveAdditional(CompoundTag compoundTag, HolderLookup.Provider provider) {
-        super.saveAdditional(compoundTag, provider);
-        compoundTag.putBoolean("hasCheckedRecipes", this.hasCheckedRecipes);
     }
 
     @OnlyIn(Dist.CLIENT)
