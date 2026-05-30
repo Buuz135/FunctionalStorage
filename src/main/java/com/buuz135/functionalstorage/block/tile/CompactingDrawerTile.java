@@ -9,6 +9,8 @@ import com.hrznstudio.titanium.annotation.Save;
 import com.hrznstudio.titanium.block.BasicTileBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -28,6 +30,7 @@ public class CompactingDrawerTile extends ItemControllableDrawerTile<CompactingD
 
     @Save
     public CompactingInventoryHandler handler;
+    @Save
     private boolean hasCheckedRecipes;
 
     public CompactingDrawerTile(BasicTileBlock<CompactingDrawerTile> base, BlockEntityType<CompactingDrawerTile> blockEntityType, BlockPos pos, BlockState state) {
