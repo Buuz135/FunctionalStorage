@@ -23,6 +23,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import org.apache.commons.lang3.text.WordUtils;
 import org.jetbrains.annotations.Nullable;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.sounds.SoundSource;
 
 import java.util.Arrays;
 import java.util.List;
@@ -123,6 +126,39 @@ public class UpgradeItem extends FSItem {
             tooltip.add(Component.translatable("item.utility.direction.desc").withStyle(ChatFormatting.GRAY));
         }
 
+    }
+
+    @Override
+    public InteractionResult useOn(UseOnContext context) {
+        Player player = context.getPlayer();
+        // Check if player is sneaking and if this is a Puller/Pusher/Collector
+        if (player != null && player.isShiftKeyDown() && isDirectionUpgrade(this)) {
+
+            // Get the face of the block that was clicked
+            Direction clickedFace = context.getClickedFace();
+            ItemStack stack = context.getItemInHand();
+
+            // Set the Direction Component (1.21 Data Component style)
+            stack.set(FSAttachments.DIRECTION, clickedFace);
+
+            // Play a sound so the player knows it worked
+            context.getLevel().playSound(player, context.getClickedPos(), SoundEvents.UI_BUTTON_CLICK.value(), SoundSource.PLAYERS, 0.5f, 1f);
+
+            // Show a message above the hotbar (Action Bar) confirming the new direction
+            if (context.getLevel().isClientSide) {
+                player.displayClientMessage(
+                        Component.translatable("item.utility.direction").withStyle(ChatFormatting.YELLOW)
+                                .append(" ")
+                                .append(Component.translatable("direction.titanium." + clickedFace.getName().toLowerCase(Locale.ROOT)).withStyle(ChatFormatting.WHITE)),
+                        true
+                );
+            }
+
+            // Return SUCCESS so the game doesn't try to place the item or open the block's GUI
+            return InteractionResult.SUCCESS;
+        }
+
+        return super.useOn(context);
     }
 
     public static boolean isDirectionUpgrade(Item item) {
