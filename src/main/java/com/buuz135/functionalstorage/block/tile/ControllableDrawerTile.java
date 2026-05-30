@@ -28,6 +28,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.api.distmarker.Dist;
@@ -113,7 +114,35 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
         compoundTag.put("storageUpgrades", storageUpgrades.serializeNBT(provider));
         super.saveAdditional(compoundTag, provider);
     }
+    @Override
+    public void onLoad() {
+        super.onLoad();
+        if (level == null || level.isClientSide()) return;
 
+        // Loaded at a new location after block movement
+        // If controllerPos exists but current position is missing from Controller list -> Moved
+        if (controllerPos != null) {
+            BlockEntity be = level.getBlockEntity(controllerPos);
+            if (be instanceof StorageControllerTile<?> controllerTile) {
+                boolean isInController = controllerTile.getConnectedDrawers()
+                        .getConnectedDrawers()
+                        .contains(this.getBlockPos().asLong());
+
+                if (!isInController) {
+                    // Moved Drawer: Remove old link + Force cache reconstruction
+                    controllerTile.getConnectedDrawers()
+                            .getConnectedDrawers()
+                            .removeIf(aLong -> aLong == this.getBlockPos().asLong());
+                    this.controllerPos = null;
+                    controllerTile.getConnectedDrawers().rebuild(); // selectors[] 재구성
+                    controllerTile.markForUpdate();
+                }
+            } else {
+                // No Controller found
+                this.controllerPos = null;
+            }
+        }
+    }
     @Override
     @OnlyIn(Dist.CLIENT)
     public void initClient() {
@@ -334,6 +363,17 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
             }
         }
         return true;
+    }
+    @Override
+    public void invalidateCaps() {
+        super.invalidateCaps();
+        // Rebuild Controller cache immediately on caps invalidation
+        if (level != null && !level.isClientSide() && controllerPos != null) {
+            BlockEntity be = level.getBlockEntity(controllerPos);
+            if (be instanceof StorageControllerTile<?> controllerTile) {
+                controllerTile.getConnectedDrawers().rebuild();
+            }
+        }
     }
 
     public abstract InventoryComponent<ControllableDrawerTile<T>> getStorageUpgradesConstructor();
