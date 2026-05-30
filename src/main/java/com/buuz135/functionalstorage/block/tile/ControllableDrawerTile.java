@@ -364,10 +364,10 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
         }
         return true;
     }
+
     @Override
-    public void invalidateCaps() {
-        super.invalidateCaps();
-        // Rebuild Controller cache immediately on caps invalidation
+    public void invalidateCapabilities() {
+        super.invalidateCapabilities();
         if (level != null && !level.isClientSide() && controllerPos != null) {
             BlockEntity be = level.getBlockEntity(controllerPos);
             if (be instanceof StorageControllerTile<?> controllerTile) {

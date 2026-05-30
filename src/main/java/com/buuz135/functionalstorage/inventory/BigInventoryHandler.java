@@ -52,11 +52,11 @@ public abstract class BigInventoryHandler implements IItemHandler, INBTSerializa
             return ItemStack.EMPTY;
         if (isValid(slot, stack)) {
             BigStack bigStack = this.storedStacks.get(slot);
-            int inserted = Math.min(getSlotLimit(slot) - bigStack.getAmount(), stack.getCount());
+            int inserted = Math.min(getSlotLimit(slot, stack) - bigStack.getAmount(), stack.getCount());
             if (!simulate) {
                 if (bigStack.getStack().isEmpty())
                     bigStack.setStack(stack.copyWithCount(stack.getMaxStackSize()));
-                bigStack.setAmount(Math.min(bigStack.getAmount() + inserted, getSlotLimit(slot)));
+                bigStack.setAmount(Math.min(bigStack.getAmount() + inserted, getSlotLimit(slot, stack)));
                 onChange();
             }
             if (inserted == stack.getCount() || isVoid()) return ItemStack.EMPTY;
@@ -101,6 +101,16 @@ public abstract class BigInventoryHandler implements IItemHandler, INBTSerializa
         double stackSize = 1;
         if (!getStoredStacks().get(slot).getStack().isEmpty()) {
             stackSize = getStoredStacks().get(slot).getStack().getMaxStackSize() / 64D;
+        }
+        return (int) Math.floor(getTotalAmount() * stackSize);
+    }
+
+    public int getSlotLimit(int slot, ItemStack stack) {
+        if (isCreative()) return Integer.MAX_VALUE;
+        if (type.getSlots() == slot) return Integer.MAX_VALUE;
+        double stackSize = 1;
+        if (!stack.isEmpty()) {
+            stackSize = stack.getMaxStackSize() / 64D;
         }
         return (int) Math.floor(getTotalAmount() * stackSize);
     }
@@ -195,6 +205,10 @@ public abstract class BigInventoryHandler implements IItemHandler, INBTSerializa
         public void setAmount(int amount) {
             this.amount = amount;
             this.slotStack.setCount(amount);
+        }
+
+        public ItemStack getSlotStack() {
+            return slotStack;
         }
     }
 }

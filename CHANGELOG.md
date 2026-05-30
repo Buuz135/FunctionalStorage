@@ -1,3 +1,12 @@
+# VERSION 1.5.6
+
+* Fix: validate drawer handler existence (#491) - Jet-fuel
+* fix: re-checking recipe on load - DoctorFTB
+* better ergonomics for directional storage upgrade - ClovisLd
+* update Korean translation (ko_kr.json) (#496) - jeffjks
+* fix: use slot limit instead of item stack limit for insertion/extraction (#477) - ImMorpheus
+* Fixed drawers inventory not using the inserted items stack size when it was the first time inserting a drawer, closes #495
+
 # VERSION 1.5.5
 
 * Fixed FTB Compat memory leak - Satherov
