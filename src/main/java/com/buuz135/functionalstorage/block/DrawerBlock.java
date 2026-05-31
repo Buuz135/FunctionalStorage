@@ -208,16 +208,16 @@ public class DrawerBlock extends Drawer<DrawerTile> {
             if (facing == Direction.DOWN){
                 var shapes = DrawerBlock.CACHED_SHAPES.get(type).get(facing).stream().toList();
                 if (subfacing == Direction.WEST) {
-                    return Arrays.asList(shapes.get(1), shapes.get(0), shapes.get(3), shapes.get(2));
+                    return Arrays.asList(shapes.get(0), shapes.get(1), shapes.get(2), shapes.get(3));
                 }
                 if (subfacing == Direction.SOUTH) {
-                    return Arrays.asList(shapes.get(0), shapes.get(2), shapes.get(1), shapes.get(3));
+                    return Arrays.asList(shapes.get(1), shapes.get(3), shapes.get(0), shapes.get(2));
                 }
                 if (subfacing == Direction.NORTH) {
-                    return Arrays.asList(shapes.get(3), shapes.get(1), shapes.get(2), shapes.get(0));
+                    return Arrays.asList(shapes.get(2), shapes.get(0), shapes.get(3), shapes.get(1));
                 }
                 if (subfacing == Direction.EAST) {
-                    return Arrays.asList(shapes.get(2), shapes.get(3), shapes.get(0), shapes.get(1));
+                    return Arrays.asList(shapes.get(3), shapes.get(2), shapes.get(1), shapes.get(0));
                 }
             }
         }

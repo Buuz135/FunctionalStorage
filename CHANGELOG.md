@@ -7,6 +7,7 @@
 * fix: use slot limit instead of item stack limit for insertion/extraction (#477) - ImMorpheus
 * Fixed drawers inventory not using the inserted items stack size when it was the first time inserting a drawer, closes #495
 * Improvements to loading & unloading of drawers, closes #493
+* Fixed Vertical Facing Down Drawers having the wrong slot assigned to the interactions, closes #487
 
 # VERSION 1.5.5
 
