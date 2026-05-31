@@ -8,6 +8,7 @@
 * Fixed drawers inventory not using the inserted items stack size when it was the first time inserting a drawer, closes #495
 * Improvements to loading & unloading of drawers, closes #493
 * Fixed Vertical Facing Down Drawers having the wrong slot assigned to the interactions, closes #487
+* Added capabilities invalidation to the acess point, closes #476 closes #486
 
 # VERSION 1.5.5
 

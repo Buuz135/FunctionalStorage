@@ -83,6 +83,7 @@ public abstract class StorageControllerExtensionTile<T extends StorageController
             hasUpdated = true;
             updateNeigh();
             markForUpdate();
+            this.invalidateCapabilities();
         }
         if (hasUpdated) {
             hasUpdated = getControllerInstance().isPresent();
