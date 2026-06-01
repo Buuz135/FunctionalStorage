@@ -1,4 +1,4 @@
-# VERSION 1.5.6
+# VERSION 1.5.6 & 1.5.7
 
 * Fix: validate drawer handler existence (#491) - Jet-fuel
 * fix: re-checking recipe on load - DoctorFTB
@@ -9,6 +9,7 @@
 * Improvements to loading & unloading of drawers, closes #493
 * Fixed Vertical Facing Down Drawers having the wrong slot assigned to the interactions, closes #487
 * Added capabilities invalidation to the acess point, closes #476 closes #486
+* Fixed server hang when closing the world, closes #499
 
 # VERSION 1.5.5
 

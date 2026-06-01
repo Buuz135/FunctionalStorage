@@ -365,7 +365,7 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
     @Override
     public void invalidateCapabilities() {
         super.invalidateCapabilities();
-        if (level != null && !level.isClientSide() && controllerPos != null) {
+        if (level != null && !level.isClientSide() && controllerPos != null && level.isLoaded(controllerPos)) {
             BlockEntity be = level.getBlockEntity(controllerPos);
             if (be instanceof StorageControllerTile<?> controllerTile) {
                 controllerTile.getConnectedDrawers().rebuild();
@@ -376,7 +376,7 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
     @Override
     public void onChunkUnloaded() {
         super.onChunkUnloaded();
-        if (level != null && !level.isClientSide() && controllerPos != null) {
+        if (level != null && !level.isClientSide() && controllerPos != null && level.isLoaded(controllerPos)) {
             BlockEntity be = level.getBlockEntity(controllerPos);
             if (be instanceof StorageControllerTile<?> controllerTile) {
                 controllerTile.getConnectedDrawers().rebuild();
