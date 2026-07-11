@@ -2,6 +2,7 @@
 
 * Fix cache invalidation closes #491 closes #488
 * Added locked check to the check if a drawer is empty, closes #498
+* Fixed Simple Compacting drawer breaking in creative, closes #483
 
 # VERSION 1.2.13
 

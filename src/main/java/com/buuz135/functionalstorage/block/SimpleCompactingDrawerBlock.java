@@ -53,7 +53,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-public class SimpleCompactingDrawerBlock extends RotatableBlock<SimpleCompactingDrawerTile> {
+public class SimpleCompactingDrawerBlock extends RotatableBlock<SimpleCompactingDrawerTile> implements Drawer {
 
 
     public SimpleCompactingDrawerBlock(String name, Properties properties) {
