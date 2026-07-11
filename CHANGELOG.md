@@ -3,7 +3,8 @@
 * Fix cache invalidation closes #491 closes #488
 * Added locked check to the check if a drawer is empty, closes #498
 * Fixed Simple Compacting drawer breaking in creative, closes #483
-* Fixed downgrade support for simple compacting drawers, closes #
+* Fixed downgrade support for simple compacting drawers, closes #370
+* Fix downgrades not being insertable in compacting drawers, closes #371 - esmenard
 
 # VERSION 1.2.13
 
