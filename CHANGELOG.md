@@ -1,3 +1,8 @@
+# VERSION 1.2.14
+
+* Fix cache invalidation closes #491 closes #488
+* Added locked check to the check if a drawer is empty, closes #498
+
 # VERSION 1.2.13
 
 * Armory Cabinet providers for Jade and TOP by Christofmeg

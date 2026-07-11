@@ -332,6 +332,9 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
     }
 
     public boolean isEverythingEmpty() {
+        if (isLocked()) {
+            return false;
+        }
         for (int i = 0; i < getStorageUpgrades().getSlots(); i++) {
             if (!getStorageUpgrades().getStackInSlot(i).isEmpty()) {
                 return false;
