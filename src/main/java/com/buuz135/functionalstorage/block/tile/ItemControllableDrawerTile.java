@@ -196,11 +196,9 @@ public abstract class ItemControllableDrawerTile<T extends ItemControllableDrawe
         }
                 .setInputFilter((stack, integer) -> {
                     if (stack.getItem().equals(FunctionalStorage.STORAGE_UPGRADES.get(StorageUpgradeItem.StorageTier.IRON).get())) {
-                        for (int i = 0; i < getStorage().getSlots(); i++) {
-                            if (getStorage().getStackInSlot(i).getCount() > 64) {
-                                return false;
-                            }
-                        }
+                        if (!canAddDowngrade()){
+							return false;
+						}
                     }
                     return stack.getItem() instanceof UpgradeItem && ((UpgradeItem) stack.getItem()).getType() == UpgradeItem.Type.STORAGE;
                 })
@@ -209,6 +207,15 @@ public abstract class ItemControllableDrawerTile<T extends ItemControllableDrawe
                 })
                 .setSlotLimit(1);
     }
+	
+	protected boolean canAddDowngrade() {
+		for (int i = 0; i < getStorage().getSlots(); i++) {
+			if (getStorage().getStackInSlot(i).getCount() > 64) {
+				return false;
+			}
+		}
+		return true;
+	}
 
     public boolean isEverythingEmpty() {
         for (int i = 0; i < getStorage().getSlots(); i++) {

@@ -122,6 +122,11 @@ public class CompactingDrawerTile extends ItemControllableDrawerTile<CompactingD
         }
         return super.onSlotActivated(playerIn, hand, facing, hitX, hitY, hitZ, slot);
     }
+	
+	@Override
+	protected boolean canAddDowngrade() {
+		return (getStorage().getStackInSlot(2).getCount() <= 64);
+	}
 
     @Override
     public int getStorageSlotAmount() {
