@@ -23,6 +23,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.api.distmarker.Dist;
@@ -75,6 +76,27 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
             );
         }
 
+    }
+
+    @Override
+    public void onLoad() {
+        super.onLoad();
+        if (level == null || level.isClientSide()) return;
+
+        if (controllerPos != null) {
+            BlockEntity be = level.getBlockEntity(controllerPos);
+            if (be instanceof StorageControllerTile<?> controllerTile) {
+                boolean isInController = controllerTile.getConnectedDrawers()
+                        .getConnectedDrawers()
+                        .contains(this.getBlockPos().asLong());
+
+                if (!isInController) {
+                    controllerTile.addConnectedDrawers(LinkingToolItem.ActionMode.ADD, getBlockPos());
+                }
+            } else {
+                this.controllerPos = null;
+            }
+        }
     }
 
     @Override
@@ -301,6 +323,12 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
     @Override
     public void invalidateCaps() {
         super.invalidateCaps();
+        if (level != null && !level.isClientSide() && controllerPos != null && level.isLoaded(controllerPos)) {
+            BlockEntity be = level.getBlockEntity(controllerPos);
+            if (be instanceof StorageControllerTile<?> controllerTile) {
+                controllerTile.getConnectedDrawers().rebuild();
+            }
+        }
     }
 
     public boolean isEverythingEmpty() {
