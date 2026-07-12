@@ -135,6 +135,7 @@ public class DrawerTile extends ItemControllableDrawerTile<DrawerTile> {
 
     @Override
     public int getBaseSize(int lost) {
+        if (hasDowngrade()) return 64;
         return type.getSlotAmount();
     }
 
