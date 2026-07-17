@@ -18,6 +18,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.SectionPos;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -31,6 +32,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.chunk.LevelChunk;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.common.util.INBTSerializable;
@@ -88,7 +90,7 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
                             .setOnSlotChanged((itemStack, integer) -> {
                                 needsUpgradeCache = true;
                                 if (controllerPos != null) {
-                                    if(this.level.getBlockEntity(controllerPos) instanceof StorageControllerTile controllerTile)
+                                    if(getLoadedBlockEntity(controllerPos) instanceof StorageControllerTile controllerTile)
                                         controllerTile.getConnectedDrawers().rebuild();
                                 }
                             })
@@ -119,11 +121,10 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
         super.onLoad();
         if (level == null || level.isClientSide()) return;
 
-        // Loaded at a new location after block movement
-        // If controllerPos exists but current position is missing from Controller list -> Moved
         if (controllerPos != null) {
-            if (level.isLoaded(controllerPos)){
-                BlockEntity be = level.getBlockEntity(controllerPos);
+            LevelChunk chunk = getLoadedChunk(controllerPos);
+            if (chunk != null) {
+                BlockEntity be = chunk.getBlockEntity(controllerPos);
                 if (be instanceof StorageControllerTile<?> controllerTile) {
                     boolean isInController = controllerTile.getConnectedDrawers()
                             .getConnectedDrawers()
@@ -133,7 +134,6 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
                         controllerTile.addConnectedDrawers(LinkingToolItem.ActionMode.ADD, getBlockPos());
                     }
                 } else {
-                    // No Controller found
                     this.controllerPos = null;
                 }
             }
@@ -365,8 +365,8 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
     @Override
     public void invalidateCapabilities() {
         super.invalidateCapabilities();
-        if (level != null && !level.isClientSide() && controllerPos != null && level.isLoaded(controllerPos)) {
-            BlockEntity be = level.getBlockEntity(controllerPos);
+        if (level != null && !level.isClientSide() && controllerPos != null) {
+            BlockEntity be = getLoadedBlockEntity(controllerPos);
             if (be instanceof StorageControllerTile<?> controllerTile) {
                 controllerTile.getConnectedDrawers().rebuild();
             }
@@ -376,12 +376,24 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
     @Override
     public void onChunkUnloaded() {
         super.onChunkUnloaded();
-        if (level != null && !level.isClientSide() && controllerPos != null && level.isLoaded(controllerPos)) {
-            BlockEntity be = level.getBlockEntity(controllerPos);
+        if (level != null && !level.isClientSide() && controllerPos != null) {
+            BlockEntity be = getLoadedBlockEntity(controllerPos);
             if (be instanceof StorageControllerTile<?> controllerTile) {
                 controllerTile.getConnectedDrawers().rebuild();
             }
         }
+    }
+
+    private BlockEntity getLoadedBlockEntity(BlockPos pos) {
+        LevelChunk chunk = getLoadedChunk(pos);
+        return chunk == null ? null : chunk.getBlockEntity(pos);
+    }
+
+    private LevelChunk getLoadedChunk(BlockPos pos) {
+        if (level == null || level.isOutsideBuildHeight(pos)) {
+            return null;
+        }
+        return level.getChunkSource().getChunkNow(SectionPos.blockToSectionCoord(pos.getX()), SectionPos.blockToSectionCoord(pos.getZ()));
     }
 
     @Override
