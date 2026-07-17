@@ -94,6 +94,7 @@
   "gui.functionalstorage.item": "Item: ",
   "gui.functionalstorage.open_gui": "Right Click while Crouching to open the GUI",
   "gui.functionalstorage.slot": "Slot: ",
+  "gui.functionalstorage.armory_search": "Search",
   "gui.functionalstorage.storage": "Storage",
   "gui.functionalstorage.storage_range": "Range",
   "gui.functionalstorage.utility": "Utility",

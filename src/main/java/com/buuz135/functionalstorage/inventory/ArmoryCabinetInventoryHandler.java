@@ -7,15 +7,17 @@ import net.minecraft.nbt.NbtOps;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.world.item.AnimalArmorItem;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.common.util.INBTSerializable;
 import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.IItemHandlerModifiable;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class ArmoryCabinetInventoryHandler implements IItemHandler, INBTSerializable<CompoundTag> {
+public abstract class ArmoryCabinetInventoryHandler implements IItemHandlerModifiable, INBTSerializable<CompoundTag> {
 
     public List<ItemStack> stackList;
 
@@ -40,6 +42,7 @@ public abstract class ArmoryCabinetInventoryHandler implements IItemHandler, INB
     @NotNull
     @Override
     public ItemStack insertItem(int slot, @NotNull ItemStack stack, boolean simulate) {
+        if (slot < 0 || slot >= this.stackList.size()) return stack;
         if (isValid(slot, stack)) {
             if (!simulate) {
                 this.stackList.set(slot, stack.copyWithCount(1));
@@ -56,6 +59,7 @@ public abstract class ArmoryCabinetInventoryHandler implements IItemHandler, INB
     @NotNull
     @Override
     public ItemStack extractItem(int slot, int amount, boolean simulate) {
+        if (slot < 0 || slot >= this.stackList.size()) return ItemStack.EMPTY;
         var inSlot = this.stackList.get(slot).copy();
         if (amount == 0 || inSlot.isEmpty()) return inSlot;
         if (!simulate) {
@@ -75,6 +79,13 @@ public abstract class ArmoryCabinetInventoryHandler implements IItemHandler, INB
         return isCertifiedStack(stack);
     }
 
+    @Override
+    public void setStackInSlot(int slot, @NotNull ItemStack stack) {
+        if (slot < 0 || slot >= this.stackList.size()) return;
+        this.stackList.set(slot, stack.isEmpty() ? ItemStack.EMPTY : stack.copyWithCount(Math.min(1, stack.getCount())));
+        onChange();
+    }
+
     private boolean isValid(int slot, @NotNull ItemStack stack) {
         return !stack.isEmpty() && this.stackList.get(slot).isEmpty() && isCertifiedStack(stack);
     }
@@ -82,7 +93,7 @@ public abstract class ArmoryCabinetInventoryHandler implements IItemHandler, INB
     private boolean isCertifiedStack(ItemStack stack){
         if (stack.getCapability(Capabilities.ItemHandler.ITEM) != null) return false;
         if (stack.getMaxStackSize() > 1) return false;
-        return stack.isDamageableItem() || stack.isEnchantable() || stack.has(DataComponents.JUKEBOX_PLAYABLE) || stack.getItem() instanceof AnimalArmorItem;
+        return stack.isDamageableItem() || stack.isEnchantable() || stack.has(DataComponents.JUKEBOX_PLAYABLE) || stack.getItem() instanceof AnimalArmorItem || stack.is(Items.ENCHANTED_BOOK);
     }
 
     @Override

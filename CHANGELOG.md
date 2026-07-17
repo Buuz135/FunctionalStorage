@@ -1,3 +1,7 @@
+# VERSION 1.5.8
+
+* Added a GUI for the armory cabinet
+
 # VERSION 1.5.6 & 1.5.7
 
 * Fix: validate drawer handler existence (#491) - Jet-fuel
