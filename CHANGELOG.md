@@ -1,6 +1,7 @@
 # VERSION 1.5.8
 
 * Added a GUI for the armory cabinet
+* Added concurrency safety checks on the connected drawers system closes #505
 
 # VERSION 1.5.6 & 1.5.7
 

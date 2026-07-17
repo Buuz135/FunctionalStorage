@@ -74,7 +74,6 @@ public abstract class StorageControllerTile<T extends StorageControllerTile<T>> 
     public void serverTick(Level level, BlockPos pos, BlockState state, T blockEntity) {
         super.serverTick(level, pos, state, blockEntity);
         if (this.connectedDrawers.getConnectedDrawers().size() != (this.connectedDrawers.getItemHandlers().size() + this.connectedDrawers.getFluidHandlers().size() + this.connectedDrawers.getExtensions())) {
-            this.connectedDrawers.getConnectedDrawers().removeIf(aLong -> !(this.getLevel().getBlockEntity(BlockPos.of(aLong)) instanceof ControllableDrawerTile<?>));
             this.connectedDrawers.setLevel(getLevel());
             this.connectedDrawers.rebuild();
             markForUpdate();
