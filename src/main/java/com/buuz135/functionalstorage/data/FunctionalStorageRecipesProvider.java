@@ -13,6 +13,7 @@ import net.minecraft.data.DataGenerator;
 import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.RecipeProvider;
+import net.minecraft.data.recipes.ShapelessRecipeBuilder;
 import net.minecraft.data.recipes.SmithingTransformRecipeBuilder;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.ItemStack;
@@ -115,6 +116,14 @@ public class FunctionalStorageRecipesProvider extends RecipeProvider {
                 .define('R', Items.HOPPER)
                 .define('D', new TagWithoutComponentIngredient(StorageTags.DRAWER).toVanilla())
                 .save(output);
+        ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, new ItemStack(PUSHING_UPGRADE.get()))
+                .requires(PULLING_UPGRADE.get())
+                .unlockedBy("has_puller_upgrade", has(PULLING_UPGRADE.get()))
+                .save(output, com.buuz135.functionalstorage.util.Utils.resourceLocation("functionalstorage:pusher_upgrade_from_puller"));
+        ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, new ItemStack(PULLING_UPGRADE.get()))
+                .requires(PUSHING_UPGRADE.get())
+                .unlockedBy("has_pusher_upgrade", has(PUSHING_UPGRADE.get()))
+                .save(output, com.buuz135.functionalstorage.util.Utils.resourceLocation("functionalstorage:puller_upgrade_from_pusher"));
         TitaniumShapedRecipeBuilder.shapedRecipe(DRIPPING_UPGRADE.get())
                 .pattern("IBI").pattern("IDI").pattern("IRI")
                 .define('I', Tags.Items.STONES)

@@ -10,6 +10,7 @@
 * Fixed empty drawers stealing your first item when right clicking them, closes #249 closes #324
 * Added a tag to configure what can be inserted inside a drawer `functionalstorage:armory_cabinet_insertable` closes #120 closes #224
 * Added proper comparator support closes #416 closes #217
+* Added a recipe to convert puller upgrades into pusher upgrades and vice-versa closes #390
 
 # VERSION 1.5.6 & 1.5.7
 
