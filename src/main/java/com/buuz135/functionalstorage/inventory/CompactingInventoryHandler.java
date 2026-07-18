@@ -18,11 +18,13 @@ public abstract class CompactingInventoryHandler implements IItemHandler, INBTSe
     public static final String BIG_ITEMS = "BigItems";
     public static final String STACK = "Stack";
     public static final String AMOUNT = "Amount";
+    public static final String CONFIGURED_SLOTS = "ConfiguredSlots";
 
     private int amount;
     private ItemStack parent;
     private List<CompactingUtil.Result> resultList;
     private int slots;
+    private int configuredSlots;
 
     public CompactingInventoryHandler(int slots) {
         this.resultList = new ArrayList<>();
@@ -30,6 +32,7 @@ public abstract class CompactingInventoryHandler implements IItemHandler, INBTSe
         for (int i = 0; i < slots; i++) {
             this.resultList.add(i, new CompactingUtil.Result(ItemStack.EMPTY, 1));
         }
+        this.configuredSlots = slots;
         this.parent = ItemStack.EMPTY;
     }
 
@@ -92,6 +95,7 @@ public abstract class CompactingInventoryHandler implements IItemHandler, INBTSe
         if (this.parent.isEmpty() && compactingUtil.getResults().size() >= 3) {
             this.parent = compactingUtil.getResults().get(2).getResult();
         }
+        this.configuredSlots = (int) this.resultList.stream().filter(result -> !result.getResult().isEmpty()).count();
         onChange();
     }
 
@@ -104,6 +108,7 @@ public abstract class CompactingInventoryHandler implements IItemHandler, INBTSe
         if (this.parent.isEmpty() && rearrangedResults.size() >= 3) {
             this.parent = rearrangedResults.get(2).getResult();
         }
+        this.configuredSlots = (int) this.resultList.stream().filter(result -> !result.getResult().isEmpty()).count();
         onChange();
     }
 
@@ -160,7 +165,7 @@ public abstract class CompactingInventoryHandler implements IItemHandler, INBTSe
 
     public int getSlotLimitBase(int slot) {
         if (slot == this.slots) return Integer.MAX_VALUE;
-        return (int) Math.min(Integer.MAX_VALUE, Math.floor((slots == 2 ? 64 * 9d  : 64 * 9d * 9)/ this.resultList.get(slot).getNeeded()));
+        return (int) Math.min(Integer.MAX_VALUE, Math.floor((configuredSlots == 2 ? 64 * 9d  : 64 * 9d * 9)/ this.resultList.get(slot).getNeeded()));
     }
 
     @Override
@@ -193,6 +198,7 @@ public abstract class CompactingInventoryHandler implements IItemHandler, INBTSe
             items.put(i + "", bigStack);
         }
         compoundTag.put(BIG_ITEMS, items);
+        compoundTag.putInt(CONFIGURED_SLOTS, this.configuredSlots);
         return compoundTag;
     }
 
@@ -204,10 +210,11 @@ public abstract class CompactingInventoryHandler implements IItemHandler, INBTSe
             this.resultList.get(Integer.parseInt(allKey)).setResult(Utils.deserialize(provider, nbt.getCompound(BIG_ITEMS).getCompound(allKey).getCompound(STACK)));
             this.resultList.get(Integer.parseInt(allKey)).setNeeded(Math.max(1, nbt.getCompound(BIG_ITEMS).getCompound(allKey).getInt(AMOUNT)));
         }
+        this.configuredSlots = nbt.getInt(CONFIGURED_SLOTS);
     }
 
     public double getTotalAmount() {
-        return slots == 2 ? 64 * 9d * getMultiplier() : 64 * 9d * 9 * getMultiplier();
+        return configuredSlots == 2 ? 64 * 9d * getMultiplier() : 64 * 9d * 9 * getMultiplier();
     }
 
     public abstract void onChange();

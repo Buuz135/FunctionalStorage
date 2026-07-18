@@ -18,6 +18,7 @@
   * `functionalstorage:creative_vending_upgrade_incompatible`
   * `functionalstorage:drawer_storage_denylist`
   * `functionalstorage:fluid_drawer_storage_denylist`
+* Fixed compacting drawer having bigger size when it only had 2 slots configure closes #468
 
 # VERSION 1.5.6 & 1.5.7
 
