@@ -140,6 +140,7 @@ public abstract class ItemControllableDrawerTile<T extends ItemControllableDrawe
                 })
                 .setOnSlotChanged((stack, integer) -> {
                     setNeedsUpgradeCache(true);
+                    updateComparatorOutput();
                 })
                 .setSlotLimit(1);
     }

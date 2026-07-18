@@ -45,6 +45,7 @@ public class FluidDrawerTile extends ControllableDrawerTile<FluidDrawerTile> {
             @Override
             public void onChange() {
                 syncObject(fluidHandler);
+                FluidDrawerTile.this.updateComparatorOutput();
             }
 
             @Override
@@ -109,6 +110,7 @@ public class FluidDrawerTile extends ControllableDrawerTile<FluidDrawerTile> {
                 return InteractionResult.PASS;
             }).orElse(InteractionResult.PASS)).orElse(InteractionResult.PASS);
             if (interactionResult == InteractionResult.SUCCESS) {
+                updateComparatorOutput();
                 return interactionResult;
             }
         }
@@ -124,6 +126,7 @@ public class FluidDrawerTile extends ControllableDrawerTile<FluidDrawerTile> {
                     var result = FluidUtil.tryFillContainerAndStow(stack, this.fluidHandler.getTankList()[slot], iItemHandler, Integer.MAX_VALUE, playerIn, true);
                     if (result.isSuccess()) {
                         playerIn.setItemInHand(InteractionHand.MAIN_HAND, result.getResult());
+                        updateComparatorOutput();
                     }
                 });
             });
@@ -216,6 +219,7 @@ public class FluidDrawerTile extends ControllableDrawerTile<FluidDrawerTile> {
                     setNeedsUpgradeCache(true);
                     this.fluidHandler.setCapacity(getTankCapacity(getStorageMultiplier()));
                     syncObject(this.fluidHandler);
+                    updateComparatorOutput();
                 })
                 .setSlotLimit(1);
     }

@@ -9,6 +9,7 @@
 * Added a tooltip to the fluid drawers when holding a bucket tha explains how to interact, closes #497
 * Fixed empty drawers stealing your first item when right clicking them, closes #249 closes #324
 * Added a tag to configure what can be inserted inside a drawer `functionalstorage:armory_cabinet_insertable` closes #120 closes #224
+* Added proper comparator support closes #416 closes #217
 
 # VERSION 1.5.6 & 1.5.7
 

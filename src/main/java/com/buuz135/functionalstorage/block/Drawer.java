@@ -3,7 +3,11 @@ package com.buuz135.functionalstorage.block;
 import com.buuz135.functionalstorage.FunctionalStorage;
 import com.buuz135.functionalstorage.block.tile.ControllableDrawerTile;
 import com.buuz135.functionalstorage.block.tile.FramedTile;
+import com.buuz135.functionalstorage.block.tile.FluidDrawerTile;
+import com.buuz135.functionalstorage.block.tile.ItemControllableDrawerTile;
 import com.buuz135.functionalstorage.block.tile.StorageControllerTile;
+import com.buuz135.functionalstorage.inventory.BigInventoryHandler;
+import com.buuz135.functionalstorage.inventory.CompactingInventoryHandler;
 import com.buuz135.functionalstorage.item.ConfigurationToolItem;
 import com.buuz135.functionalstorage.item.FSAttachments;
 import com.buuz135.functionalstorage.item.LinkingToolItem;
@@ -213,6 +217,71 @@ public abstract class Drawer<T extends ControllableDrawerTile<T>> extends Rotata
     @Override
     public boolean isSignalSource(BlockState p_60571_) {
         return true;
+    }
+
+    @Override
+    public boolean hasAnalogOutputSignal(BlockState state) {
+        return true;
+    }
+
+    @Override
+    public int getAnalogOutputSignal(BlockState state, Level level, BlockPos pos) {
+        ControllableDrawerTile<?> tile = TileUtil.getTileEntity(level, pos, ControllableDrawerTile.class).orElse(null);
+        if (tile instanceof FluidDrawerTile fluidDrawer) {
+            return getFluidComparatorSignal(fluidDrawer.getFluidHandler());
+        }
+        if (tile instanceof ItemControllableDrawerTile<?> itemDrawer) {
+            if (itemDrawer.getStorage() instanceof CompactingInventoryHandler compactingInventoryHandler) {
+                return getCompactingComparatorSignal(compactingInventoryHandler);
+            }
+            return getItemComparatorSignal(itemDrawer.getStorage());
+        }
+        return 0;
+    }
+
+    private static int getItemComparatorSignal(net.neoforged.neoforge.items.IItemHandler handler) {
+        int slots = handler instanceof BigInventoryHandler bigInventoryHandler ? bigInventoryHandler.getStoredStacks().size() : handler.getSlots();
+        if (slots <= 0) {
+            return 0;
+        }
+
+        double fullness = 0;
+        boolean hasContents = false;
+        for (int slot = 0; slot < slots; slot++) {
+            ItemStack stack = handler.getStackInSlot(slot);
+            if (!stack.isEmpty()) {
+                hasContents = true;
+                int limit = handler.getSlotLimit(slot);
+                fullness += limit <= 0 ? 0 : Math.min(1D, stack.getCount() / (double) limit);
+            }
+        }
+        return comparatorSignal(fullness / slots, hasContents);
+    }
+
+    private static int getCompactingComparatorSignal(CompactingInventoryHandler handler) {
+        return comparatorSignal(handler.getAmount() / handler.getTotalAmount(), handler.getAmount() > 0);
+    }
+
+    private static int getFluidComparatorSignal(net.neoforged.neoforge.fluids.capability.IFluidHandler handler) {
+        if (handler.getTanks() <= 0) {
+            return 0;
+        }
+
+        double fullness = 0;
+        boolean hasContents = false;
+        for (int tank = 0; tank < handler.getTanks(); tank++) {
+            var stack = handler.getFluidInTank(tank);
+            if (!stack.isEmpty()) {
+                hasContents = true;
+                int capacity = handler.getTankCapacity(tank);
+                fullness += capacity <= 0 ? 0 : Math.min(1D, stack.getAmount() / (double) capacity);
+            }
+        }
+        return comparatorSignal(fullness / handler.getTanks(), hasContents);
+    }
+
+    private static int comparatorSignal(double fullness, boolean hasContents) {
+        return hasContents ? Math.min(15, (int) Math.floor(fullness * 14D) + 1) : 0;
     }
 
     @Override

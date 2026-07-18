@@ -212,6 +212,12 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
         return storageSize;
     }
 
+    public void updateComparatorOutput() {
+        if (level != null && !level.isClientSide()) {
+            level.updateNeighbourForOutputSignal(worldPosition, getBlockState().getBlock());
+        }
+    }
+
     public boolean isVoid() {
         maybeCacheUpgrades();
         return isVoid;
