@@ -28,6 +28,3 @@ right click another Ender Drawer and then they will have their contents synced
 <strong>Linking Tool</strong>: Right + Clicking a controller to configure it then you can link Normal/Compacting/Ender
 Drawer to a controller by Right Clicking them if they are in range (8 radius by default)
 
-<strong>Planned features</strong>
-
-Armory Cabinet easy access

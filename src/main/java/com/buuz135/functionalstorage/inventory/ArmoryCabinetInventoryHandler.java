@@ -1,6 +1,7 @@
 package com.buuz135.functionalstorage.inventory;
 
 import com.buuz135.functionalstorage.block.config.FunctionalStorageConfig;
+import com.buuz135.functionalstorage.util.StorageTags;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
@@ -92,6 +93,7 @@ public abstract class ArmoryCabinetInventoryHandler implements IItemHandlerModif
 
     private boolean isCertifiedStack(ItemStack stack){
         if (stack.getCapability(Capabilities.ItemHandler.ITEM) != null) return false;
+        if (stack.is(StorageTags.ARMORY_CABINET_INSERTABLE)) return true;
         if (stack.getMaxStackSize() > 1) return false;
         return stack.isDamageableItem() || stack.isEnchantable() || stack.has(DataComponents.JUKEBOX_PLAYABLE) || stack.getItem() instanceof AnimalArmorItem || stack.is(Items.ENCHANTED_BOOK);
     }
