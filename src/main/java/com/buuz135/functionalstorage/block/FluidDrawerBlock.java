@@ -3,6 +3,7 @@ package com.buuz135.functionalstorage.block;
 import com.buuz135.functionalstorage.FunctionalStorage;
 import com.buuz135.functionalstorage.block.tile.FluidDrawerTile;
 import com.buuz135.functionalstorage.client.item.FluidDrawerISTER;
+import com.buuz135.functionalstorage.inventory.item.FluidDrawerStackItemHandler;
 import com.buuz135.functionalstorage.item.FSAttachments;
 import com.buuz135.functionalstorage.util.NumberUtils;
 import com.buuz135.functionalstorage.util.Utils;
@@ -30,6 +31,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -148,6 +150,10 @@ public class FluidDrawerBlock extends Drawer<FluidDrawerTile>{
         public FluidDrawerItem(FluidDrawerBlock block, Properties props,  TitaniumTab tab) {
             super(block, props);
             this.drawerBlock = block;
+        }
+
+        public IFluidHandlerItem initCapabilities(ItemStack stack) {
+            return new FluidDrawerStackItemHandler(stack, this.drawerBlock.getType());
         }
 
         @Override

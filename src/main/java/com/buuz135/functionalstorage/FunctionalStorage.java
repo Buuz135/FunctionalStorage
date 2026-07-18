@@ -256,6 +256,13 @@ public class FunctionalStorage extends ModuleController {
                 }
                 return null;
             }, COMPACTING_DRAWER.asItem(), SIMPLE_COMPACTING_DRAWER.asItem(), FRAMED_COMPACTING_DRAWER.asItem(), FRAMED_SIMPLE_COMPACTING_DRAWER.asItem());
+
+            event.registerItem(Capabilities.FluidHandler.ITEM, (object, context) -> {
+                if (object.getItem() instanceof FluidDrawerBlock.FluidDrawerItem di) {
+                    return di.initCapabilities(object);
+                }
+                return null;
+            }, FLUID_DRAWER_1.asItem(), FLUID_DRAWER_2.asItem(), FLUID_DRAWER_4.asItem(), FRAMED_FLUID_DRAWER_1.asItem(), FRAMED_FLUID_DRAWER_2.asItem(), FRAMED_FLUID_DRAWER_4.asItem());
         });
 
         modBus.addListener((final NewRegistryEvent event) -> event.register(FunctionalUpgradeBehavior.REGISTRY));
