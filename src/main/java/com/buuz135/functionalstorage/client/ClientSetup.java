@@ -12,9 +12,19 @@ import com.hrznstudio.titanium.client.screen.container.BasicAddonScreen;
 import com.hrznstudio.titanium.event.handler.EventManager;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.client.event.RenderGuiEvent;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
+
+import java.util.List;
+import java.util.Optional;
 
 public class ClientSetup {
     public static void init() {
@@ -59,5 +69,34 @@ public class ClientSetup {
                 tooltip.addAll(functional.getTooltip());
             }
         }).subscribe();
+
+        EventManager.forge(RenderGuiEvent.Post.class).process(event -> renderFluidDrawerHint(event.getGuiGraphics())).subscribe();
+    }
+
+    private static void renderFluidDrawerHint(GuiGraphics guiGraphics) {
+        var minecraft = Minecraft.getInstance();
+        if (minecraft.options.hideGui || minecraft.screen != null || minecraft.player == null || minecraft.level == null) {
+            return;
+        }
+        if (!(minecraft.hitResult instanceof BlockHitResult blockHitResult) || blockHitResult.getType() != HitResult.Type.BLOCK) {
+            return;
+        }
+        if (!(minecraft.level.getBlockEntity(blockHitResult.getBlockPos()) instanceof FluidDrawerTile)) {
+            return;
+        }
+        if (!isFluidContainer(minecraft.player.getItemInHand(InteractionHand.MAIN_HAND)) && !isFluidContainer(minecraft.player.getItemInHand(InteractionHand.OFF_HAND))) {
+            return;
+        }
+
+        List<Component> tooltip = List.of(
+                Component.translatable("gui.functionalstorage.fluid_drawer_hint").withStyle(ChatFormatting.GOLD),
+                Component.translatable("gui.functionalstorage.fluid_drawer_hint.empty", minecraft.options.keyUse.getTranslatedKeyMessage()).withStyle(ChatFormatting.GRAY),
+                Component.translatable("gui.functionalstorage.fluid_drawer_hint.fill", minecraft.options.keyAttack.getTranslatedKeyMessage()).withStyle(ChatFormatting.GRAY)
+        );
+        guiGraphics.renderTooltip(minecraft.font, tooltip, Optional.empty(), guiGraphics.guiWidth() / 2 + 12, guiGraphics.guiHeight() / 2 + 12);
+    }
+
+    private static boolean isFluidContainer(ItemStack stack) {
+        return !stack.isEmpty() && stack.getCapability(Capabilities.FluidHandler.ITEM) != null;
     }
 }
