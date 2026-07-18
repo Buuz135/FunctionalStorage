@@ -9,7 +9,7 @@
   "category": "misc",
   "key": {
     "C": {
-      "item": "minecraft:bucket"
+      "tag": "c:buckets/empty"
     },
     "P": {
       "item": "minecraft:iron_nugget"

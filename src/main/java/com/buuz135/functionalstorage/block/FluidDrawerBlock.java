@@ -21,7 +21,6 @@ import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -29,6 +28,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
+import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.fluids.FluidStack;
 
 import java.util.ArrayList;
@@ -88,21 +88,21 @@ public class FluidDrawerBlock extends Drawer<FluidDrawerTile>{
             TitaniumShapedRecipeBuilder.shapedRecipe(this)
                     .pattern("PPP").pattern("PCP").pattern("PPP")
                     .define('P', ItemTags.PLANKS)
-                    .define('C', Items.BUCKET)
+                    .define('C', Tags.Items.BUCKETS_EMPTY)
                     .save(consumer);
         }
         if (type == FunctionalStorage.DrawerType.X_2) {
             TitaniumShapedRecipeBuilder.shapedRecipe(this, 2)
                     .pattern("PCP").pattern("PPP").pattern("PCP")
                     .define('P', ItemTags.PLANKS)
-                    .define('C', Items.BUCKET)
+                    .define('C', Tags.Items.BUCKETS_EMPTY)
                     .save(consumer);
         }
         if (type == FunctionalStorage.DrawerType.X_4) {
             TitaniumShapedRecipeBuilder.shapedRecipe(this, 4)
                     .pattern("CPC").pattern("PPP").pattern("CPC")
                     .define('P', ItemTags.PLANKS)
-                    .define('C', Items.BUCKET)
+                    .define('C', Tags.Items.BUCKETS_EMPTY)
                     .save(consumer);
         }
     }

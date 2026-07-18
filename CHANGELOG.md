@@ -12,6 +12,7 @@
 * Added proper comparator support closes #416 closes #217
 * Added a recipe to convert puller upgrades into pusher upgrades and vice-versa closes #390
 * Added a priority system for drawers linked to controllers, closes #447
+* Changed recipes that used an empty bucket to use the empty bucket tag, closes #471
 
 # VERSION 1.5.6 & 1.5.7
 
