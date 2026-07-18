@@ -5,6 +5,7 @@ import com.buuz135.functionalstorage.inventory.BigInventoryHandler;
 import com.buuz135.functionalstorage.inventory.BigInventoryHandler.BigStack;
 import com.buuz135.functionalstorage.item.FSAttachments;
 import com.buuz135.functionalstorage.item.component.SizeProvider;
+import com.buuz135.functionalstorage.util.StorageTags;
 import com.buuz135.functionalstorage.util.Utils;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
@@ -102,6 +103,9 @@ public class DrawerStackItemHandler implements IItemHandler, INBTSerializable<Co
     @Nonnull
     @Override
     public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
+        if (stack.is(StorageTags.DRAWER_STORAGE_DENYLIST)) {
+            return stack;
+        }
         if (isValid(slot, stack)) {
             BigStack bigStack = this.storedStacks.get(slot);
             int inserted = Math.min(getSlotLimit(slot) - bigStack.getAmount(), stack.getCount());
@@ -126,6 +130,9 @@ public class DrawerStackItemHandler implements IItemHandler, INBTSerializable<Co
     }
 
     private boolean isValid(int slot, @Nonnull ItemStack stack) {
+        if (stack.is(StorageTags.DRAWER_STORAGE_DENYLIST)) {
+            return false;
+        }
         if (slot < type.getSlots()) {
             BigStack bigStack = this.storedStacks.get(slot);
             ItemStack fl = bigStack.getStack();
@@ -181,7 +188,7 @@ public class DrawerStackItemHandler implements IItemHandler, INBTSerializable<Co
 
     @Override
     public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
-        return !stack.isEmpty();
+        return !stack.isEmpty() && !stack.is(StorageTags.DRAWER_STORAGE_DENYLIST);
     }
 
     public List<BigStack> getStoredStacks() {

@@ -8,6 +8,7 @@ import com.buuz135.functionalstorage.item.FSAttachments;
 import com.buuz135.functionalstorage.item.LinkingToolItem;
 import com.buuz135.functionalstorage.item.UpgradeItem;
 import com.buuz135.functionalstorage.item.component.SizeProvider;
+import com.buuz135.functionalstorage.util.StorageTags;
 import com.hrznstudio.titanium.annotation.Save;
 import com.hrznstudio.titanium.block.BasicTileBlock;
 import com.hrznstudio.titanium.block.RotatableBlock;
@@ -252,6 +253,24 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
 
     public void setNeedsUpgradeCache(boolean needsUpgradeCache) {
         this.needsUpgradeCache = needsUpgradeCache;
+    }
+
+    protected boolean canUseStorageUpgradeWithCreative(ItemStack stack, int slot) {
+        boolean insertingCreative = stack.is(FunctionalStorage.CREATIVE_UPGRADE);
+        boolean insertingCreativeIncompatible = stack.is(StorageTags.CREATIVE_VENDING_UPGRADE_INCOMPATIBLE);
+        if (!insertingCreative && !insertingCreativeIncompatible) {
+            return true;
+        }
+        for (int i = 0; i < storageUpgrades.getSlots(); i++) {
+            if (i == slot) {
+                continue;
+            }
+            ItemStack stored = storageUpgrades.getStackInSlot(i);
+            if ((insertingCreative && stored.is(StorageTags.CREATIVE_VENDING_UPGRADE_INCOMPATIBLE)) || (insertingCreativeIncompatible && stored.is(FunctionalStorage.CREATIVE_UPGRADE))) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public InteractionResult onSlotActivated(Player playerIn, InteractionHand hand, Direction facing, double hitX, double hitY, double hitZ, int slot) {

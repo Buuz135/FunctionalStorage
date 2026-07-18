@@ -52,6 +52,8 @@ public class FunctionalStorageItemTagsProvider extends ItemTagsProvider {
                 .addTag(ItemTags.TRIDENT_ENCHANTABLE)
                 .addTag(ItemTags.MACE_ENCHANTABLE)
                 .add(Items.ELYTRA, Items.SHIELD, Items.FISHING_ROD, Items.FLINT_AND_STEEL, Items.SHEARS, Items.BRUSH, Items.ENCHANTED_BOOK);
+        this.tag(StorageTags.DRAWER_STORAGE_DENYLIST);
+        this.tag(StorageTags.CREATIVE_VENDING_UPGRADE_INCOMPATIBLE);
     }
 
     @Override

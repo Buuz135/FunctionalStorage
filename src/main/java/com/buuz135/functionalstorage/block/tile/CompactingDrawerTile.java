@@ -5,6 +5,7 @@ import com.buuz135.functionalstorage.client.gui.DrawerInfoGuiAddon;
 import com.buuz135.functionalstorage.inventory.CompactingInventoryHandler;
 import com.buuz135.functionalstorage.item.FSAttachments;
 import com.buuz135.functionalstorage.util.CompactingUtil;
+import com.buuz135.functionalstorage.util.StorageTags;
 import com.hrznstudio.titanium.annotation.Save;
 import com.hrznstudio.titanium.block.BasicTileBlock;
 import net.minecraft.core.BlockPos;
@@ -100,7 +101,7 @@ public class CompactingDrawerTile extends ItemControllableDrawerTile<CompactingD
     public InteractionResult onSlotActivated(Player playerIn, InteractionHand hand, Direction facing, double hitX, double hitY, double hitZ, int slot) {
         ItemStack stack = playerIn.getItemInHand(hand);
         if (stack.getItem().equals(FunctionalStorage.CONFIGURATION_TOOL.get()) || stack.getItem().equals(FunctionalStorage.LINKING_TOOL.get())) return InteractionResult.PASS;
-        if (!handler.isSetup() && slot != -1 && isServer()) {
+        if (!handler.isSetup() && slot != -1 && isServer() && !stack.is(StorageTags.DRAWER_STORAGE_DENYLIST)) {
             stack = playerIn.getItemInHand(hand).copy();
             stack.setCount(1);
             CompactingUtil compactingUtil = new CompactingUtil(this.level, 3);

@@ -14,6 +14,10 @@
 * Added a priority system for drawers linked to controllers, closes #447
 * Changed recipes that used an empty bucket to use the empty bucket tag, closes #471
 * Fluid drawers now will behave like a tank in item form, closes #479
+* Added tags to blacklist items from being used in drawers and being used in combination with the creative vending upgrade closes #465
+  * `functionalstorage:creative_vending_upgrade_incompatible`
+  * `functionalstorage:drawer_storage_denylist`
+  * `functionalstorage:fluid_drawer_storage_denylist`
 
 # VERSION 1.5.6 & 1.5.7
 

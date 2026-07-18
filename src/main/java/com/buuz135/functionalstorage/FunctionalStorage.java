@@ -39,6 +39,7 @@ import com.buuz135.functionalstorage.client.SimpleCompactingDrawerRenderer;
 import com.buuz135.functionalstorage.client.loader.FramedModel;
 import com.buuz135.functionalstorage.data.FunctionalStorageBlockTagsProvider;
 import com.buuz135.functionalstorage.data.FunctionalStorageBlockstateProvider;
+import com.buuz135.functionalstorage.data.FunctionalStorageFluidTagsProvider;
 import com.buuz135.functionalstorage.data.FunctionalStorageItemTagsProvider;
 import com.buuz135.functionalstorage.data.FunctionalStorageLangProvider;
 import com.buuz135.functionalstorage.data.FunctionalStorageRecipesProvider;
@@ -584,6 +585,7 @@ public class FunctionalStorage extends ModuleController {
             var blockTags = new FunctionalStorageBlockTagsProvider(event.getGenerator(), event.getLookupProvider(), MOD_ID, event.getExistingFileHelper());
             event.getGenerator().addProvider(true, blockTags);
             event.getGenerator().addProvider(true, new FunctionalStorageItemTagsProvider(event.getGenerator().getPackOutput(), event.getLookupProvider(), blockTags.contentsGetter(), MOD_ID, event.getExistingFileHelper()));
+            event.getGenerator().addProvider(true, new FunctionalStorageFluidTagsProvider(event.getGenerator().getPackOutput(), event.getLookupProvider(), MOD_ID, event.getExistingFileHelper()));
             event.getGenerator().addProvider(true, new FunctionalStorageLangProvider(event.getGenerator(), MOD_ID, "en_us"));
 
             event.getGenerator().addProvider(true, new ItemModelProvider(event.getGenerator().getPackOutput(), MOD_ID, event.getExistingFileHelper()) {

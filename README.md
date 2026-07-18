@@ -1,30 +1,35 @@
-![Logo](https://i.imgur.com/fW81jPR.png)
+![](https://i.imgur.com/fW81jPR.png)
 
-![Discord](https://imgur.com/A7U3oXE.png) [Join my Discord](https://discord.gg/4tPfwjn)![Patreon](https://imgur.com/m9xyJSE.png) [Support me on Patreon](https://www.patreon.com/buuz135)![Twitter](https://imgur.com/A7U3oXE.png) [Follow me on twitter](https://twitter.com/Buuz135mods)
+ <p style="text-align:center">![](https://imgur.com/A7U3oXE.png)[Join my Discord](https://discord.gg/4tPfwjn) ![](https://imgur.com/m9xyJSE.png) [Support me on Patreon](https://www.patreon.com/buuz135) ![](https://imgur.com/h0VJ7eQ.png) [Follow me on twitter](https://twitter.com/Buuz135mods)</p> 
 
-<strong>Functional Storage</strong> is an alternative take on the storage solution of Storage Drawers, with an updated
-look and additional functionalities like:
+**Functional Storage** is an alternative take on the storage solution of [Storage Drawers](https://www.curseforge.com/minecraft/mc-mods/storage-drawers) with an updated look:
 
-<ul>
-<li><strong>Pulling Upgrade</strong>: It pulls items from an adjacent inventory
-<li><strong>Pushing Upgrade</strong>: It pushes items to an adjacent inventory
-<li><strong>Collecting Upgrade</strong>: It collects items on the ground
-<li><strong>Armory Cabinet</strong>: It stores 4096 non stackeable items(by default) and can only be accessed with external tools (currently) like Applied Energistics or Refined Storage external storage tools
-<li><strong>Storage Upgrades</strong>: Have changed a a bit, there a less types of them but they give a bigger boost
-<li><strong>Storage Controller</strong>: You can link drawers to it without having direct contact
-<li><strong>Fluid Drawer</strong>: Stores Fluids
-<li><strong>Controller Extensions</strong>: Acts as a Storage Controller when linked to it
-<li><strong>Simple Compacting Drawer</strong>: Its like a compacting drawer but with only 2 slots
-</ul>
+*   **Pulling Upgrade**: It pulls items from an adjacent inventory
+*   **Pushing Upgrade**: It pushes items to an adjacent inventory
+*   **Collecting Upgrade**: It collects items on the ground
+*   **Armory Cabinet**: It stores 4096 non stackeable items(by default) and can only be accessed with external tools (currently) like Applied Energistics or Refined Storage external storage tools
+*   **Storage Upgrades**: Have changed a a bit, there a less types of them but they give a bigger boost
+*   **Storage Controller**: You can link drawers to it without having direct contact (Range can be extended with upgrades)
+*   **Fluid Drawer**: Stores Fluids
+*   **Controller Access Points**: Acts as a Storage Controller when linked to it
+*   **Simple Compacting Drawer**: Its like a compacting drawer but with only 2 slots
 
 
-![Image](https://imgur.com/qF7p3d9.png)
+![](https://i.imgur.com/qF7p3d9.png)
 
-<strong>How to use</strong>
 
-<strong>Drawer controller</strong>: To link a drawer to a drawer controller you need to use a Linking Tool
-<strong>Ender Drawer</strong>: You can copy a drawer frequency by left clicking it with a Linking Tool and then you can
-right click another Ender Drawer and then they will have their contents synced
-<strong>Linking Tool</strong>: Right + Clicking a controller to configure it then you can link Normal/Compacting/Ender
-Drawer to a controller by Right Clicking them if they are in range (8 radius by default)
+**How to use**
 
+
+*   **Drawer controller:** To link a drawer to a drawer controller you need to use a **Linking Tool  **
+*   **Ender Drawer**: You can copy a drawer frequency by left clicking it with a **Linking Tool** and then you can right click another **Ender Drawer** and then they will have their contents synced
+*   **Linking Tool**: Right + Clicking a controller to configure it then you can link **Normal/Compacting/Ender Drawer** to a controller by Right Clicking them if they are in range (8 radius by default)
+
+
+**Data pack tags**
+
+
+*   **functionalstorage:armory_cabinet_insertable`**: Item tag. Items in this tag are allowed to be inserted into the Armory Cabinet.
+*   **`functionalstorage:drawer_storage_denylist`**: Item tag. Items in this tag cannot be stored in drawers, including normal drawers, compacting drawers, controller access, and drawer item capabilities.
+*   **`functionalstorage:fluid_drawer_storage_denylist`**: Fluid tag. Fluids in this tag cannot be stored in fluid drawers.
+*   **`functionalstorage:creative_vending_upgrade_incompatible`**: Item tag. Items in this tag cannot be used in a drawer storage upgrade slot together with the Creative Vending Upgrade.

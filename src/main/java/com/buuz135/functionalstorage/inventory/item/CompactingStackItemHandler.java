@@ -4,6 +4,7 @@ import com.buuz135.functionalstorage.FunctionalStorage;
 import com.buuz135.functionalstorage.item.FSAttachments;
 import com.buuz135.functionalstorage.item.component.SizeProvider;
 import com.buuz135.functionalstorage.util.CompactingUtil;
+import com.buuz135.functionalstorage.util.StorageTags;
 import com.buuz135.functionalstorage.util.Utils;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
@@ -85,6 +86,9 @@ public class CompactingStackItemHandler implements IItemHandler, INBTSerializabl
     @Nonnull
     @Override
     public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
+        if (stack.is(StorageTags.DRAWER_STORAGE_DENYLIST)) {
+            return stack;
+        }
         if (isVoid() && slot == this.slots && isVoidValid(stack) || (isVoidValid(stack) && isCreative()))
             return ItemStack.EMPTY;
         if (isValid(slot, stack)) {
@@ -177,10 +181,13 @@ public class CompactingStackItemHandler implements IItemHandler, INBTSerializabl
 
     @Override
     public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
-        return isSetup() && !stack.isEmpty();
+        return isSetup() && !stack.isEmpty() && !stack.is(StorageTags.DRAWER_STORAGE_DENYLIST);
     }
 
     private boolean isValid(int slot, @Nonnull ItemStack stack) {
+        if (stack.is(StorageTags.DRAWER_STORAGE_DENYLIST)) {
+            return false;
+        }
         if (slot < this.slots) {
             CompactingUtil.Result bigStack = this.resultList.get(slot);
             ItemStack fl = bigStack.getResult();

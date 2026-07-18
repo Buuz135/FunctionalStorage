@@ -213,6 +213,7 @@ public class FluidDrawerTile extends ControllableDrawerTile<FluidDrawerTile> {
         }
                 .setInputFilter((stack, integer) -> {
                     if (isStorageUpgradeLocked()) return false;
+                    if (!canUseStorageUpgradeWithCreative(stack, integer)) return false;
                     if (stack.getItem().equals(FunctionalStorage.STORAGE_UPGRADES.get(StorageUpgradeItem.StorageTier.IRON).get())) {
                         return true;
                     }
