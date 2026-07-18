@@ -90,13 +90,14 @@ public abstract class ControllerInventoryHandler implements IItemHandler {
     @Override
     public ItemStack insertItem(int slot, @NotNull ItemStack stack, boolean simulate) {
         HandlerSlotSelector selector = selectorForSlot(slot);
+        if (null == selector) return stack;
         //Verify if the handler is still valid before extraction
         if (!getDrawers().getItemHandlers().contains(selector.handler)) {
             // Invalid handler: Rebuild slots and return empty stack
             invalidateSlots();
-            return ItemStack.EMPTY;
+            return stack;
         }
-        return null != selector ? selector.insertItem(stack, simulate) : ItemStack.EMPTY;
+        return selector.insertItem(stack, simulate);
     }
 
     @NotNull
