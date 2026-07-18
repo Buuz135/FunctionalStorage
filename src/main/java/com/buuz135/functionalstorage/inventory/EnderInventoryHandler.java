@@ -3,6 +3,7 @@ package com.buuz135.functionalstorage.inventory;
 import com.buuz135.functionalstorage.FunctionalStorage;
 import com.buuz135.functionalstorage.world.EnderSavedData;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.item.ItemStack;
 
 public class EnderInventoryHandler extends BigInventoryHandler implements ILockable {
 
@@ -46,6 +47,16 @@ public class EnderInventoryHandler extends BigInventoryHandler implements ILocka
         double stackSize = 1;
         if (!getStoredStacks().get(slot).getStack().isEmpty()) {
             stackSize = getStoredStacks().get(slot).getStack().getMaxStackSize() / 64D;
+        }
+        return (int) Math.floor(Math.min(Integer.MAX_VALUE, FunctionalStorage.DrawerType.X_1.getSlotAmount() * 64 * 4) * stackSize);
+    }
+
+    @Override
+    public int getSlotLimit(int slot, ItemStack stack) {
+        if (slot == 1) return Integer.MAX_VALUE;
+        double stackSize = 1;
+        if (!stack.isEmpty()) {
+            stackSize = stack.getMaxStackSize() / 64D;
         }
         return (int) Math.floor(Math.min(Integer.MAX_VALUE, FunctionalStorage.DrawerType.X_1.getSlotAmount() * 64 * 4) * stackSize);
     }

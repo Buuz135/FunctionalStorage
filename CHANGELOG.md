@@ -4,6 +4,7 @@
 * Added concurrency safety checks on the connected drawers system closes #505
 * Improved loading and unloading of chunks closes #502
 * Added check for locked state when breaking a drawer, closes #498
+* Fixed ender drawer only accepting up to 1 stack of items, closes #500
 
 # VERSION 1.5.6 & 1.5.7
 
