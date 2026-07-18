@@ -62,7 +62,7 @@ public abstract class ItemControllableDrawerTile<T extends ItemControllableDrawe
             if (!stack.isEmpty() && getStorage().insertItem(slot, stack, true).getCount() != stack.getCount()) {
                 playerIn.setItemInHand(hand, getStorage().insertItem(slot, stack, false));
                 return InteractionResult.SUCCESS;
-            } else if (System.currentTimeMillis() - INTERACTION_LOGGER.getOrDefault(playerIn.getUUID(), System.currentTimeMillis()) < 300) {
+            } else if (System.currentTimeMillis() - INTERACTION_LOGGER.getOrDefault(playerIn.getUUID(), System.currentTimeMillis()) < 300 && !getStorage().getStackInSlot(slot).isEmpty()) {
                 for (ItemStack itemStack : playerIn.getInventory().items) {
                     if (!itemStack.isEmpty() && getStorage().insertItem(slot, itemStack, true).getCount() != itemStack.getCount()) {
                         itemStack.setCount(getStorage().insertItem(slot, itemStack.copy(), false).getCount());

@@ -7,6 +7,7 @@
 * Fixed ender drawer only accepting up to 1 stack of items, closes #500
 * Fixed controller not checking for selectors properly when inserting, closes #501
 * Added a tooltip to the fluid drawers when holding a bucket tha explains how to interact, closes #497
+* Fixed empty drawers stealing your first item when right clicking them, closes #249 closes #324
 
 # VERSION 1.5.6 & 1.5.7
 
