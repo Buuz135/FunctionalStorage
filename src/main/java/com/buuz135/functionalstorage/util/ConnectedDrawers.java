@@ -82,7 +82,10 @@ public class ConnectedDrawers implements INBTSerializable<CompoundTag> {
                         }
                     }
 
-                    validDrawers.sort(Comparator.comparingDouble(value -> BlockPos.of(value).distSqr(controllerTile.getBlockPos())));
+                    validDrawers.sort(
+                            Comparator.<Long>comparingInt(value -> getPriority(BlockPos.of(value))).reversed()
+                                    .thenComparingDouble(value -> BlockPos.of(value).distSqr(controllerTile.getBlockPos()))
+                    );
                     this.connectedDrawers = validDrawers;
                     for (Long connectedDrawer : this.connectedDrawers) {
                         BlockPos pos = BlockPos.of(connectedDrawer);
@@ -171,5 +174,12 @@ public class ConnectedDrawers implements INBTSerializable<CompoundTag> {
 
     public VoxelShape getCachedVoxelShape() {
         return cachedVoxelShape;
+    }
+
+    private int getPriority(BlockPos pos) {
+        if (level != null && level.getBlockEntity(pos) instanceof com.buuz135.functionalstorage.block.tile.ControllableDrawerTile<?> drawer) {
+            return drawer.getPriority();
+        }
+        return 0;
     }
 }

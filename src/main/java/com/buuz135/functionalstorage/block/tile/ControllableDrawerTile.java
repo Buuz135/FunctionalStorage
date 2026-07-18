@@ -2,6 +2,7 @@ package com.buuz135.functionalstorage.block.tile;
 
 import com.buuz135.functionalstorage.FunctionalStorage;
 import com.buuz135.functionalstorage.block.DrawerBlock;
+import com.buuz135.functionalstorage.client.gui.DrawerPriorityGuiAddon;
 import com.buuz135.functionalstorage.item.ConfigurationToolItem;
 import com.buuz135.functionalstorage.item.FSAttachments;
 import com.buuz135.functionalstorage.item.LinkingToolItem;
@@ -59,6 +60,8 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
     private boolean isVoid = false;
     @Save
     private boolean isStorageUpgradeLocked = false;
+    @Save
+    private int priority = 0;
 
     public final Supplier<DataComponentType<SizeProvider>> sizeUpgradeComponent;
     @Save
@@ -165,6 +168,7 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
                 return Component.translatable("key.categories.inventory").getString();
             }
         });
+        addGuiAddonFactory(() -> new DrawerPriorityGuiAddon(114, 16, this::getPriority, this::getBlockPos));
     }
 
     @Override
@@ -210,6 +214,24 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
     public float getStorageMultiplier() {
         maybeCacheUpgrades();
         return storageSize;
+    }
+
+    public int getPriority() {
+        return priority;
+    }
+
+    public void setPriority(int priority) {
+        if (this.priority == priority) {
+            return;
+        }
+        this.priority = priority;
+        markForUpdate();
+        if (isServer() && controllerPos != null) {
+            TileUtil.getTileEntity(getLevel(), controllerPos, StorageControllerTile.class).ifPresent(controllerTile -> {
+                controllerTile.getConnectedDrawers().rebuild();
+                controllerTile.markForUpdate();
+            });
+        }
     }
 
     public void updateComparatorOutput() {
@@ -355,6 +377,9 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
     }
 
     public boolean isEverythingEmpty() {
+        if (getPriority() != 0) {
+            return false;
+        }
         if (isLocked()) {
             return false;
         }

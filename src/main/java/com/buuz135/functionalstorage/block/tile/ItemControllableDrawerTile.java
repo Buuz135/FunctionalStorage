@@ -156,6 +156,9 @@ public abstract class ItemControllableDrawerTile<T extends ItemControllableDrawe
     }
 
     public boolean isEverythingEmpty() {
+        if (getPriority() != 0) {
+            return false;
+        }
         for (int i = 0; i < getStorage().getSlots(); i++) {
             if (!getStorage().getStackInSlot(i).isEmpty()) {
                 return false;

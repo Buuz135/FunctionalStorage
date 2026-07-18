@@ -64,6 +64,7 @@ import com.buuz135.functionalstorage.item.component.GenerateItemBehavior;
 import com.buuz135.functionalstorage.item.component.MoveFluidsBehavior;
 import com.buuz135.functionalstorage.item.component.MoveItemsBehavior;
 import com.buuz135.functionalstorage.network.EnderDrawerSyncMessage;
+import com.buuz135.functionalstorage.network.DrawerPriorityMessage;
 import com.buuz135.functionalstorage.recipe.*;
 import com.buuz135.functionalstorage.util.DrawerWoodType;
 import com.buuz135.functionalstorage.util.IWoodType;
@@ -159,6 +160,7 @@ public class FunctionalStorage extends ModuleController {
 
     static {
         NETWORK.registerMessage("ender_drawer_sync", EnderDrawerSyncMessage.class);
+        NETWORK.registerMessage("drawer_priority", DrawerPriorityMessage.class);
     }
 
     // Directly reference a Mojang's logger.

@@ -160,6 +160,9 @@ public class FluidDrawerTile extends ControllableDrawerTile<FluidDrawerTile> {
     }
 
     public boolean isEverythingEmpty() {
+        if (getPriority() != 0) {
+            return false;
+        }
         for (int i = 0; i < getFluidHandler().getTanks(); i++) {
             if (!getFluidHandler().getFluidInTank(i).isEmpty()) {
                 return false;
