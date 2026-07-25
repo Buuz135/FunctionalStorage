@@ -3,15 +3,6 @@
     {
       "apply": {
         "model": "functionalstorage:block/armory_cabinet",
-        "uvlock": true
-      },
-      "when": {
-        "subfacing": "north"
-      }
-    },
-    {
-      "apply": {
-        "model": "functionalstorage:block/armory_cabinet",
         "uvlock": true,
         "y": 180
       },
@@ -22,11 +13,10 @@
     {
       "apply": {
         "model": "functionalstorage:block/armory_cabinet",
-        "uvlock": true,
-        "y": 270
+        "uvlock": true
       },
       "when": {
-        "subfacing": "west"
+        "subfacing": "north"
       }
     },
     {
@@ -37,6 +27,16 @@
       },
       "when": {
         "subfacing": "east"
+      }
+    },
+    {
+      "apply": {
+        "model": "functionalstorage:block/armory_cabinet",
+        "uvlock": true,
+        "y": 270
+      },
+      "when": {
+        "subfacing": "west"
       }
     }
   ]

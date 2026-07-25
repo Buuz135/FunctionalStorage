@@ -13,6 +13,7 @@ public class TOPPlugin implements FeaturePluginInstance {
     public void execute(PluginPhase phase) {
         if (phase == PluginPhase.CONSTRUCTION) {
             EventManager.mod(InterModEnqueueEvent.class).process(interModEnqueueEvent -> {
+                InterModComms.sendTo("theoneprobe", "getTheOneProbe", () -> FunctionalArmoryProvider.REGISTER);
                 InterModComms.sendTo("theoneprobe", "getTheOneProbe", () -> FunctionalDrawerProvider.REGISTER);
             }).subscribe();
         }

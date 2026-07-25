@@ -12,6 +12,7 @@
       "tag": "c:ingots/netherite"
     },
     "C": {
+      "type": "functionalstorage:tag_without_component",
       "tag": "functionalstorage:drawer"
     },
     "D": {

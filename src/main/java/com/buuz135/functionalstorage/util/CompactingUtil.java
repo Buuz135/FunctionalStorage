@@ -43,6 +43,21 @@ public class CompactingUtil {
     }
 
     public void setup(ItemStack stack){
+        setup(stack, -1);
+    }
+
+    public void setup(ItemStack stack, int slot){
+
+        if (slot < 0) {
+            autoSetup(stack);
+        } else {
+            manualSetup(stack, slot);
+        }
+
+        results.stream().filter(result1 -> result1.getResult().getCount() > 0).forEach(result1 -> result1.setNeeded(result1.getNeeded() / result1.getResult().getCount()));
+    }
+
+    private void autoSetup(ItemStack stack){
         results.add(new Result(stack, 1));
         Result result = findUpperTier(stack);
         if (!result.getResult().isEmpty()){
@@ -63,15 +78,89 @@ public class CompactingUtil {
                     result1.setNeeded(result1.getNeeded() * result.getNeeded());
                 }
                 result.setNeeded(1);
-                results.add(0, result);
+                results.addFirst(result);
             } else {
                 canFind = false;
             }
         }
         while (results.size() < resultAmount) {
-            results.add(0, new Result(ItemStack.EMPTY, 1));
+            results.addFirst(new Result(ItemStack.EMPTY, 1));
         }
-        results.stream().filter(result1 -> result1.getResult().getCount() > 0).forEach(result1 -> result1.setNeeded(result1.getNeeded() / result1.getResult().getCount()));
+    }
+
+    private void manualSetup(ItemStack stack, int slot){
+        results.clear();
+        results.add(new Result(stack, 1));
+
+        Result current = stack.isEmpty() ? new Result(ItemStack.EMPTY, 0) : findLowerTier(stack);
+        for (int i = 0; i < slot && !current.getResult().isEmpty(); i++) {
+            results.addFirst(current);
+            current = findLowerTier(current.getResult());
+        }
+
+        current = stack.isEmpty() ? new Result(ItemStack.EMPTY, 0) : findUpperTier(stack);
+        for (int i = slot + 1; i < resultAmount && !current.getResult().isEmpty(); i++) {
+            if (results.size() > 1) {
+                current.setNeeded(current.getNeeded() * results.getLast().getNeeded());
+            }
+            results.add(current);
+            current = findUpperTier(current.getResult());
+        }
+
+        for (int i = slot - 1; i >= 0; i--) {
+            Result lower = results.get(i);
+            int multiplier = lower.getNeeded();
+
+            for (int j = i + 1; j < results.size(); j++) {
+                results.get(j).setNeeded(results.get(j).getNeeded() * multiplier);
+            }
+
+            lower.setNeeded(1);
+        }
+
+        while (results.size() < resultAmount) {
+            results.add(Math.max(results.size(), slot), new Result(ItemStack.EMPTY, 1));
+        }
+    }
+
+
+    public List<Result> rearrangeResults(ItemStack clickedItemStack, int clickedSlot) {
+
+        List<Result> rearranged = new ArrayList<>(resultAmount);
+        for (int i = 0; i < resultAmount; i++) {
+            rearranged.add(new Result(ItemStack.EMPTY, 1));
+        }
+
+        int clickedIndex = -1;
+        for (int i = 0; i < results.size(); i++) {
+            if (ItemStack.isSameItem(results.get(i).getResult(), clickedItemStack)) {
+                clickedIndex = i;
+                break;
+            }
+        }
+        if (clickedIndex < 0) {
+            return results;
+        }
+
+        List<Result> copy = new ArrayList<>(results);
+        Result clickedResult = copy.remove(clickedIndex);
+
+        List<Result> lower  = copy.subList(0, Math.min(clickedIndex, copy.size()));
+        List<Result> higher = copy.subList(Math.min(clickedIndex, copy.size()), copy.size());
+
+        int slotsAbove = resultAmount - clickedSlot - 1;
+
+        rearranged.set(clickedSlot, clickedResult);
+
+        for (int i = 0; i < Math.min(clickedSlot, lower.size()); i++) {
+            rearranged.set(clickedSlot - 1 - i, lower.get(lower.size() - 1 - i));
+        }
+
+        for (int i = 0; i < Math.min(slotsAbove, higher.size()); i++) {
+            rearranged.set(clickedSlot + 1 + i, higher.get(i));
+        }
+
+        return rearranged;
     }
 
     public List<Result> getResults() {

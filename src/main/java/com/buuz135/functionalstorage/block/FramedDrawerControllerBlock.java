@@ -3,6 +3,7 @@ package com.buuz135.functionalstorage.block;
 import com.buuz135.functionalstorage.FunctionalStorage;
 import com.buuz135.functionalstorage.block.tile.FramedDrawerControllerTile;
 import com.buuz135.functionalstorage.item.FSAttachments;
+import com.buuz135.functionalstorage.recipe.TagWithoutComponentIngredient;
 import com.buuz135.functionalstorage.util.StorageTags;
 import com.hrznstudio.titanium.recipe.generator.TitaniumShapedRecipeBuilder;
 import com.hrznstudio.titanium.util.TileUtil;
@@ -82,7 +83,7 @@ public class FramedDrawerControllerBlock extends StorageControllerBlock<FramedDr
                 .pattern("IBI").pattern("CDC").pattern("IBI")
                 .define('I', Tags.Items.NUGGETS_IRON)
                 .define('B', Items.QUARTZ_BLOCK)
-                .define('C', StorageTags.DRAWER)
+                .define('C', new TagWithoutComponentIngredient(StorageTags.DRAWER).toVanilla())
                 .define('D', Items.COMPARATOR)
                 .save(consumer);
     }

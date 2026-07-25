@@ -2,6 +2,7 @@ package com.buuz135.functionalstorage.block.tile;
 
 import com.buuz135.functionalstorage.FunctionalStorage;
 import com.buuz135.functionalstorage.client.gui.DrawerInfoGuiAddon;
+import com.buuz135.functionalstorage.inventory.BigInventoryHandler;
 import com.buuz135.functionalstorage.inventory.EnderInventoryHandler;
 import com.buuz135.functionalstorage.item.FSAttachments;
 import com.buuz135.functionalstorage.network.EnderDrawerSyncMessage;
@@ -54,7 +55,8 @@ public class EnderDrawerTile extends ItemControllableDrawerTile<EnderDrawerTile>
                 1,
                 FunctionalStorage.DrawerType.X_1.getSlotPosition(),
                 integer -> getStorage().getStackInSlot(integer),
-                integer -> getStorage().getSlotLimit(integer)
+                integer -> getStorage().getSlotLimit(integer),
+                integer -> getStorage() instanceof BigInventoryHandler bigInventoryHandler ? bigInventoryHandler.getStoredStacks().get(integer).getStack() : getStorage().getStackInSlot(integer)
         ));
     }
 

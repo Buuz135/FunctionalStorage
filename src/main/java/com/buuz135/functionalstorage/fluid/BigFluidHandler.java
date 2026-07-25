@@ -1,5 +1,6 @@
 package com.buuz135.functionalstorage.fluid;
 
+import com.buuz135.functionalstorage.util.StorageTags;
 import com.buuz135.functionalstorage.util.Utils;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
@@ -26,6 +27,9 @@ public abstract class BigFluidHandler implements IFluidHandler, INBTSerializable
             this.filterStack[i] = FluidStack.EMPTY;
             int finalI = i;
             this.tanks[i] = new CustomFluidTank(capacity, fluidStack -> {
+                if (fluidStack.is(StorageTags.FLUID_DRAWER_STORAGE_DENYLIST)) {
+                    return false;
+                }
                 if (isDrawerLocked()) {
                     return FluidStack.isSameFluidSameComponents(fluidStack, this.filterStack[finalI]);
                 }
@@ -56,11 +60,14 @@ public abstract class BigFluidHandler implements IFluidHandler, INBTSerializable
 
     @Override
     public boolean isFluidValid(int tank, @NotNull FluidStack stack) {
-        return this.tanks[tank].isFluidValid(stack);
+        return !stack.is(StorageTags.FLUID_DRAWER_STORAGE_DENYLIST) && this.tanks[tank].isFluidValid(stack);
     }
 
     @Override
     public int fill(FluidStack resource, FluidAction action) {
+        if (resource.is(StorageTags.FLUID_DRAWER_STORAGE_DENYLIST)) {
+            return 0;
+        }
         for (CustomFluidTank tank : tanks) {
             if (!tank.getFluid().isEmpty() && tank.fill(resource, FluidAction.SIMULATE) != 0) {
                 int ret = tank.fill(resource, action);
@@ -172,6 +179,9 @@ public abstract class BigFluidHandler implements IFluidHandler, INBTSerializable
 
         @Override
         public int fill(FluidStack resource, FluidAction action) {
+            if (resource.is(StorageTags.FLUID_DRAWER_STORAGE_DENYLIST)) {
+                return 0;
+            }
             int amount = super.fill(resource, action);
             if (isDrawerVoid()
                     && ((isDrawerLocked() && isFluidValid(resource)) || (!getFluid().isEmpty() && FluidStack.isSameFluidSameComponents(getFluid(), resource))))

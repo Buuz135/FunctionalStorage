@@ -1,6 +1,7 @@
 package com.buuz135.functionalstorage.item;
 
 import com.buuz135.functionalstorage.FunctionalStorage;
+import com.buuz135.functionalstorage.block.Drawer;
 import com.buuz135.functionalstorage.block.tile.ControllableDrawerTile;
 import com.buuz135.functionalstorage.block.tile.FluidDrawerTile;
 import com.buuz135.functionalstorage.item.component.FunctionalUpgradeBehavior;
@@ -22,6 +23,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import org.apache.commons.lang3.text.WordUtils;
 import org.jetbrains.annotations.Nullable;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.sounds.SoundSource;
 
 import java.util.Arrays;
 import java.util.List;
@@ -112,7 +116,7 @@ public class UpgradeItem extends FSItem {
         tooltip.add(Component.translatable("upgrade.type").withStyle(ChatFormatting.YELLOW).append(Component.translatable("upgrade.type." + getType().name().toLowerCase(Locale.ROOT)).withStyle(ChatFormatting.WHITE)));
         Item item = stack.getItem();
         if (isDirectionUpgrade(item) && stack.has(FSAttachments.DIRECTION)) {
-            tooltip.add(Component.translatable("item.utility.direction").withStyle(ChatFormatting.YELLOW).append(Component.translatable(WordUtils.capitalize(getDirection(stack).getName().toLowerCase(Locale.ROOT))).withStyle(ChatFormatting.WHITE)));
+            tooltip.add(Component.translatable("item.utility.direction").withStyle(ChatFormatting.YELLOW).append(Component.translatable("direction.titanium." + getDirection(stack).getName().toLowerCase(Locale.ROOT)).withStyle(ChatFormatting.WHITE)));
             tooltip.add(Component.literal(""));
             tooltip.add(Component.translatable("item.utility.direction.desc").withStyle(ChatFormatting.GRAY));
         }
@@ -124,13 +128,46 @@ public class UpgradeItem extends FSItem {
 
     }
 
+    @Override
+    public InteractionResult useOn(UseOnContext context) {
+        Player player = context.getPlayer();
+        // Check if player is sneaking and if this is a Puller/Pusher/Collector
+        if (player != null && player.isShiftKeyDown() && isDirectionUpgrade(this)) {
+
+            // Get the face of the block that was clicked
+            Direction clickedFace = context.getClickedFace();
+            ItemStack stack = context.getItemInHand();
+
+            // Set the Direction Component (1.21 Data Component style)
+            stack.set(FSAttachments.DIRECTION, clickedFace);
+
+            // Play a sound so the player knows it worked
+            context.getLevel().playSound(player, context.getClickedPos(), SoundEvents.UI_BUTTON_CLICK.value(), SoundSource.PLAYERS, 0.5f, 1f);
+
+            // Show a message above the hotbar (Action Bar) confirming the new direction
+            if (context.getLevel().isClientSide) {
+                player.displayClientMessage(
+                        Component.translatable("item.utility.direction").withStyle(ChatFormatting.YELLOW)
+                                .append(" ")
+                                .append(Component.translatable("direction.titanium." + clickedFace.getName().toLowerCase(Locale.ROOT)).withStyle(ChatFormatting.WHITE)),
+                        true
+                );
+            }
+
+            // Return SUCCESS so the game doesn't try to place the item or open the block's GUI
+            return InteractionResult.SUCCESS;
+        }
+
+        return super.useOn(context);
+    }
+
     public static boolean isDirectionUpgrade(Item item) {
         return (item.equals(FunctionalStorage.PULLING_UPGRADE.get()) || item.equals(FunctionalStorage.PUSHING_UPGRADE.get()) || item.equals(FunctionalStorage.COLLECTOR_UPGRADE.get()));
     }
 
     @Nullable
     public Component getDescription(ItemStack stack, ControllableDrawerTile<?> tile) {
-        var dir = tile.getBlockState().getValue(RotatableBlock.FACING_HORIZONTAL);
+        var dir = tile.getBlockState().getValue(Drawer.FACING_HORIZONTAL_CUSTOM);
         var type = tile instanceof FluidDrawerTile ? "fluid" : "item";
         if (this == FunctionalStorage.PUSHING_UPGRADE.get()) {
             return Component.translatable("drawer_upgrade.functionalstorage.push." + type, getRelativeDirection(
@@ -157,6 +194,41 @@ public class UpgradeItem extends FSItem {
     public static MutableComponent getRelativeDirection(Direction upgrade, Direction facing) {
         return Component.translatable(
                 "tooltip.titanium.facing_handler." + FacingUtil.getFacingRelative(upgrade, facing).name().toLowerCase()).withStyle(ChatFormatting.WHITE);
+    }
+
+    public static MutableComponent getRelativeDirectionVertical(Direction placedSide, Direction relative, Direction facing) {
+        return Component.translatable(
+                "tooltip.titanium.facing_handler." + getFacingRelativeVertical(placedSide, relative, facing).name().toLowerCase()).withStyle(ChatFormatting.WHITE);
+    }
+
+    public static FacingUtil.Sideness getFacingRelativeVertical(Direction placedSide, Direction relative, Direction facing) {
+        if (placedSide == Direction.DOWN) {
+            if (relative == facing) {
+                return FacingUtil.Sideness.BOTTOM;
+            }
+            if (relative == facing.getOpposite()) {
+                return FacingUtil.Sideness.TOP;
+            }
+        }
+        if (placedSide == facing) {
+            return FacingUtil.Sideness.FRONT;
+        }
+        if (placedSide == facing.getOpposite()) {
+            return FacingUtil.Sideness.BACK;
+        }
+        if (relative == facing) {
+            return FacingUtil.Sideness.TOP;
+        }
+        if (relative == facing.getOpposite()) {
+            return FacingUtil.Sideness.BACK;
+        }
+        if (relative.getClockWise() == facing) {
+            return FacingUtil.Sideness.RIGHT;
+        }
+        if (relative.getCounterClockWise() == facing) {
+            return FacingUtil.Sideness.LEFT;
+        }
+        return FacingUtil.Sideness.BACK;
     }
 
     @Override

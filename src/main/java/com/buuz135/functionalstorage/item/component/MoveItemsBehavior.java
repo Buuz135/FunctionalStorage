@@ -33,13 +33,14 @@ public record MoveItemsBehavior(boolean drawerIsSource, int itemsPerOperation) i
             for (int sourceSlot = 0; sourceSlot < source.getSlots(); sourceSlot++) {
                 ItemStack pulledStack = source.extractItem(sourceSlot, itemsPerOperation, true);
                 if (pulledStack.isEmpty()) continue;
+
                 for (int destinationSlot = 0; destinationSlot < destination.getSlots(); destinationSlot++) {
                     if (destination.getStackInSlot(destinationSlot).getCount() >= destination.getSlotLimit(destinationSlot))
                         continue;
-                    ItemStack simulated = destination.insertItem(destinationSlot, pulledStack, true);
-                    if (simulated.getCount() <= pulledStack.getCount()) {
-                        destination.insertItem(destinationSlot, source.extractItem(sourceSlot, pulledStack.getCount() - simulated.getCount(), false), false);
-                        return;
+                    ItemStack remainder = destination.insertItem(destinationSlot, pulledStack, true);
+                    if (remainder.getCount() < pulledStack.getCount()) {
+                        destination.insertItem(destinationSlot, source.extractItem(sourceSlot, pulledStack.getCount() - remainder.getCount(), false), false);
+                        break;
                     }
                 }
             }

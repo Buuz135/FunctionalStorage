@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_pusher_upgrade": {
+      "conditions": {
+        "items": [
+          {
+            "items": "functionalstorage:pusher_upgrade"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "functionalstorage:puller_upgrade_from_pusher"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_pusher_upgrade"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "functionalstorage:puller_upgrade_from_pusher"
+    ]
+  }
+}

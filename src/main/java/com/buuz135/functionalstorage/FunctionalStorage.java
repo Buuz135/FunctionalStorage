@@ -29,6 +29,7 @@ import com.buuz135.functionalstorage.block.tile.FramedFluidDrawerTile;
 import com.buuz135.functionalstorage.block.tile.FramedSimpleCompactingDrawerTile;
 import com.buuz135.functionalstorage.block.tile.SimpleCompactingDrawerTile;
 import com.buuz135.functionalstorage.client.ClientSetup;
+import com.buuz135.functionalstorage.client.gui.ArmoryCabinetScreen;
 import com.buuz135.functionalstorage.client.CompactingDrawerRenderer;
 import com.buuz135.functionalstorage.client.ControllerRenderer;
 import com.buuz135.functionalstorage.client.DrawerRenderer;
@@ -38,9 +39,11 @@ import com.buuz135.functionalstorage.client.SimpleCompactingDrawerRenderer;
 import com.buuz135.functionalstorage.client.loader.FramedModel;
 import com.buuz135.functionalstorage.data.FunctionalStorageBlockTagsProvider;
 import com.buuz135.functionalstorage.data.FunctionalStorageBlockstateProvider;
+import com.buuz135.functionalstorage.data.FunctionalStorageFluidTagsProvider;
 import com.buuz135.functionalstorage.data.FunctionalStorageItemTagsProvider;
 import com.buuz135.functionalstorage.data.FunctionalStorageLangProvider;
 import com.buuz135.functionalstorage.data.FunctionalStorageRecipesProvider;
+import com.buuz135.functionalstorage.inventory.ArmoryCabinetMenu;
 import com.buuz135.functionalstorage.inventory.BigInventoryHandler;
 import com.buuz135.functionalstorage.inventory.item.CompactingStackItemHandler;
 import com.buuz135.functionalstorage.inventory.item.DrawerStackItemHandler;
@@ -62,10 +65,8 @@ import com.buuz135.functionalstorage.item.component.GenerateItemBehavior;
 import com.buuz135.functionalstorage.item.component.MoveFluidsBehavior;
 import com.buuz135.functionalstorage.item.component.MoveItemsBehavior;
 import com.buuz135.functionalstorage.network.EnderDrawerSyncMessage;
-import com.buuz135.functionalstorage.recipe.CopyComponentsRecipe;
-import com.buuz135.functionalstorage.recipe.CustomCompactingRecipe;
-import com.buuz135.functionalstorage.recipe.DrawerlessWoodIngredient;
-import com.buuz135.functionalstorage.recipe.FramedDrawerRecipe;
+import com.buuz135.functionalstorage.network.DrawerPriorityMessage;
+import com.buuz135.functionalstorage.recipe.*;
 import com.buuz135.functionalstorage.util.DrawerWoodType;
 import com.buuz135.functionalstorage.util.IWoodType;
 import com.buuz135.functionalstorage.util.NumberUtils;
@@ -99,6 +100,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.crafting.SimpleCraftingRecipeSerializer;
+import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -118,6 +120,7 @@ import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.ModelEvent;
 import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
+import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.neoforged.neoforge.client.event.RenderTooltipEvent;
 import net.neoforged.neoforge.client.model.generators.BlockModelProvider;
 import net.neoforged.neoforge.client.model.generators.ItemModelBuilder;
@@ -125,6 +128,7 @@ import net.neoforged.neoforge.client.model.generators.ItemModelProvider;
 import net.neoforged.neoforge.client.model.generators.ModelFile;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.NeoForgeMod;
+import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
 import net.neoforged.neoforge.common.crafting.IngredientType;
 import net.neoforged.neoforge.common.util.Lazy;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
@@ -157,6 +161,7 @@ public class FunctionalStorage extends ModuleController {
 
     static {
         NETWORK.registerMessage("ender_drawer_sync", EnderDrawerSyncMessage.class);
+        NETWORK.registerMessage("drawer_priority", DrawerPriorityMessage.class);
     }
 
     // Directly reference a Mojang's logger.
@@ -169,6 +174,7 @@ public class FunctionalStorage extends ModuleController {
     public static BlockWithTile COMPACTING_DRAWER;
     public static BlockWithTile DRAWER_CONTROLLER;
     public static BlockWithTile ARMORY_CABINET;
+    public static DeferredHolder<MenuType<?>, MenuType<?>> ARMORY_CABINET_MENU;
     public static BlockWithTile ENDER_DRAWER;
     public static BlockWithTile FRAMED_COMPACTING_DRAWER;
     public static BlockWithTile FLUID_DRAWER_1;
@@ -251,6 +257,13 @@ public class FunctionalStorage extends ModuleController {
                 }
                 return null;
             }, COMPACTING_DRAWER.asItem(), SIMPLE_COMPACTING_DRAWER.asItem(), FRAMED_COMPACTING_DRAWER.asItem(), FRAMED_SIMPLE_COMPACTING_DRAWER.asItem());
+
+            event.registerItem(Capabilities.FluidHandler.ITEM, (object, context) -> {
+                if (object.getItem() instanceof FluidDrawerBlock.FluidDrawerItem di) {
+                    return di.initCapabilities(object);
+                }
+                return null;
+            }, FLUID_DRAWER_1.asItem(), FLUID_DRAWER_2.asItem(), FLUID_DRAWER_4.asItem(), FRAMED_FLUID_DRAWER_1.asItem(), FRAMED_FLUID_DRAWER_2.asItem(), FRAMED_FLUID_DRAWER_4.asItem());
         });
 
         modBus.addListener((final NewRegistryEvent event) -> event.register(FunctionalUpgradeBehavior.REGISTRY));
@@ -324,6 +337,7 @@ public class FunctionalStorage extends ModuleController {
                 )))));
         VOID_UPGRADE = getRegistries().registerGeneric(Registries.ITEM, "void_upgrade", () -> new UpgradeItem(new Item.Properties(), UpgradeItem.Type.UTILITY));
         ARMORY_CABINET = getRegistries().registerBlockWithTile("armory_cabinet", ArmoryCabinetBlock::new, TAB);
+        ARMORY_CABINET_MENU = getRegistries().registerGeneric(Registries.MENU, "armory_cabinet", () -> IMenuTypeExtension.create(ArmoryCabinetMenu::new));
         ENDER_DRAWER = getRegistries().registerBlockWithTile("ender_drawer", EnderDrawerBlock::new, TAB);
         REDSTONE_UPGRADE = getRegistries().registerGeneric(Registries.ITEM, "redstone_upgrade", () -> new UpgradeItem(EmitRedstoneBehavior.INSTANCE));
         CREATIVE_UPGRADE = getRegistries().registerGeneric(Registries.ITEM, "creative_vending_upgrade", () -> new UpgradeItem(new Item.Properties(), UpgradeItem.Type.STORAGE) {
@@ -333,6 +347,7 @@ public class FunctionalStorage extends ModuleController {
             }
         });
         DrawerlessWoodIngredient.TYPE = getRegistries().registerGeneric(NeoForgeRegistries.Keys.INGREDIENT_TYPES, DrawerlessWoodIngredient.NAME.getPath(), () -> new IngredientType<>(DrawerlessWoodIngredient.CODEC));
+        TagWithoutComponentIngredient.TYPE = getRegistries().registerGeneric(NeoForgeRegistries.Keys.INGREDIENT_TYPES, TagWithoutComponentIngredient.NAME.getPath(), () -> new IngredientType<>(TagWithoutComponentIngredient.CODEC));
 
 
         this.addCreativeTab("main", () -> new ItemStack(DRAWER_CONTROLLER), MOD_ID, TAB);
@@ -512,6 +527,9 @@ public class FunctionalStorage extends ModuleController {
             ItemBlockRenderTypes.setRenderLayer(FRAMED_FLUID_DRAWER_2.getBlock(), RenderType.cutout());
             ItemBlockRenderTypes.setRenderLayer(FRAMED_FLUID_DRAWER_4.getBlock(), RenderType.cutout());
         }).subscribe();
+        EventManager.mod(RegisterMenuScreensEvent.class).process(event -> {
+            event.register((MenuType<ArmoryCabinetMenu>) ARMORY_CABINET_MENU.get(), ArmoryCabinetScreen::new);
+        }).subscribe();
         EventManager.forge(RenderTooltipEvent.Pre.class).process(itemTooltipEvent -> {
             if (itemTooltipEvent.getItemStack().getItem().equals(FunctionalStorage.ENDER_DRAWER.getBlock().asItem()) && itemTooltipEvent.getItemStack().has(FSAttachments.TILE)) {
                 TooltipUtil.renderItems(itemTooltipEvent.getGraphics(), EnderDrawerBlock.getFrequencyDisplay(itemTooltipEvent.getItemStack().get(FSAttachments.TILE).getString("frequency")), itemTooltipEvent.getX() + 14, itemTooltipEvent.getY() + 11);
@@ -567,6 +585,7 @@ public class FunctionalStorage extends ModuleController {
             var blockTags = new FunctionalStorageBlockTagsProvider(event.getGenerator(), event.getLookupProvider(), MOD_ID, event.getExistingFileHelper());
             event.getGenerator().addProvider(true, blockTags);
             event.getGenerator().addProvider(true, new FunctionalStorageItemTagsProvider(event.getGenerator().getPackOutput(), event.getLookupProvider(), blockTags.contentsGetter(), MOD_ID, event.getExistingFileHelper()));
+            event.getGenerator().addProvider(true, new FunctionalStorageFluidTagsProvider(event.getGenerator().getPackOutput(), event.getLookupProvider(), MOD_ID, event.getExistingFileHelper()));
             event.getGenerator().addProvider(true, new FunctionalStorageLangProvider(event.getGenerator(), MOD_ID, "en_us"));
 
             event.getGenerator().addProvider(true, new ItemModelProvider(event.getGenerator().getPackOutput(), MOD_ID, event.getExistingFileHelper()) {

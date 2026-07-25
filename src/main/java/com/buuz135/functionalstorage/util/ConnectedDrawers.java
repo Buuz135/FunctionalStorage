@@ -1,6 +1,5 @@
 package com.buuz135.functionalstorage.util;
 
-import com.buuz135.functionalstorage.block.config.FunctionalStorageConfig;
 import com.buuz135.functionalstorage.block.tile.FluidDrawerTile;
 import com.buuz135.functionalstorage.block.tile.ItemControllableDrawerTile;
 import com.buuz135.functionalstorage.block.tile.StorageControllerExtensionTile;
@@ -31,6 +30,8 @@ public class ConnectedDrawers implements INBTSerializable<CompoundTag> {
     private Level level;
     private int extensions;
     private VoxelShape cachedVoxelShape;
+    private boolean rebuilding;
+    private boolean rebuildQueued;
 
     public ConnectedDrawers(Level level, StorageControllerTile<?> controllerTile) {
         this.controllerTile = controllerTile;
@@ -42,6 +43,8 @@ public class ConnectedDrawers implements INBTSerializable<CompoundTag> {
         this.extensions = 0;
 
         this.cachedVoxelShape = null;
+        this.rebuilding = false;
+        this.rebuildQueued = false;
     }
 
     public void setLevel(Level level) {
@@ -49,33 +52,64 @@ public class ConnectedDrawers implements INBTSerializable<CompoundTag> {
     }
 
     public void rebuild() {
-        this.itemHandlers = new ArrayList<>();
-        this.fluidHandlers = new ArrayList<>();
-        this.extensions = 0;
-        if (level != null && !level.isClientSide()) {
-            var range = controllerTile.getStorageMultiplier();
-            var area = new AABB(controllerTile.getBlockPos()).inflate(range);
-            this.connectedDrawers.removeIf(aLong -> !area.contains(Vec3.atCenterOf(BlockPos.of(aLong))));
-            this.connectedDrawers.sort(Comparator.comparingDouble(value -> BlockPos.of(value).distSqr(controllerTile.getBlockPos())));
-            for (Long connectedDrawer : this.connectedDrawers) {
-                BlockPos pos = BlockPos.of(connectedDrawer);
-                BlockEntity entity = level.getBlockEntity(pos);
-                if (entity instanceof StorageControllerTile) continue;
-                if (entity instanceof StorageControllerExtensionTile) {
-                    ++extensions;
-                    continue;
-                }
-                if (entity instanceof ItemControllableDrawerTile<?> itemControllableDrawerTile) {
-                    this.itemHandlers.add(itemControllableDrawerTile.getStorage());
-                }
-                if (entity instanceof FluidDrawerTile fluidDrawerTile) {
-                    this.fluidHandlers.add(fluidDrawerTile.getFluidHandler());
-                }
-            }
+        if (this.rebuilding) {
+            this.rebuildQueued = true;
+            return;
         }
+        do {
+            this.rebuilding = true;
+            this.rebuildQueued = false;
+            try {
+                this.itemHandlers = new ArrayList<>();
+                this.fluidHandlers = new ArrayList<>();
+                this.extensions = 0;
+                if (level != null && !level.isClientSide()) {
+                    var range = controllerTile.getStorageMultiplier();
+                    var area = new AABB(controllerTile.getBlockPos()).inflate(range);
+                    List<Long> validDrawers = new ArrayList<>();
 
-        this.controllerTile.inventoryHandler.invalidateSlots();
-        this.controllerTile.fluidHandler.invalidateSlots();
+                    for (Long connectedDrawer : new ArrayList<>(this.connectedDrawers)) {
+                        BlockPos pos = BlockPos.of(connectedDrawer);
+                        if (!area.contains(Vec3.atCenterOf(pos)) || !level.isLoaded(pos)) {
+                            continue;
+                        }
+
+                        BlockEntity entity = level.getBlockEntity(pos);
+                        if (entity instanceof ItemControllableDrawerTile<?>
+                                || entity instanceof FluidDrawerTile
+                                || entity instanceof StorageControllerExtensionTile) {
+                            validDrawers.add(connectedDrawer);
+                        }
+                    }
+
+                    validDrawers.sort(
+                            Comparator.<Long>comparingInt(value -> getPriority(BlockPos.of(value))).reversed()
+                                    .thenComparingDouble(value -> BlockPos.of(value).distSqr(controllerTile.getBlockPos()))
+                    );
+                    this.connectedDrawers = validDrawers;
+                    for (Long connectedDrawer : this.connectedDrawers) {
+                        BlockPos pos = BlockPos.of(connectedDrawer);
+                        BlockEntity entity = level.getBlockEntity(pos);
+                        if (entity instanceof StorageControllerTile) continue;
+                        if (entity instanceof StorageControllerExtensionTile) {
+                            ++extensions;
+                            continue;
+                        }
+                        if (entity instanceof ItemControllableDrawerTile<?> itemControllableDrawerTile) {
+                            this.itemHandlers.add(itemControllableDrawerTile.getStorage());
+                        }
+                        if (entity instanceof FluidDrawerTile fluidDrawerTile) {
+                            this.fluidHandlers.add(fluidDrawerTile.getFluidHandler());
+                        }
+                    }
+                }
+
+                this.controllerTile.inventoryHandler.invalidateSlots();
+                this.controllerTile.fluidHandler.invalidateSlots();
+            } finally {
+                this.rebuilding = false;
+            }
+        } while (this.rebuildQueued);
     }
 
     public void rebuildShapes() {
@@ -140,5 +174,12 @@ public class ConnectedDrawers implements INBTSerializable<CompoundTag> {
 
     public VoxelShape getCachedVoxelShape() {
         return cachedVoxelShape;
+    }
+
+    private int getPriority(BlockPos pos) {
+        if (level != null && level.getBlockEntity(pos) instanceof com.buuz135.functionalstorage.block.tile.ControllableDrawerTile<?> drawer) {
+            return drawer.getPriority();
+        }
+        return 0;
     }
 }

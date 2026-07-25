@@ -25,7 +25,7 @@ public abstract class StorageControllerExtensionBlock<T extends StorageControlle
     public StorageControllerExtensionBlock(String name, Properties properties, Class<T> tileClass) {
         super(name, properties, tileClass);
         setItemGroup(FunctionalStorage.TAB);
-        registerDefaultState(defaultBlockState().setValue(RotatableBlock.FACING_HORIZONTAL, Direction.NORTH).setValue(DrawerBlock.LOCKED, false));
+        registerDefaultState(defaultBlockState().setValue(Drawer.FACING_HORIZONTAL, Direction.NORTH).setValue(DrawerBlock.LOCKED, false));
     }
 
     @NotNull

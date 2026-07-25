@@ -4,6 +4,7 @@ import com.buuz135.functionalstorage.FunctionalStorage;
 import com.buuz135.functionalstorage.item.FSAttachments;
 import com.buuz135.functionalstorage.item.component.SizeProvider;
 import com.buuz135.functionalstorage.util.CompactingUtil;
+import com.buuz135.functionalstorage.util.StorageTags;
 import com.buuz135.functionalstorage.util.Utils;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
@@ -27,7 +28,7 @@ public class CompactingStackItemHandler implements IItemHandler, INBTSerializabl
     private ItemStack parent;
     private List<CompactingUtil.Result> resultList;
     private final int slots;
-    private int size;
+    private float size;
     private boolean isVoid;
     private boolean isCreative;
     private final ItemStack stack;
@@ -49,7 +50,7 @@ public class CompactingStackItemHandler implements IItemHandler, INBTSerializabl
 
             var upgrades = new ItemStackHandler();
             upgrades.deserializeNBT(Utils.registryAccess(), tile.getCompound("storageUpgrades"));
-            size = SizeProvider.calculate(upgrades, FSAttachments.ITEM_STORAGE_MODIFIER, size);
+            size = SizeProvider.calculateAsFactor(upgrades, FSAttachments.ITEM_STORAGE_MODIFIER, size);
 
             for (Tag tag : tile.getCompound("storageUpgrades").getList("Items", Tag.TAG_COMPOUND)) {
                 ItemStack itemStack = Utils.deserialize(Utils.registryAccess(), (CompoundTag) tag);
@@ -85,6 +86,9 @@ public class CompactingStackItemHandler implements IItemHandler, INBTSerializabl
     @Nonnull
     @Override
     public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
+        if (stack.is(StorageTags.DRAWER_STORAGE_DENYLIST)) {
+            return stack;
+        }
         if (isVoid() && slot == this.slots && isVoidValid(stack) || (isVoidValid(stack) && isCreative()))
             return ItemStack.EMPTY;
         if (isValid(slot, stack)) {
@@ -92,7 +96,7 @@ public class CompactingStackItemHandler implements IItemHandler, INBTSerializabl
             int inserted = Math.min(getSlotLimit(slot) * result.getNeeded() - amount, stack.getCount() * result.getNeeded());
             inserted = (int) (Math.floor(inserted / result.getNeeded()) * result.getNeeded());
             if (!simulate) {
-                this.amount = Math.min(this.amount + inserted, size * 64 * 9 * 9);
+                this.amount = Math.min(this.amount + inserted, (int) Math.floor(size * 64 * 9 * 9));
                 onChange();
             }
             if (inserted == stack.getCount() * result.getNeeded() || isVoid()) return ItemStack.EMPTY;
@@ -177,10 +181,13 @@ public class CompactingStackItemHandler implements IItemHandler, INBTSerializabl
 
     @Override
     public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
-        return isSetup() && !stack.isEmpty();
+        return isSetup() && !stack.isEmpty() && !stack.is(StorageTags.DRAWER_STORAGE_DENYLIST);
     }
 
     private boolean isValid(int slot, @Nonnull ItemStack stack) {
+        if (stack.is(StorageTags.DRAWER_STORAGE_DENYLIST)) {
+            return false;
+        }
         if (slot < this.slots) {
             CompactingUtil.Result bigStack = this.resultList.get(slot);
             ItemStack fl = bigStack.getResult();

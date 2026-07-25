@@ -3,7 +3,11 @@ package com.buuz135.functionalstorage.block;
 import com.buuz135.functionalstorage.FunctionalStorage;
 import com.buuz135.functionalstorage.block.tile.ControllableDrawerTile;
 import com.buuz135.functionalstorage.block.tile.FramedTile;
+import com.buuz135.functionalstorage.block.tile.FluidDrawerTile;
+import com.buuz135.functionalstorage.block.tile.ItemControllableDrawerTile;
 import com.buuz135.functionalstorage.block.tile.StorageControllerTile;
+import com.buuz135.functionalstorage.inventory.BigInventoryHandler;
+import com.buuz135.functionalstorage.inventory.CompactingInventoryHandler;
 import com.buuz135.functionalstorage.item.ConfigurationToolItem;
 import com.buuz135.functionalstorage.item.FSAttachments;
 import com.buuz135.functionalstorage.item.LinkingToolItem;
@@ -27,6 +31,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
@@ -34,6 +39,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
@@ -52,6 +58,9 @@ import java.util.Collection;
 import java.util.List;
 
 public abstract class Drawer<T extends ControllableDrawerTile<T>> extends RotatableBlock<T> {
+
+    public static final DirectionProperty FACING_HORIZONTAL_CUSTOM = DirectionProperty.create("subfacing", Direction.values());
+
     public Drawer(String name, Properties properties, Class<T> tileClass) {
         super(name, properties, tileClass);
     }
@@ -63,14 +72,33 @@ public abstract class Drawer<T extends ControllableDrawerTile<T>> extends Rotata
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> def) {
-        super.createBlockStateDefinition(def);
+        if (this.getRotationType() == RotationType.FOUR_WAY) {
+            super.createBlockStateDefinition(def);
+        } else {
+            def.add(DrawerBlock.FACING_HORIZONTAL_CUSTOM);
+            def.add(RotatableBlock.FACING_ALL);
+        }
         def.add(DrawerBlock.LOCKED);
+    }
+
+    @Override
+    public BlockState getStateForPlacement(BlockPlaceContext context) {
+        if (this.getRotationType() == RotationType.FOUR_WAY) {
+            return super.getStateForPlacement(context);
+        }
+        var direction = context.getNearestLookingDirection().getOpposite();
+        if (direction.getAxis().isHorizontal()) {
+            var blockstate = this.defaultBlockState().setValue(Drawer.FACING_HORIZONTAL_CUSTOM, direction).setValue(RotatableBlock.FACING_ALL, Direction.DOWN);
+            return blockstate;
+        }
+        var blockstate  = this.defaultBlockState().setValue(Drawer.FACING_HORIZONTAL_CUSTOM, direction).setValue(RotatableBlock.FACING_ALL, direction == Direction.DOWN ? context.getHorizontalDirection().getOpposite()  : context.getHorizontalDirection());
+        return blockstate;
     }
 
     @NotNull
     @Override
     public RotationType getRotationType() {
-        return RotationType.FOUR_WAY;
+        return RotationType.TWENTY_FOUR_WAY;
     }
 
     @Nonnull
@@ -189,6 +217,71 @@ public abstract class Drawer<T extends ControllableDrawerTile<T>> extends Rotata
     @Override
     public boolean isSignalSource(BlockState p_60571_) {
         return true;
+    }
+
+    @Override
+    public boolean hasAnalogOutputSignal(BlockState state) {
+        return true;
+    }
+
+    @Override
+    public int getAnalogOutputSignal(BlockState state, Level level, BlockPos pos) {
+        ControllableDrawerTile<?> tile = TileUtil.getTileEntity(level, pos, ControllableDrawerTile.class).orElse(null);
+        if (tile instanceof FluidDrawerTile fluidDrawer) {
+            return getFluidComparatorSignal(fluidDrawer.getFluidHandler());
+        }
+        if (tile instanceof ItemControllableDrawerTile<?> itemDrawer) {
+            if (itemDrawer.getStorage() instanceof CompactingInventoryHandler compactingInventoryHandler) {
+                return getCompactingComparatorSignal(compactingInventoryHandler);
+            }
+            return getItemComparatorSignal(itemDrawer.getStorage());
+        }
+        return 0;
+    }
+
+    private static int getItemComparatorSignal(net.neoforged.neoforge.items.IItemHandler handler) {
+        int slots = handler instanceof BigInventoryHandler bigInventoryHandler ? bigInventoryHandler.getStoredStacks().size() : handler.getSlots();
+        if (slots <= 0) {
+            return 0;
+        }
+
+        double fullness = 0;
+        boolean hasContents = false;
+        for (int slot = 0; slot < slots; slot++) {
+            ItemStack stack = handler.getStackInSlot(slot);
+            if (!stack.isEmpty()) {
+                hasContents = true;
+                int limit = handler.getSlotLimit(slot);
+                fullness += limit <= 0 ? 0 : Math.min(1D, stack.getCount() / (double) limit);
+            }
+        }
+        return comparatorSignal(fullness / slots, hasContents);
+    }
+
+    private static int getCompactingComparatorSignal(CompactingInventoryHandler handler) {
+        return comparatorSignal(handler.getAmount() / handler.getTotalAmount(), handler.getAmount() > 0);
+    }
+
+    private static int getFluidComparatorSignal(net.neoforged.neoforge.fluids.capability.IFluidHandler handler) {
+        if (handler.getTanks() <= 0) {
+            return 0;
+        }
+
+        double fullness = 0;
+        boolean hasContents = false;
+        for (int tank = 0; tank < handler.getTanks(); tank++) {
+            var stack = handler.getFluidInTank(tank);
+            if (!stack.isEmpty()) {
+                hasContents = true;
+                int capacity = handler.getTankCapacity(tank);
+                fullness += capacity <= 0 ? 0 : Math.min(1D, stack.getAmount() / (double) capacity);
+            }
+        }
+        return comparatorSignal(fullness / handler.getTanks(), hasContents);
+    }
+
+    private static int comparatorSignal(double fullness, boolean hasContents) {
+        return hasContents ? Math.min(15, (int) Math.floor(fullness * 14D) + 1) : 0;
     }
 
     @Override

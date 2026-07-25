@@ -5,10 +5,13 @@ import com.buuz135.functionalstorage.client.gui.DrawerInfoGuiAddon;
 import com.buuz135.functionalstorage.inventory.CompactingInventoryHandler;
 import com.buuz135.functionalstorage.item.FSAttachments;
 import com.buuz135.functionalstorage.util.CompactingUtil;
+import com.buuz135.functionalstorage.util.StorageTags;
 import com.hrznstudio.titanium.annotation.Save;
 import com.hrznstudio.titanium.block.BasicTileBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -21,11 +24,14 @@ import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.items.IItemHandler;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
+import java.util.ArrayList;
+import java.util.List;
 
 public class CompactingDrawerTile extends ItemControllableDrawerTile<CompactingDrawerTile> {
 
     @Save
     public CompactingInventoryHandler handler;
+    @Save
     private boolean hasCheckedRecipes;
 
     public CompactingDrawerTile(BasicTileBlock<CompactingDrawerTile> base, BlockEntityType<CompactingDrawerTile> blockEntityType, BlockPos pos, BlockState state) {
@@ -34,10 +40,11 @@ public class CompactingDrawerTile extends ItemControllableDrawerTile<CompactingD
             @Override
             public void onChange() {
                 CompactingDrawerTile.this.markForUpdate();
+                CompactingDrawerTile.this.updateComparatorOutput();
             }
 
             @Override
-            public int getMultiplier() {
+            public float getMultiplier() {
                 return getStorageMultiplier();
             }
 
@@ -73,7 +80,8 @@ public class CompactingDrawerTile extends ItemControllableDrawerTile<CompactingD
                     return Pair.of(16, 4);
                 },
                 integer -> getStorage().getStackInSlot(integer),
-                integer -> getStorage().getSlotLimit(integer)
+                integer -> getStorage().getSlotLimit(integer),
+                integer -> getHandler().getResultList().get(integer).getResult()
         ));
     }
 
@@ -93,18 +101,13 @@ public class CompactingDrawerTile extends ItemControllableDrawerTile<CompactingD
     public InteractionResult onSlotActivated(Player playerIn, InteractionHand hand, Direction facing, double hitX, double hitY, double hitZ, int slot) {
         ItemStack stack = playerIn.getItemInHand(hand);
         if (stack.getItem().equals(FunctionalStorage.CONFIGURATION_TOOL.get()) || stack.getItem().equals(FunctionalStorage.LINKING_TOOL.get())) return InteractionResult.PASS;
-        if (!handler.isSetup() && slot != -1 && isServer()) {
+        if (!handler.isSetup() && slot != -1 && isServer() && !stack.is(StorageTags.DRAWER_STORAGE_DENYLIST)) {
             stack = playerIn.getItemInHand(hand).copy();
             stack.setCount(1);
             CompactingUtil compactingUtil = new CompactingUtil(this.level, 3);
-            compactingUtil.setup(stack);
-            handler.setup(compactingUtil);
-            for (int i = 0; i < handler.getResultList().size(); i++) {
-                if (ItemStack.isSameItem(handler.getResultList().get(i).getResult(), stack)) {
-                    slot = i;
-                    break;
-                }
-            }
+            compactingUtil.setup(stack, slot);
+            List<CompactingUtil.Result> rearrangedResults = compactingUtil.rearrangeResults(stack, slot);
+            handler.setupWithRearrangedResults(rearrangedResults);
             markForUpdate();
         }
         return super.onSlotActivated(playerIn, hand, facing, hitX, hitY, hitZ, slot);
@@ -121,10 +124,14 @@ public class CompactingDrawerTile extends ItemControllableDrawerTile<CompactingD
     }
 
     @Override
-    protected boolean canChangeMultiplier(long newSizeMultiplier) {
-        var stack = getStorage().getStackInSlot(2);
-        if (stack.isEmpty()) return true;
-        return stack.getCount() <= Math.min(Integer.MAX_VALUE, stack.getMaxStackSize() * newSizeMultiplier);
+    protected boolean canChangeMultiplier(double newSizeMultiplier) {
+        for (int i = 0; i < getStorage().getSlots(); i++) {
+            var stored = getStorage().getStackInSlot(i);
+            if (!stored.isEmpty() && stored.getCount() > Math.min(Integer.MAX_VALUE, Math.floor(newSizeMultiplier * getHandler().getSlotLimitBase(i)))) {
+                return false;
+            }
+        }
+        return true;
     }
 
     @NotNull

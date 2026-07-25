@@ -2,6 +2,7 @@ package com.buuz135.functionalstorage.data;
 
 import com.buuz135.functionalstorage.item.StorageUpgradeItem;
 import com.buuz135.functionalstorage.recipe.CustomCompactingRecipe;
+import com.buuz135.functionalstorage.recipe.TagWithoutComponentIngredient;
 import com.buuz135.functionalstorage.util.StorageTags;
 import com.hrznstudio.titanium.block.BasicBlock;
 import com.hrznstudio.titanium.recipe.generator.TitaniumShapedRecipeBuilder;
@@ -12,6 +13,7 @@ import net.minecraft.data.DataGenerator;
 import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.RecipeProvider;
+import net.minecraft.data.recipes.ShapelessRecipeBuilder;
 import net.minecraft.data.recipes.SmithingTransformRecipeBuilder;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.ItemStack;
@@ -41,25 +43,25 @@ public class FunctionalStorageRecipesProvider extends RecipeProvider {
         TitaniumShapedRecipeBuilder.shapedRecipe(STORAGE_UPGRADES.get(StorageUpgradeItem.StorageTier.IRON).get())
                 .pattern("III").pattern("IDI").pattern("III")
                 .define('I', Tags.Items.INGOTS_IRON)
-                .define('D', StorageTags.DRAWER)
+                .define('D', new TagWithoutComponentIngredient(StorageTags.DRAWER).toVanilla())
                 .save(output);
         TitaniumShapedRecipeBuilder.shapedRecipe(VOID_UPGRADE.get())
                 .pattern("III").pattern("IDI").pattern("III")
                 .define('I', Tags.Items.OBSIDIANS)
-                .define('D', StorageTags.DRAWER)
+                .define('D', new TagWithoutComponentIngredient(StorageTags.DRAWER).toVanilla())
                 .save(output);
         TitaniumShapedRecipeBuilder.shapedRecipe(CONFIGURATION_TOOL.get())
                 .pattern("PPG").pattern("PDG").pattern("PEP")
                 .define('P', Items.PAPER)
                 .define('G', Tags.Items.INGOTS_GOLD)
-                .define('D', StorageTags.DRAWER)
+                .define('D', new TagWithoutComponentIngredient(StorageTags.DRAWER).toVanilla())
                 .define('E', Items.EMERALD)
                 .save(output);
         TitaniumShapedRecipeBuilder.shapedRecipe(LINKING_TOOL.get())
                 .pattern("PPG").pattern("PDG").pattern("PEP")
                 .define('P', Items.PAPER)
                 .define('G', Tags.Items.INGOTS_GOLD)
-                .define('D', StorageTags.DRAWER)
+                .define('D', new TagWithoutComponentIngredient(StorageTags.DRAWER).toVanilla())
                 .define('E', Items.DIAMOND)
                 .save(output);
         TitaniumShapedRecipeBuilder.shapedRecipe(STORAGE_UPGRADES.get(StorageUpgradeItem.StorageTier.COPPER).get())
@@ -67,7 +69,7 @@ public class FunctionalStorageRecipesProvider extends RecipeProvider {
                 .define('I', Items.COPPER_INGOT)
                 .define('B', Items.COPPER_BLOCK)
                 .define('C', Tags.Items.CHESTS_WOODEN)
-                .define('D', StorageTags.DRAWER)
+                .define('D', new TagWithoutComponentIngredient(StorageTags.DRAWER).toVanilla())
                 .save(output);
         TitaniumShapedRecipeBuilder.shapedRecipe(STORAGE_UPGRADES.get(StorageUpgradeItem.StorageTier.GOLD).get())
                 .pattern("IBI").pattern("CDC").pattern("BIB")
@@ -88,7 +90,7 @@ public class FunctionalStorageRecipesProvider extends RecipeProvider {
                 .define('I', Items.REDSTONE)
                 .define('B', Items.REDSTONE_BLOCK)
                 .define('C', Items.COMPARATOR)
-                .define('D', StorageTags.DRAWER)
+                .define('D', new TagWithoutComponentIngredient(StorageTags.DRAWER).toVanilla())
                 .save(output);
         SmithingTransformRecipeBuilder.smithing(Ingredient.of(Items.NETHERITE_UPGRADE_SMITHING_TEMPLATE), Ingredient.of(STORAGE_UPGRADES.get(StorageUpgradeItem.StorageTier.DIAMOND).get()), Ingredient.of(Items.NETHERITE_INGOT), RecipeCategory.MISC, STORAGE_UPGRADES.get(StorageUpgradeItem.StorageTier.NETHERITE).get())
                 .unlocks("has_netherite_ingot", has(Items.NETHERITE_INGOT))
@@ -97,7 +99,7 @@ public class FunctionalStorageRecipesProvider extends RecipeProvider {
                 .pattern("ICI").pattern("CDC").pattern("IBI")
                 .define('I', Tags.Items.STONES)
                 .define('B', Tags.Items.INGOTS_NETHERITE)
-                .define('C', StorageTags.DRAWER)
+                .define('C', new TagWithoutComponentIngredient(StorageTags.DRAWER).toVanilla())
                 .define('D', Items.COMPARATOR)
                 .save(output);
         TitaniumShapedRecipeBuilder.shapedRecipe(PULLING_UPGRADE.get())
@@ -105,15 +107,23 @@ public class FunctionalStorageRecipesProvider extends RecipeProvider {
                 .define('I', Tags.Items.STONES)
                 .define('B', Tags.Items.DUSTS_REDSTONE)
                 .define('C', Items.HOPPER)
-                .define('D', StorageTags.DRAWER)
+                .define('D', new TagWithoutComponentIngredient(StorageTags.DRAWER).toVanilla())
                 .save(output);
         TitaniumShapedRecipeBuilder.shapedRecipe(PUSHING_UPGRADE.get())
                 .pattern("IBI").pattern("IDI").pattern("IRI")
                 .define('I', Tags.Items.STONES)
                 .define('B', Tags.Items.DUSTS_REDSTONE)
                 .define('R', Items.HOPPER)
-                .define('D', StorageTags.DRAWER)
+                .define('D', new TagWithoutComponentIngredient(StorageTags.DRAWER).toVanilla())
                 .save(output);
+        ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, new ItemStack(PUSHING_UPGRADE.get()))
+                .requires(PULLING_UPGRADE.get())
+                .unlockedBy("has_puller_upgrade", has(PULLING_UPGRADE.get()))
+                .save(output, com.buuz135.functionalstorage.util.Utils.resourceLocation("functionalstorage:pusher_upgrade_from_puller"));
+        ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, new ItemStack(PULLING_UPGRADE.get()))
+                .requires(PUSHING_UPGRADE.get())
+                .unlockedBy("has_pusher_upgrade", has(PUSHING_UPGRADE.get()))
+                .save(output, com.buuz135.functionalstorage.util.Utils.resourceLocation("functionalstorage:puller_upgrade_from_pusher"));
         TitaniumShapedRecipeBuilder.shapedRecipe(DRIPPING_UPGRADE.get())
                 .pattern("IBI").pattern("IDI").pattern("IRI")
                 .define('I', Tags.Items.STONES)
@@ -132,13 +142,13 @@ public class FunctionalStorageRecipesProvider extends RecipeProvider {
                 .define('I', Tags.Items.STONES)
                 .define('B', Items.HOPPER)
                 .define('R', Tags.Items.DUSTS_REDSTONE)
-                .define('D', StorageTags.DRAWER)
+                .define('D', new TagWithoutComponentIngredient(StorageTags.DRAWER).toVanilla())
                 .save(output);
         TitaniumShapedRecipeBuilder.shapedRecipe(ENDER_DRAWER.getBlock())
                 .pattern("PPP").pattern("LCL").pattern("PPP")
                 .define('P', ItemTags.PLANKS)
                 .define('C', Tags.Items.CHESTS_ENDER)
-                .define('L', StorageTags.DRAWER)
+                .define('L', new TagWithoutComponentIngredient(StorageTags.DRAWER).toVanilla())
                 .save(output);
         TitaniumShapelessRecipeBuilder.shapelessRecipe(OBSIDIAN_UPGRADE.get())
                 .requires(DRIPPING_UPGRADE.get(), 4)

@@ -1,6 +1,7 @@
 package com.buuz135.functionalstorage.inventory;
 
 import com.buuz135.functionalstorage.util.CompactingUtil;
+import com.buuz135.functionalstorage.util.StorageTags;
 import com.buuz135.functionalstorage.util.Utils;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
@@ -17,13 +18,13 @@ public abstract class CompactingInventoryHandler implements IItemHandler, INBTSe
     public static final String BIG_ITEMS = "BigItems";
     public static final String STACK = "Stack";
     public static final String AMOUNT = "Amount";
-
-    public int totalAmount;
+    public static final String CONFIGURED_SLOTS = "ConfiguredSlots";
 
     private int amount;
     private ItemStack parent;
     private List<CompactingUtil.Result> resultList;
     private int slots;
+    private int configuredSlots;
 
     public CompactingInventoryHandler(int slots) {
         this.resultList = new ArrayList<>();
@@ -31,6 +32,7 @@ public abstract class CompactingInventoryHandler implements IItemHandler, INBTSe
         for (int i = 0; i < slots; i++) {
             this.resultList.add(i, new CompactingUtil.Result(ItemStack.EMPTY, 1));
         }
+        this.configuredSlots = slots;
         this.parent = ItemStack.EMPTY;
     }
 
@@ -53,6 +55,9 @@ public abstract class CompactingInventoryHandler implements IItemHandler, INBTSe
     @Nonnull
     @Override
     public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
+        if (stack.is(StorageTags.DRAWER_STORAGE_DENYLIST)) {
+            return stack;
+        }
         if (isVoid() && slot == this.slots && isVoidValid(stack) || (isVoidValid(stack) && isCreative()))
             return ItemStack.EMPTY;
         if (isValid(slot, stack)) {
@@ -77,8 +82,8 @@ public abstract class CompactingInventoryHandler implements IItemHandler, INBTSe
         return false;
     }
 
-    public boolean isSetup(){
-        return !this.resultList.get(this.resultList.size() -1).getResult().isEmpty();
+    public boolean isSetup() {
+        return resultList.stream().anyMatch(result -> !result.getResult().isEmpty());
     }
 
     public void setup(CompactingUtil compactingUtil){
@@ -90,6 +95,20 @@ public abstract class CompactingInventoryHandler implements IItemHandler, INBTSe
         if (this.parent.isEmpty() && compactingUtil.getResults().size() >= 3) {
             this.parent = compactingUtil.getResults().get(2).getResult();
         }
+        this.configuredSlots = (int) this.resultList.stream().filter(result -> !result.getResult().isEmpty()).count();
+        onChange();
+    }
+
+    public void setupWithRearrangedResults(List<CompactingUtil.Result> rearrangedResults){
+        this.resultList = rearrangedResults;
+        this.parent = rearrangedResults.get(0).getResult();
+        if (this.parent.isEmpty()) {
+            this.parent = rearrangedResults.get(1).getResult();
+        }
+        if (this.parent.isEmpty() && rearrangedResults.size() >= 3) {
+            this.parent = rearrangedResults.get(2).getResult();
+        }
+        this.configuredSlots = (int) this.resultList.stream().filter(result -> !result.getResult().isEmpty()).count();
         onChange();
     }
 
@@ -112,6 +131,7 @@ public abstract class CompactingInventoryHandler implements IItemHandler, INBTSe
         if (slot < this.slots) {
             CompactingUtil.Result bigStack = this.resultList.get(slot);
             if (bigStack.getResult().isEmpty()) return ItemStack.EMPTY;
+            amount = Math.min(amount, getSlotLimit(slot));
             int stackAmount = bigStack.getNeeded() * amount;
             if (!isCreative() && stackAmount >= this.amount) {
                 ItemStack out = bigStack.getResult().copy();
@@ -145,15 +165,18 @@ public abstract class CompactingInventoryHandler implements IItemHandler, INBTSe
 
     public int getSlotLimitBase(int slot) {
         if (slot == this.slots) return Integer.MAX_VALUE;
-        return (int) Math.min(Integer.MAX_VALUE, Math.floor(64 * 9 * 9f / this.resultList.get(slot).getNeeded()));
+        return (int) Math.min(Integer.MAX_VALUE, Math.floor((configuredSlots == 2 ? 64 * 9d  : 64 * 9d * 9)/ this.resultList.get(slot).getNeeded()));
     }
 
     @Override
     public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
-        return isSetup() && !stack.isEmpty();
+        return isSetup() && !stack.isEmpty() && !stack.is(StorageTags.DRAWER_STORAGE_DENYLIST);
     }
 
     private boolean isValid(int slot, @Nonnull ItemStack stack){
+        if (stack.is(StorageTags.DRAWER_STORAGE_DENYLIST)) {
+            return false;
+        }
         if (slot < this.slots) {
             CompactingUtil.Result bigStack = this.resultList.get(slot);
             ItemStack fl = bigStack.getResult();
@@ -175,6 +198,7 @@ public abstract class CompactingInventoryHandler implements IItemHandler, INBTSe
             items.put(i + "", bigStack);
         }
         compoundTag.put(BIG_ITEMS, items);
+        compoundTag.putInt(CONFIGURED_SLOTS, this.configuredSlots);
         return compoundTag;
     }
 
@@ -186,15 +210,16 @@ public abstract class CompactingInventoryHandler implements IItemHandler, INBTSe
             this.resultList.get(Integer.parseInt(allKey)).setResult(Utils.deserialize(provider, nbt.getCompound(BIG_ITEMS).getCompound(allKey).getCompound(STACK)));
             this.resultList.get(Integer.parseInt(allKey)).setNeeded(Math.max(1, nbt.getCompound(BIG_ITEMS).getCompound(allKey).getInt(AMOUNT)));
         }
+        this.configuredSlots = nbt.getInt(CONFIGURED_SLOTS);
     }
 
     public double getTotalAmount() {
-        return slots == 2 ? 64 * 9d * getMultiplier() : 64 * 9d * 9 * getMultiplier();
+        return configuredSlots == 2 ? 64 * 9d * getMultiplier() : 64 * 9d * 9 * getMultiplier();
     }
 
     public abstract void onChange();
 
-    public abstract int getMultiplier();
+    public abstract float getMultiplier();
 
     public abstract boolean isVoid();
 

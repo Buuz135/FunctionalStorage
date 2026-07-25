@@ -12,6 +12,7 @@
       "tag": "c:chests/ender"
     },
     "L": {
+      "type": "functionalstorage:tag_without_component",
       "tag": "functionalstorage:drawer"
     },
     "P": {

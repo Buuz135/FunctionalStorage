@@ -35,10 +35,11 @@ public class DrawerTile extends ItemControllableDrawerTile<DrawerTile> {
             @Override
             public void onChange() {
                 DrawerTile.this.markForUpdate();
+                DrawerTile.this.updateComparatorOutput();
             }
 
             @Override
-            public int getMultiplier() {
+            public float getMultiplier() {
                 return getStorageMultiplier();
             }
 
@@ -70,7 +71,8 @@ public class DrawerTile extends ItemControllableDrawerTile<DrawerTile> {
                 type.getSlots(),
                 type.getSlotPosition(),
                 integer -> getHandler().getStackInSlot(integer),
-                integer -> getHandler().getSlotLimit(integer)
+                integer -> getHandler().getSlotLimit(integer),
+                integer -> getHandler().getStoredStacks().get(integer).getStack()
         ));
     }
 

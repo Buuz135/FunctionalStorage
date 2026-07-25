@@ -32,7 +32,10 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.client.model.data.ModelData;
 import org.jetbrains.annotations.NotNull;
 
+import java.text.DecimalFormat;
 import java.util.HashMap;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 public abstract class FunctionalStorageISTER extends BlockEntityWithoutLevelRenderer {
 
@@ -73,7 +76,7 @@ public abstract class FunctionalStorageISTER extends BlockEntityWithoutLevelRend
      * @implNote Heavily based on/from vanilla's ItemRenderer#render code that calls the renderByItem method on the ISBER
      */
     protected void renderBlockItem(@NotNull ItemStack stack, @NotNull ItemDisplayContext displayContext, @NotNull PoseStack matrix, @NotNull MultiBufferSource renderer,
-                                   int light, int overlayLight, ModelData modelData) {
+                                   int light, int overlayLight, ModelData modelData, Consumer<PoseStack> consumerRotation) {
         if (!(stack.getItem() instanceof BlockItem blockItem)) {
             return;
         }
@@ -93,9 +96,9 @@ public abstract class FunctionalStorageISTER extends BlockEntityWithoutLevelRend
         Minecraft minecraft = Minecraft.getInstance();
         ItemRenderer itemRenderer = minecraft.getItemRenderer();
         BlockState defaultState = block.defaultBlockState();
-
         BakedModel mainModel = minecraft.getModelManager().getBlockModelShaper().getBlockModel(defaultState);
         mainModel = mainModel.applyTransform(displayContext, matrix, isLeftHand(displayContext));
+        consumerRotation.accept(matrix);
         matrix.translate(-.5, -.5, -.5); // Replicate ItemRenderer's translation
         long seed = 42;
         RandomSource random = RandomSource.create();

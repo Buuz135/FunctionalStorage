@@ -1,3 +1,87 @@
+# VERSION 1.5.8
+
+* Added a GUI for the armory cabinet
+* Added concurrency safety checks on the connected drawers system closes #505
+* Improved loading and unloading of chunks closes #502
+* Added check for locked state when breaking a drawer, closes #498
+* Fixed ender drawer only accepting up to 1 stack of items, closes #500
+* Fixed controller not checking for selectors properly when inserting, closes #501
+* Added a tooltip to the fluid drawers when holding a bucket tha explains how to interact, closes #497
+* Fixed empty drawers stealing your first item when right clicking them, closes #249 closes #324
+* Added a tag to configure what can be inserted inside a drawer `functionalstorage:armory_cabinet_insertable` closes #120 closes #224
+* Added proper comparator support closes #416 closes #217
+* Added a recipe to convert puller upgrades into pusher upgrades and vice-versa closes #390
+* Added a priority system for drawers linked to controllers, closes #447
+* Changed recipes that used an empty bucket to use the empty bucket tag, closes #471
+* Fluid drawers now will behave like a tank in item form, closes #479
+* Added tags to blacklist items from being used in drawers and being used in combination with the creative vending upgrade closes #465
+  * `functionalstorage:creative_vending_upgrade_incompatible`
+  * `functionalstorage:drawer_storage_denylist`
+  * `functionalstorage:fluid_drawer_storage_denylist`
+* Fixed compacting drawer having bigger size when it only had 2 slots configure closes #468
+
+# VERSION 1.5.6 & 1.5.7
+
+* Fix: validate drawer handler existence (#491) - Jet-fuel
+* fix: re-checking recipe on load - DoctorFTB
+* better ergonomics for directional storage upgrade - ClovisLd
+* update Korean translation (ko_kr.json) (#496) - jeffjks
+* fix: use slot limit instead of item stack limit for insertion/extraction (#477) - ImMorpheus
+* Fixed drawers inventory not using the inserted items stack size when it was the first time inserting a drawer, closes #495
+* Improvements to loading & unloading of drawers, closes #493
+* Fixed Vertical Facing Down Drawers having the wrong slot assigned to the interactions, closes #487
+* Added capabilities invalidation to the acess point, closes #476 closes #486
+* Fixed server hang when closing the world, closes #499
+
+# VERSION 1.5.5
+
+* Fixed FTB Compat memory leak - Satherov
+* Added russian translation - AlexYarym
+
+# VERSION 1.5.4
+
+* Improved lag by caching the lock state of the drawer, closes #450 closes #392
+* Empty locked drawers will now show the items in the GUI, closes #419
+* Blacklisted drawers from being moved, closes #451
+* Fixed 2 slot drawers and compacting drawers facing down having reversed interaction slots, closes #454
+* Fixed pipez extracting negative amounts when inserting into a 1 slot output and the extracting amount was greater than the max stack size, closes #452
+
+# VERSION 1.5.3
+
+* Fixed the relative direction tooltip crashing with controllers, closes #445 
+
+# VERSION 1.5.2
+
+* Update zh_cn.json 1.21 - Mooncywin
+* Create es_es.json and es_mx.json - ArrivedBog593
+* Support fractional factors and base amounts - Matyrobbrt
+* Fixed Controller, Access Point and Armory Cabinet having their model reversed, closes #435
+* Fixed being able to extract upgrades from Fluid Drawers, closes #437
+* Fixed upgrades not being able to be extracted properly in compacting drawers, closes #417
+
+# VERSION 1.5.1
+
+* Fixed being able to override compacting drawers setup if the top slot was empty, closes #432 - Satherov
+* Improved drawer interaction in claimed chunks  - Satherov
+
+# VERSION 1.5.0
+
+* Added ua_ua.json for Ukrainian localization - inceon
+* Update Chinese localization #414 - ZHAY10086
+* Added support for UP and DOWN orientations in drawer blocks
+* Full numbers when viewing items / fluids inside the gui - Satherov
+* Allow items to be placed in any compacting slot - Satherov
+
+# VERSION 1.4.3
+
+* Added item tags to fluid drawers, closes #411
+* Add translatable strings - StarskyXIII
+* Examine all destination slots - kylev
+* Armory Cabinet providers for Jade and TOP - Christofmeg
+* Fixed being able to extract upgrades when going over the possible limit closes #406 blame @Matyrobbrt
+* Added extra checks for the reconnection of the Controller Extension, closes #395
+* Fixed recipes that used drawers could use drawers with items, closes #331 closes #407
+
 # VERSION 1.4.2
 * Fix upgrades not being insertable/extractable in compacting drawers by Matyrobbrt
 

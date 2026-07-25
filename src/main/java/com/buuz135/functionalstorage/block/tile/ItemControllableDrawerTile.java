@@ -1,6 +1,7 @@
 package com.buuz135.functionalstorage.block.tile;
 
 import com.buuz135.functionalstorage.FunctionalStorage;
+import com.buuz135.functionalstorage.compat.ftb.FTBChunksManager;
 import com.buuz135.functionalstorage.item.FSAttachments;
 import com.buuz135.functionalstorage.item.component.SizeProvider;
 import com.hrznstudio.titanium.block.BasicTileBlock;
@@ -21,6 +22,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.fml.ModList;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
 import org.jetbrains.annotations.NotNull;
@@ -60,7 +62,7 @@ public abstract class ItemControllableDrawerTile<T extends ItemControllableDrawe
             if (!stack.isEmpty() && getStorage().insertItem(slot, stack, true).getCount() != stack.getCount()) {
                 playerIn.setItemInHand(hand, getStorage().insertItem(slot, stack, false));
                 return InteractionResult.SUCCESS;
-            } else if (System.currentTimeMillis() - INTERACTION_LOGGER.getOrDefault(playerIn.getUUID(), System.currentTimeMillis()) < 300) {
+            } else if (System.currentTimeMillis() - INTERACTION_LOGGER.getOrDefault(playerIn.getUUID(), System.currentTimeMillis()) < 300 && !getStorage().getStackInSlot(slot).isEmpty()) {
                 for (ItemStack itemStack : playerIn.getInventory().items) {
                     if (!itemStack.isEmpty() && getStorage().insertItem(slot, itemStack, true).getCount() != itemStack.getCount()) {
                         itemStack.setCount(getStorage().insertItem(slot, itemStack.copy(), false).getCount());
@@ -85,10 +87,18 @@ public abstract class ItemControllableDrawerTile<T extends ItemControllableDrawe
                 BlockHitResult blockResult = (BlockHitResult) rayTraceResult;
                 Direction facing = blockResult.getDirection();
                 if (facing.equals(this.getFacingDirection())) {
+                    if (preventInteraction(blockResult.getBlockPos(), playerIn)) return;
                     ItemHandlerHelper.giveItemToPlayer(playerIn, getStorage().extractItem(slot, playerIn.isShiftKeyDown() ? getStorage().getStackInSlot(slot).getMaxStackSize() : 1, false));
                 }
             }
         }
+    }
+
+    private boolean preventInteraction(BlockPos pos, Player player) {
+        if (ModList.get().isLoaded("ftbchunks")) {
+            return FTBChunksManager.preventInteraction(pos, player);
+        }
+        return false;
     }
 
     public abstract IItemHandler getStorage();
@@ -103,9 +113,9 @@ public abstract class ItemControllableDrawerTile<T extends ItemControllableDrawe
                 ItemStack stack = this.getStackInSlot(slot);
                 if (stack.has(FSAttachments.ITEM_STORAGE_MODIFIER)) {
                     var replacement = new ItemStack[this.getSlots()];
-                    replacement[slot] = stack;
+                    replacement[slot] = ItemStack.EMPTY;
 
-                    var newSize = (long) SizeProvider.calculate(this, FSAttachments.ITEM_STORAGE_MODIFIER, baseSize, replacement);
+                    var newSize = (double) SizeProvider.calculateAsFactor(this, FSAttachments.ITEM_STORAGE_MODIFIER, baseSize, replacement);
                     if (!canChangeMultiplier(newSize)) {
                         return ItemStack.EMPTY;
                     }
@@ -115,13 +125,14 @@ public abstract class ItemControllableDrawerTile<T extends ItemControllableDrawe
         }
                 .setInputFilter((stack, integer) -> {
                     if (isStorageUpgradeLocked()) return false;
+                    if (!canUseStorageUpgradeWithCreative(stack, integer)) return false;
                     if (stack.is(FunctionalStorage.CREATIVE_UPGRADE)) return true;
                     if (!stack.has(FSAttachments.ITEM_STORAGE_MODIFIER)) return false;
 
                     var replacement = new ItemStack[getStorageUpgrades().getSlots()];
                     replacement[integer] = stack;
 
-                    var newSize = (long) SizeProvider.calculate(getStorageUpgrades(), FSAttachments.ITEM_STORAGE_MODIFIER, baseSize, replacement);
+                    var newSize = (double) SizeProvider.calculateAsFactor(getStorageUpgrades(), FSAttachments.ITEM_STORAGE_MODIFIER, baseSize, replacement);
                     if (!canChangeMultiplier(newSize)) {
                         return false;
                     }
@@ -130,14 +141,15 @@ public abstract class ItemControllableDrawerTile<T extends ItemControllableDrawe
                 })
                 .setOnSlotChanged((stack, integer) -> {
                     setNeedsUpgradeCache(true);
+                    updateComparatorOutput();
                 })
                 .setSlotLimit(1);
     }
 
-    protected boolean canChangeMultiplier(long newSizeMultiplier) {
+    protected boolean canChangeMultiplier(double newSizeMultiplier) {
         for (int i = 0; i < getStorage().getSlots(); i++) {
             var stored = getStorage().getStackInSlot(i);
-            if (!stored.isEmpty() && stored.getCount() > Math.min(Integer.MAX_VALUE, newSizeMultiplier * stored.getMaxStackSize())) {
+            if (!stored.isEmpty() && stored.getCount() > Math.min(Integer.MAX_VALUE, Math.floor(newSizeMultiplier * stored.getMaxStackSize()))) {
                 return false;
             }
         }
@@ -145,6 +157,9 @@ public abstract class ItemControllableDrawerTile<T extends ItemControllableDrawe
     }
 
     public boolean isEverythingEmpty() {
+        if (getPriority() != 0) {
+            return false;
+        }
         for (int i = 0; i < getStorage().getSlots(); i++) {
             if (!getStorage().getStackInSlot(i).isEmpty()) {
                 return false;

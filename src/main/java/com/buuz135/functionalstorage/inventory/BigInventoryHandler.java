@@ -1,6 +1,7 @@
 package com.buuz135.functionalstorage.inventory;
 
 import com.buuz135.functionalstorage.FunctionalStorage;
+import com.buuz135.functionalstorage.util.StorageTags;
 import com.buuz135.functionalstorage.util.Utils;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
@@ -48,15 +49,18 @@ public abstract class BigInventoryHandler implements IItemHandler, INBTSerializa
     @Nonnull
     @Override
     public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
+        if (stack.is(StorageTags.DRAWER_STORAGE_DENYLIST)) {
+            return stack;
+        }
         if (isVoid() && type.getSlots() == slot && isVoidValid(stack) || (isVoidValid(stack) && isCreative()))
             return ItemStack.EMPTY;
         if (isValid(slot, stack)) {
             BigStack bigStack = this.storedStacks.get(slot);
-            int inserted = Math.min(getSlotLimit(slot) - bigStack.getAmount(), stack.getCount());
+            int inserted = Math.min(getSlotLimit(slot, stack) - bigStack.getAmount(), stack.getCount());
             if (!simulate) {
                 if (bigStack.getStack().isEmpty())
                     bigStack.setStack(stack.copyWithCount(stack.getMaxStackSize()));
-                bigStack.setAmount(Math.min(bigStack.getAmount() + inserted, getSlotLimit(slot)));
+                bigStack.setAmount(Math.min(bigStack.getAmount() + inserted, getSlotLimit(slot, stack)));
                 onChange();
             }
             if (inserted == stack.getCount() || isVoid()) return ItemStack.EMPTY;
@@ -68,10 +72,11 @@ public abstract class BigInventoryHandler implements IItemHandler, INBTSerializa
     @Nonnull
     @Override
     public ItemStack extractItem(int slot, int amount, boolean simulate) {
-        if (amount == 0 || type.getSlots() == slot) return ItemStack.EMPTY;
+        if (amount <= 0 || type.getSlots() == slot) return ItemStack.EMPTY;
         if (slot < type.getSlots()){
             BigStack bigStack = this.storedStacks.get(slot);
             if (bigStack.getStack().isEmpty()) return ItemStack.EMPTY;
+            amount = Math.min(amount, getSlotLimit(slot));
             if (!isCreative() && bigStack.getAmount() <= amount) {
                 ItemStack out = bigStack.getStack().copy();
                 int newAmount = bigStack.getAmount();
@@ -104,12 +109,25 @@ public abstract class BigInventoryHandler implements IItemHandler, INBTSerializa
         return (int) Math.floor(getTotalAmount() * stackSize);
     }
 
+    public int getSlotLimit(int slot, ItemStack stack) {
+        if (isCreative()) return Integer.MAX_VALUE;
+        if (type.getSlots() == slot) return Integer.MAX_VALUE;
+        double stackSize = 1;
+        if (!stack.isEmpty()) {
+            stackSize = stack.getMaxStackSize() / 64D;
+        }
+        return (int) Math.floor(getTotalAmount() * stackSize);
+    }
+
     @Override
     public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
-        return !stack.isEmpty();
+        return !stack.isEmpty() && !stack.is(StorageTags.DRAWER_STORAGE_DENYLIST);
     }
 
     private boolean isValid(int slot, @Nonnull ItemStack stack){
+        if (stack.is(StorageTags.DRAWER_STORAGE_DENYLIST)) {
+            return false;
+        }
         if (slot < type.getSlots()){
             BigStack bigStack = this.storedStacks.get(slot);
             ItemStack fl = bigStack.getStack();
@@ -150,7 +168,7 @@ public abstract class BigInventoryHandler implements IItemHandler, INBTSerializa
 
     public abstract void onChange();
 
-    public abstract int getMultiplier();
+    public abstract float getMultiplier();
 
     public double getTotalAmount() {
         return 64d * getMultiplier();
@@ -194,6 +212,10 @@ public abstract class BigInventoryHandler implements IItemHandler, INBTSerializa
         public void setAmount(int amount) {
             this.amount = amount;
             this.slotStack.setCount(amount);
+        }
+
+        public ItemStack getSlotStack() {
+            return slotStack;
         }
     }
 }

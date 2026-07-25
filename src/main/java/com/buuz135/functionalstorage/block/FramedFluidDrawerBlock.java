@@ -7,6 +7,7 @@ import com.hrznstudio.titanium.recipe.generator.TitaniumShapedRecipeBuilder;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.neoforged.neoforge.common.Tags;
 
 
 public class FramedFluidDrawerBlock extends FluidDrawerBlock implements FramedBlock{
@@ -35,21 +36,21 @@ public class FramedFluidDrawerBlock extends FluidDrawerBlock implements FramedBl
             TitaniumShapedRecipeBuilder.shapedRecipe(this)
                     .pattern("PPP").pattern("PCP").pattern("PPP")
                     .define('P', Items.IRON_NUGGET)
-                    .define('C', Items.BUCKET)
+                    .define('C', Tags.Items.BUCKETS_EMPTY)
                     .save(consumer);
         }
         if (this.getType() == FunctionalStorage.DrawerType.X_2) {
             TitaniumShapedRecipeBuilder.shapedRecipe(this, 2)
                     .pattern("PCP").pattern("PPP").pattern("PCP")
                     .define('P', Items.IRON_NUGGET)
-                    .define('C', Items.BUCKET)
+                    .define('C', Tags.Items.BUCKETS_EMPTY)
                     .save(consumer);
         }
         if (this.getType() == FunctionalStorage.DrawerType.X_4) {
             TitaniumShapedRecipeBuilder.shapedRecipe(this, 4)
                     .pattern("CPC").pattern("PPP").pattern("CPC")
                     .define('P', Items.IRON_NUGGET)
-                    .define('C', Items.BUCKET)
+                    .define('C', Tags.Items.BUCKETS_EMPTY)
                     .save(consumer);
         }
     }
