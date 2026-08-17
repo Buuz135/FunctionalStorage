@@ -57,8 +57,8 @@ public class UpgradeItem extends FSItem {
     }
 
     @Override
-    public void onCraftedBy(ItemStack p_41447_, Level p_41448_, Player p_41449_) {
-        super.onCraftedBy(p_41447_, p_41448_, p_41449_);
+    public void onCraftedBy(ItemStack p_41447_, Player p_41449_) {
+        super.onCraftedBy(p_41447_, p_41449_);
         initNbt(p_41447_);
     }
 
@@ -71,18 +71,6 @@ public class UpgradeItem extends FSItem {
             stack.set(FSAttachments.SLOT, 0);
         }
         return stack;
-    }
-
-    @Override
-    public void verifyComponentsAfterLoad(ItemStack stack) {
-        super.verifyComponentsAfterLoad(stack);
-        Item item = stack.getItem();
-        if (item.equals(FunctionalStorage.PULLING_UPGRADE.get()) || item.equals(FunctionalStorage.PUSHING_UPGRADE.get()) || item.equals(FunctionalStorage.COLLECTOR_UPGRADE.get())){
-            if (!stack.has(FSAttachments.DIRECTION)) stack.set(FSAttachments.DIRECTION, Direction.NORTH);
-        }
-        if (item.equals(FunctionalStorage.REDSTONE_UPGRADE.get())){
-            if (!stack.has(FSAttachments.SLOT)) stack.set(FSAttachments.SLOT, 0);
-        }
     }
 
     public Type getType() {
@@ -145,12 +133,11 @@ public class UpgradeItem extends FSItem {
             context.getLevel().playSound(player, context.getClickedPos(), SoundEvents.UI_BUTTON_CLICK.value(), SoundSource.PLAYERS, 0.5f, 1f);
 
             // Show a message above the hotbar (Action Bar) confirming the new direction
-            if (context.getLevel().isClientSide) {
-                player.displayClientMessage(
+            if (context.getLevel().isClientSide()) {
+                player.sendOverlayMessage(
                         Component.translatable("item.utility.direction").withStyle(ChatFormatting.YELLOW)
                                 .append(" ")
-                                .append(Component.translatable("direction.titanium." + clickedFace.getName().toLowerCase(Locale.ROOT)).withStyle(ChatFormatting.WHITE)),
-                        true
+                                .append(Component.translatable("direction.titanium." + clickedFace.getName().toLowerCase(Locale.ROOT)).withStyle(ChatFormatting.WHITE))
                 );
             }
 

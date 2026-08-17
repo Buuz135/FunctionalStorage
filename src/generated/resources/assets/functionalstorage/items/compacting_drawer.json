@@ -1,0 +1,19 @@
+{
+  "model": {
+    "type": "minecraft:composite",
+    "models": [
+      {
+        "type": "minecraft:model",
+        "model": "functionalstorage:block/compacting_drawer"
+      },
+      {
+        "type": "minecraft:special",
+        "base": "functionalstorage:block/compacting_drawer",
+        "model": {
+          "type": "functionalstorage:drawer",
+          "kind": "COMPACTING"
+        }
+      }
+    ]
+  }
+}

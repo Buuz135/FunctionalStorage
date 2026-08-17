@@ -1,4 +1,10 @@
 {
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:registered",
+      "value": "functionalstorage:framed_1"
+    }
+  ],
   "type": "functionalstorage:copy_components",
   "category": "misc",
   "components": [
@@ -7,17 +13,24 @@
   "copyIndex": 4,
   "key": {
     "C": {
-      "type": "neoforge:difference",
-      "base": {
-        "tag": "functionalstorage:drawer_1x1"
-      },
-      "subtracted": {
-        "item": "functionalstorage:framed_1"
-      }
+      "neoforge:ingredient_type": "neoforge:difference",
+      "base": [
+        "functionalstorage:oak_1",
+        "functionalstorage:spruce_1",
+        "functionalstorage:birch_1",
+        "functionalstorage:jungle_1",
+        "functionalstorage:acacia_1",
+        "functionalstorage:dark_oak_1",
+        "functionalstorage:crimson_1",
+        "functionalstorage:warped_1",
+        "functionalstorage:mangrove_1",
+        "functionalstorage:cherry_1",
+        "functionalstorage:framed_1",
+        "functionalstorage:fluid_1"
+      ],
+      "subtracted": "functionalstorage:framed_1"
     },
-    "P": {
-      "tag": "c:nuggets/iron"
-    }
+    "P": "#c:nuggets/iron"
   },
   "pattern": [
     "PPP",
@@ -25,7 +38,6 @@
     "PPP"
   ],
   "result": {
-    "count": 1,
     "id": "functionalstorage:framed_1"
   }
 }

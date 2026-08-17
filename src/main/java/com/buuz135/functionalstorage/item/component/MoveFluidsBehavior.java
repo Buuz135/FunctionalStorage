@@ -1,6 +1,5 @@
 package com.buuz135.functionalstorage.item.component;
 
-import com.buuz135.functionalstorage.block.config.FunctionalStorageConfig;
 import com.buuz135.functionalstorage.block.tile.ControllableDrawerTile;
 import com.buuz135.functionalstorage.block.tile.FluidDrawerTile;
 import com.buuz135.functionalstorage.item.UpgradeItem;
@@ -12,7 +11,9 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
+import net.neoforged.neoforge.transfer.fluid.FluidResource;
 
 public record MoveFluidsBehavior(boolean drawerIsSource, int fluidPerOperation) implements FunctionalUpgradeBehavior {
     public static final MapCodec<MoveFluidsBehavior> CODEC = RecordCodecBuilder.mapCodec(in -> in.group(
@@ -25,35 +26,12 @@ public record MoveFluidsBehavior(boolean drawerIsSource, int fluidPerOperation) 
         if (!(dr instanceof FluidDrawerTile drawer)) return;
 
         Direction direction = UpgradeItem.getDirection(upgradeStack);
-        var otherFluidHandler = level.getCapability(Capabilities.FluidHandler.BLOCK, pos.relative(direction), direction.getOpposite());
+        var otherResourceHandler = level.getCapability(Capabilities.Fluid.BLOCK, pos.relative(direction), direction.getOpposite());
 
-        if (otherFluidHandler != null) {
-            if (drawerIsSource) {
-                for (int tankId = 0; tankId < drawer.getFluidHandler().getTanks(); tankId++) {
-                    var fluidTank = drawer.fluidHandler.getTankList()[tankId];
-                    if (fluidTank.getFluid().isEmpty()) continue;
-                    var extracted = fluidTank.drain(FunctionalStorageConfig.UPGRADE_PUSH_FLUID, IFluidHandler.FluidAction.SIMULATE);
-                    if (extracted.isEmpty()) continue;
-                    var insertedAmount = otherFluidHandler.fill(extracted, IFluidHandler.FluidAction.EXECUTE);
-                    if (insertedAmount > 0) {
-                        fluidTank.drain(insertedAmount, IFluidHandler.FluidAction.EXECUTE);
-                        drawer.fluidHandler.onChange();
-                        break;
-                    }
-                }
-            } else {
-                for (int tankId = 0; tankId < drawer.getFluidHandler().getTanks(); tankId++) {
-                    var fluidTank = drawer.fluidHandler.getTankList()[tankId];
-                    var extracted = otherFluidHandler.drain(FunctionalStorageConfig.UPGRADE_PULL_FLUID, IFluidHandler.FluidAction.SIMULATE);
-                    if (extracted.isEmpty()) continue;
-                    var insertedAmount = fluidTank.fill(extracted, IFluidHandler.FluidAction.EXECUTE);
-                    if (insertedAmount > 0) {
-                        otherFluidHandler.drain(insertedAmount, IFluidHandler.FluidAction.EXECUTE);
-                        drawer.fluidHandler.onChange();
-                        break;
-                    }
-                }
-            }
+        if (otherResourceHandler != null) {
+            ResourceHandler<FluidResource> source = drawerIsSource ? drawer.getFluidHandler() : otherResourceHandler;
+            ResourceHandler<FluidResource> destination = drawerIsSource ? otherResourceHandler : drawer.getFluidHandler();
+            ResourceHandlerUtil.move(source, destination, resource -> true, fluidPerOperation, null);
         }
     }
 

@@ -32,7 +32,12 @@ public class EnderDrawerSyncMessage extends Message {
     }
 
     @Override
-    protected void handleMessage(IPayloadContext context) {
+    protected void handleServerMessage(IPayloadContext iPayloadContext) {
+
+    }
+    
+    @Override
+    public void handleClientMessage(IPayloadContext context) {
         EnderSavedData.getInstance(context.player().level()).setFrenquency(frequency, handler);
     }
 }

@@ -9,21 +9,25 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.fluids.FluidStackTemplate;
+import net.neoforged.neoforge.transfer.fluid.FluidResource;
+import net.neoforged.neoforge.transfer.transaction.Transaction;
 
 import java.util.List;
 
-public record GenerateFluidBehavior(FluidStack fluid) implements FunctionalUpgradeBehavior {
+public record GenerateFluidBehavior(FluidStackTemplate fluid) implements FunctionalUpgradeBehavior {
     public static final MapCodec<GenerateFluidBehavior> CODEC = RecordCodecBuilder.mapCodec(in -> in.group(
-            FluidStack.CODEC.fieldOf("fluid").forGetter(GenerateFluidBehavior::fluid)
+            FluidStackTemplate.CODEC.fieldOf("fluid").forGetter(GenerateFluidBehavior::fluid)
     ).apply(in, GenerateFluidBehavior::new));
 
     @Override
     public void work(Level level, BlockPos pos, ControllableDrawerTile<?> drawer, ItemStack upgradeStack, int upgradeSlot) {
-        var capability = level.getCapability(Capabilities.FluidHandler.BLOCK, pos, Direction.UP);
+        var capability = level.getCapability(Capabilities.Fluid.BLOCK, pos, Direction.UP);
         if (capability != null) {
-            capability.fill(fluid.copy(), IFluidHandler.FluidAction.EXECUTE);
+            try (Transaction transaction = Transaction.openRoot()) {
+                capability.insert(FluidResource.of(fluid), fluid.amount(), transaction);
+                transaction.commit();
+            }
         }
     }
 
@@ -35,7 +39,8 @@ public record GenerateFluidBehavior(FluidStack fluid) implements FunctionalUpgra
     @Override
     public List<Component> getTooltip() {
         var list = FunctionalUpgradeBehavior.super.getTooltip();
-        list.add(Component.translatable("functionalupgrade.desc.generate_fluid", fluid.getAmount(), fluid.getHoverName().getString()));
+        var stack = fluid.create();
+        list.add(Component.translatable("functionalupgrade.desc.generate_fluid", stack.getAmount(), stack.getHoverName().getString()));
         return list;
     }
 }

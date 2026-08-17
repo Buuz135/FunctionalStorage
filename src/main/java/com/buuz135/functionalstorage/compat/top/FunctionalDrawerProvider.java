@@ -14,7 +14,6 @@ import mcjty.theoneprobe.apiimpl.elements.ElementHorizontal;
 import mcjty.theoneprobe.apiimpl.elements.ElementTank;
 import mcjty.theoneprobe.apiimpl.elements.ElementVertical;
 import mcjty.theoneprobe.apiimpl.styles.ProgressStyle;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -60,7 +59,7 @@ public class FunctionalDrawerProvider implements IProbeInfoProvider {
             ElementVertical vertical = new ElementVertical();
             if (blockEntity instanceof DrawerTile) {
                 BigInventoryHandler handler = ((DrawerTile) blockEntity).getHandler();
-                if (handler.getSlots() == 1 || player.isShiftKeyDown() || probeMode == ProbeMode.EXTENDED) {
+                if (handler.size() == 1 || player.isShiftKeyDown() || probeMode == ProbeMode.EXTENDED) {
                     ElementVertical elementVertical = new ElementVertical(iProbeInfo.defaultLayoutStyle().spacing(2).leftPadding(7).rightPadding(7));
                     elementVertical.getStyle().borderColor(Color.CYAN.darker().getRGB());
                     for (int i = 0; i < handler.getStoredStacks().size(); i++) {

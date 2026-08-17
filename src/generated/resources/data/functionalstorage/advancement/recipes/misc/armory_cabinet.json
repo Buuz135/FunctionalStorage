@@ -1,8 +1,8 @@
 {
   "neoforge:conditions": [
     {
-      "type": "neoforge:item_exists",
-      "item": "functionalstorage:armory_cabinet"
+      "type": "neoforge:registered",
+      "value": "functionalstorage:armory_cabinet"
     }
   ],
   "parent": "minecraft:recipes/root",

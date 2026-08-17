@@ -1,7 +1,6 @@
 package com.buuz135.functionalstorage.block.tile;
 
 import com.buuz135.functionalstorage.FunctionalStorage;
-import com.buuz135.functionalstorage.client.gui.FluidDrawerInfoGuiAddon;
 import com.buuz135.functionalstorage.fluid.BigFluidHandler;
 import com.buuz135.functionalstorage.item.FSAttachments;
 import com.buuz135.functionalstorage.item.StorageUpgradeItem;
@@ -18,25 +17,24 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.Fluids;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.FluidUtil;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler;
-import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.fluid.FluidUtil;
+import net.neoforged.neoforge.transfer.fluid.FluidResource;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.nio.charset.StandardCharsets;
-import java.util.Optional;
 import java.util.UUID;
 
 public class FluidDrawerTile extends ControllableDrawerTile<FluidDrawerTile> {
     @Save
     public BigFluidHandler fluidHandler;
     private final FunctionalStorage.DrawerType type;
+    private ResourceHandler<FluidResource> transferHandler;
 
     public FluidDrawerTile(BasicTileBlock<FluidDrawerTile> base, BlockEntityType<FluidDrawerTile> blockEntityType, BlockPos pos, BlockState state, FunctionalStorage.DrawerType type) {
         super(base, blockEntityType, pos, state, new DrawerProperties(type.getSlotAmount(), FSAttachments.FLUID_STORAGE_MODIFIER));
@@ -69,49 +67,20 @@ public class FluidDrawerTile extends ControllableDrawerTile<FluidDrawerTile> {
         return (int) Math.min(Integer.MAX_VALUE, Math.floor(storageMultiplier * 1000L));
     }
 
-    @OnlyIn(Dist.CLIENT)
-    @Override
-    public void initClient() {
-        super.initClient();
-        var slotName = "";
-        if (type.getSlots() == 2) {
-            slotName = "_2";
-        }
-        if (type.getSlots() == 4) {
-            slotName = "_4";
-        }
-        String finalSlotName = slotName;
-        addGuiAddonFactory(() -> new FluidDrawerInfoGuiAddon(64, 16,
-                com.buuz135.functionalstorage.util.Utils.resourceLocation(FunctionalStorage.MOD_ID, "textures/block/fluid_front" + finalSlotName + ".png"),
-                type.getSlots(),
-                type.getSlotPosition(),
-                this::getFluidHandler,
-                integer -> getFluidHandler().getTankCapacity(integer)
-        ));
-    }
-
     @Override
     public InteractionResult onSlotActivated(Player playerIn, InteractionHand hand, Direction facing, double hitX, double hitY, double hitZ, int slot) {
         ItemStack stack = playerIn.getItemInHand(hand);
         if (stack.getItem().equals(FunctionalStorage.CONFIGURATION_TOOL.get()) || stack.getItem().equals(FunctionalStorage.LINKING_TOOL.get()))
             return InteractionResult.PASS;
         if (slot != -1 && !playerIn.getItemInHand(hand).isEmpty()) {
-            var fluidStack = FluidUtil.getFluidContained(stack);
-            if (fluidStack.isPresent() && this.fluidHandler.isDrawerLocked() && this.fluidHandler.isFluidValid(slot, new FluidStack(Fluids.EMPTY, 0))){
-                this.fluidHandler.getFilterStack()[slot] = fluidStack.get();
+            var fluidStack = FluidUtil.getFirstStackContained(stack);
+            if (!fluidStack.isEmpty() && this.fluidHandler.isDrawerLocked()) {
+                this.fluidHandler.setFilterResource(slot, FluidResource.of(fluidStack));
                 markForUpdate();
             }
-            var interactionResult = Optional.ofNullable(stack.getCapability(Capabilities.FluidHandler.ITEM)).map(iFluidHandlerItem -> Optional.ofNullable(playerIn.getCapability(Capabilities.ItemHandler.ENTITY)).map(iItemHandler -> {
-                var result = FluidUtil.tryEmptyContainerAndStow(stack, this.fluidHandler.getTankList()[slot], iItemHandler, Integer.MAX_VALUE, playerIn, true);
-                if (result.isSuccess()) {
-                    playerIn.setItemInHand(hand, result.getResult().copy());
-                    return InteractionResult.SUCCESS;
-                }
-                return InteractionResult.PASS;
-            }).orElse(InteractionResult.PASS)).orElse(InteractionResult.PASS);
-            if (interactionResult == InteractionResult.SUCCESS) {
+            if (FluidUtil.interactWithFluidHandler(playerIn, hand, getBlockPos(), fluidHandler, null)) {
                 updateComparatorOutput();
-                return interactionResult;
+                return InteractionResult.SUCCESS;
             }
         }
         return super.onSlotActivated(playerIn, hand, facing, hitX, hitY, hitZ, slot);
@@ -121,15 +90,7 @@ public class FluidDrawerTile extends ControllableDrawerTile<FluidDrawerTile> {
     public void onClicked(Player playerIn, int slot) {
         ItemStack stack = playerIn.getItemInHand(InteractionHand.MAIN_HAND);
         if (slot != -1 && !stack.isEmpty()) {
-            Optional.ofNullable(stack.getCapability(Capabilities.FluidHandler.ITEM)).ifPresent(iFluidHandlerItem -> {
-                Optional.ofNullable(playerIn.getCapability(Capabilities.ItemHandler.ENTITY)).ifPresent(iItemHandler -> {
-                    var result = FluidUtil.tryFillContainerAndStow(stack, this.fluidHandler.getTankList()[slot], iItemHandler, Integer.MAX_VALUE, playerIn, true);
-                    if (result.isSuccess()) {
-                        playerIn.setItemInHand(InteractionHand.MAIN_HAND, result.getResult());
-                        updateComparatorOutput();
-                    }
-                });
-            });
+            if (FluidUtil.interactWithFluidHandler(playerIn, InteractionHand.MAIN_HAND, getBlockPos(), fluidHandler, null)) updateComparatorOutput();
         }
     }
 
@@ -239,12 +200,14 @@ public class FluidDrawerTile extends ControllableDrawerTile<FluidDrawerTile> {
     }
 
     @Override
-    public IFluidHandler getFluidHandler(@Nullable Direction direction) {
-        return fluidHandler;
+    public ResourceHandler<FluidResource> getFluidHandler(@Nullable Direction direction) {
+        if (transferHandler == null) transferHandler = fluidHandler;
+        return transferHandler;
     }
 
     @Override
-    public IItemHandler getItemHandler(@Nullable Direction direction) {
+    public ResourceHandler<ItemResource> getItemHandler(@Nullable Direction direction) {
         return null;
     }
+
 }

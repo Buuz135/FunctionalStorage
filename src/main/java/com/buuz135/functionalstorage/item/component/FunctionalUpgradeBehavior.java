@@ -9,7 +9,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.Registry;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -21,11 +21,11 @@ import java.util.List;
 
 public interface FunctionalUpgradeBehavior {
 
-    ResourceKey<Registry<MapCodec<? extends FunctionalUpgradeBehavior>>> REGISTRY_KEY = ResourceKey.createRegistryKey(ResourceLocation.fromNamespaceAndPath(FunctionalStorage.MOD_ID, "functional_upgrade_behavior"));
+    ResourceKey<Registry<MapCodec<? extends FunctionalUpgradeBehavior>>> REGISTRY_KEY = ResourceKey.createRegistryKey(Identifier.fromNamespaceAndPath(FunctionalStorage.MOD_ID, "functional_upgrade_behavior"));
     Registry<MapCodec<? extends FunctionalUpgradeBehavior>> REGISTRY = new RegistryBuilder<>(REGISTRY_KEY).sync(true).create();
 
-    Codec<FunctionalUpgradeBehavior> CODEC = ResourceLocation.CODEC
-            .dispatch(t -> REGISTRY.wrapAsHolder(t.codec()).getKey().location(), REGISTRY::get);
+    Codec<FunctionalUpgradeBehavior> CODEC = Identifier.CODEC
+            .dispatch(t -> REGISTRY.getKey(t.codec()), REGISTRY::getValue);
 
     default void work(Level level, BlockPos pos, ControllableDrawerTile<?> drawer, ItemStack upgradeStack, int upgradeSlot) {
 

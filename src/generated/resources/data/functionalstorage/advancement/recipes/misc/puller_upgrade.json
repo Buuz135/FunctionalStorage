@@ -1,8 +1,8 @@
 {
   "neoforge:conditions": [
     {
-      "type": "neoforge:item_exists",
-      "item": "functionalstorage:puller_upgrade"
+      "type": "neoforge:registered",
+      "value": "functionalstorage:puller_upgrade"
     }
   ],
   "parent": "minecraft:recipes/root",

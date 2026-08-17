@@ -2,37 +2,41 @@ package com.buuz135.functionalstorage.inventory;
 
 import com.buuz135.functionalstorage.block.config.FunctionalStorageConfig;
 import com.buuz135.functionalstorage.util.StorageTags;
+import com.buuz135.functionalstorage.util.Utils;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.resources.RegistryOps;
-import net.minecraft.world.item.AnimalArmorItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.common.util.INBTSerializable;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.IItemHandlerModifiable;
+import com.hrznstudio.titanium.nbthandler.INBTSerializable;
+import net.neoforged.neoforge.transfer.access.ItemAccess;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.TransferPreconditions;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
+import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class ArmoryCabinetInventoryHandler implements IItemHandlerModifiable, INBTSerializable<CompoundTag> {
+public abstract class ArmoryCabinetInventoryHandler extends SnapshotJournal<List<ArmoryCabinetInventoryHandler.StoredItem>> implements ResourceHandler<ItemResource>, INBTSerializable<CompoundTag> {
 
     public List<ItemStack> stackList;
+    private List<ItemResource> resourceList;
 
     public ArmoryCabinetInventoryHandler() {
         this.stackList = create();
+        this.resourceList = createResources();
     }
 
-    @Override
     public int getSlots() {
         return FunctionalStorageConfig.ARMORY_CABINET_SIZE;
     }
 
     @NotNull
-    @Override
     public ItemStack getStackInSlot(int slot) {
         if (slot < this.stackList.size()){
             return this.stackList.get(slot);
@@ -40,62 +44,33 @@ public abstract class ArmoryCabinetInventoryHandler implements IItemHandlerModif
         return ItemStack.EMPTY;
     }
 
-    @NotNull
-    @Override
-    public ItemStack insertItem(int slot, @NotNull ItemStack stack, boolean simulate) {
-        if (slot < 0 || slot >= this.stackList.size()) return stack;
-        if (isValid(slot, stack)) {
-            if (!simulate) {
-                this.stackList.set(slot, stack.copyWithCount(1));
-                onChange();
-            }
-
-            return stack.getCount() > 1 ? stack.copyWithCount(stack.getCount() - 1) : ItemStack.EMPTY;
-        }
-        return stack;
-    }
-
     public abstract void onChange();
 
-    @NotNull
-    @Override
-    public ItemStack extractItem(int slot, int amount, boolean simulate) {
-        if (slot < 0 || slot >= this.stackList.size()) return ItemStack.EMPTY;
-        var inSlot = this.stackList.get(slot).copy();
-        if (amount == 0 || inSlot.isEmpty()) return inSlot;
-        if (!simulate) {
-            stackList.set(slot, ItemStack.EMPTY);
-            onChange();
-        }
-        return inSlot;
-    }
-
-    @Override
     public int getSlotLimit(int slot) {
         return 1;
     }
 
-    @Override
-    public boolean isItemValid(int slot, @NotNull ItemStack stack) {
-        return isCertifiedStack(stack);
+    public boolean isItemValid(int slot, ItemResource resource) {
+        return isCertifiedResource(resource);
     }
 
-    @Override
     public void setStackInSlot(int slot, @NotNull ItemStack stack) {
         if (slot < 0 || slot >= this.stackList.size()) return;
         this.stackList.set(slot, stack.isEmpty() ? ItemStack.EMPTY : stack.copyWithCount(Math.min(1, stack.getCount())));
+        this.resourceList.set(slot, ItemResource.of(stack));
         onChange();
     }
 
-    private boolean isValid(int slot, @NotNull ItemStack stack) {
-        return !stack.isEmpty() && this.stackList.get(slot).isEmpty() && isCertifiedStack(stack);
+    private boolean canInsert(int slot, ItemResource resource) {
+        return slot >= 0 && slot < stackList.size() && !resource.isEmpty() && stackList.get(slot).isEmpty() && isCertifiedResource(resource);
     }
 
-    private boolean isCertifiedStack(ItemStack stack){
-        if (stack.getCapability(Capabilities.ItemHandler.ITEM) != null) return false;
-        if (stack.is(StorageTags.ARMORY_CABINET_INSERTABLE)) return true;
-        if (stack.getMaxStackSize() > 1) return false;
-        return stack.isDamageableItem() || stack.isEnchantable() || stack.has(DataComponents.JUKEBOX_PLAYABLE) || stack.getItem() instanceof AnimalArmorItem || stack.is(Items.ENCHANTED_BOOK);
+    private boolean isCertifiedResource(ItemResource resource){
+        ItemStack stack = resource.toStack();
+        if (stack.getCapability(Capabilities.Item.ITEM, ItemAccess.forStack(stack)) != null) return false;
+        if (resource.typeHolder().is(StorageTags.ARMORY_CABINET_INSERTABLE)) return true;
+        if (resource.getMaxStackSize() > 1) return false;
+        return stack.isDamageableItem() || stack.isEnchantable() || resource.has(DataComponents.JUKEBOX_PLAYABLE) || resource.has(DataComponents.EQUIPPABLE) || resource.is(Items.ENCHANTED_BOOK);
     }
 
     @Override
@@ -104,7 +79,7 @@ public abstract class ArmoryCabinetInventoryHandler implements IItemHandlerModif
         for (int i = 0; i < this.stackList.size(); i++) {
             ItemStack stack = this.stackList.get(i);
             if (!stack.isEmpty()){
-                compoundTag.put(String.valueOf(i), stack.saveOptional(provider));
+                compoundTag.put(String.valueOf(i), Utils.serialize(provider, stack));
             }
         }
         return compoundTag;
@@ -118,14 +93,71 @@ public abstract class ArmoryCabinetInventoryHandler implements IItemHandlerModif
         return stackList;
     }
 
+    private List<ItemResource> createResources() {
+        List<ItemResource> resources = new ArrayList<>();
+        for (int i = 0; i < FunctionalStorageConfig.ARMORY_CABINET_SIZE; i++) resources.add(ItemResource.EMPTY);
+        return resources;
+    }
+
     @Override
     public void deserializeNBT(net.minecraft.core.HolderLookup.Provider provider, CompoundTag nbt) {
         this.stackList = create();
-        for (String allKey : nbt.getAllKeys()) {
+        this.resourceList = createResources();
+        for (String allKey : nbt.keySet()) {
             int pos = Integer.parseInt(allKey);
             if (pos < this.stackList.size()){
-                this.stackList.set(pos, ItemStack.CODEC.decode(RegistryOps.create(NbtOps.INSTANCE, provider), nbt.getCompound(allKey)).getOrThrow().getFirst());
+                ItemStack stack = Utils.deserialize(provider, nbt.getCompoundOrEmpty(allKey));
+                this.stackList.set(pos, stack);
+                this.resourceList.set(pos, ItemResource.of(stack));
             }
         }
     }
+
+    @Override public int size() { return getSlots(); }
+    @Override public ItemResource getResource(int index) { return index >= 0 && index < resourceList.size() ? resourceList.get(index) : ItemResource.EMPTY; }
+    @Override public long getAmountAsLong(int index) { return getStackInSlot(index).isEmpty() ? 0 : 1; }
+    @Override public long getCapacityAsLong(int index, ItemResource resource) { return resource.isEmpty() || canInsert(index, resource) ? 1 : 0; }
+    @Override public boolean isValid(int index, ItemResource resource) { return isItemValid(index, resource); }
+
+    @Override
+    public int insert(int index, ItemResource resource, int amount, TransactionContext transaction) {
+        TransferPreconditions.checkNonEmptyNonNegative(resource, amount);
+        if (amount == 0 || !canInsert(index, resource)) return 0;
+        updateSnapshots(transaction);
+        stackList.set(index, resource.toStack(1));
+        resourceList.set(index, resource);
+        onChange();
+        return 1;
+    }
+
+    @Override
+    public int extract(int index, ItemResource resource, int amount, TransactionContext transaction) {
+        TransferPreconditions.checkNonEmptyNonNegative(resource, amount);
+        if (amount == 0 || index < 0 || index >= stackList.size() || !resource.matches(stackList.get(index))) return 0;
+        updateSnapshots(transaction);
+        stackList.set(index, ItemStack.EMPTY);
+        resourceList.set(index, ItemResource.EMPTY);
+        onChange();
+        return 1;
+    }
+
+    @Override
+    protected List<StoredItem> createSnapshot() {
+        List<StoredItem> snapshot = new ArrayList<>(stackList.size());
+        for (int i = 0; i < stackList.size(); i++) snapshot.add(new StoredItem(stackList.get(i).copy(), resourceList.get(i)));
+        return snapshot;
+    }
+
+    @Override
+    protected void revertToSnapshot(List<StoredItem> snapshot) {
+        stackList = new ArrayList<>(snapshot.size());
+        resourceList = new ArrayList<>(snapshot.size());
+        for (StoredItem item : snapshot) {
+            stackList.add(item.stack().copy());
+            resourceList.add(item.resource());
+        }
+        onChange();
+    }
+
+    protected record StoredItem(ItemStack stack, ItemResource resource) {}
 }

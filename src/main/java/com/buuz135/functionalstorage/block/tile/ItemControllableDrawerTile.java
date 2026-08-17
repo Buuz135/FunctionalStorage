@@ -1,9 +1,9 @@
 package com.buuz135.functionalstorage.block.tile;
 
 import com.buuz135.functionalstorage.FunctionalStorage;
-import com.buuz135.functionalstorage.compat.ftb.FTBChunksManager;
 import com.buuz135.functionalstorage.item.FSAttachments;
 import com.buuz135.functionalstorage.item.component.SizeProvider;
+import com.buuz135.functionalstorage.util.StorageTransferUtil;
 import com.hrznstudio.titanium.block.BasicTileBlock;
 import com.hrznstudio.titanium.component.inventory.InventoryComponent;
 import com.hrznstudio.titanium.util.RayTraceUtils;
@@ -12,7 +12,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -23,8 +22,8 @@ import net.minecraft.world.phys.HitResult;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.fml.ModList;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.ItemHandlerHelper;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -35,13 +34,13 @@ public abstract class ItemControllableDrawerTile<T extends ItemControllableDrawe
 
     private static HashMap<UUID, Long> INTERACTION_LOGGER = new HashMap<>();
     private int removeTicks = 0;
+    private ResourceHandler<ItemResource> transferHandler;
 
     public ItemControllableDrawerTile(BasicTileBlock<T> base, BlockEntityType<T> entityType, BlockPos pos, BlockState state, DrawerProperties props) {
         super(base, entityType, pos, state, props);
     }
 
     @Override
-    @OnlyIn(Dist.CLIENT)
     public void initClient() {
         super.initClient();
     }
@@ -55,17 +54,25 @@ public abstract class ItemControllableDrawerTile<T extends ItemControllableDrawe
     @Override
     public InteractionResult onSlotActivated(Player playerIn, InteractionHand hand, Direction facing, double hitX, double hitY, double hitZ, int slot) {
         ItemStack stack = playerIn.getItemInHand(hand);
-        if (super.onActivated(playerIn, hand, facing, hitX, hitY, hitZ) == ItemInteractionResult.SUCCESS) {
+        if (super.onActivated(playerIn, hand, facing, hitX, hitY, hitZ) == InteractionResult.SUCCESS) {
             return InteractionResult.SUCCESS;
         }
         if (slot != -1 && isServer()) {
-            if (!stack.isEmpty() && getStorage().insertItem(slot, stack, true).getCount() != stack.getCount()) {
-                playerIn.setItemInHand(hand, getStorage().insertItem(slot, stack, false));
+            ItemResource resource = ItemResource.of(stack);
+            int inserted = StorageTransferUtil.insert(getStorage(), slot, resource, stack.getCount(), false);
+            if (!stack.isEmpty() && inserted > 0) {
+                StorageTransferUtil.insert(getStorage(), slot, resource, inserted, true);
+                playerIn.setItemInHand(hand, inserted == stack.getCount() ? ItemStack.EMPTY : stack.copyWithCount(stack.getCount() - inserted));
                 return InteractionResult.SUCCESS;
-            } else if (System.currentTimeMillis() - INTERACTION_LOGGER.getOrDefault(playerIn.getUUID(), System.currentTimeMillis()) < 300 && !getStorage().getStackInSlot(slot).isEmpty()) {
-                for (ItemStack itemStack : playerIn.getInventory().items) {
-                    if (!itemStack.isEmpty() && getStorage().insertItem(slot, itemStack, true).getCount() != itemStack.getCount()) {
-                        itemStack.setCount(getStorage().insertItem(slot, itemStack.copy(), false).getCount());
+            } else if (System.currentTimeMillis() - INTERACTION_LOGGER.getOrDefault(playerIn.getUUID(), System.currentTimeMillis()) < 300 && !getStorage().getResource(slot).isEmpty()) {
+                var inventory = playerIn.getInventory();
+                for (int inventorySlot = 0; inventorySlot < inventory.getContainerSize(); inventorySlot++) {
+                    ItemStack itemStack = inventory.getItem(inventorySlot);
+                    ItemResource inventoryResource = ItemResource.of(itemStack);
+                    int inventoryInserted = StorageTransferUtil.insert(getStorage(), slot, inventoryResource, itemStack.getCount(), false);
+                    if (!itemStack.isEmpty() && inventoryInserted > 0) {
+                        StorageTransferUtil.insert(getStorage(), slot, inventoryResource, inventoryInserted, true);
+                        itemStack.shrink(inventoryInserted);
                     }
                 }
             }
@@ -85,10 +92,13 @@ public abstract class ItemControllableDrawerTile<T extends ItemControllableDrawe
             HitResult rayTraceResult = RayTraceUtils.rayTraceSimple(this.level, playerIn, 16, 0);
             if (rayTraceResult.getType() == HitResult.Type.BLOCK) {
                 BlockHitResult blockResult = (BlockHitResult) rayTraceResult;
-                Direction facing = blockResult.getDirection();
-                if (facing.equals(this.getFacingDirection())) {
-                    if (preventInteraction(blockResult.getBlockPos(), playerIn)) return;
-                    ItemHandlerHelper.giveItemToPlayer(playerIn, getStorage().extractItem(slot, playerIn.isShiftKeyDown() ? getStorage().getStackInSlot(slot).getMaxStackSize() : 1, false));
+                    Direction facing = blockResult.getDirection();
+                    if (facing.equals(this.getFacingDirection())) {
+                        if (preventInteraction(blockResult.getBlockPos(), playerIn)) return;
+                    ItemResource resource = getStorage().getResource(slot);
+                    int extractedAmount = StorageTransferUtil.extract(getStorage(), slot, resource, playerIn.isShiftKeyDown() ? resource.getMaxStackSize() : 1, true);
+                    ItemStack extracted = resource.toStack(extractedAmount);
+                    if (!playerIn.addItem(extracted)) playerIn.drop(extracted, false);
                 }
             }
         }
@@ -96,12 +106,18 @@ public abstract class ItemControllableDrawerTile<T extends ItemControllableDrawe
 
     private boolean preventInteraction(BlockPos pos, Player player) {
         if (ModList.get().isLoaded("ftbchunks")) {
-            return FTBChunksManager.preventInteraction(pos, player);
+            try {
+                return (boolean) Class.forName("com.buuz135.functionalstorage.compat.ftb.FTBChunksManager")
+                        .getMethod("preventInteraction", BlockPos.class, Player.class)
+                        .invoke(null, pos, player);
+            } catch (ReflectiveOperationException ignored) {
+                return false;
+            }
         }
         return false;
     }
 
-    public abstract IItemHandler getStorage();
+    public abstract ResourceHandler<ItemResource> getStorage();
 
     @Override
     public InventoryComponent<ControllableDrawerTile<T>> getStorageUpgradesConstructor() {
@@ -147,9 +163,9 @@ public abstract class ItemControllableDrawerTile<T extends ItemControllableDrawe
     }
 
     protected boolean canChangeMultiplier(double newSizeMultiplier) {
-        for (int i = 0; i < getStorage().getSlots(); i++) {
-            var stored = getStorage().getStackInSlot(i);
-            if (!stored.isEmpty() && stored.getCount() > Math.min(Integer.MAX_VALUE, Math.floor(newSizeMultiplier * stored.getMaxStackSize()))) {
+        for (int i = 0; i < getStorage().size(); i++) {
+            ItemResource resource = getStorage().getResource(i);
+            if (!resource.isEmpty() && getStorage().getAmountAsLong(i) > Math.min(Integer.MAX_VALUE, Math.floor(newSizeMultiplier * resource.getMaxStackSize()))) {
                 return false;
             }
         }
@@ -160,8 +176,8 @@ public abstract class ItemControllableDrawerTile<T extends ItemControllableDrawe
         if (getPriority() != 0) {
             return false;
         }
-        for (int i = 0; i < getStorage().getSlots(); i++) {
-            if (!getStorage().getStackInSlot(i).isEmpty()) {
+        for (int i = 0; i < getStorage().size(); i++) {
+            if (!getStorage().getResource(i).isEmpty()) {
                 return false;
             }
         }
@@ -179,8 +195,8 @@ public abstract class ItemControllableDrawerTile<T extends ItemControllableDrawe
     }
 
     public boolean isInventoryEmpty() {
-        for (int i = 0; i < getStorage().getSlots(); i++) {
-            if (!getStorage().getStackInSlot(i).isEmpty()) {
+        for (int i = 0; i < getStorage().size(); i++) {
+            if (!getStorage().getResource(i).isEmpty()) {
                 return false;
             }
         }
@@ -193,7 +209,10 @@ public abstract class ItemControllableDrawerTile<T extends ItemControllableDrawe
     }
 
     @Override
-    public IItemHandler getItemHandler(@Nullable Direction direction) {
-        return getStorage();
+    public ResourceHandler<ItemResource> getItemHandler(@Nullable Direction direction) {
+        if (transferHandler == null) transferHandler = getStorage();
+        return transferHandler;
     }
+
+
 }

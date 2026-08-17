@@ -1,138 +1,73 @@
 package com.buuz135.functionalstorage.fluid;
 
-import com.buuz135.functionalstorage.block.tile.DrawerControllerTile;
-import com.buuz135.functionalstorage.inventory.ControllerInventoryHandler;
 import com.buuz135.functionalstorage.util.ConnectedDrawers;
-import org.jetbrains.annotations.NotNull;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.fluid.FluidResource;
+import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
 import java.util.ArrayList;
 import java.util.List;
-import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 
-public abstract class ControllerFluidHandler implements IFluidHandler {
+public abstract class ControllerFluidHandler implements ResourceHandler<FluidResource> {
 
-    HandlerTankSelector[] selectors;
-    private int tanks = 0;
+    private HandlerIndex[] indices;
 
     public ControllerFluidHandler() {
         invalidateSlots();
     }
 
     public void invalidateSlots() {
-        List<HandlerTankSelector> selectors = new ArrayList<>();
-        this.tanks = 0;
-        for (IFluidHandler handler : getDrawers().getFluidHandlers()) {
-            if (handler instanceof ControllerInventoryHandler) continue;
-            int handlerTanks = handler.getTanks();
-            for (int i = 0; i < handlerTanks; ++i) {
-                selectors.add(new HandlerTankSelector(handler, i));
-            }
-            this.tanks += handlerTanks;
+        List<HandlerIndex> rebuilt = new ArrayList<>();
+        for (ResourceHandler<FluidResource> handler : getDrawers().getFluidHandlers()) {
+            if (handler instanceof ControllerFluidHandler) continue;
+            for (int index = 0; index < handler.size(); index++) rebuilt.add(new HandlerIndex(handler, index));
         }
-        this.selectors = selectors.toArray(new HandlerTankSelector[selectors.size()]);
+        indices = rebuilt.toArray(HandlerIndex[]::new);
     }
 
-    private HandlerTankSelector selectorForTank(int tank) {
-        return tank >= 0 && tank < selectors.length ? selectors[tank] : null;
+    private HandlerIndex index(int index) {
+        return index >= 0 && index < indices.length ? indices[index] : null;
+    }
+
+    @Override public int size() { return indices.length; }
+
+    @Override
+    public FluidResource getResource(int index) {
+        HandlerIndex selected = index(index);
+        return selected == null ? FluidResource.EMPTY : selected.handler.getResource(selected.index);
     }
 
     @Override
-    public int getTanks() {
-        return tanks;
+    public long getAmountAsLong(int index) {
+        HandlerIndex selected = index(index);
+        return selected == null ? 0 : selected.handler.getAmountAsLong(selected.index);
     }
 
     @Override
-    public @NotNull FluidStack getFluidInTank(int tank) {
-        HandlerTankSelector selector = selectorForTank(tank);
-        return null != selector ? selector.getStackInSlot() : FluidStack.EMPTY;
+    public long getCapacityAsLong(int index, FluidResource resource) {
+        HandlerIndex selected = index(index);
+        return selected == null ? 0 : selected.handler.getCapacityAsLong(selected.index, resource);
     }
 
     @Override
-    public int getTankCapacity(int tank) {
-        HandlerTankSelector selector = selectorForTank(tank);
-        return null != selector ? selector.getCapacity() : 0;
+    public boolean isValid(int index, FluidResource resource) {
+        HandlerIndex selected = index(index);
+        return selected != null && selected.handler.isValid(selected.index, resource);
     }
 
     @Override
-    public boolean isFluidValid(int tank, @NotNull FluidStack stack) {
-        HandlerTankSelector selector = selectorForTank(tank);
-        return null != selector && selector.isFluidValid(stack);
+    public int insert(int index, FluidResource resource, int amount, TransactionContext transaction) {
+        HandlerIndex selected = index(index);
+        return selected == null ? 0 : selected.handler.insert(selected.index, resource, amount, transaction);
     }
 
     @Override
-    public int fill(FluidStack resource, FluidAction action) {
-        for (HandlerTankSelector selector : this.selectors) {
-            if (!selector.getStackInSlot().isEmpty() && FluidStack.isSameFluidSameComponents(selector.getStackInSlot(), resource) && selector.fill(resource, FluidAction.SIMULATE) > 0) {
-                return selector.fill(resource, action);
-            }
-        }
-        for (HandlerTankSelector selector : this.selectors) {
-            if (selector.getStackInSlot().isEmpty() && selector.fill(resource, FluidAction.SIMULATE) > 0) {
-                return selector.fill(resource, action);
-            }
-        }
-        return 0;
-    }
-
-    @Override
-    public @NotNull FluidStack drain(FluidStack resource, FluidAction action) {
-        for (HandlerTankSelector selector : this.selectors) {
-            if (!selector.getStackInSlot().isEmpty() && FluidStack.isSameFluidSameComponents(selector.getStackInSlot(), resource)) {
-                return selector.drain(resource, action);
-            }
-        }
-        for (HandlerTankSelector selector : this.selectors) {
-            if (selector.getStackInSlot().isEmpty()) {
-                return selector.drain(resource, action);
-            }
-        }
-        return FluidStack.EMPTY;
-    }
-
-    @Override
-    public @NotNull FluidStack drain(int maxDrain, FluidAction action) {
-        for (HandlerTankSelector selector : this.selectors) {
-            if (!selector.getStackInSlot().isEmpty()) {
-                return selector.drain(maxDrain, action);
-            }
-        }
-        return FluidStack.EMPTY;
+    public int extract(int index, FluidResource resource, int amount, TransactionContext transaction) {
+        HandlerIndex selected = index(index);
+        return selected == null ? 0 : selected.handler.extract(selected.index, resource, amount, transaction);
     }
 
     public abstract ConnectedDrawers getDrawers();
-}
 
-class HandlerTankSelector {
-    IFluidHandler handler;
-    int slot;
-
-    public HandlerTankSelector(IFluidHandler handler, int slot) {
-        this.handler = handler;
-        this.slot = slot;
-    }
-
-    public FluidStack getStackInSlot() {
-        return handler.getFluidInTank(slot);
-    }
-
-    public int fill(@NotNull FluidStack stack, IFluidHandler.FluidAction action) {
-        return handler.fill(stack, action);
-    }
-
-    public FluidStack drain(int amount, IFluidHandler.FluidAction action) {
-        return handler.drain(amount, action);
-    }
-
-    public FluidStack drain(FluidStack fluidStack, IFluidHandler.FluidAction action) {
-        return handler.drain(fluidStack, action);
-    }
-
-    public int getCapacity() {
-        return handler.getTankCapacity(slot);
-    }
-
-    public boolean isFluidValid(@NotNull FluidStack stack) {
-        return handler.isFluidValid(slot, stack);
-    }
+    private record HandlerIndex(ResourceHandler<FluidResource> handler, int index) {}
 }

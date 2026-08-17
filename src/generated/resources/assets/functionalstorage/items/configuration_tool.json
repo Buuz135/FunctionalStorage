@@ -1,0 +1,16 @@
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "functionalstorage:item/configuration_tool",
+    "tints": [
+      {
+        "type": "functionalstorage:tool",
+        "layer": 0
+      },
+      {
+        "type": "functionalstorage:tool",
+        "layer": 1
+      }
+    ]
+  }
+}

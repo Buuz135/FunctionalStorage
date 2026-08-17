@@ -1,0 +1,19 @@
+{
+  "model": {
+    "type": "minecraft:composite",
+    "models": [
+      {
+        "type": "minecraft:model",
+        "model": "functionalstorage:block/mangrove_1"
+      },
+      {
+        "type": "minecraft:special",
+        "base": "functionalstorage:block/mangrove_1",
+        "model": {
+          "type": "functionalstorage:drawer",
+          "kind": "DRAWER"
+        }
+      }
+    ]
+  }
+}

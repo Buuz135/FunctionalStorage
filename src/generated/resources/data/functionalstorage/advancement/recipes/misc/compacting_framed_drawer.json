@@ -1,8 +1,8 @@
 {
   "neoforge:conditions": [
     {
-      "type": "neoforge:item_exists",
-      "item": "functionalstorage:compacting_framed_drawer"
+      "type": "neoforge:registered",
+      "value": "functionalstorage:compacting_framed_drawer"
     }
   ],
   "parent": "minecraft:recipes/root",

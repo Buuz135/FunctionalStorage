@@ -89,30 +89,4 @@ public class EnderDrawerBlock extends Drawer<EnderDrawerTile> {
     protected void configure(LivingEntity player, EnderDrawerTile tile) {
     }
 
-    @Override
-    public void onRemove(BlockState state, Level worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
-        if (!state.is(newState.getBlock())){
-            TileUtil.getTileEntity(worldIn, pos, EnderDrawerTile.class).ifPresent(tile -> {
-                if (tile.getControllerPos() != null) {
-                    TileUtil.getTileEntity(worldIn, tile.getControllerPos(), StorageControllerTile.class).ifPresent(drawerControllerTile -> {
-                        drawerControllerTile.addConnectedDrawers(LinkingToolItem.ActionMode.REMOVE, pos);
-                    });
-                }
-            });
-        }
-        super.onRemove(state, worldIn, pos, newState, isMoving);
-    }
-
-
-    @Override
-    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
-        if (stack.has(FSAttachments.TILE)) {
-            MutableComponent text = Component.translatable("linkingtool.ender.frequency");
-            tooltipComponents.add(text.withStyle(ChatFormatting.GRAY));
-            tooltipComponents.add(Component.literal(""));
-            tooltipComponents.add(Component.literal(""));
-        }
-
-    }
-
 }

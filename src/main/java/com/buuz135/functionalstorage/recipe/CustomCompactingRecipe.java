@@ -8,36 +8,39 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.recipes.RecipeOutput;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.item.crafting.PlacementInfo;
+import net.minecraft.world.item.crafting.RecipeBookCategory;
+import net.minecraft.world.item.crafting.RecipeBookCategories;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.Level;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class CustomCompactingRecipe implements Recipe<CraftingInput> {
     public static final MapCodec<CustomCompactingRecipe> CODEC = RecordCodecBuilder.mapCodec(in -> in.group(
-            ItemStack.CODEC.fieldOf("lower_input").forGetter(CustomCompactingRecipe::getLower_input),
-            ItemStack.CODEC.fieldOf("higher_input").forGetter(CustomCompactingRecipe::getHigher_input)
+            ItemStackTemplate.CODEC.fieldOf("lower_input").forGetter(CustomCompactingRecipe::lowerTemplate),
+            ItemStackTemplate.CODEC.fieldOf("higher_input").forGetter(CustomCompactingRecipe::higherTemplate)
     ).apply(in, CustomCompactingRecipe::new));
+    public static final StreamCodec<RegistryFriendlyByteBuf, CustomCompactingRecipe> STREAM_CODEC = StreamCodec.composite(
+            ItemStackTemplate.STREAM_CODEC, CustomCompactingRecipe::lowerTemplate,
+            ItemStackTemplate.STREAM_CODEC, CustomCompactingRecipe::higherTemplate,
+            CustomCompactingRecipe::new);
 
-    public static List<CustomCompactingRecipe> RECIPES = new ArrayList<>();
+    private final ItemStackTemplate lowerInput;
+    private final ItemStackTemplate higherInput;
 
-    public ItemStack lower_input = ItemStack.EMPTY;
-    public ItemStack higher_input = ItemStack.EMPTY;
-
-    public CustomCompactingRecipe() {
-    }
-
-    public CustomCompactingRecipe(ItemStack lower_input, ItemStack higher_input) {
-        this.lower_input = lower_input;
-        this.higher_input = higher_input;
-        RECIPES.add(this);
+    public CustomCompactingRecipe(ItemStackTemplate lowerInput, ItemStackTemplate higherInput) {
+        this.lowerInput = lowerInput;
+        this.higherInput = higherInput;
     }
 
     @Override
@@ -46,44 +49,63 @@ public class CustomCompactingRecipe implements Recipe<CraftingInput> {
     }
 
     @Override
-    public ItemStack assemble(CraftingInput input, HolderLookup.Provider registries) {
+    public ItemStack assemble(CraftingInput input) {
         return ItemStack.EMPTY;
     }
 
     @Override
-    public boolean canCraftInDimensions(int width, int height) {
+    public boolean showNotification() {
         return false;
     }
 
     @Override
-    public ItemStack getResultItem(HolderLookup.Provider access) {
-        return ItemStack.EMPTY;
+    public String group() {
+        return "";
     }
 
     @Override
-    public RecipeSerializer<?> getSerializer() {
-        return FunctionalStorage.CUSTOM_COMPACTING_RECIPE_SERIALIZER.value();
+    public PlacementInfo placementInfo() {
+        return PlacementInfo.NOT_PLACEABLE;
     }
 
     @Override
-    public RecipeType<?> getType() {
-        return FunctionalStorage.CUSTOM_COMPACTING_RECIPE_TYPE.value();
+    public RecipeBookCategory recipeBookCategory() {
+        return RecipeBookCategories.CRAFTING_MISC;
     }
 
-    public void save(RecipeOutput output, ResourceLocation id) {
-        output.accept(id, this, null);
+    @Override
+    @SuppressWarnings("unchecked")
+    public RecipeSerializer<CustomCompactingRecipe> getSerializer() {
+        return (RecipeSerializer<CustomCompactingRecipe>) (RecipeSerializer<?>) FunctionalStorage.CUSTOM_COMPACTING_RECIPE_SERIALIZER.value();
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public RecipeType<CustomCompactingRecipe> getType() {
+        return (RecipeType<CustomCompactingRecipe>) (RecipeType<?>) FunctionalStorage.CUSTOM_COMPACTING_RECIPE_TYPE.value();
+    }
+
+    public void save(RecipeOutput output, Identifier id) {
+        output.accept(ResourceKey.create(Registries.RECIPE, id), this, null);
     }
 
     public void save(RecipeOutput output) {
-        save(output, BuiltInRegistries.ITEM.getKey(higher_input.getItem()));
+        save(output, BuiltInRegistries.ITEM.getKey(higherInput.item().value()));
     }
 
-
-    public ItemStack getLower_input() {
-        return lower_input;
+    public ItemStackTemplate lowerTemplate() {
+        return lowerInput;
     }
 
-    public ItemStack getHigher_input() {
-        return higher_input;
+    public ItemStackTemplate higherTemplate() {
+        return higherInput;
+    }
+
+    public ItemStack lowerStack() {
+        return lowerInput.create();
+    }
+
+    public ItemStack higherStack() {
+        return higherInput.create();
     }
 }

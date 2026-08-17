@@ -2,7 +2,6 @@ package com.buuz135.functionalstorage.block;
 
 import com.buuz135.functionalstorage.FunctionalStorage;
 import com.buuz135.functionalstorage.block.tile.DrawerTile;
-import com.buuz135.functionalstorage.client.item.DrawerISTER;
 import com.buuz135.functionalstorage.inventory.item.DrawerStackItemHandler;
 import com.buuz135.functionalstorage.recipe.DrawerlessWoodIngredient;
 import com.buuz135.functionalstorage.util.IWoodType;
@@ -10,14 +9,17 @@ import com.google.common.collect.Multimap;
 import com.google.common.collect.MultimapBuilder;
 import com.hrznstudio.titanium.block.RotatableBlock;
 import com.hrznstudio.titanium.module.BlockWithTile;
+import com.hrznstudio.titanium.module.DeferredRegistryHelper;
 import com.hrznstudio.titanium.recipe.generator.TitaniumShapedRecipeBuilder;
 import com.hrznstudio.titanium.tab.TitaniumTab;
-import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.TooltipDisplay;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
@@ -26,9 +28,9 @@ import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 import net.neoforged.neoforge.common.Tags;
-import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -299,27 +301,19 @@ public class DrawerBlock extends Drawer<DrawerTile> {
         private final DrawerBlock drawerBlock;
 
         public DrawerItem(DrawerBlock drawerBlock, Properties properties, TitaniumTab tab) {
-            super(drawerBlock, properties);
+            super(drawerBlock, DeferredRegistryHelper.applyItemRegistrationId(properties.useBlockDescriptionPrefix()));
             this.drawerBlock = drawerBlock;
         }
 
         @Nullable
-        public IItemHandler initCapabilities(ItemStack stack) {
+        public ResourceHandler<ItemResource> initCapabilities(ItemStack stack) {
             return new DrawerStackItemHandler(stack, this.drawerBlock.getType());
         }
 
         @Override
-        public void initializeClient(Consumer<IClientItemExtensions> consumer) {
-            consumer.accept(new IClientItemExtensions() {
-                @Override
-                public BlockEntityWithoutLevelRenderer getCustomRenderer() {
-                    return switch (drawerBlock.getType()){
-                        case X_2 -> DrawerISTER.SLOT_2;
-                        case X_4 -> DrawerISTER.SLOT_4;
-                        default -> DrawerISTER.SLOT_1;
-                    };
-                }
-            });
+        public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
+            super.appendHoverText(stack, context, display, tooltip, flag);
+            drawerBlock.appendDrawerHoverText(stack, context, display, tooltip, flag);
         }
 
     }

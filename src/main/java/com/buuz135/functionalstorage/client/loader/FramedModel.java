@@ -1,534 +1,307 @@
 package com.buuz135.functionalstorage.client.loader;
 
 import com.buuz135.functionalstorage.FunctionalStorage;
-import com.buuz135.functionalstorage.block.FramedDrawerBlock;
-import com.buuz135.functionalstorage.client.model.FramedDrawerModelData;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
+import com.buuz135.functionalstorage.block.FramedBlock;
+import com.buuz135.functionalstorage.util.CustomFramedDrawerModelData;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.LightTexture;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.block.model.BakedQuad;
-import net.minecraft.client.renderer.block.model.BlockModel;
-import net.minecraft.client.renderer.block.model.ItemOverrides;
-import net.minecraft.client.renderer.block.model.ItemTransforms;
-import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.resources.model.*;
+import net.minecraft.client.color.block.BlockTintSource;
+import net.minecraft.client.renderer.block.BlockAndTintGetter;
+import net.minecraft.client.renderer.block.dispatch.BlockStateModel;
+import net.minecraft.client.renderer.block.dispatch.BlockStateModelPart;
+import net.minecraft.client.resources.model.geometry.BakedQuad;
+import net.minecraft.client.resources.model.sprite.Material;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.Vec3i;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.client.ChunkRenderTypeSet;
-import net.neoforged.neoforge.client.model.IDynamicBakedModel;
-import net.neoforged.neoforge.client.model.IQuadTransformer;
-import net.neoforged.neoforge.client.model.SimpleModelState;
-import net.neoforged.neoforge.client.model.data.ModelData;
-import net.neoforged.neoforge.client.model.data.ModelProperty;
-import net.neoforged.neoforge.client.model.geometry.IGeometryBakingContext;
-import net.neoforged.neoforge.client.model.geometry.IGeometryLoader;
-import net.neoforged.neoforge.client.model.geometry.IUnbakedGeometry;
-import net.neoforged.neoforge.common.util.ConcatenatedListView;
-import org.apache.commons.lang3.tuple.ImmutableTriple;
-import org.apache.commons.lang3.tuple.Triple;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import org.joml.Vector3f;
+import net.neoforged.neoforge.client.event.ModelEvent;
+import net.neoforged.neoforge.client.model.DynamicBlockStateModel;
+import net.neoforged.neoforge.client.model.quad.MutableQuad;
+import org.jspecify.annotations.Nullable;
 
-import java.util.*;
-import java.util.function.Function;
+import java.util.ArrayList;
+import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import static com.buuz135.functionalstorage.client.loader.FramedModel.Baked.getQuadsUsingShape;
+public final class FramedModel implements DynamicBlockStateModel {
+    private static final String SIDE_MARKER = "framed_side";
+    private static final String DIVIDER_MARKER = "machine_divider";
+    private static final String FRONT_MARKER_PREFIX = "framed_front_";
 
-/**
- * A Custom Model for Framed Drawers. <br>
- * Based on {@link net.neoforged.neoforge.client.model.CompositeModel} from Forge. <br>
- * Using parts of <a href="https://github.com/SleepyTrousers/EnderIO-Rewrite/blob/dev/1.19.x/src/decor/java/com/enderio/decoration/client/model/painted/PaintedBlockModel.java"> Painted Block Model</a> from Ender IO.
- */
-public class FramedModel implements IUnbakedGeometry<FramedModel> {
-    private final ImmutableMap<String, BlockModel> children;
-    private final ImmutableList<String> itemPasses;
+    private final BlockStateModel delegate;
 
-    public FramedModel(ImmutableMap<String, BlockModel> children, ImmutableList<String> itemPasses) {
-        this.children = children;
-        this.itemPasses = itemPasses;
+    public FramedModel(BlockStateModel delegate) {
+        this.delegate = delegate;
+    }
+
+    public static void wrapModels(ModelEvent.ModifyBakingResult event) {
+        event.getBakingResult().blockStateModels().replaceAll((state, model) ->
+                FunctionalStorage.FRAMED_BLOCKS.contains(state.getBlock()) && !(model instanceof FramedModel)
+                        ? new FramedModel(model)
+                        : model);
     }
 
     @Override
-    public void resolveParents(Function<ResourceLocation, UnbakedModel> modelGetter, IGeometryBakingContext context) {
-        children.values().forEach(child -> child.resolveParents(modelGetter));
+    public @Nullable Object createGeometryKey(BlockAndTintGetter level, BlockPos pos, BlockState state, RandomSource random) {
+        Object delegateKey = delegate.createGeometryKey(level, pos, state, random);
+        CustomFramedDrawerModelData design = getDesign(level, pos);
+        return design == null || delegateKey == null ? delegateKey : new GeometryKey(delegateKey, design.getCode(), this);
     }
 
     @Override
-    public BakedModel bake(IGeometryBakingContext context, ModelBaker baker, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelState, ItemOverrides overrides) {
-        Material particleLocation = context.getMaterial("particle");
-        TextureAtlasSprite particle = spriteGetter.apply(particleLocation);
+    public void collectParts(BlockAndTintGetter level, BlockPos pos, BlockState state, RandomSource random, List<BlockStateModelPart> output) {
+        List<BlockStateModelPart> baseParts = new ArrayList<>();
+        delegate.collectParts(level, pos, state, random, baseParts);
+        output.addAll(styleParts(baseParts, getDesign(level, pos), level, pos, false));
+    }
 
-        var rootTransform = context.getRootTransform();
-        if (!rootTransform.isIdentity())
-            modelState = new SimpleModelState(modelState.getRotation().compose(rootTransform), modelState.isUvLocked());
+    @Override
+    public Material.Baked particleMaterial() {
+        return delegate.particleMaterial();
+    }
 
-        var bakedPartsBuilder = ImmutableMap.<String, BakedModel>builder();
-        for (var entry : children.entrySet()) {
-            var name = entry.getKey();
-            if (!context.isComponentVisible(name, true))
+    @Override
+    public Material.Baked particleMaterial(BlockAndTintGetter level, BlockPos pos, BlockState state) {
+        CustomFramedDrawerModelData design = getDesign(level, pos);
+        Item particle = getMaterial(design, "particle");
+        if (particle instanceof BlockItem blockItem && !(blockItem.getBlock() instanceof FramedBlock)) {
+            BlockState materialState = blockItem.getBlock().defaultBlockState();
+            return Minecraft.getInstance().getModelManager().getBlockStateModelSet().get(materialState)
+                    .particleMaterial(level, pos, materialState);
+        }
+        return delegate.particleMaterial(level, pos, state);
+    }
+
+    @Override
+    public int materialFlags() {
+        return delegate.materialFlags();
+    }
+
+    @Override
+    public int materialFlags(BlockAndTintGetter level, BlockPos pos, BlockState state) {
+        int flags = delegate.materialFlags(level, pos, state);
+        CustomFramedDrawerModelData design = getDesign(level, pos);
+        if (design != null) {
+            for (Item item : design.getDesign().values()) {
+                if (item instanceof BlockItem blockItem && !(blockItem.getBlock() instanceof FramedBlock)) {
+                    BlockState materialState = blockItem.getBlock().defaultBlockState();
+                    flags |= Minecraft.getInstance().getModelManager().getBlockStateModelSet().get(materialState)
+                            .materialFlags(level, pos, materialState);
+                }
+            }
+        }
+        return flags;
+    }
+
+    private static @Nullable CustomFramedDrawerModelData getDesign(BlockAndTintGetter level, BlockPos pos) {
+        return level.getModelData(pos).get(CustomFramedDrawerModelData.MODEL_PROPERTY);
+    }
+
+
+    public static List<BlockStateModelPart> styleParts(List<BlockStateModelPart> baseParts,
+                                                       @Nullable CustomFramedDrawerModelData design,
+                                                       BlockAndTintGetter level, BlockPos pos,
+                                                       boolean itemContext) {
+        if (baseParts.isEmpty()) return List.of();
+
+        Map<String, BakedQuad> fallbackMarkers = findFallbackMarkers(baseParts);
+        Map<MaterialKey, List<BakedQuad>> materialCache = new HashMap<>();
+        List<BlockStateModelPart> styled = new ArrayList<>(baseParts.size());
+        for (BlockStateModelPart part : baseParts) {
+            styled.add(new StyledPart(part, design, fallbackMarkers, materialCache, level, pos, itemContext));
+        }
+        return List.copyOf(styled);
+    }
+
+    public static List<BlockStateModelPart> collectBaseParts(BlockStateModel model, BlockState state) {
+        BlockStateModel baseModel = model instanceof FramedModel framed ? framed.delegate : model;
+        List<BlockStateModelPart> parts = new ArrayList<>();
+        baseModel.collectParts(BlockAndTintGetter.EMPTY, BlockPos.ZERO, state, RandomSource.create(42), parts);
+        return List.copyOf(parts);
+    }
+
+    public static List<BakedQuad> flattenParts(List<BlockStateModelPart> parts) {
+        List<BakedQuad> quads = new ArrayList<>();
+        for (BlockStateModelPart part : parts) quads.addAll(collectAllQuads(part));
+        return List.copyOf(quads);
+    }
+
+    private static Map<String, BakedQuad> findFallbackMarkers(List<BlockStateModelPart> parts) {
+        Map<String, BakedQuad> markers = new HashMap<>();
+        for (BlockStateModelPart part : parts) {
+            collectAllQuads(part).forEach(quad -> {
+                String key = markerKey(quad);
+                if (key != null) markers.putIfAbsent(key, quad);
+            });
+        }
+        return markers;
+    }
+
+    private static List<BakedQuad> collectAllQuads(BlockStateModelPart part) {
+        List<BakedQuad> quads = new ArrayList<>(part.getQuads(null));
+        for (Direction direction : Direction.values()) quads.addAll(part.getQuads(direction));
+        return quads;
+    }
+
+    private static List<BakedQuad> styleQuads(List<BakedQuad> shapeQuads,
+                                               @Nullable CustomFramedDrawerModelData design,
+                                               Map<String, BakedQuad> fallbackMarkers,
+                                               Map<MaterialKey, List<BakedQuad>> materialCache,
+                                               BlockAndTintGetter level, BlockPos pos,
+                                               boolean itemContext) {
+        List<BakedQuad> result = new ArrayList<>(shapeQuads.size());
+        for (BakedQuad shape : shapeQuads) {
+            String key = markerKey(shape);
+            if (key == null) {
+                result.add(shape);
                 continue;
-            var model = entry.getValue();
-            bakedPartsBuilder.put(name, model.bake(baker, model, spriteGetter, modelState, true));
-        }
-        var bakedParts = bakedPartsBuilder.build();
+            }
 
-        var itemPassesBuilder = ImmutableList.<BakedModel>builder();
-        for (String name : this.itemPasses) {
-            var model = bakedParts.get(name);
-            if (model == null)
-                throw new IllegalStateException("Specified \"" + name + "\" in \"item_render_order\", but that is not a child of this model.");
-            itemPassesBuilder.add(model);
-        }
+            Item material = getMaterial(design, key);
+            if (material == null && key.equals("front_divider")) material = getMaterial(design, "side");
+            List<BakedQuad> samples = material == null ? List.of() : materialCache.computeIfAbsent(
+                    new MaterialKey(material, shape.direction()), cacheKey -> collectMaterialQuads(
+                            cacheKey.item(), cacheKey.direction(), level, pos));
 
-        return new FramedModel.Baked(context.isGui3d(), context.useBlockLight(), context.useAmbientOcclusion(), particle, context.getTransforms(), overrides, bakedParts, itemPassesBuilder.build());
+            if (samples.isEmpty() && key.equals("front_divider")) {
+                BakedQuad fallback = fallbackMarkers.get("side");
+                if (fallback != null) samples = List.of(fallback);
+            }
+
+            if (samples.isEmpty()) {
+                result.add(shape);
+            } else {
+                for (BakedQuad sample : samples) {
+                    result.add(applyMaterial(shape, sample, material, level, pos, itemContext));
+                }
+            }
+        }
+        return List.copyOf(result);
     }
 
-    @Override
-    public Set<String> getConfigurableComponentNames() {
-        return children.keySet();
+    private static List<BakedQuad> collectMaterialQuads(Item item, Direction direction,
+                                                         BlockAndTintGetter level, BlockPos pos) {
+        if (!(item instanceof BlockItem blockItem) || blockItem.getBlock() instanceof FramedBlock) return List.of();
+        BlockState materialState = blockItem.getBlock().defaultBlockState();
+        BlockStateModel model = Minecraft.getInstance().getModelManager().getBlockStateModelSet().get(materialState);
+        List<BlockStateModelPart> parts = new ArrayList<>();
+        model.collectParts(level, pos, materialState, RandomSource.create(42), parts);
+
+        List<BakedQuad> quads = new ArrayList<>();
+        for (BlockStateModelPart part : parts) quads.addAll(part.getQuads(direction));
+        if (quads.isEmpty()) {
+            for (BlockStateModelPart part : parts) {
+                for (BakedQuad quad : part.getQuads(null)) {
+                    if (quad.direction() == direction) quads.add(quad);
+                }
+            }
+        }
+        return List.copyOf(quads);
     }
 
-    public class Baked implements IDynamicBakedModel {
-        private final boolean isAmbientOcclusion;
-        private final boolean isGui3d;
-        private final boolean isSideLit;
-        private final TextureAtlasSprite particle;
-        private final ItemOverrides overrides;
-        private final ItemTransforms transforms;
-        private final ImmutableMap<String, BakedModel> children;
-        private final ImmutableList<BakedModel> itemPasses;
+    private static BakedQuad applyMaterial(BakedQuad shape, BakedQuad sample, @Nullable Item material,
+                                           BlockAndTintGetter level, BlockPos pos, boolean itemContext) {
+        MutableQuad quad = new MutableQuad().setFrom(shape).setSpriteAndMoveUv(
+                sample.materialInfo().sprite(), sample.materialInfo().layer(), sample.materialInfo().itemRenderType());
+        quad.setTintIndex(-1);
 
-        public Baked(boolean isGui3d, boolean isSideLit, boolean isAmbientOcclusion, TextureAtlasSprite particle, ItemTransforms transforms, ItemOverrides overrides, ImmutableMap<String, BakedModel> children, ImmutableList<BakedModel> itemPasses) {
-            this.children = children;
-            this.isAmbientOcclusion = isAmbientOcclusion;
-            this.isGui3d = isGui3d;
-            this.isSideLit = isSideLit;
-            this.particle = particle;
-            this.overrides = overrides;
-            this.transforms = transforms;
-            this.itemPasses = itemPasses;
+        int tint = 0xFFFFFFFF;
+        int lightEmission = sample.materialInfo().lightEmission();
+        if (material instanceof BlockItem blockItem) {
+            BlockState materialState = blockItem.getBlock().defaultBlockState();
+            lightEmission = Math.max(lightEmission, materialState.getLightEmission());
+            int tintIndex = sample.materialInfo().tintIndex();
+            if (tintIndex >= 0) {
+                BlockTintSource tintSource = Minecraft.getInstance().getBlockColors().getTintSource(materialState, tintIndex);
+                if (tintSource != null) {
+                    tint = itemContext ? tintSource.color(materialState) : tintSource.colorInWorld(materialState, level, pos);
+                }
+            }
+        }
+        quad.setLightEmission(Math.max(shape.materialInfo().lightEmission(), lightEmission));
+        for (int vertex = 0; vertex < 4; vertex++) {
+            quad.setColor(vertex, multiplyColors(shape.bakedColors().color(vertex), sample.bakedColors().color(vertex), tint));
+        }
+        return quad.toBakedQuad();
+    }
+
+    private static int multiplyColors(int first, int second, int third) {
+        int a = channel(first, 24) * channel(second, 24) * channel(third, 24) / (255 * 255);
+        int r = channel(first, 16) * channel(second, 16) * channel(third, 16) / (255 * 255);
+        int g = channel(first, 8) * channel(second, 8) * channel(third, 8) / (255 * 255);
+        int b = channel(first, 0) * channel(second, 0) * channel(third, 0) / (255 * 255);
+        return a << 24 | r << 16 | g << 8 | b;
+    }
+
+    private static int channel(int color, int shift) {
+        return color >>> shift & 0xFF;
+    }
+
+    private static @Nullable Item getMaterial(@Nullable CustomFramedDrawerModelData design, String key) {
+        if (design == null) return null;
+        Item item = design.getDesign().get(key);
+        return item instanceof BlockItem ? item : null;
+    }
+
+    private static @Nullable String markerKey(BakedQuad quad) {
+        Identifier texture = quad.materialInfo().sprite().contents().name();
+        if (!texture.getNamespace().equals(FunctionalStorage.MOD_ID)) return null;
+        String path = texture.getPath();
+        if (path.equals("block/" + SIDE_MARKER)) return "side";
+        if (path.equals("block/" + DIVIDER_MARKER)) return "front_divider";
+        if (path.startsWith("block/" + FRONT_MARKER_PREFIX)) return "front";
+        return null;
+    }
+
+    private record GeometryKey(@Nullable Object delegateKey, String design, FramedModel owner) {}
+    private record MaterialKey(Item item, Direction direction) {}
+
+    private static final class StyledPart implements BlockStateModelPart {
+        private final BlockStateModelPart delegate;
+        private final List<BakedQuad> unculled;
+        private final EnumMap<Direction, List<BakedQuad>> culled = new EnumMap<>(Direction.class);
+        private final int materialFlags;
+
+        private StyledPart(BlockStateModelPart delegate, @Nullable CustomFramedDrawerModelData design,
+                           Map<String, BakedQuad> fallbackMarkers,
+                           Map<MaterialKey, List<BakedQuad>> materialCache,
+                           BlockAndTintGetter level, BlockPos pos, boolean itemContext) {
+            this.delegate = delegate;
+            this.unculled = styleQuads(delegate.getQuads(null), design, fallbackMarkers, materialCache, level, pos, itemContext);
+            for (Direction direction : Direction.values()) {
+                culled.put(direction, styleQuads(delegate.getQuads(direction), design, fallbackMarkers, materialCache, level, pos, itemContext));
+            }
+            int flags = 0;
+            for (BakedQuad quad : unculled) flags |= quad.materialInfo().flags();
+            for (List<BakedQuad> quads : culled.values()) {
+                for (BakedQuad quad : quads) flags |= quad.materialInfo().flags();
+            }
+            this.materialFlags = flags;
         }
 
-        @NotNull
         @Override
-        public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, @NotNull RandomSource rand, @NotNull ModelData data, @Nullable RenderType renderType) {
-            List<List<BakedQuad>> quadLists = new ArrayList<>();
-            for (Map.Entry<String, BakedModel> entry : children.entrySet()) {
-                if (renderType == null || (state != null && entry.getValue().getRenderTypes(state, rand, data).contains(renderType))) {
-                    FramedDrawerModelData framedDrawerModelData = data.get(FramedDrawerModelData.FRAMED_PROPERTY);
-                    List<BakedQuad> quads = entry.getValue().getQuads(state, side, rand, Data.resolve(data, entry.getKey()), renderType);
-                    if (framedDrawerModelData != null && framedDrawerModelData.getDesign().containsKey(entry.getKey())) {
-                        Item item = framedDrawerModelData.getDesign().get(entry.getKey());
-                        quadLists.add(getQuadsUsingShape(item, quads, side, rand, renderType));
-                    } else {
-                        quadLists.add(quads);
-                    }
-                }
-            }
-            return ConcatenatedListView.of(quadLists);
-        }
-
-        protected static List<BakedQuad> getQuadsUsingShape(@Nullable Item frameItem, List<BakedQuad> shape, @Nullable Direction side, RandomSource rand, @Nullable RenderType renderType) {
-            if (frameItem instanceof BlockItem blockItem) {
-                BlockState state1 = blockItem.getBlock().defaultBlockState();
-                BakedModel model = Minecraft.getInstance().getBlockRenderer().getBlockModel(state1);
-                Optional<List<Triple<TextureAtlasSprite, Integer, int[]>>> spriteOptional = getSpriteData(model, state1, side, rand, null, renderType);
-                List<BakedQuad> returnQuads = new ArrayList<>();
-                for (BakedQuad shapeQuad : shape) {
-                    List<Triple<TextureAtlasSprite, Integer, int[]>> spriteData = spriteOptional.orElse(getSpriteFromModel(shapeQuad, model, state1, null));
-                    returnQuads.addAll(framedQuad(shapeQuad, spriteData, state1.getLightEmission(Minecraft.getInstance().level, BlockPos.ZERO)));
-                }
-                return returnQuads;
-            }
-            return List.of();
-        }
-
-        private static Optional<List<Triple<TextureAtlasSprite, Integer, int[]>>> getSpriteData(BakedModel model, BlockState state, @Nullable Direction side, RandomSource rand, @Nullable Direction rotation, @Nullable RenderType renderType) {
-            List<BakedQuad> quads = model.getQuads(state, side, rand, ModelData.EMPTY, renderType);
-            List<Float> positions = new ArrayList<>();
-            List<Triple<TextureAtlasSprite, Integer, int[]>> modelData = new ArrayList<>();
-            if (!quads.isEmpty()) {
-                for (BakedQuad bakedQuad : quads) {
-                    float[] position = unpackVertices(bakedQuad.getVertices(), 0, IQuadTransformer.POSITION, 3);
-                    positions.add(getPositionFromDirection(position, side));
-                }
-                List<Integer> index = getMinMaxPosition(positions, side);
-                for (int i = 0; i < index.size(); i++) {
-                    int[] lights = new int[4];
-                    for (int j = 0; j < 4; j++) {
-                        lights[j] = quads.get(i).getVertices()[IQuadTransformer.UV2 + j * IQuadTransformer.STRIDE];
-                    }
-                    int tint = quads.get(i).isTinted() ? Minecraft.getInstance().getBlockColors().getColor(state, Minecraft.getInstance().level, null, quads.get(i).getTintIndex()) : -1;
-                    Triple<TextureAtlasSprite, Integer, int[]> triple = new ImmutableTriple<>(quads.get(i).getSprite(), tint, lights);
-                    modelData.add(triple);
-                }
-            }
-            return quads.isEmpty() ? Optional.empty() : Optional.of(modelData);
-        }
-
-        private static float getPositionFromDirection(float[] position, Direction side) {
-            Vec3i normal = new Vec3i(0, 0, 0);
-            if (side != null) {
-                normal = side.getNormal();
-            }
-            Vector3f vector3f = new Vector3f(position[0] * normal.getX(), position[1] * normal.getY(), position[2] * normal.getZ()); // making a vector with only 1 element at the normal
-            return (float) Math.sqrt(vector3f.dot(vector3f));
-        }
-
-        private static List<Integer> getMinMaxPosition(List<Float> positions, Direction side) {
-            List<Integer> index = new ArrayList<>();
-            float minMax = side != null && side.getAxisDirection() == Direction.AxisDirection.POSITIVE ? Collections.max(positions) : Collections.min(positions);
-            for (int i = 0; i < positions.size(); i++) {
-                if (Math.abs(positions.get(i) - minMax) < 0.1) {
-                    index.add(i);
-                }
-            }
-            return index;
-        }
-
-        protected static List<Triple<TextureAtlasSprite, Integer, int[]>> getSpriteFromModel(BakedQuad shape, BakedModel model, BlockState state, Direction rotation) {
-            List<BakedQuad> quads = model.getQuads(state, shape.getDirection(), RandomSource.create());
-            List<Float> positions = new ArrayList<>();
-            List<Triple<TextureAtlasSprite, Integer, int[]>> modelData = new ArrayList<>();
-            if (!quads.isEmpty()) {
-                for (BakedQuad bakedQuad : quads) {
-                    float[] position = unpackVertices(bakedQuad.getVertices(), 0, IQuadTransformer.POSITION, 3);
-                    positions.add(getPositionFromDirection(position, shape.getDirection()));
-
-                }
-                List<Integer> index = getMinMaxPosition(positions, shape.getDirection());
-                for (int i = 0; i < index.size(); i++) {
-                    int[] lights = new int[4];
-                    for (int j = 0; j < 4; j++) {
-                        lights[j] = quads.get(i).getVertices()[IQuadTransformer.UV2 + j * IQuadTransformer.STRIDE];
-                    }
-                    int tint = quads.get(i).isTinted() ? Minecraft.getInstance().getBlockColors().getColor(state, Minecraft.getInstance().level, null, quads.get(i).getTintIndex()) : -1;
-                    Triple<TextureAtlasSprite, Integer, int[]> triple = new ImmutableTriple<>(quads.get(i).getSprite(), tint, lights);
-                    modelData.add(triple);
-                }
-            }
-            return quads.isEmpty() ? List.of(Triple.of(Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(MissingTextureAtlasSprite.getLocation()), -1, new int[] {0, 0, 0, 0})) : modelData;
-        }
-
-        protected static List<BakedQuad> framedQuad(BakedQuad toCopy, List<Triple<TextureAtlasSprite, Integer, int[]>> modelData, int lightEmission) {
-            lightEmission = LightTexture.pack(lightEmission, lightEmission);
-            List<BakedQuad> quads = new ArrayList<>();
-            for (int j = 0; j < modelData.size(); j++) {
-                BakedQuad copied = new BakedQuad(Arrays.copyOf(toCopy.getVertices(), 32), -1, toCopy.getDirection(), modelData.get(j).getLeft(), toCopy.isShade());
-
-                for (int i = 0; i < 4; i++) {
-                    float[] uv0 = unpackVertices(copied.getVertices(), i, IQuadTransformer.UV0, 2);
-                    uv0[0] = (uv0[0] - toCopy.getSprite().getU0()) * toCopy.getSprite().contents().width() / toCopy.getSprite().contents().width() + modelData.get(j).getLeft().getU0();
-                    uv0[1] = (uv0[1] - toCopy.getSprite().getV0()) * toCopy.getSprite().contents().height() / toCopy.getSprite().contents().height() + modelData.get(j).getLeft().getV0();
-                    int[] packedTextureData = packUV(uv0[0], uv0[1]);
-                    copied.getVertices()[IQuadTransformer.UV0 + i * IQuadTransformer.STRIDE] = packedTextureData[0];
-                    copied.getVertices()[IQuadTransformer.UV0 + 1 + i * IQuadTransformer.STRIDE] = packedTextureData[1];
-
-                    if (modelData.get(j).getMiddle() != -1) {
-                        int[] colors = getColorARGB(copied.getVertices(), i);
-                        int[] color1 = getColorARGB(modelData.get(j).getMiddle());
-                        colors[0] = (colors[0] * color1[0]) / 255;
-                        colors[1] = (colors[1] * color1[1]) / 255;
-                        colors[2] = (colors[2] * color1[2]) / 255;
-                        colors[3] = (colors[3] * color1[3]) / 255;
-                        int packedColor = packColor(colors[3], colors[2], colors[1], colors[0]);
-                        copied.getVertices()[IQuadTransformer.COLOR + i * IQuadTransformer.STRIDE] = packedColor;
-                    }
-
-                    copied.getVertices()[IQuadTransformer.UV2 + i * IQuadTransformer.STRIDE] = Math.max(modelData.get(j).getRight()[i], lightEmission);
-
-                }
-                quads.add(copied);
-            }
-            return quads;
-        }
-
-        private static float[] unpackVertices(int[] vertices, int vertexIndex, int position, int count) {
-            float[] floats = new float[count];
-            int startIndex = vertexIndex * IQuadTransformer.STRIDE + position;
-            for (int i = 0; i < count; i++) {
-                floats[i] = Float.intBitsToFloat(vertices[startIndex + i]);
-            }
-            return floats;
-        }
-
-        private static int[] getColorARGB(int[] vertices, int vertexIndex) {
-            int color = vertices[IQuadTransformer.STRIDE * vertexIndex + IQuadTransformer.COLOR];
-            return getColorARGB(color);
-        }
-
-        private static int[] getColorARGB(int color) {
-            int[] argb = new int[4];
-            argb[0] = color >> 24 & 0xFF;
-            argb[1] = color >> 16 & 0xFF;
-            argb[2] = color >> 8 & 0xFF;
-            argb[3] = color & 0xFF;
-            return argb;
-        }
-
-        private static int[] getUV2(int[] vertices, int vertexIndex) {
-            int[] light = new int[2];
-            int uv2 = vertices[IQuadTransformer.STRIDE * vertexIndex + IQuadTransformer.UV2];
-            light[0] = (uv2 & 0xFFFF) >> 4;
-            light[1] = uv2 >> 20 & '\uffff';
-            return light;
-        }
-
-
-        public static int[] packUV(float u, float v) {
-            int[] quadData = new int[2];
-            quadData[0] = Float.floatToRawIntBits(u);
-            quadData[1] = Float.floatToRawIntBits(v);
-            return quadData;
-        }
-
-        public static int packColor(int r, int g, int b, int a) {
-            return ((a & 0xFF) << 24) |
-                    ((r & 0xFF) << 16) |
-                    ((g & 0xFF) << 8) |
-                    ((b & 0xFF));
-        }
-
-        public static int packUV2(int u, int v) {
-            return u << 4 | v << 20;
+        public List<BakedQuad> getQuads(@Nullable Direction direction) {
+            return direction == null ? unculled : culled.get(direction);
         }
 
         @Override
         public boolean useAmbientOcclusion() {
-            return isAmbientOcclusion;
+            return delegate.useAmbientOcclusion();
         }
 
         @Override
-        public boolean isGui3d() {
-            return isGui3d;
+        public Material.Baked particleMaterial() {
+            return delegate.particleMaterial();
         }
 
         @Override
-        public boolean usesBlockLight() {
-            return isSideLit;
-        }
-
-        @Override
-        public boolean isCustomRenderer() {
-            return false;
-        }
-
-        @Override
-        public TextureAtlasSprite getParticleIcon() {
-            return particle;
-        }
-
-        @Override
-        public TextureAtlasSprite getParticleIcon(@NotNull ModelData data) {
-            FramedDrawerModelData framedDrawerModelData = data.get(FramedDrawerModelData.FRAMED_PROPERTY);
-            if (framedDrawerModelData != null && framedDrawerModelData.getDesign().containsKey("particle")) {
-                if (framedDrawerModelData.getDesign().get("particle") instanceof BlockItem blockItem && !BuiltInRegistries.ITEM.getKey(blockItem).getNamespace().equals(FunctionalStorage.MOD_ID)) {
-                    return Minecraft.getInstance().getBlockRenderer().getBlockModel(blockItem.getBlock().defaultBlockState()).getParticleIcon(data);
-                }
-            }
-            return particle;
-        }
-
-        @Override
-        public ItemOverrides getOverrides() {
-            return overrides;
-        }
-
-        @Override
-        public ItemTransforms getTransforms() {
-            return transforms;
-        }
-
-        @Override
-        public ChunkRenderTypeSet getRenderTypes(@NotNull BlockState state, @NotNull RandomSource rand, @NotNull ModelData data) {
-            var sets = new ArrayList<ChunkRenderTypeSet>();
-            for (Map.Entry<String, BakedModel> entry : children.entrySet())
-                sets.add(entry.getValue().getRenderTypes(state, rand, FramedModel.Data.resolve(data, entry.getKey())));
-            return ChunkRenderTypeSet.union(sets);
-        }
-
-        @Override
-        public List<BakedModel> getRenderPasses(ItemStack itemStack, boolean fabulous) {
-            return List.of(new ItemModel(this, itemStack));
-        }
-
-        @Nullable
-        public BakedModel getPart(String name) {
-            return children.get(name);
-        }
-    }
-
-    /**
-     * A model data container which stores data for child components.
-     */
-    public static class Data {
-        public static final ModelProperty<FramedModel.Data> PROPERTY = new ModelProperty<>();
-
-        private final Map<String, ModelData> partData;
-
-        private Data(Map<String, ModelData> partData) {
-            this.partData = partData;
-        }
-
-        @Nullable
-        public ModelData get(String name) {
-            return partData.get(name);
-        }
-
-        /**
-         * Helper to get the data from a {@link ModelData} instance.
-         *
-         * @param modelData The object to get data from
-         * @param name      The name of the part to get data for
-         * @return The data for the part, or the one passed in if not found
-         */
-        public static ModelData resolve(ModelData modelData, String name) {
-            var compositeData = modelData.get(PROPERTY);
-            if (compositeData == null)
-                return modelData;
-            var partData = compositeData.get(name);
-            return partData != null ? partData : modelData;
-        }
-
-        public static FramedModel.Data.Builder builder() {
-            return new FramedModel.Data.Builder();
-        }
-
-        public static final class Builder {
-            private final Map<String, ModelData> partData = new IdentityHashMap<>();
-
-            public FramedModel.Data.Builder with(String name, ModelData data) {
-                partData.put(name, data);
-                return this;
-            }
-
-            public FramedModel.Data build() {
-                return new FramedModel.Data(partData);
-            }
-        }
-    }
-
-    public static final class Loader implements IGeometryLoader<FramedModel> {
-        public static final FramedModel.Loader INSTANCE = new FramedModel.Loader();
-
-        private Loader() {
-        }
-
-        @Override
-        public FramedModel read(JsonObject jsonObject, JsonDeserializationContext deserializationContext) {
-            List<String> itemPasses = new ArrayList<>();
-            ImmutableMap.Builder<String, BlockModel> childrenBuilder = ImmutableMap.builder();
-            readChildren(jsonObject, "children", deserializationContext, childrenBuilder, itemPasses, false);
-            boolean logWarning = readChildren(jsonObject, "parts", deserializationContext, childrenBuilder, itemPasses, true);
-
-            var children = childrenBuilder.build();
-            if (children.isEmpty())
-                throw new JsonParseException("Composite model requires a \"children\" element with at least one element.");
-
-            if (jsonObject.has("item_render_order")) {
-                itemPasses.clear();
-                for (var element : jsonObject.getAsJsonArray("item_render_order")) {
-                    var name = element.getAsString();
-                    if (!children.containsKey(name))
-                        throw new JsonParseException("Specified \"" + name + "\" in \"item_render_order\", but that is not a child of this model.");
-                    itemPasses.add(name);
-                }
-            }
-
-            return new FramedModel(children, ImmutableList.copyOf(itemPasses));
-        }
-
-        private boolean readChildren(JsonObject jsonObject, String name, JsonDeserializationContext deserializationContext, ImmutableMap.Builder<String, BlockModel> children, List<String> itemPasses, boolean logWarning) {
-            if (!jsonObject.has(name))
-                return false;
-            var childrenJsonObject = jsonObject.getAsJsonObject(name);
-            for (Map.Entry<String, JsonElement> entry : childrenJsonObject.entrySet()) {
-                children.put(entry.getKey(), deserializationContext.deserialize(entry.getValue(), BlockModel.class));
-                itemPasses.add(entry.getKey()); // We can do this because GSON preserves ordering during deserialization
-            }
-            return logWarning;
-        }
-    }
-
-    private class ItemModel implements IDynamicBakedModel {
-
-        private final Baked baked;
-        private final ItemStack itemStack;
-
-        public ItemModel(Baked baked, ItemStack itemStack) {
-            this.baked = baked;
-            this.itemStack = itemStack;
-        }
-
-        @Override
-        public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, RandomSource rand, ModelData extraData, @Nullable RenderType renderType) {
-            List<List<BakedQuad>> quadLists = new ArrayList<>();
-            for (Map.Entry<String, BakedModel> entry : baked.children.entrySet()) {
-                if (renderType == null || (state != null && entry.getValue().getRenderTypes(state, rand, extraData).contains(renderType))) {
-
-                    List<BakedQuad> quads = entry.getValue().getQuads(state, side, rand, Data.resolve(extraData, entry.getKey()), renderType);
-                    FramedDrawerModelData framedDrawerModelData = FramedDrawerBlock.getDrawerModelData(itemStack);
-                    if (framedDrawerModelData != null && framedDrawerModelData.getDesign().containsKey(entry.getKey())) {
-                        Item item = framedDrawerModelData.getDesign().get(entry.getKey());
-                        quadLists.add(getQuadsUsingShape(item, quads, side, rand, renderType));
-                    } else {
-                        quadLists.add(quads);
-                    }
-                }
-            }
-            return ConcatenatedListView.of(quadLists);
-        }
-
-        @Override
-        public boolean useAmbientOcclusion() {
-            return false;
-        }
-
-        @Override
-        public boolean isGui3d() {
-            return true;
-        }
-
-        @Override
-        public boolean usesBlockLight() {
-            return true;
-        }
-
-        @Override
-        public boolean isCustomRenderer() {
-            return false;
-        }
-
-        @Override
-        public TextureAtlasSprite getParticleIcon() {
-            return baked.getParticleIcon();
-        }
-
-        @Override
-        public ItemOverrides getOverrides() {
-            return ItemOverrides.EMPTY;
-        }
-
-        @Override
-        public ItemTransforms getTransforms() {
-            return baked.getTransforms();
+        public int materialFlags() {
+            return materialFlags;
         }
     }
 }

@@ -1,132 +1,73 @@
 package com.buuz135.functionalstorage.inventory;
 
-import com.buuz135.functionalstorage.block.tile.DrawerControllerTile;
 import com.buuz135.functionalstorage.util.ConnectedDrawers;
-import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.items.IItemHandler;
-import org.jetbrains.annotations.NotNull;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
 import java.util.ArrayList;
 import java.util.List;
 
-class HandlerSlotSelector {
-    IItemHandler handler;
-    int slot;
+public abstract class ControllerInventoryHandler implements ResourceHandler<ItemResource> {
 
-    public HandlerSlotSelector(IItemHandler handler, int slot) {
-        this.handler = handler;
-        this.slot = slot;
-    }
-
-    public ItemStack getStackInSlot() {
-        return handler.getStackInSlot(slot);
-    }
-
-    public ItemStack insertItem(@NotNull ItemStack stack, boolean simulate) {
-        return handler.insertItem(slot, stack, simulate);
-    }
-
-    public ItemStack extractItem(int amount, boolean simulate) {
-        return handler.extractItem(slot, amount, simulate);
-    }
-
-    public int getSlotLimit() {
-        return handler.getSlotLimit(slot);
-    }
-
-    public boolean isItemValid(@NotNull ItemStack stack) {
-        return handler.isItemValid(slot, stack);
-    }
-}
-
-public abstract class ControllerInventoryHandler implements IItemHandler {
-
-    HandlerSlotSelector[] selectors;
-    private int slots = 0;
+    private HandlerIndex[] indices;
 
     public ControllerInventoryHandler() {
         invalidateSlots();
     }
 
-    @Override
-    public int getSlots() {
-        return slots;
-    }
-
     public void invalidateSlots() {
-        List<HandlerSlotSelector> selectors = new ArrayList<HandlerSlotSelector>();
-        this.slots = 0;
-        for (IItemHandler handler : getDrawers().getItemHandlers()) {
+        List<HandlerIndex> rebuilt = new ArrayList<>();
+        for (ResourceHandler<ItemResource> handler : getDrawers().getItemHandlers()) {
             if (handler instanceof ControllerInventoryHandler) continue;
-            int handlerSlots = handler.getSlots();
-            for (int i = 0; i < handlerSlots; ++i) {
-                selectors.add(new HandlerSlotSelector(handler, i));
-            }
-            this.slots += handlerSlots;
+            for (int index = 0; index < handler.size(); index++) rebuilt.add(new HandlerIndex(handler, index));
         }
-        this.selectors = selectors.toArray(new HandlerSlotSelector[selectors.size()]);
+        indices = rebuilt.toArray(HandlerIndex[]::new);
     }
 
-    private HandlerSlotSelector selectorForSlot(int slot) {
-        return slot >= 0 && slot < selectors.length ? selectors[slot] : null;
+    private HandlerIndex index(int index) {
+        return index >= 0 && index < indices.length ? indices[index] : null;
     }
 
-    @NotNull
+    @Override public int size() { return indices.length; }
+
     @Override
-    public ItemStack getStackInSlot(int slot) {
-        HandlerSlotSelector selector = selectorForSlot(slot);
-        if (null == selector) return ItemStack.EMPTY;
-
-        // Block access to invalid handlers
-        if (!getDrawers().getItemHandlers().contains(selector.handler)) {
-            invalidateSlots();
-            return ItemStack.EMPTY;
-        }
-
-        return selector.getStackInSlot();
-    }
-
-    @NotNull
-    @Override
-    public ItemStack insertItem(int slot, @NotNull ItemStack stack, boolean simulate) {
-        HandlerSlotSelector selector = selectorForSlot(slot);
-        if (null == selector) return stack;
-        //Verify if the handler is still valid before extraction
-        if (!getDrawers().getItemHandlers().contains(selector.handler)) {
-            // Invalid handler: Rebuild slots and return empty stack
-            invalidateSlots();
-            return stack;
-        }
-        return selector.insertItem(stack, simulate);
-    }
-
-    @NotNull
-    @Override
-    public ItemStack extractItem(int slot, int amount, boolean simulate) {
-        HandlerSlotSelector selector = selectorForSlot(slot);
-        if (null == selector) return ItemStack.EMPTY;
-
-        //Verify if the handler is still valid before extraction
-        if (!getDrawers().getItemHandlers().contains(selector.handler)) {
-            // Invalid handler: Rebuild slots and return empty stack
-            invalidateSlots();
-            return ItemStack.EMPTY;
-        }
-
-        return selector.extractItem(amount, simulate);
+    public ItemResource getResource(int index) {
+        HandlerIndex selected = index(index);
+        return selected == null ? ItemResource.EMPTY : selected.handler.getResource(selected.index);
     }
 
     @Override
-    public int getSlotLimit(int slot) {
-        HandlerSlotSelector selector = selectorForSlot(slot);
-        return null != selector ? selector.getSlotLimit() : 0;
+    public long getAmountAsLong(int index) {
+        HandlerIndex selected = index(index);
+        return selected == null ? 0 : selected.handler.getAmountAsLong(selected.index);
     }
 
     @Override
-    public boolean isItemValid(int slot, @NotNull ItemStack stack) {
-        HandlerSlotSelector selector = selectorForSlot(slot);
-        return null != selector ? selector.isItemValid(stack) : false;
+    public long getCapacityAsLong(int index, ItemResource resource) {
+        HandlerIndex selected = index(index);
+        return selected == null ? 0 : selected.handler.getCapacityAsLong(selected.index, resource);
+    }
+
+    @Override
+    public boolean isValid(int index, ItemResource resource) {
+        HandlerIndex selected = index(index);
+        return selected != null && selected.handler.isValid(selected.index, resource);
+    }
+
+    @Override
+    public int insert(int index, ItemResource resource, int amount, TransactionContext transaction) {
+        HandlerIndex selected = index(index);
+        return selected == null ? 0 : selected.handler.insert(selected.index, resource, amount, transaction);
+    }
+
+    @Override
+    public int extract(int index, ItemResource resource, int amount, TransactionContext transaction) {
+        HandlerIndex selected = index(index);
+        return selected == null ? 0 : selected.handler.extract(selected.index, resource, amount, transaction);
     }
 
     public abstract ConnectedDrawers getDrawers();
+
+    private record HandlerIndex(ResourceHandler<ItemResource> handler, int index) {}
 }

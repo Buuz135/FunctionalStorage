@@ -1,26 +1,20 @@
 {
   "neoforge:conditions": [
     {
-      "type": "neoforge:item_exists",
-      "item": "functionalstorage:pusher_upgrade"
+      "type": "neoforge:registered",
+      "value": "functionalstorage:pusher_upgrade"
     }
   ],
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "B": {
-      "tag": "c:dusts/redstone"
-    },
+    "B": "#c:dusts/redstone",
     "D": {
-      "type": "functionalstorage:tag_without_component",
+      "neoforge:ingredient_type": "functionalstorage:tag_without_component",
       "tag": "functionalstorage:drawer"
     },
-    "I": {
-      "tag": "c:stones"
-    },
-    "R": {
-      "item": "minecraft:hopper"
-    }
+    "I": "#c:stones",
+    "R": "minecraft:hopper"
   },
   "pattern": [
     "IBI",
@@ -28,10 +22,6 @@
     "IRI"
   ],
   "result": {
-    "components": {
-      "functionalstorage:direction": "north"
-    },
-    "count": 1,
     "id": "functionalstorage:pusher_upgrade"
   }
 }

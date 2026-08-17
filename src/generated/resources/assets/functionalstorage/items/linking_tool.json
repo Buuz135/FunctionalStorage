@@ -1,0 +1,24 @@
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "functionalstorage:item/linking_tool",
+    "tints": [
+      {
+        "type": "functionalstorage:tool",
+        "layer": 0
+      },
+      {
+        "type": "functionalstorage:tool",
+        "layer": 1
+      },
+      {
+        "type": "functionalstorage:tool",
+        "layer": 2
+      },
+      {
+        "type": "functionalstorage:tool",
+        "layer": 3
+      }
+    ]
+  }
+}

@@ -11,7 +11,9 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 
 public record MoveItemsBehavior(boolean drawerIsSource, int itemsPerOperation) implements FunctionalUpgradeBehavior {
     public static final MapCodec<MoveItemsBehavior> CODEC = RecordCodecBuilder.mapCodec(in -> in.group(
@@ -24,26 +26,12 @@ public record MoveItemsBehavior(boolean drawerIsSource, int itemsPerOperation) i
         if (!(dr instanceof ItemControllableDrawerTile<?> drawer)) return;
 
         Direction direction = UpgradeItem.getDirection(upgradeStack);
-        var otherHandler = level.getCapability(Capabilities.ItemHandler.BLOCK, pos.relative(direction), direction.getOpposite());
+        var otherResourceHandler = level.getCapability(Capabilities.Item.BLOCK, pos.relative(direction), direction.getOpposite());
 
-        if (otherHandler != null) {
-            IItemHandler source = drawerIsSource ? drawer.getStorage() : otherHandler;
-            IItemHandler destination = drawerIsSource ? otherHandler : drawer.getStorage();
-
-            for (int sourceSlot = 0; sourceSlot < source.getSlots(); sourceSlot++) {
-                ItemStack pulledStack = source.extractItem(sourceSlot, itemsPerOperation, true);
-                if (pulledStack.isEmpty()) continue;
-
-                for (int destinationSlot = 0; destinationSlot < destination.getSlots(); destinationSlot++) {
-                    if (destination.getStackInSlot(destinationSlot).getCount() >= destination.getSlotLimit(destinationSlot))
-                        continue;
-                    ItemStack remainder = destination.insertItem(destinationSlot, pulledStack, true);
-                    if (remainder.getCount() < pulledStack.getCount()) {
-                        destination.insertItem(destinationSlot, source.extractItem(sourceSlot, pulledStack.getCount() - remainder.getCount(), false), false);
-                        break;
-                    }
-                }
-            }
+        if (otherResourceHandler != null) {
+            ResourceHandler<ItemResource> source = drawerIsSource ? drawer.getStorage() : otherResourceHandler;
+            ResourceHandler<ItemResource> destination = drawerIsSource ? otherResourceHandler : drawer.getStorage();
+            ResourceHandlerUtil.moveStacking(source, destination, resource -> true, itemsPerOperation, null);
         }
     }
 

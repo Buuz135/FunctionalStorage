@@ -10,7 +10,7 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -19,6 +19,8 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.TagValueInput;
+import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
@@ -53,9 +55,9 @@ public class ArmoryCabinetBlock extends RotatableBlock<ArmoryCabinetTile> {
     }
 
     @Override
-    protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
+    protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
         openArmoryMenu(level, pos, player);
-        return ItemInteractionResult.SUCCESS;
+        return InteractionResult.SUCCESS;
     }
 
     private void openArmoryMenu(Level level, BlockPos pos, Player player) {
@@ -102,7 +104,7 @@ public class ArmoryCabinetBlock extends RotatableBlock<ArmoryCabinetTile> {
         if (stack.has(FSAttachments.TILE)) {
             BlockEntity entity = level.getBlockEntity(pos);
             if (entity instanceof ArmoryCabinetTile et) {
-                et.loadAdditional(stack.get(FSAttachments.TILE), entity.getLevel().registryAccess());
+                et.loadCustomOnly(TagValueInput.create(ProblemReporter.DISCARDING, entity.getLevel().registryAccess(), stack.get(FSAttachments.TILE)));
                 et.markForUpdate();
             }
         }

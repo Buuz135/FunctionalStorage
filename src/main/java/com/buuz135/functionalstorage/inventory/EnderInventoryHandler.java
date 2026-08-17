@@ -3,7 +3,7 @@ package com.buuz135.functionalstorage.inventory;
 import com.buuz135.functionalstorage.FunctionalStorage;
 import com.buuz135.functionalstorage.world.EnderSavedData;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 
 public class EnderInventoryHandler extends BigInventoryHandler implements ILockable {
 
@@ -32,8 +32,8 @@ public class EnderInventoryHandler extends BigInventoryHandler implements ILocka
     @Override
     public void deserializeNBT(net.minecraft.core.HolderLookup.Provider provider, CompoundTag nbt) {
         super.deserializeNBT(provider, nbt);
-        this.locked = nbt.getBoolean(NBT_LOCKED);
-        this.voidItems = nbt.getBoolean(NBT_VOID);
+        this.locked = nbt.getBooleanOr(NBT_LOCKED, false);
+        this.voidItems = nbt.getBooleanOr(NBT_VOID, false);
     }
 
     @Override
@@ -52,11 +52,11 @@ public class EnderInventoryHandler extends BigInventoryHandler implements ILocka
     }
 
     @Override
-    public int getSlotLimit(int slot, ItemStack stack) {
+    public int getSlotLimit(int slot, ItemResource resource) {
         if (slot == 1) return Integer.MAX_VALUE;
         double stackSize = 1;
-        if (!stack.isEmpty()) {
-            stackSize = stack.getMaxStackSize() / 64D;
+        if (!resource.isEmpty()) {
+            stackSize = resource.getMaxStackSize() / 64D;
         }
         return (int) Math.floor(Math.min(Integer.MAX_VALUE, FunctionalStorage.DrawerType.X_1.getSlotAmount() * 64 * 4) * stackSize);
     }

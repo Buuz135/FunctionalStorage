@@ -9,11 +9,10 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.util.FastColor;
+import net.minecraft.util.ARGB;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
@@ -48,8 +47,8 @@ public class ConfigurationToolItem extends FSItem {
             } else {
                 ((ControllableDrawerTile<?>) blockEntity).toggleOption(configuractionAction);
                 if (configuractionAction.getMax() > 1) {
-                    context.getPlayer().displayClientMessage(
-                            Component.translatable("configurationtool.configmode.indicator.mode_" + ((ControllableDrawerTile<?>) blockEntity).getDrawerOptions().getAdvancedValue(configuractionAction)).setStyle(Style.EMPTY.withColor(configuractionAction.getColor())), true);
+                    context.getPlayer().sendOverlayMessage(
+                            Component.translatable("configurationtool.configmode.indicator.mode_" + ((ControllableDrawerTile<?>) blockEntity).getDrawerOptions().getAdvancedValue(configuractionAction)).setStyle(Style.EMPTY.withColor(configuractionAction.getColor())));
                 }
             }
             return InteractionResult.SUCCESS;
@@ -58,17 +57,17 @@ public class ConfigurationToolItem extends FSItem {
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level p_41432_, Player player, InteractionHand hand) {
+    public InteractionResult use(Level p_41432_, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         if (!stack.isEmpty()) {
             if (player.isShiftKeyDown()) {
                 ConfigurationAction action = getAction(stack);
                 ConfigurationAction newAction = ConfigurationAction.values()[(Arrays.asList(ConfigurationAction.values()).indexOf(action) + 1) % ConfigurationAction.values().length];
                 stack.set(FSAttachments.CONFIGURATION_ACTION, newAction);
-                player.displayClientMessage(Component.translatable("configurationtool.configmode.swapped").setStyle(Style.EMPTY.withColor(newAction.getColor()))
-                        .append(Component.translatable("configurationtool.configmode." + newAction.name().toLowerCase(Locale.ROOT))), true);
+                player.sendOverlayMessage(Component.translatable("configurationtool.configmode.swapped").setStyle(Style.EMPTY.withColor(newAction.getColor()))
+                        .append(Component.translatable("configurationtool.configmode." + newAction.name().toLowerCase(Locale.ROOT))));
                 player.playSound(SoundEvents.ITEM_FRAME_REMOVE_ITEM, 0.5f, 1);
-                return InteractionResultHolder.success(stack);
+                return InteractionResult.SUCCESS;
             }
         }
         return super.use(p_41432_, player, hand);
@@ -92,11 +91,11 @@ public class ConfigurationToolItem extends FSItem {
     }
 
     public enum ConfigurationAction implements StringRepresentable{
-        LOCKING(TextColor.fromRgb(FastColor.ARGB32.color(40, 131, 250)), 1),
-        TOGGLE_NUMBERS(TextColor.fromRgb(FastColor.ARGB32.color(250, 145, 40)), 1),
-        TOGGLE_RENDER(TextColor.fromRgb(FastColor.ARGB32.color(100, 250, 40)), 1),
-        TOGGLE_UPGRADES(TextColor.fromRgb(FastColor.ARGB32.color(166, 40, 250)), 1),
-        INDICATOR(TextColor.fromRgb(FastColor.ARGB32.color(255, 40, 40)), 3); //0 NO , 1 - PROGRESS, 2 - ONLY FULL, 3 - ONLY FULL WITHOUT BG
+        LOCKING(TextColor.fromRgb(ARGB.color(40, 131, 250)), 1),
+        TOGGLE_NUMBERS(TextColor.fromRgb(ARGB.color(250, 145, 40)), 1),
+        TOGGLE_RENDER(TextColor.fromRgb(ARGB.color(100, 250, 40)), 1),
+        TOGGLE_UPGRADES(TextColor.fromRgb(ARGB.color(166, 40, 250)), 1),
+        INDICATOR(TextColor.fromRgb(ARGB.color(255, 40, 40)), 3); //0 NO , 1 - PROGRESS, 2 - ONLY FULL, 3 - ONLY FULL WITHOUT BG
 
 
         public static final Codec<ConfigurationAction> CODEC = StringRepresentable.fromValues(ConfigurationAction::values);

@@ -1,0 +1,9 @@
+{
+  "model": {
+    "type": "minecraft:special",
+    "base": "functionalstorage:block/framed_storage_controller",
+    "model": {
+      "type": "functionalstorage:framed"
+    }
+  }
+}

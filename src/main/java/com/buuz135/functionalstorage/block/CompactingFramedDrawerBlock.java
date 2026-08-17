@@ -59,9 +59,8 @@ public class CompactingFramedDrawerBlock extends CompactingDrawerBlock implement
                 .pattern("S S").pattern("SDS").pattern(" S ")
                 .define('S', Tags.Items.NUGGETS_IRON)
                 .define('D', FunctionalStorage.COMPACTING_DRAWER)
-                .save(CopyComponentsRecipe.output(
-                        consumer, 4, FSAttachments.TILE.get()
-                ), builtInRegistryHolder().unwrapKey().get().location().withSuffix("_from_simple"));
+                .setName(builtInRegistryHolder().unwrapKey().get().identifier().withSuffix("_from_simple"))
+                .save(CopyComponentsRecipe.output(consumer, 4, FSAttachments.TILE.get()));
     }
     
 }

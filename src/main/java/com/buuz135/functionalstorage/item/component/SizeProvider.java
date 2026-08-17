@@ -7,7 +7,8 @@ import com.mojang.serialization.MapCodec;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 
 import java.text.DecimalFormat;
 import java.util.Map;
@@ -34,23 +35,23 @@ public interface SizeProvider {
 
     MapCodec<? extends SizeProvider> codec();
 
-    static int calculate(IItemHandler upgrades, Supplier<DataComponentType<SizeProvider>> component, int baseIn, ItemStack[] replacements) {
+    static int calculate(ResourceHandler<ItemResource> upgrades, Supplier<DataComponentType<SizeProvider>> component, int baseIn, ItemStack[] replacements) {
         return (int) Math.floor(calculateAsFactor(upgrades, component, baseIn, replacements));
     }
 
-    static int calculate(IItemHandler upgrades, Supplier<DataComponentType<SizeProvider>> component, int baseIn) {
+    static int calculate(ResourceHandler<ItemResource> upgrades, Supplier<DataComponentType<SizeProvider>> component, int baseIn) {
         return (int) Math.floor(calculateAsFactor(upgrades, component, baseIn));
     }
 
-    static float calculateAsFactor(IItemHandler upgrades, Supplier<DataComponentType<SizeProvider>> component, float baseIn) {
-        return calculateAsFactor(upgrades, component, baseIn, new ItemStack[upgrades.getSlots()]);
+    static float calculateAsFactor(ResourceHandler<ItemResource> upgrades, Supplier<DataComponentType<SizeProvider>> component, float baseIn) {
+        return calculateAsFactor(upgrades, component, baseIn, new ItemStack[upgrades.size()]);
     }
 
-    static float calculateAsFactor(IItemHandler upgrades, Supplier<DataComponentType<SizeProvider>> component, float baseIn, ItemStack[] replacements) {
+    static float calculateAsFactor(ResourceHandler<ItemResource> upgrades, Supplier<DataComponentType<SizeProvider>> component, float baseIn, ItemStack[] replacements) {
         float factor = 1f;
         float base = baseIn;
-        for (int i = 0; i < upgrades.getSlots(); i++) {
-            var stack = Objects.requireNonNullElse(replacements[i], upgrades.getStackInSlot(i));
+        for (int i = 0; i < upgrades.size(); i++) {
+            var stack = Objects.requireNonNullElse(replacements[i], upgrades.getResource(i).toStack(upgrades.getAmountAsInt(i)));
             if (!stack.isEmpty()) {
                 var comp = stack.get(component);
                 if (comp != null) {

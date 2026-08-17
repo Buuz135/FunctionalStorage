@@ -38,7 +38,7 @@ public class FSAttachments {
             register("controller_position", () -> BlockPos.ZERO, builder -> builder.persistent(BlockPos.CODEC));
 
     public static final Supplier<DataComponentType<String>> ENDER_FREQUENCY = register("ender_frequency", () -> "", op -> op.persistent(Codec.STRING));
-    public static final Supplier<DataComponentType<Unit>> ENDER_SAFETY = register("ender_safety", () -> Unit.INSTANCE, op -> op.persistent(Codec.unit(Unit.INSTANCE)));
+    public static final Supplier<DataComponentType<Unit>> ENDER_SAFETY = register("ender_safety", () -> Unit.INSTANCE, op -> op.persistent(Codec.BOOL.xmap(ignored -> Unit.INSTANCE, unit -> true)));
     public static final Supplier<DataComponentType<Direction>> DIRECTION = register("direction", () -> Direction.NORTH, op -> op.persistent(Direction.CODEC));
     public static final Supplier<DataComponentType<Integer>> SLOT = register("slot", () -> 0, op -> op.persistent(Codec.intRange(0, UpgradeItem.MAX_SLOT - 1)));
     public static final Supplier<DataComponentType<Boolean>> LOCKED = register("locked", () -> false, op -> op.persistent(Codec.BOOL));

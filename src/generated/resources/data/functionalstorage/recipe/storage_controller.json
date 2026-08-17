@@ -1,26 +1,20 @@
 {
   "neoforge:conditions": [
     {
-      "type": "neoforge:item_exists",
-      "item": "functionalstorage:storage_controller"
+      "type": "neoforge:registered",
+      "value": "functionalstorage:storage_controller"
     }
   ],
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "B": {
-      "item": "minecraft:quartz_block"
-    },
+    "B": "minecraft:quartz_block",
     "C": {
-      "type": "functionalstorage:tag_without_component",
+      "neoforge:ingredient_type": "functionalstorage:tag_without_component",
       "tag": "functionalstorage:drawer"
     },
-    "D": {
-      "item": "minecraft:comparator"
-    },
-    "I": {
-      "tag": "c:stones"
-    }
+    "D": "minecraft:comparator",
+    "I": "#c:stones"
   },
   "pattern": [
     "IBI",
@@ -28,7 +22,6 @@
     "IBI"
   ],
   "result": {
-    "count": 1,
     "id": "functionalstorage:storage_controller"
   }
 }

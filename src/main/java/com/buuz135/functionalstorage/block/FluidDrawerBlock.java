@@ -2,7 +2,6 @@ package com.buuz135.functionalstorage.block;
 
 import com.buuz135.functionalstorage.FunctionalStorage;
 import com.buuz135.functionalstorage.block.tile.FluidDrawerTile;
-import com.buuz135.functionalstorage.client.item.FluidDrawerISTER;
 import com.buuz135.functionalstorage.inventory.item.FluidDrawerStackItemHandler;
 import com.buuz135.functionalstorage.item.FSAttachments;
 import com.buuz135.functionalstorage.util.NumberUtils;
@@ -11,7 +10,6 @@ import com.hrznstudio.titanium.block.RotatableBlock;
 import com.hrznstudio.titanium.recipe.generator.TitaniumShapedRecipeBuilder;
 import com.hrznstudio.titanium.tab.TitaniumTab;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.data.recipes.RecipeOutput;
@@ -23,15 +21,16 @@ import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.fluid.FluidResource;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -113,33 +112,32 @@ public class FluidDrawerBlock extends Drawer<FluidDrawerTile>{
         return type;
     }
 
-    @Override
-    public void appendHoverText(ItemStack itemStack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag tooltipFlag) {
+    public void appendFluidHoverText(ItemStack itemStack, Item.TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag tooltipFlag) {
         if (itemStack.has(FSAttachments.TILE)) {
-            var tileTag = itemStack.get(FSAttachments.TILE).getCompound("fluidHandler");
-            tooltip.add(Component.translatable("drawer.block.contents").withStyle(ChatFormatting.GRAY));
+            var tileTag = itemStack.get(FSAttachments.TILE).getCompoundOrEmpty("TitaniumData").getCompoundOrEmpty("fluidHandler");
+            tooltip.accept(Component.translatable("drawer.block.contents").withStyle(ChatFormatting.GRAY));
             for (int i = 0; i < type.getSlots(); i++) {
-                FluidStack stack = FluidStack.OPTIONAL_CODEC.decode(RegistryOps.create(NbtOps.INSTANCE, Utils.registryAccess()), tileTag.getCompound(i + "").getCompound("Fluid")).getOrThrow().getFirst();
+                FluidStack stack = FluidStack.OPTIONAL_CODEC.decode(RegistryOps.create(NbtOps.INSTANCE, Utils.registryAccess()), tileTag.getCompoundOrEmpty(i + "")).getOrThrow().getFirst();
                 if (!stack.isEmpty())
-                    tooltip.add(Component.literal(" - " + ChatFormatting.YELLOW + NumberUtils.getFormatedFluidBigNumber(stack.getAmount()) + ChatFormatting.WHITE + " of ").append(stack.getHoverName().copy().withStyle(ChatFormatting.GOLD)));
+                    tooltip.accept(Component.literal(" - " + ChatFormatting.YELLOW + NumberUtils.getFormatedFluidBigNumber(stack.getAmount()) + ChatFormatting.WHITE + " of ").append(stack.getHoverName().copy().withStyle(ChatFormatting.GOLD)));
             }
-            var tile = itemStack.get(FSAttachments.TILE);
-            tooltip.add(Component.translatable("drawer.block.upgrades").withStyle(ChatFormatting.GRAY));
+            var tile = itemStack.get(FSAttachments.TILE).getCompoundOrEmpty("TitaniumData");
+            tooltip.accept(Component.translatable("drawer.block.upgrades").withStyle(ChatFormatting.GRAY));
             var anyupgrade = false;
-            if (tile.contains("isCreative") && tile.getBoolean("isCreative")) {
-                tooltip.add(Component.literal("- ").withStyle(ChatFormatting.GRAY).append(Component.translatable("drawer.block.upgrades.is_creative").withStyle(ChatFormatting.LIGHT_PURPLE)));
+            if (tile.getBooleanOr("isCreative", false)) {
+                tooltip.accept(Component.literal("- ").withStyle(ChatFormatting.GRAY).append(Component.translatable("drawer.block.upgrades.is_creative").withStyle(ChatFormatting.LIGHT_PURPLE)));
                 anyupgrade = true;
             }
-            if (tile.contains("isVoid") && tile.getBoolean("isVoid")) {
-                tooltip.add(Component.literal("- ").withStyle(ChatFormatting.GRAY).append(Component.translatable("drawer.block.upgrades.is_void").withStyle(ChatFormatting.BLUE)));
+            if (tile.getBooleanOr("isVoid", false)) {
+                tooltip.accept(Component.literal("- ").withStyle(ChatFormatting.GRAY).append(Component.translatable("drawer.block.upgrades.is_void").withStyle(ChatFormatting.BLUE)));
                 anyupgrade = true;
             }
             if (!anyupgrade) {
-                tooltip.add(Component.literal("- ").withStyle(ChatFormatting.GRAY).append(Component.translatable("drawer.block.upgrades.none").withStyle(ChatFormatting.GRAY)));
+                tooltip.accept(Component.literal("- ").withStyle(ChatFormatting.GRAY).append(Component.translatable("drawer.block.upgrades.none").withStyle(ChatFormatting.GRAY)));
             }
         }
         if (this instanceof FramedBlock) {
-            tooltip.add(Component.translatable("frameddrawer.use").withStyle(ChatFormatting.GRAY));
+            tooltip.accept(Component.translatable("frameddrawer.use").withStyle(ChatFormatting.GRAY));
         }
     }
 
@@ -148,26 +146,19 @@ public class FluidDrawerBlock extends Drawer<FluidDrawerTile>{
         private final FluidDrawerBlock drawerBlock;
 
         public FluidDrawerItem(FluidDrawerBlock block, Properties props,  TitaniumTab tab) {
-            super(block, props);
+            super(block, com.hrznstudio.titanium.module.DeferredRegistryHelper.applyItemRegistrationId(props.useBlockDescriptionPrefix()));
             this.drawerBlock = block;
         }
 
-        public IFluidHandlerItem initCapabilities(ItemStack stack) {
+        public ResourceHandler<FluidResource> initCapabilities(ItemStack stack) {
             return new FluidDrawerStackItemHandler(stack, this.drawerBlock.getType());
         }
 
         @Override
-        public void initializeClient(Consumer<IClientItemExtensions> consumer) {
-            consumer.accept(new IClientItemExtensions() {
-                @Override
-                public BlockEntityWithoutLevelRenderer getCustomRenderer() {
-                    return switch (drawerBlock.getType()){
-                        case X_2 -> FluidDrawerISTER.SLOT_2;
-                        case X_4 -> FluidDrawerISTER.SLOT_4;
-                        default -> FluidDrawerISTER.SLOT_1;
-                    };
-                }
-            });
+        public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
+            super.appendHoverText(stack, context, display, tooltip, flag);
+            drawerBlock.appendFluidHoverText(stack, context, display, tooltip, flag);
         }
+
     }
 }

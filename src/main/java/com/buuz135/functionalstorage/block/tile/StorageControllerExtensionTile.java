@@ -15,8 +15,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler;
-import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.fluid.FluidResource;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
@@ -43,12 +44,12 @@ public abstract class StorageControllerExtensionTile<T extends StorageController
     }
 
     @Override
-    public IItemHandler getStorage() {
+    public ResourceHandler<ItemResource> getStorage() {
         return getControllerInstance().map(StorageControllerTile::getStorage).orElse(null);
     }
 
     @Override
-    public IFluidHandler getFluidHandler(@Nullable Direction direction) {
+    public ResourceHandler<FluidResource> getFluidHandler(@Nullable Direction direction) {
         return getControllerInstance().map(c -> c.getFluidHandler(direction)).orElse(null);
     }
 

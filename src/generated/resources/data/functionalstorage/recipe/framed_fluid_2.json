@@ -1,19 +1,15 @@
 {
   "neoforge:conditions": [
     {
-      "type": "neoforge:item_exists",
-      "item": "functionalstorage:framed_fluid_2"
+      "type": "neoforge:registered",
+      "value": "functionalstorage:framed_fluid_2"
     }
   ],
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "C": {
-      "tag": "c:buckets/empty"
-    },
-    "P": {
-      "item": "minecraft:iron_nugget"
-    }
+    "C": "#c:buckets/empty",
+    "P": "minecraft:iron_nugget"
   },
   "pattern": [
     "PCP",

@@ -1,8 +1,8 @@
 {
   "neoforge:conditions": [
     {
-      "type": "neoforge:item_exists",
-      "item": "functionalstorage:framed_controller_extension"
+      "type": "neoforge:registered",
+      "value": "functionalstorage:framed_controller_extension"
     }
   ],
   "parent": "minecraft:recipes/root",

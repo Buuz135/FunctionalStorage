@@ -1,26 +1,20 @@
 {
   "neoforge:conditions": [
     {
-      "type": "neoforge:item_exists",
-      "item": "functionalstorage:compacting_framed_drawer"
+      "type": "neoforge:registered",
+      "value": "functionalstorage:compacting_framed_drawer"
     }
   ],
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
     "D": {
-      "type": "functionalstorage:tag_without_component",
+      "neoforge:ingredient_type": "functionalstorage:tag_without_component",
       "tag": "functionalstorage:drawer"
     },
-    "I": {
-      "tag": "c:ingots/iron"
-    },
-    "P": {
-      "item": "minecraft:piston"
-    },
-    "S": {
-      "item": "minecraft:iron_nugget"
-    }
+    "I": "#c:ingots/iron",
+    "P": "minecraft:piston",
+    "S": "minecraft:iron_nugget"
   },
   "pattern": [
     "SSS",
@@ -28,7 +22,6 @@
     "SIS"
   ],
   "result": {
-    "count": 1,
     "id": "functionalstorage:compacting_framed_drawer"
   }
 }

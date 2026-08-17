@@ -1,6 +1,6 @@
 {
 	"parent": "minecraft:block/block",
-	"loader": "functionalstorage:framedblock",
+	"loader": "neoforge:composite",
 	"children": {
 		"side": {
 			"parent": "functionalstorage:block/side",

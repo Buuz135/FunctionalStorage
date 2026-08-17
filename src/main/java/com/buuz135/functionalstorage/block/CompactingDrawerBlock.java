@@ -2,7 +2,6 @@ package com.buuz135.functionalstorage.block;
 
 import com.buuz135.functionalstorage.FunctionalStorage;
 import com.buuz135.functionalstorage.block.tile.CompactingDrawerTile;
-import com.buuz135.functionalstorage.client.item.CompactingDrawerISTER;
 import com.buuz135.functionalstorage.inventory.item.CompactingStackItemHandler;
 import com.buuz135.functionalstorage.recipe.TagWithoutComponentIngredient;
 import com.buuz135.functionalstorage.util.StorageTags;
@@ -10,7 +9,6 @@ import com.google.common.collect.Multimap;
 import com.google.common.collect.MultimapBuilder;
 import com.hrznstudio.titanium.block.RotatableBlock;
 import com.hrznstudio.titanium.recipe.generator.TitaniumShapedRecipeBuilder;
-import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.data.recipes.RecipeOutput;
@@ -24,13 +22,12 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 import net.neoforged.neoforge.common.Tags;
-import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 
 import java.util.*;
 
-import java.util.function.Consumer;
 
 public class CompactingDrawerBlock extends Drawer<CompactingDrawerTile> {
 
@@ -175,22 +172,13 @@ public class CompactingDrawerBlock extends Drawer<CompactingDrawerTile> {
         private final int slots;
 
         public CompactingDrawerItem(Block block, net.minecraft.world.item.Item.Properties properties, int slots) {
-            super(block, properties);
+            super(block, com.hrznstudio.titanium.module.DeferredRegistryHelper.applyItemRegistrationId(properties.useBlockDescriptionPrefix()));
             this.slots = slots;
         }
 
-        public IItemHandler initCapabilities(ItemStack stack) {
+        public ResourceHandler<ItemResource> initCapabilities(ItemStack stack) {
             return new CompactingStackItemHandler(stack, slots);
         }
 
-        @Override
-        public void initializeClient(Consumer<IClientItemExtensions> consumer) {
-            consumer.accept(new IClientItemExtensions() {
-                @Override
-                public BlockEntityWithoutLevelRenderer getCustomRenderer() {
-                    return getBlock() instanceof SimpleCompactingDrawerBlock ? CompactingDrawerISTER.SIMPLE : CompactingDrawerISTER.NORMAL;
-                }
-            });
-        }
     }
 }

@@ -32,8 +32,9 @@ public record EmitRedstoneBehavior() implements FunctionalUpgradeBehavior {
         return switch (drawer) {
             case ItemControllableDrawerTile<?> itemDrawer -> {
                 int redstoneSlot = upgradeStack.getOrDefault(FSAttachments.SLOT, 0);
-                if (redstoneSlot < itemDrawer.getStorage().getSlots()) {
-                    int amount = (int) Math.floor(itemDrawer.getStorage().getStackInSlot(redstoneSlot).getCount() * 14f / itemDrawer.getStorage().getSlotLimit(redstoneSlot));
+                if (redstoneSlot < itemDrawer.getStorage().size()) {
+                    var resource = itemDrawer.getStorage().getResource(redstoneSlot);
+                    int amount = (int) Math.floor(itemDrawer.getStorage().getAmountAsLong(redstoneSlot) * 14f / itemDrawer.getStorage().getCapacityAsLong(redstoneSlot, resource));
                     yield amount + (amount > 0 ? 1 : 0);
                 }
 
@@ -42,8 +43,9 @@ public record EmitRedstoneBehavior() implements FunctionalUpgradeBehavior {
 
             case FluidDrawerTile fluidDrawer -> {
                 int redstoneSlot = upgradeStack.getOrDefault(FSAttachments.SLOT, 0);
-                if (redstoneSlot < fluidDrawer.getFluidHandler().getTanks()) {
-                    yield (int) Math.floor(fluidDrawer.getFluidHandler().getFluidInTank(redstoneSlot).getAmount() * 15f / fluidDrawer.getFluidHandler().getTankCapacity(redstoneSlot));
+                if (redstoneSlot < fluidDrawer.getFluidHandler().size()) {
+                    var resource = fluidDrawer.getFluidHandler().getResource(redstoneSlot);
+                    yield (int) Math.floor(fluidDrawer.getFluidHandler().getAmountAsLong(redstoneSlot) * 15f / fluidDrawer.getFluidHandler().getCapacityAsLong(redstoneSlot, resource));
                 }
 
                 yield -1;

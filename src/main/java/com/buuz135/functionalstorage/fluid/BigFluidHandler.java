@@ -2,233 +2,152 @@ package com.buuz135.functionalstorage.fluid;
 
 import com.buuz135.functionalstorage.util.StorageTags;
 import com.buuz135.functionalstorage.util.Utils;
+import com.hrznstudio.titanium.nbthandler.INBTSerializable;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.resources.RegistryOps;
-import net.neoforged.neoforge.common.util.INBTSerializable;
 import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler;
-import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
-import org.jetbrains.annotations.NotNull;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.TransferPreconditions;
+import net.neoforged.neoforge.transfer.fluid.FluidResource;
+import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
+import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
-import javax.annotation.Nonnull;
-import java.util.function.Predicate;
+import java.util.ArrayList;
+import java.util.List;
 
-public abstract class BigFluidHandler implements IFluidHandler, INBTSerializable<CompoundTag> {
+public abstract class BigFluidHandler extends SnapshotJournal<List<BigFluidHandler.StoredFluid>> implements ResourceHandler<FluidResource>, INBTSerializable<CompoundTag> {
 
-    private CustomFluidTank[] tanks;
-    private FluidStack[] filterStack;
+    private final FluidResource[] tankResources;
+    private final FluidResource[] filterResources;
+    private final int[] amounts;
     private int capacity;
 
     public BigFluidHandler(int size, int capacity) {
-        this.tanks = new CustomFluidTank[size];
-        this.filterStack = new FluidStack[size];
-        for (int i = 0; i < this.tanks.length; i++) {
-            this.filterStack[i] = FluidStack.EMPTY;
-            int finalI = i;
-            this.tanks[i] = new CustomFluidTank(capacity, fluidStack -> {
-                if (fluidStack.is(StorageTags.FLUID_DRAWER_STORAGE_DENYLIST)) {
-                    return false;
-                }
-                if (isDrawerLocked()) {
-                    return FluidStack.isSameFluidSameComponents(fluidStack, this.filterStack[finalI]);
-                }
-                return true;
-            });
+        this.tankResources = new FluidResource[size];
+        this.filterResources = new FluidResource[size];
+        this.amounts = new int[size];
+        for (int i = 0; i < size; i++) {
+            tankResources[i] = FluidResource.EMPTY;
+            filterResources[i] = FluidResource.EMPTY;
         }
         this.capacity = capacity;
     }
 
-    public CustomFluidTank[] getTankList() {
-        return this.tanks;
+    public int getTanks() { return tankResources.length; }
+
+    public FluidStack getFluidInTank(int tank) {
+        return tankResources[tank].toStack(!tankResources[tank].isEmpty() && isDrawerCreative() ? Integer.MAX_VALUE : amounts[tank]);
     }
 
-    @Override
-    public int getTanks() {
-        return this.tanks.length;
-    }
+    public int getTankCapacity(int tank) { return isDrawerCreative() ? Integer.MAX_VALUE : capacity; }
 
-    @Override
-    public @NotNull FluidStack getFluidInTank(int tank) {
-        return this.tanks[tank].getFluidInTank(0);
-    }
-
-    @Override
-    public int getTankCapacity(int tank) {
-        return this.tanks[tank].getTankCapacity(0);
-    }
-
-    @Override
-    public boolean isFluidValid(int tank, @NotNull FluidStack stack) {
-        return !stack.is(StorageTags.FLUID_DRAWER_STORAGE_DENYLIST) && this.tanks[tank].isFluidValid(stack);
-    }
-
-    @Override
-    public int fill(FluidStack resource, FluidAction action) {
-        if (resource.is(StorageTags.FLUID_DRAWER_STORAGE_DENYLIST)) {
-            return 0;
-        }
-        for (CustomFluidTank tank : tanks) {
-            if (!tank.getFluid().isEmpty() && tank.fill(resource, FluidAction.SIMULATE) != 0) {
-                int ret = tank.fill(resource, action);
-                if (action == FluidAction.EXECUTE) onChange();
-                return ret;
-            }
-        }
-        for (CustomFluidTank tank : tanks) {
-            if (tank.getFluid().isEmpty() && tank.fill(resource, FluidAction.SIMULATE) != 0) {
-                int ret = tank.fill(resource, action);
-                if (action == FluidAction.EXECUTE) onChange();
-                return ret;
-            }
-        }
-        return 0;
-    }
-
-    @Nonnull
-    @Override
-    public FluidStack drain(FluidStack resource, FluidAction action) {
-        for (CustomFluidTank tank : tanks) {
-            if (!tank.getFluid().isEmpty() && FluidStack.isSameFluidSameComponents(tank.getFluid(), resource) && !tank.drain(resource, FluidAction.SIMULATE).isEmpty()) {
-                FluidStack ret = tank.drain(resource, action);
-                if (action == FluidAction.EXECUTE) onChange();
-                return ret;
-            }
-        }
-        for (CustomFluidTank tank : tanks) {
-            if (!tank.drain(resource, FluidAction.SIMULATE).isEmpty()) {
-                FluidStack ret = tank.drain(resource, action);
-                if (action == FluidAction.EXECUTE) onChange();
-                return ret;
-            }
-        }
-        return FluidStack.EMPTY;
-    }
-
-    @Nonnull
-    @Override
-    public FluidStack drain(int maxDrain, FluidAction action) {
-        for (CustomFluidTank tank : tanks) {
-            if (!tank.drain(maxDrain, FluidAction.SIMULATE).isEmpty()) {
-                FluidStack ret = tank.drain(maxDrain, action);
-                if (action == FluidAction.EXECUTE) onChange();
-                return ret;
-            }
-        }
-        return FluidStack.EMPTY;
+    public boolean isFluidValid(int tank, FluidResource resource) {
+        if (resource.isEmpty() || resource.typeHolder().is(StorageTags.FLUID_DRAWER_STORAGE_DENYLIST)) return false;
+        return !isDrawerLocked() || resource.equals(filterResources[tank]);
     }
 
     public void setCapacity(int capacity) {
         this.capacity = capacity;
-        for (CustomFluidTank tank : this.tanks) {
-            tank.setCapacity(capacity);
-            if (!tank.getFluid().isEmpty()) tank.getFluid().setAmount(Math.min(tank.getFluidAmount(), capacity));
+        for (int i = 0; i < tankResources.length; i++) {
+            amounts[i] = Math.min(amounts[i], capacity);
         }
     }
 
     @Override
     public CompoundTag serializeNBT(net.minecraft.core.HolderLookup.Provider provider) {
-        CompoundTag compoundTag = new CompoundTag();
-        for (int i = 0; i < this.tanks.length; i++) {
-            compoundTag.put(i + "", this.tanks[i].writeToNBT(provider, new CompoundTag()));
-            compoundTag.put("Locked" + i, FluidStack.OPTIONAL_CODEC.encodeStart(RegistryOps.create(NbtOps.INSTANCE, provider), this.filterStack[i]).getOrThrow());
+        CompoundTag tag = new CompoundTag();
+        for (int i = 0; i < tankResources.length; i++) {
+            tag.put(Integer.toString(i), FluidStack.OPTIONAL_CODEC.encodeStart(RegistryOps.create(NbtOps.INSTANCE, provider), tankResources[i].toStack(amounts[i])).getOrThrow());
+            tag.put("Locked" + i, FluidStack.OPTIONAL_CODEC.encodeStart(RegistryOps.create(NbtOps.INSTANCE, provider), filterResources[i].toStack(1)).getOrThrow());
         }
-        compoundTag.putInt("Capacity", this.capacity);
-        return compoundTag;
+        tag.putInt("Capacity", capacity);
+        return tag;
     }
 
     @Override
     public void deserializeNBT(net.minecraft.core.HolderLookup.Provider provider, CompoundTag nbt) {
-        this.capacity = nbt.getInt("Capacity");
-        for (int i = 0; i < this.tanks.length; i++) {
-            this.tanks[i].readFromNBT(provider, nbt.getCompound(i + ""));
-            this.tanks[i].setCapacity(this.capacity);
-            this.filterStack[i] = Utils.deserializeFluid(provider, nbt.getCompound("Locked" + i));
+        capacity = nbt.getIntOr("Capacity", capacity);
+        for (int i = 0; i < tankResources.length; i++) {
+            FluidStack tank = Utils.deserializeFluid(provider, nbt.getCompoundOrEmpty(Integer.toString(i)));
+            FluidStack filter = Utils.deserializeFluid(provider, nbt.getCompoundOrEmpty("Locked" + i));
+            tankResources[i] = FluidResource.of(tank);
+            amounts[i] = tank.getAmount();
+            filterResources[i] = FluidResource.of(filter);
         }
     }
 
     public abstract void onChange();
-
     public abstract boolean isDrawerLocked();
-
     public abstract boolean isDrawerVoid();
-
     public abstract boolean isDrawerCreative();
 
     public void lockHandler() {
-        for (int i = 0; i < this.tanks.length; i++) {
-            this.filterStack[i] = this.tanks[i].getFluid().copy();
-            if (!this.filterStack[i].isEmpty()) this.filterStack[i].setAmount(1);
+        for (int i = 0; i < tankResources.length; i++) {
+            filterResources[i] = tankResources[i];
         }
     }
 
     public FluidStack[] getFilterStack() {
-        return filterStack;
+        FluidStack[] stacks = new FluidStack[filterResources.length];
+        for (int i = 0; i < stacks.length; i++) stacks[i] = filterResources[i].toStack(1);
+        return stacks;
     }
 
-    public class CustomFluidTank extends FluidTank {
+    public void setFilterResource(int tank, FluidResource resource) { filterResources[tank] = resource; }
 
+    @Override public int size() { return getTanks(); }
+    @Override public FluidResource getResource(int index) { return tankResources[index]; }
+    @Override public long getAmountAsLong(int index) { return isDrawerCreative() && !tankResources[index].isEmpty() ? Integer.MAX_VALUE : amounts[index]; }
+    @Override public long getCapacityAsLong(int index, FluidResource resource) { return resource.isEmpty() || isValid(index, resource) ? getTankCapacity(index) : 0; }
+    @Override public boolean isValid(int index, FluidResource resource) { return isFluidValid(index, resource); }
 
-        public CustomFluidTank(int capacity) {
-            super(capacity);
+    @Override
+    public int insert(int index, FluidResource resource, int amount, TransactionContext transaction) {
+        TransferPreconditions.checkNonEmptyNonNegative(resource, amount);
+        if (amount == 0 || !isFluidValid(index, resource)) return 0;
+        FluidResource stored = tankResources[index];
+        if (!stored.isEmpty() && !stored.equals(resource)) return 0;
+        int inserted = isDrawerCreative() ? amount : Math.min(amount, capacity - amounts[index]);
+        if (isDrawerVoid() && (inserted > 0 || !stored.isEmpty())) inserted = amount;
+        if (inserted <= 0) return 0;
+        updateSnapshots(transaction);
+        if (stored.isEmpty()) tankResources[index] = resource;
+        if (!isDrawerCreative()) amounts[index] = (int) Math.min(capacity, (long) amounts[index] + inserted);
+        else if (amounts[index] == 0) amounts[index] = 1;
+        onChange();
+        return inserted;
+    }
+
+    @Override
+    public int extract(int index, FluidResource resource, int amount, TransactionContext transaction) {
+        TransferPreconditions.checkNonEmptyNonNegative(resource, amount);
+        if (amount == 0 || !resource.equals(tankResources[index])) return 0;
+        int extracted = Math.min(amount, isDrawerCreative() ? amount : amounts[index]);
+        if (extracted <= 0) return 0;
+        updateSnapshots(transaction);
+        if (!isDrawerCreative()) {
+            amounts[index] -= extracted;
+            if (amounts[index] == 0) tankResources[index] = FluidResource.EMPTY;
+            onChange();
         }
+        return extracted;
+    }
 
-        public CustomFluidTank(int capacity, Predicate<FluidStack> validator) {
-            super(capacity, validator);
-        }
+    @Override
+    protected List<StoredFluid> createSnapshot() {
+        List<StoredFluid> snapshot = new ArrayList<>(tankResources.length);
+        for (int i = 0; i < tankResources.length; i++) snapshot.add(new StoredFluid(tankResources[i], amounts[i]));
+        return snapshot;
+    }
 
-        @Override
-        public int fill(FluidStack resource, FluidAction action) {
-            if (resource.is(StorageTags.FLUID_DRAWER_STORAGE_DENYLIST)) {
-                return 0;
-            }
-            int amount = super.fill(resource, action);
-            if (isDrawerVoid()
-                    && ((isDrawerLocked() && isFluidValid(resource)) || (!getFluid().isEmpty() && FluidStack.isSameFluidSameComponents(getFluid(), resource))))
-                return resource.getAmount();
-            return amount;
-        }
-
-        @Override
-        public @NotNull FluidStack getFluidInTank(int tank) {
-            FluidStack stack = super.getFluidInTank(tank);
-            if (!stack.isEmpty() && isDrawerCreative()) stack.setAmount(Integer.MAX_VALUE);
-            return stack;
-        }
-
-        @Override
-        public int getTankCapacity(int tank) {
-            return isDrawerCreative() ? Integer.MAX_VALUE : super.getTankCapacity(tank);
-        }
-
-        @Override
-        public @NotNull FluidStack drain(FluidStack resource, FluidAction action) {
-            if (isDrawerCreative()) return resource.copy();
-            return super.drain(resource, action);
-        }
-
-        @Override
-        public @NotNull FluidStack drain(int maxDrain, FluidAction action) {
-            FluidStack fluidStack = super.drain(maxDrain, action);
-            if (isDrawerCreative()) fluidStack.setAmount(maxDrain);
-            return fluidStack;
-        }
-
-        @Override
-        public int getCapacity() {
-            return isDrawerCreative() ? Integer.MAX_VALUE : super.getCapacity();
-        }
-
-        @Override
-        public @NotNull FluidStack getFluid() {
-            FluidStack stack = super.getFluid();
-            if (!stack.isEmpty() && isDrawerCreative()) stack.setAmount(Integer.MAX_VALUE);
-            return stack;
-        }
-
-        @Override
-        public int getFluidAmount() {
-            return isDrawerCreative() ? Integer.MAX_VALUE : super.getFluidAmount();
+    @Override
+    protected void revertToSnapshot(List<StoredFluid> snapshot) {
+        for (int i = 0; i < tankResources.length; i++) {
+            tankResources[i] = snapshot.get(i).resource();
+            amounts[i] = snapshot.get(i).amount();
         }
     }
+
+    protected record StoredFluid(FluidResource resource, int amount) {}
 }

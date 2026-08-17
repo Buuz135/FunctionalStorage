@@ -1,26 +1,20 @@
 {
   "neoforge:conditions": [
     {
-      "type": "neoforge:item_exists",
-      "item": "functionalstorage:linking_tool"
+      "type": "neoforge:registered",
+      "value": "functionalstorage:linking_tool"
     }
   ],
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
     "D": {
-      "type": "functionalstorage:tag_without_component",
+      "neoforge:ingredient_type": "functionalstorage:tag_without_component",
       "tag": "functionalstorage:drawer"
     },
-    "E": {
-      "item": "minecraft:diamond"
-    },
-    "G": {
-      "tag": "c:ingots/gold"
-    },
-    "P": {
-      "item": "minecraft:paper"
-    }
+    "E": "minecraft:diamond",
+    "G": "#c:ingots/gold",
+    "P": "minecraft:paper"
   },
   "pattern": [
     "PPG",
@@ -28,7 +22,6 @@
     "PEP"
   ],
   "result": {
-    "count": 1,
     "id": "functionalstorage:linking_tool"
   }
 }

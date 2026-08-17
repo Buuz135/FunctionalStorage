@@ -1,26 +1,20 @@
 {
   "neoforge:conditions": [
     {
-      "type": "neoforge:item_exists",
-      "item": "functionalstorage:copper_upgrade"
+      "type": "neoforge:registered",
+      "value": "functionalstorage:copper_upgrade"
     }
   ],
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "B": {
-      "item": "minecraft:copper_block"
-    },
-    "C": {
-      "tag": "c:chests/wooden"
-    },
+    "B": "minecraft:copper_block",
+    "C": "#c:chests/wooden",
     "D": {
-      "type": "functionalstorage:tag_without_component",
+      "neoforge:ingredient_type": "functionalstorage:tag_without_component",
       "tag": "functionalstorage:drawer"
     },
-    "I": {
-      "item": "minecraft:copper_ingot"
-    }
+    "I": "minecraft:copper_ingot"
   },
   "pattern": [
     "IBI",
@@ -28,7 +22,6 @@
     "IBI"
   ],
   "result": {
-    "count": 1,
     "id": "functionalstorage:copper_upgrade"
   }
 }

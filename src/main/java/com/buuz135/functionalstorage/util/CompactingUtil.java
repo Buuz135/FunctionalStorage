@@ -5,13 +5,18 @@ import com.buuz135.functionalstorage.recipe.CustomCompactingRecipe;
 import com.hrznstudio.titanium.util.RecipeUtil;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.item.crafting.CraftingRecipe;
+import net.minecraft.world.item.crafting.ShapedRecipe;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.context.ContextMap;
 import net.minecraft.world.level.Level;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -169,8 +174,9 @@ public class CompactingUtil {
 
     private Result findUpperTier(ItemStack stack){
         for (CustomCompactingRecipe recipe : this.recipes) {
-            if (ItemStack.isSameItem(recipe.lower_input, stack)) {
-                return new Result(recipe.higher_input.copyWithCount(1), recipe.lower_input.getCount());
+            ItemStack lower = recipe.lowerStack();
+            if (ItemStack.isSameItem(lower, stack)) {
+                return new Result(recipe.higherStack().copyWithCount(1), lower.getCount());
             }
         }
         //Checking 3x3
@@ -211,19 +217,24 @@ public class CompactingUtil {
 
     private Result findLowerTier(ItemStack stack){
         for (CustomCompactingRecipe recipe : this.recipes) {
-            if (ItemStack.isSameItem(recipe.higher_input, stack)) {
-                return new Result(recipe.lower_input.copyWithCount(1), recipe.lower_input.getCount());
+            ItemStack lower = recipe.lowerStack();
+            if (ItemStack.isSameItem(recipe.higherStack(), stack)) {
+                return new Result(lower.copyWithCount(1), lower.getCount());
             }
         }
         List<ItemStack> candidates = new ArrayList<>();
         Map<ItemStack, Integer> candidatesRate = new HashMap<>();
-        for (var rcp : level.getRecipeManager().getAllRecipesFor(RecipeType.CRAFTING)) {
-            var craftingRecipe = rcp.value();
-            ItemStack output = craftingRecipe.getResultItem(this.level.registryAccess());
+        if (!(level instanceof ServerLevel serverLevel)) return new Result(ItemStack.EMPTY, 0);
+        for (var rcp : serverLevel.getServer().getRecipeManager().getRecipes()) {
+            if (!(rcp.value() instanceof ShapedRecipe craftingRecipe)) continue;
+            ItemStack output = craftingRecipe.display().stream()
+                    .map(display -> display.result().resolveForFirstStack(ContextMap.EMPTY))
+                    .filter(result -> !result.isEmpty()).findFirst().orElse(ItemStack.EMPTY);
             if (!ItemStack.isSameItem(stack, output)) continue;
-            ItemStack match = tryMatch(stack, craftingRecipe.getIngredients());
+            List<Ingredient> ingredients = craftingRecipe.getIngredients().stream().flatMap(java.util.Optional::stream).toList();
+            ItemStack match = tryMatch(stack, ingredients);
             if (!match.isEmpty()){
-                int recipeSize = craftingRecipe.getIngredients().size();
+                int recipeSize = ingredients.size();
                 if (stack.is(StorageTags.IGNORE_CRAFTING_CHECK)){
                     candidates.add(match);
                     candidatesRate.put(match, recipeSize);
@@ -252,10 +263,11 @@ public class CompactingUtil {
 
     private List<ItemStack> findAllMatchingRecipes(CraftingInput crafting) {
         List<ItemStack> candidates = new ArrayList<>();
-        for (var rcp : level.getRecipeManager().getRecipesFor(RecipeType.CRAFTING, crafting, level)) {
-            var recipe = rcp.value();
+        if (!(level instanceof ServerLevel serverLevel)) return candidates;
+        for (var rcp : serverLevel.getServer().getRecipeManager().getRecipes()) {
+            if (!(rcp.value() instanceof CraftingRecipe recipe)) continue;
             if (recipe.matches(crafting, level)) {
-                ItemStack result = recipe.assemble(crafting, this.level.registryAccess());
+                ItemStack result = recipe.assemble(crafting);
                 if (!result.isEmpty())
                     candidates.add(result);
             }
@@ -264,9 +276,9 @@ public class CompactingUtil {
     }
 
     private ItemStack findSimilar(ItemStack reference, List<ItemStack> candidates) {
-        ResourceLocation referenceName = BuiltInRegistries.ITEM.getKey(reference.getItem());
+        Identifier referenceName = BuiltInRegistries.ITEM.getKey(reference.getItem());
         for (ItemStack candidate : candidates) {
-            ResourceLocation matchName = BuiltInRegistries.ITEM.getKey(candidate.getItem());
+            Identifier matchName = BuiltInRegistries.ITEM.getKey(candidate.getItem());
             if (referenceName.getNamespace().equals(matchName.getNamespace()))
                 return candidate;
         }
@@ -274,13 +286,13 @@ public class CompactingUtil {
     }
 
 
-    private ItemStack tryMatch(ItemStack stack, NonNullList<Ingredient> ingredients) {
+    private ItemStack tryMatch(ItemStack stack, List<Ingredient> ingredients) {
         if (ingredients.size() != 9 && ingredients.size() != 4)
             return ItemStack.EMPTY;
 
         Ingredient refIngredient = ingredients.get(0);
-        ItemStack[] refMatchingStacks = refIngredient.getItems();
-        if (refMatchingStacks.length == 0)
+        List<ItemStack> refMatchingStacks = refIngredient.items().map(ItemStack::new).toList();
+        if (refMatchingStacks.isEmpty())
             return ItemStack.EMPTY;
 
         for (int i = 1, n = ingredients.size(); i < n; i++) {
@@ -298,9 +310,9 @@ public class CompactingUtil {
                 return ItemStack.EMPTY;
         }
 
-        ItemStack match = findSimilar(stack, Arrays.asList(refMatchingStacks));
+        ItemStack match = findSimilar(stack, refMatchingStacks);
         if (match.isEmpty())
-            match = refMatchingStacks[0];
+            match = refMatchingStacks.get(0);
 
         return match;
     }
@@ -313,10 +325,12 @@ public class CompactingUtil {
     public static class Result{
 
         private ItemStack result;
+        private ItemResource resource;
         private int needed;
 
         public Result(ItemStack result, int needed) {
             this.result = result;
+            this.resource = ItemResource.of(result);
             this.needed = needed;
         }
 
@@ -326,6 +340,11 @@ public class CompactingUtil {
 
         public void setResult(ItemStack result) {
             this.result = result;
+            this.resource = ItemResource.of(result);
+        }
+
+        public ItemResource getResource() {
+            return resource;
         }
 
         public int getNeeded() {

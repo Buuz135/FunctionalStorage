@@ -5,7 +5,7 @@ import com.buuz135.functionalstorage.block.DrawerBlock;
 import com.buuz135.functionalstorage.item.StorageUpgradeItem;
 import com.hrznstudio.titanium.module.BlockWithTile;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.data.DataGenerator;
+import net.minecraft.data.PackOutput;
 import net.neoforged.neoforge.common.data.LanguageProvider;
 import org.apache.commons.lang3.text.WordUtils;
 
@@ -13,8 +13,8 @@ import java.util.stream.Collectors;
 
 public class FunctionalStorageLangProvider extends LanguageProvider {
 
-    public FunctionalStorageLangProvider(DataGenerator gen, String modid, String locale) {
-        super(gen.getPackOutput(), modid, locale);
+    public FunctionalStorageLangProvider(PackOutput output, String modid, String locale) {
+        super(output, modid, locale);
     }
 
     @Override

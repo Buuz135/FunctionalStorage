@@ -1,16 +1,19 @@
 plugins {
-    id 'net.neoforged.moddev' version '2.0.75'
+    id 'java-library'
+    id 'net.neoforged.moddev' version '2.0.143'
     id 'maven-publish'
 }
 
-final mcVersion = project.neo_version.split('\\.', 3).with {
-    '1.' + it[0] + '.' + it[1]
-}
-version = mcVersion + "-" + mod_version
+version = minecraft_version + "-" + mod_version
 group = modGroup
 
 sourceSets {
     main {
+        java {
+            exclude 'com/buuz135/functionalstorage/compat/jade/**'
+            exclude 'com/buuz135/functionalstorage/compat/top/**'
+            exclude 'com/buuz135/functionalstorage/compat/ftb/**'
+        }
         resources.srcDir('src/generated/resources')
     }
 }
@@ -32,15 +35,10 @@ base {
     archivesName = modBaseName
 }
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+java.toolchain.languageVersion = JavaLanguageVersion.of(25)
 
 neoForge {
     version = "${neo_version}"
-
-    parchment {
-        minecraftVersion = '1.21'
-        mappingsVersion = '2024.06.23'
-    }
 
     validateAccessTransformers = true
 
@@ -50,10 +48,15 @@ neoForge {
         }
         server {
             server()
+            programArgument '--nogui'
         }
-        data {
-            data()
-            programArguments.addAll '--mod', 'functionalstorage', '--all', '--output', file('src/generated/resources/').getAbsolutePath(), '--existing', file('src/main/resources/').getAbsolutePath()
+        clientData {
+            clientData()
+            programArguments.addAll '--mod', 'functionalstorage', '--all', '--uncached', '--output', file('src/generated/resources/').getAbsolutePath(), '--existing', file('src/main/resources/').getAbsolutePath()
+        }
+        serverData {
+            serverData()
+            programArguments.addAll '--mod', 'functionalstorage', '--all', '--uncached', '--output', file('src/generated/resources/').getAbsolutePath(), '--existing', file('src/main/resources/').getAbsolutePath()
         }
     }
 
@@ -61,28 +64,19 @@ neoForge {
         functionalstorage {
             sourceSet sourceSets.main
         }
-        titanium {
-            sourceSet sourceSets.main
-        }
     }
 }
 
+configurations {
+    runtimeClasspath.extendsFrom localRuntime
+}
+
 dependencies {
-	compileOnly "mezz.jei:jei-1.21.1-common-api:$jei_version"
-    compileOnly "mezz.jei:jei-1.21.1-neoforge-api:$jei_version"
-    runtimeOnly "mezz.jei:jei-1.21.1-neoforge:$jei_version"
-    implementation project.dependencies.create('com.hrznstudio:titanium:1.21-4.0.34')
-    implementation "curse.maven:jade-324717:5444008"
-    compileOnly "curse.maven:the-one-probe-245211:5475189"
-    runtimeOnly "curse.maven:applied-energistics-2-223794:5729094"
+    compileOnly "mezz.jei:jei-${minecraft_version}-common-api:${jei_version}"
+    compileOnly "mezz.jei:jei-${minecraft_version}-neoforge-api:${jei_version}"
+    localRuntime "mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}"
 
-    compileOnly "curse.maven:architectury-api-419699:5786327"
-    compileOnly "curse.maven:ftb-library-forge-404465:6711324"
-    compileOnly "curse.maven:ftb-teams-forge-404468:6119437"
-    compileOnly "curse.maven:ftb-chunks-forge-314906:6504893"
-
-    runtimeOnly "curse.maven:create-328085:6641610"
-    runtimeOnly "curse.maven:pipez-443900:5757713"
+    implementation "com.hrznstudio:titanium:${titanium_version}"
 }
 
 jar {

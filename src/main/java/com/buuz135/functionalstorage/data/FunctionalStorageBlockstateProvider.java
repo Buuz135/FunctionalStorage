@@ -4,84 +4,127 @@ import com.buuz135.functionalstorage.FunctionalStorage;
 import com.buuz135.functionalstorage.block.Drawer;
 import com.buuz135.functionalstorage.block.DrawerBlock;
 import com.hrznstudio.titanium.block.RotatableBlock;
+import com.mojang.math.Quadrant;
+import net.minecraft.client.data.models.BlockModelGenerators;
+import net.minecraft.client.data.models.blockstates.MultiPartGenerator;
+import net.minecraft.client.data.models.model.ModelLocationUtils;
+import net.minecraft.client.renderer.block.dispatch.BlockStateModelDispatcher;
+import net.minecraft.client.renderer.block.dispatch.Variant;
 import net.minecraft.core.Direction;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.data.DataGenerator;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.data.CachedOutput;
+import net.minecraft.data.DataProvider;
+import net.minecraft.data.PackOutput;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.block.Block;
-import net.neoforged.neoforge.client.model.generators.BlockStateProvider;
-import net.neoforged.neoforge.client.model.generators.ModelFile;
-import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.neoforged.neoforge.common.util.Lazy;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
-public class FunctionalStorageBlockstateProvider extends BlockStateProvider {
+public class FunctionalStorageBlockstateProvider implements DataProvider {
+    private final PackOutput.PathProvider blockStatePathProvider;
     private final Lazy<List<Block>> blocks;
 
-    public FunctionalStorageBlockstateProvider(DataGenerator gen, ExistingFileHelper exFileHelper, Lazy<List<Block>> blocks) {
-        super(gen.getPackOutput(), FunctionalStorage.MOD_ID, exFileHelper);
+    public FunctionalStorageBlockstateProvider(PackOutput output, Lazy<List<Block>> blocks) {
+        this.blockStatePathProvider = output.createPathProvider(PackOutput.Target.RESOURCE_PACK, "blockstates");
         this.blocks = blocks;
     }
 
-    public static ResourceLocation getModel(Block block) {
-        return com.buuz135.functionalstorage.util.Utils.resourceLocation(BuiltInRegistries.BLOCK.getKey(block).getNamespace(), "block/" + BuiltInRegistries.BLOCK.getKey(block).getPath());
-    }
-
     @Override
-    protected void registerStatesAndModels() {
-        blocks.get().stream()
-        .filter(b -> b instanceof RotatableBlock<?>)
-        .forEach(b -> registerRotatable((RotatableBlock<?>) b));
+    public CompletableFuture<?> run(CachedOutput cache) {
+        Map<Block, BlockStateModelDispatcher> definitions = new LinkedHashMap<>();
+        for (Block block : blocks.get()) {
+            if (block instanceof RotatableBlock<?> rotatable) {
+                definitions.put(block, createRotatable(rotatable).create());
+            }
+        }
+        return DataProvider.saveAll(
+                cache,
+                BlockStateModelDispatcher.CODEC,
+                block -> blockStatePathProvider.json(block.builtInRegistryHolder().key().identifier()),
+                definitions);
     }
 
-    private void registerRotatable(RotatableBlock<?> block) {
-        var baseModel = new ModelFile.UncheckedModelFile(getModel(block));
-        var lockModel = new ModelFile.UncheckedModelFile(ResourceLocation.fromNamespaceAndPath(FunctionalStorage.MOD_ID, "block/lock"));
-        var builder = getMultipartBuilder(block);
+    private static MultiPartGenerator createRotatable(RotatableBlock<?> block) {
+        Identifier baseModel = ModelLocationUtils.getModelLocation(block);
+        Identifier lockModel = Identifier.fromNamespaceAndPath(FunctionalStorage.MOD_ID, "block/lock");
+        MultiPartGenerator builder = MultiPartGenerator.multiPart(block);
 
         if (block.getRotationType() == RotatableBlock.RotationType.FOUR_WAY) {
             for (Direction direction : Drawer.FACING_HORIZONTAL.getPossibleValues()) {
-                builder.part().modelFile(baseModel).uvLock(true).rotationY((int) direction.toYRot()).addModel()
-                        .condition(Drawer.FACING_HORIZONTAL, direction.getOpposite()).end();
-
+                builder.with(
+                        BlockModelGenerators.condition().term(Drawer.FACING_HORIZONTAL, direction.getOpposite()),
+                        variant(baseModel, 0, direction.toYRot(), true));
                 if (block instanceof Drawer) {
-                    builder.part().modelFile(lockModel).uvLock(true).rotationY((int) direction.toYRot()).addModel()
-                            .condition(Drawer.FACING_HORIZONTAL, direction.getOpposite()).condition(DrawerBlock.LOCKED, true).end();
+                    builder.with(
+                            BlockModelGenerators.condition()
+                                    .term(Drawer.FACING_HORIZONTAL, direction.getOpposite())
+                                    .term(DrawerBlock.LOCKED, true),
+                            variant(lockModel, 0, direction.toYRot(), true));
                 }
             }
         } else {
             for (Direction direction : Direction.values()) {
-                if (direction == Direction.DOWN) {
-                    for (Direction possibleValue : Drawer.FACING_HORIZONTAL_CUSTOM.getPossibleValues()) {
-                        builder.part().modelFile(baseModel).uvLock(false).rotationX(90).rotationY((int) possibleValue.getOpposite().toYRot()).addModel()
-                                .condition(Drawer.FACING_HORIZONTAL_CUSTOM, direction).condition(RotatableBlock.FACING_ALL, possibleValue).end();
-
+                if (direction == Direction.DOWN || direction == Direction.UP) {
+                    float xRotation = direction == Direction.DOWN ? 90 : 270;
+                    for (Direction horizontal : Drawer.FACING_HORIZONTAL_CUSTOM.getPossibleValues()) {
+                        float yRotation = direction == Direction.DOWN ? horizontal.getOpposite().toYRot() : horizontal.toYRot();
+                        builder.with(
+                                BlockModelGenerators.condition()
+                                        .term(Drawer.FACING_HORIZONTAL_CUSTOM, direction)
+                                        .term(RotatableBlock.FACING_ALL, horizontal),
+                                variant(baseModel, xRotation, yRotation, false));
                         if (block instanceof Drawer) {
-                            builder.part().modelFile(lockModel).uvLock(false).rotationX(90).rotationY((int) possibleValue.getOpposite().toYRot()).addModel()
-                                    .condition(Drawer.FACING_HORIZONTAL_CUSTOM, direction).condition(RotatableBlock.FACING_ALL, possibleValue).condition(DrawerBlock.LOCKED, true).end();
-                        }
-                    }
-                } else if (direction == Direction.UP) {
-                    for (Direction possibleValue : Drawer.FACING_HORIZONTAL_CUSTOM.getPossibleValues()) {
-                        builder.part().modelFile(baseModel).uvLock(false).rotationX(270).rotationY((int) possibleValue.toYRot()).addModel()
-                                .condition(Drawer.FACING_HORIZONTAL_CUSTOM, direction).condition(RotatableBlock.FACING_ALL, possibleValue).end();
-
-                        if (block instanceof Drawer) {
-                            builder.part().modelFile(lockModel).uvLock(false).rotationX(270).rotationY((int) possibleValue.toYRot()).addModel()
-                                    .condition(Drawer.FACING_HORIZONTAL_CUSTOM, direction).condition(RotatableBlock.FACING_ALL, possibleValue).condition(DrawerBlock.LOCKED, true).end();
+                            builder.with(
+                                    BlockModelGenerators.condition()
+                                            .term(Drawer.FACING_HORIZONTAL_CUSTOM, direction)
+                                            .term(RotatableBlock.FACING_ALL, horizontal)
+                                            .term(DrawerBlock.LOCKED, true),
+                                    variant(lockModel, xRotation, yRotation, false));
                         }
                     }
                 } else {
-                    builder.part().modelFile(baseModel).uvLock(false).rotationY((int) direction.getOpposite().toYRot()).addModel()
-                            .condition(Drawer.FACING_HORIZONTAL_CUSTOM, direction).condition(RotatableBlock.FACING_ALL, Direction.DOWN).end();
-
+                    builder.with(
+                            BlockModelGenerators.condition()
+                                    .term(Drawer.FACING_HORIZONTAL_CUSTOM, direction)
+                                    .term(RotatableBlock.FACING_ALL, Direction.DOWN),
+                            variant(baseModel, 0, direction.getOpposite().toYRot(), false));
                     if (block instanceof Drawer) {
-                        builder.part().modelFile(lockModel).uvLock(false).rotationY((int) direction.getOpposite().toYRot()).addModel()
-                                .condition(Drawer.FACING_HORIZONTAL_CUSTOM, direction).condition(RotatableBlock.FACING_ALL, Direction.DOWN).condition(DrawerBlock.LOCKED, true).end();
+                        builder.with(
+                                BlockModelGenerators.condition()
+                                        .term(Drawer.FACING_HORIZONTAL_CUSTOM, direction)
+                                        .term(RotatableBlock.FACING_ALL, Direction.DOWN)
+                                        .term(DrawerBlock.LOCKED, true),
+                                variant(lockModel, 0, direction.getOpposite().toYRot(), false));
                     }
                 }
             }
         }
+
+        return builder;
+    }
+
+    private static net.minecraft.client.data.models.MultiVariant variant(Identifier model, float x, float y, boolean uvLock) {
+        Variant variant = new Variant(model)
+                .withXRot(quadrant(x))
+                .withYRot(quadrant(y))
+                .withUvLock(uvLock);
+        return BlockModelGenerators.variant(variant);
+    }
+
+    private static Quadrant quadrant(float degrees) {
+        return switch (Math.floorMod(Math.round(degrees / 90.0F), 4)) {
+            case 1 -> Quadrant.R90;
+            case 2 -> Quadrant.R180;
+            case 3 -> Quadrant.R270;
+            default -> Quadrant.R0;
+        };
+    }
+
+    @Override
+    public String getName() {
+        return "Functional Storage Blockstates";
     }
 }

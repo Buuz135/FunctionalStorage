@@ -1,8 +1,8 @@
 {
   "neoforge:conditions": [
     {
-      "type": "neoforge:item_exists",
-      "item": "functionalstorage:warped_2"
+      "type": "neoforge:registered",
+      "value": "functionalstorage:warped_2"
     }
   ],
   "parent": "minecraft:recipes/root",

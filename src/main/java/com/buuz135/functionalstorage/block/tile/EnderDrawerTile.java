@@ -1,8 +1,6 @@
 package com.buuz135.functionalstorage.block.tile;
 
 import com.buuz135.functionalstorage.FunctionalStorage;
-import com.buuz135.functionalstorage.client.gui.DrawerInfoGuiAddon;
-import com.buuz135.functionalstorage.inventory.BigInventoryHandler;
 import com.buuz135.functionalstorage.inventory.EnderInventoryHandler;
 import com.buuz135.functionalstorage.item.FSAttachments;
 import com.buuz135.functionalstorage.network.EnderDrawerSyncMessage;
@@ -11,8 +9,6 @@ import com.hrznstudio.titanium.annotation.Save;
 import com.hrznstudio.titanium.block.BasicTileBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -21,9 +17,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.minecraft.world.level.storage.ValueInput;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
@@ -32,7 +28,7 @@ public class EnderDrawerTile extends ItemControllableDrawerTile<EnderDrawerTile>
 
     @Save
     private String frequency;
-    private IItemHandler storage;
+    private ResourceHandler<ItemResource> storage;
 
     public EnderDrawerTile(BasicTileBlock<EnderDrawerTile> base, BlockEntityType<EnderDrawerTile> blockEntityType, BlockPos pos, BlockState state) {
         super(base, blockEntityType, pos, state, new DrawerProperties(32, FSAttachments.ITEM_STORAGE_MODIFIER));
@@ -46,24 +42,10 @@ public class EnderDrawerTile extends ItemControllableDrawerTile<EnderDrawerTile>
         this.storage = EnderSavedData.getInstance(this.level).getFrequency(this.frequency);
     }
 
-    @OnlyIn(Dist.CLIENT)
-    @Override
-    public void initClient() {
-        super.initClient();
-        addGuiAddonFactory(() -> new DrawerInfoGuiAddon(64, 16,
-                com.buuz135.functionalstorage.util.Utils.resourceLocation(FunctionalStorage.MOD_ID, "textures/block/ender_front.png"),
-                1,
-                FunctionalStorage.DrawerType.X_1.getSlotPosition(),
-                integer -> getStorage().getStackInSlot(integer),
-                integer -> getStorage().getSlotLimit(integer),
-                integer -> getStorage() instanceof BigInventoryHandler bigInventoryHandler ? bigInventoryHandler.getStoredStacks().get(integer).getStack() : getStorage().getStackInSlot(integer)
-        ));
-    }
-
     @Override
     public void serverTick(Level level, BlockPos pos, BlockState state, EnderDrawerTile blockEntity) {
         super.serverTick(level, pos, state, blockEntity);
-        if (level.getGameTime() % 20 == 0){
+        if (level.getGameTime() % 10 == 0){
             FunctionalStorage.NETWORK.sendToNearby(level, pos, 32, new EnderDrawerSyncMessage(frequency, ((EnderInventoryHandler)getStorage())));
         }
         if (level.getGameTime() % 10 == 0) {
@@ -101,9 +83,9 @@ public class EnderDrawerTile extends ItemControllableDrawerTile<EnderDrawerTile>
     }
 
     @Override
-    public void loadAdditional(CompoundTag compound, HolderLookup.Provider provider) {
+    protected void loadAdditional(ValueInput input) {
         String oldFreq = this.frequency;
-        super.loadAdditional(compound, provider);
+        super.loadAdditional(input);
         if (!this.frequency.equalsIgnoreCase(oldFreq) && level instanceof ServerLevel){
             setFrequency(this.frequency);
         }
@@ -131,14 +113,14 @@ public class EnderDrawerTile extends ItemControllableDrawerTile<EnderDrawerTile>
     }
 
     @Override
-    public IItemHandler getStorage() {
+    public ResourceHandler<ItemResource> getStorage() {
         return this.storage;
     }
 
     @Override
     public boolean isEverythingEmpty() {
         EnderInventoryHandler inventoryHandler = EnderSavedData.getInstance(this.level).getFrequency(this.frequency);
-        for (int i = 0; i < inventoryHandler.getSlots(); i++) {
+        for (int i = 0; i < inventoryHandler.size(); i++) {
             if (!inventoryHandler.getStackInSlot(i).isEmpty()) {
                 return false;
             }

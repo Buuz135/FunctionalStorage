@@ -17,7 +17,6 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.items.IItemHandler;
 import org.jetbrains.annotations.NotNull;
 
 public class DrawerTile extends ItemControllableDrawerTile<DrawerTile> {
@@ -36,6 +35,7 @@ public class DrawerTile extends ItemControllableDrawerTile<DrawerTile> {
             public void onChange() {
                 DrawerTile.this.markForUpdate();
                 DrawerTile.this.updateComparatorOutput();
+                syncObject(DrawerTile.this.handler);
             }
 
             @Override
@@ -62,7 +62,6 @@ public class DrawerTile extends ItemControllableDrawerTile<DrawerTile> {
         };
     }
 
-    @OnlyIn(Dist.CLIENT)
     @Override
     public void initClient() {
         super.initClient();
@@ -104,7 +103,7 @@ public class DrawerTile extends ItemControllableDrawerTile<DrawerTile> {
     }
 
     @Override
-    public IItemHandler getStorage() {
+    public BigInventoryHandler getStorage() {
         return handler;
     }
 

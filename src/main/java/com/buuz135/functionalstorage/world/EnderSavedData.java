@@ -8,6 +8,8 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.saveddata.SavedData;
+import net.minecraft.world.level.saveddata.SavedDataType;
+import net.minecraft.resources.Identifier;
 
 import java.util.HashMap;
 
@@ -16,6 +18,12 @@ public class EnderSavedData extends SavedData {
     public static EnderSavedData CLIENT = new EnderSavedData(null);
 
     public static final String NAME = "FunctionalStorageEnder";
+    public static final SavedDataType<EnderSavedData> TYPE = new SavedDataType<>(
+            Identifier.fromNamespaceAndPath("functionalstorage", "ender"),
+            EnderSavedData::new,
+            serverLevel -> CompoundTag.CODEC.xmap(
+                    tag -> EnderSavedData.load(tag, serverLevel),
+                    data -> data.save(new CompoundTag(), serverLevel.registryAccess())));
 
     private HashMap<String, EnderInventoryHandler> itemHandlers;
 
@@ -29,8 +37,7 @@ public class EnderSavedData extends SavedData {
     public static EnderSavedData getInstance(LevelAccessor accessor){
         if (accessor instanceof ServerLevel){
             ServerLevel serverWorld = ((ServerLevel) accessor).getServer().getLevel(Level.OVERWORLD);
-            EnderSavedData data = serverWorld.getDataStorage().computeIfAbsent(
-                    new Factory<>(() -> new EnderSavedData((ServerLevel)accessor), (tag, prov) -> EnderSavedData.load(tag, (ServerLevel) accessor)), NAME);
+            EnderSavedData data = serverWorld.getDataStorage().computeIfAbsent(TYPE);
             return data;
         } else if (accessor instanceof ClientLevel){
             return CLIENT;
@@ -41,10 +48,10 @@ public class EnderSavedData extends SavedData {
     private static EnderSavedData load(CompoundTag compoundTag, Level level) {
         EnderSavedData manager = new EnderSavedData(level);
         manager.itemHandlers = new HashMap<>();
-        CompoundTag backpacks = compoundTag.getCompound("Ender");
-        for (String s : backpacks.getAllKeys()) {
+        CompoundTag backpacks = compoundTag.getCompoundOrEmpty("Ender");
+        for (String s : backpacks.keySet()) {
             EnderInventoryHandler hander = new EnderInventoryHandler(s, manager);
-            hander.deserializeNBT(level.registryAccess(), backpacks.getCompound(s));
+            hander.deserializeNBT(level.registryAccess(), backpacks.getCompoundOrEmpty(s));
             manager.itemHandlers.put(s, hander);
         }
 
@@ -59,7 +66,6 @@ public class EnderSavedData extends SavedData {
         itemHandlers.put(frequency, handler);
     }
 
-    @Override
     public CompoundTag save(CompoundTag tag, HolderLookup.Provider provider) {
         CompoundTag nbt = new CompoundTag();
         itemHandlers.forEach((s, iItemHandler) -> nbt.put(s, iItemHandler.serializeNBT(provider)));

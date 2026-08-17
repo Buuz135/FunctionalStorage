@@ -23,7 +23,7 @@ public class DrawerPriorityMessage extends Message {
     }
 
     @Override
-    protected void handleMessage(IPayloadContext context) {
+    protected void handleServerMessage(IPayloadContext context) {
         BlockPos pos = new BlockPos(x, y, z);
         if (context.player().distanceToSqr(pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D) > 64D) {
             return;

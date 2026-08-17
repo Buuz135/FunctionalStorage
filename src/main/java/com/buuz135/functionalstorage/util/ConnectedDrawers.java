@@ -13,9 +13,10 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.neoforged.neoforge.common.util.INBTSerializable;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler;
-import net.neoforged.neoforge.items.IItemHandler;
+import com.hrznstudio.titanium.nbthandler.INBTSerializable;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.fluid.FluidResource;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -25,8 +26,8 @@ public class ConnectedDrawers implements INBTSerializable<CompoundTag> {
     private final StorageControllerTile<?> controllerTile;
 
     private List<Long> connectedDrawers;
-    private List<IItemHandler> itemHandlers;
-    private List<IFluidHandler> fluidHandlers;
+    private List<ResourceHandler<ItemResource>> itemHandlers;
+    private List<ResourceHandler<FluidResource>> fluidHandlers;
     private Level level;
     private int extensions;
     private VoxelShape cachedVoxelShape;
@@ -147,8 +148,8 @@ public class ConnectedDrawers implements INBTSerializable<CompoundTag> {
     @Override
     public void deserializeNBT(net.minecraft.core.HolderLookup.Provider provider, CompoundTag nbt) {
         this.connectedDrawers = new ArrayList<>();
-        for (String allKey : nbt.getAllKeys()) {
-            connectedDrawers.add(nbt.getLong(allKey));
+        for (String allKey : nbt.keySet()) {
+            connectedDrawers.add(nbt.getLongOr(allKey, 0L));
         }
         rebuild();
         if (controllerTile.getLevel() != null && controllerTile.isClient()) {
@@ -160,11 +161,11 @@ public class ConnectedDrawers implements INBTSerializable<CompoundTag> {
         return connectedDrawers;
     }
 
-    public List<IItemHandler> getItemHandlers() {
+    public List<ResourceHandler<ItemResource>> getItemHandlers() {
         return itemHandlers;
     }
 
-    public List<IFluidHandler> getFluidHandlers() {
+    public List<ResourceHandler<FluidResource>> getFluidHandlers() {
         return fluidHandlers;
     }
 

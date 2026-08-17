@@ -18,7 +18,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -28,6 +29,7 @@ public class ArmoryCabinetTile extends ActiveTile<ArmoryCabinetTile> implements 
 
     @Save
     public ArmoryCabinetInventoryHandler handler;
+    private ResourceHandler<ItemResource> transferHandler;
 
     public ArmoryCabinetTile(BasicTileBlock<ArmoryCabinetTile> base, BlockEntityType<?> entityType, BlockPos pos, BlockState state) {
         super(base, entityType, pos, state);
@@ -39,7 +41,7 @@ public class ArmoryCabinetTile extends ActiveTile<ArmoryCabinetTile> implements 
         };
     }
 
-    public IItemHandler getStorage() {
+    public ArmoryCabinetInventoryHandler getStorage() {
         return handler;
     }
 
@@ -57,10 +59,6 @@ public class ArmoryCabinetTile extends ActiveTile<ArmoryCabinetTile> implements 
     @Override
     public ClientboundBlockEntityDataPacket getUpdatePacket() {
         return ClientboundBlockEntityDataPacket.create(this, (blockEntity, acc) -> new CompoundTag());
-    }
-
-    @Override
-    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt, HolderLookup.Provider provider) {
     }
 
     @Override // TODO - wat?
@@ -86,7 +84,8 @@ public class ArmoryCabinetTile extends ActiveTile<ArmoryCabinetTile> implements 
     }
 
     @Override
-    public IItemHandler getItemHandler(@Nullable Direction direction) {
-        return getStorage();
+    public ResourceHandler<ItemResource> getItemHandler(@Nullable Direction direction) {
+        if (transferHandler == null) transferHandler = getStorage();
+        return transferHandler;
     }
 }

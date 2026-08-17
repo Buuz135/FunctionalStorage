@@ -1,0 +1,19 @@
+{
+  "model": {
+    "type": "minecraft:composite",
+    "models": [
+      {
+        "type": "minecraft:model",
+        "model": "functionalstorage:block/spruce_2"
+      },
+      {
+        "type": "minecraft:special",
+        "base": "functionalstorage:block/spruce_2",
+        "model": {
+          "type": "functionalstorage:drawer",
+          "kind": "DRAWER"
+        }
+      }
+    ]
+  }
+}

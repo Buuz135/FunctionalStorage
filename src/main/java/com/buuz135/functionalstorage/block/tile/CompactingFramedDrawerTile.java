@@ -1,39 +1,37 @@
 package com.buuz135.functionalstorage.block.tile;
 
-import com.buuz135.functionalstorage.client.model.FramedDrawerModelData;
+import com.buuz135.functionalstorage.util.CustomFramedDrawerModelData;
 import com.hrznstudio.titanium.annotation.Save;
 import com.hrznstudio.titanium.block.BasicTileBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.client.model.data.ModelData;
-import javax.annotation.Nonnull;
+import net.neoforged.neoforge.model.data.ModelData;
+
 import java.util.HashMap;
 
 public class CompactingFramedDrawerTile extends CompactingDrawerTile implements FramedTile {
     @Save
-    private FramedDrawerModelData framedDrawerModelData;
+    private CustomFramedDrawerModelData framedDrawerModelData;
 
     public CompactingFramedDrawerTile(BasicTileBlock<CompactingDrawerTile> base, BlockEntityType<CompactingDrawerTile> blockEntityType, BlockPos pos, BlockState state) {
         super(base, blockEntityType, pos, state);
-        this.framedDrawerModelData = new FramedDrawerModelData(new HashMap<>());
+        this.framedDrawerModelData = new CustomFramedDrawerModelData(new HashMap<>());
     }
 
-    public FramedDrawerModelData getFramedDrawerModelData() {
+    public CustomFramedDrawerModelData getFramedDrawerModelData() {
         return framedDrawerModelData;
     }
 
-    public void setFramedDrawerModelData(FramedDrawerModelData framedDrawerModelData) {
+    public void setFramedDrawerModelData(CustomFramedDrawerModelData framedDrawerModelData) {
         this.framedDrawerModelData = framedDrawerModelData;
+        requestModelDataUpdate();
         markForUpdate();
-        if (level.isClientSide) requestModelDataUpdate();
     }
 
-    @Nonnull
     @Override
     public ModelData getModelData() {
-        return ModelData.builder().with(FramedDrawerModelData.FRAMED_PROPERTY, framedDrawerModelData).build();
+        return ModelData.of(CustomFramedDrawerModelData.MODEL_PROPERTY, framedDrawerModelData);
     }
-
 
 }

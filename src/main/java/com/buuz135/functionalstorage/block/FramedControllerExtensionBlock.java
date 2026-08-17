@@ -64,7 +64,7 @@ public class FramedControllerExtensionBlock extends StorageControllerExtensionBl
     }
 
     @Override
-    public ItemStack getCloneItemStack(BlockState state, HitResult target, LevelReader level, BlockPos pos, Player player) {
+    public ItemStack getCloneItemStack(LevelReader level, BlockPos pos, BlockState state, boolean includeData, Player player) {
         BlockEntity blockEntity = level.getBlockEntity(pos);
         if (blockEntity instanceof FramedControllerExtensionTile framedControllerExtensionTile) {
             if (framedControllerExtensionTile.getFramedDrawerModelData() != null) {
@@ -75,7 +75,7 @@ public class FramedControllerExtensionBlock extends StorageControllerExtensionBl
                 }
             }
         }
-        return super.getCloneItemStack(state, target, level, pos, player);
+        return super.getCloneItemStack(level, pos, state, includeData, player);
     }
 
     @Override

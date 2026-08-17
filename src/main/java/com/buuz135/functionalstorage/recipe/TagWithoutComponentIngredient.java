@@ -12,13 +12,12 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
-import net.minecraft.core.component.DataComponentPredicate;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.HolderSetCodec;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -29,6 +28,7 @@ import net.neoforged.neoforge.common.crafting.IngredientType;
 
 import java.util.List;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import static com.buuz135.functionalstorage.FunctionalStorage.MOD_ID;
 
@@ -41,7 +41,7 @@ public class TagWithoutComponentIngredient implements ICustomIngredient {
                             TagKey.codec(BuiltInRegistries.ITEM.key()).fieldOf("tag").forGetter(TagWithoutComponentIngredient::getTag))
                     .apply(builder, TagWithoutComponentIngredient::new));
     public static Holder<IngredientType<?>> TYPE;
-    public static final ResourceLocation NAME = Utils.resourceLocation(MOD_ID, "tag_without_component");
+    public static final Identifier NAME = Utils.resourceLocation(MOD_ID, "tag_without_component");
 
     private final TagKey<Item> tag;
 
@@ -70,8 +70,8 @@ public class TagWithoutComponentIngredient implements ICustomIngredient {
     }
 
     @Override
-    public Stream<ItemStack> getItems() {
-        return getListOfItems().stream();
+    public Stream<Holder<Item>> items() {
+        return StreamSupport.stream(BuiltInRegistries.ITEM.getTagOrEmpty(this.tag).spliterator(), false);
     }
 
     @Override

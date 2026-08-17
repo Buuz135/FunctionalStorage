@@ -1,26 +1,20 @@
 {
   "neoforge:conditions": [
     {
-      "type": "neoforge:item_exists",
-      "item": "functionalstorage:redstone_upgrade"
+      "type": "neoforge:registered",
+      "value": "functionalstorage:redstone_upgrade"
     }
   ],
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "B": {
-      "item": "minecraft:redstone_block"
-    },
-    "C": {
-      "item": "minecraft:comparator"
-    },
+    "B": "minecraft:redstone_block",
+    "C": "minecraft:comparator",
     "D": {
-      "type": "functionalstorage:tag_without_component",
+      "neoforge:ingredient_type": "functionalstorage:tag_without_component",
       "tag": "functionalstorage:drawer"
     },
-    "I": {
-      "item": "minecraft:redstone"
-    }
+    "I": "minecraft:redstone"
   },
   "pattern": [
     "IBI",
@@ -28,10 +22,6 @@
     "IBI"
   ],
   "result": {
-    "components": {
-      "functionalstorage:slot": 0
-    },
-    "count": 1,
     "id": "functionalstorage:redstone_upgrade"
   }
 }

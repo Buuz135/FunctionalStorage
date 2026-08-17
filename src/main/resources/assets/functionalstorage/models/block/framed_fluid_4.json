@@ -1,6 +1,6 @@
 {
 	"parent": "minecraft:block/block",
-	"loader": "functionalstorage:framedblock",
+	"loader": "neoforge:composite",
 	"children": {
 		"side": {
 			"parent": "functionalstorage:block/side",
@@ -20,7 +20,7 @@
 		"front_divider" : {
 			"parent": "functionalstorage:block/divider_4",
 			"textures": {
-				"front_divider": "functionalstorage:block/framed_side"
+				"front_divider": "functionalstorage:block/machine_divider"
 			}
 		}
 	},

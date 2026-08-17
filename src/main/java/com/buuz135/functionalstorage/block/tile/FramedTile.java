@@ -1,9 +1,9 @@
 package com.buuz135.functionalstorage.block.tile;
 
-import com.buuz135.functionalstorage.client.model.FramedDrawerModelData;
+import com.buuz135.functionalstorage.util.CustomFramedDrawerModelData;
 
 public interface FramedTile {
-    FramedDrawerModelData getFramedDrawerModelData();
+    CustomFramedDrawerModelData getFramedDrawerModelData();
 
-    void setFramedDrawerModelData(FramedDrawerModelData framedDrawerModelData);
+    void setFramedDrawerModelData(CustomFramedDrawerModelData framedDrawerModelData);
 }

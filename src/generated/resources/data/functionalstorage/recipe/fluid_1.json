@@ -1,19 +1,15 @@
 {
   "neoforge:conditions": [
     {
-      "type": "neoforge:item_exists",
-      "item": "functionalstorage:fluid_1"
+      "type": "neoforge:registered",
+      "value": "functionalstorage:fluid_1"
     }
   ],
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "C": {
-      "tag": "c:buckets/empty"
-    },
-    "P": {
-      "tag": "minecraft:planks"
-    }
+    "C": "#c:buckets/empty",
+    "P": "#minecraft:planks"
   },
   "pattern": [
     "PPP",
@@ -21,7 +17,6 @@
     "PPP"
   ],
   "result": {
-    "count": 1,
     "id": "functionalstorage:fluid_1"
   }
 }

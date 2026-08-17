@@ -23,10 +23,12 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.core.SectionPos;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.Connection;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -34,11 +36,12 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.common.util.INBTSerializable;
-import net.neoforged.neoforge.items.ItemHandlerHelper;
+import com.hrznstudio.titanium.nbthandler.INBTSerializable;
 
 import java.util.HashMap;
 import java.util.function.Supplier;
@@ -107,19 +110,35 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
     }
 
     @Override
-    public void loadAdditional(CompoundTag compound, HolderLookup.Provider provider) {
-        if (compound.contains("storageUpgrades")) {
-            storageUpgrades.deserializeNBT(provider, compound.getCompound("storageUpgrades"));
+    protected void loadAdditional(ValueInput input) {
+        if (input.child("storageUpgrades").isPresent()) {
+            storageUpgrades.deserialize(input.childOrEmpty("storageUpgrades"));
             recalculateUpgrades();
         }
-        super.loadAdditional(compound, provider);
+        super.loadAdditional(input);
     }
 
     @Override
-    protected void saveAdditional(CompoundTag compoundTag, HolderLookup.Provider provider) {
-        compoundTag.put("storageUpgrades", storageUpgrades.serializeNBT(provider));
-        super.saveAdditional(compoundTag, provider);
+    protected void saveAdditional(ValueOutput output) {
+        storageUpgrades.serialize(output.child("storageUpgrades"));
+        super.saveAdditional(output);
     }
+
+    @Override
+    public CompoundTag getUpdateTag(HolderLookup.Provider provider) {
+        return saveWithoutMetadata(provider);
+    }
+
+    @Override
+    public ClientboundBlockEntityDataPacket getUpdatePacket() {
+        return ClientboundBlockEntityDataPacket.create(this);
+    }
+
+    @Override
+    public void handleUpdateTag(ValueInput input) {
+        super.handleUpdateTag(input);
+    }
+
     @Override
     public void onLoad() {
         super.onLoad();
@@ -143,8 +162,8 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
             }
         }
     }
+
     @Override
-    @OnlyIn(Dist.CLIENT)
     public void initClient() {
         super.initClient();
         if (getStorageSlotAmount() > 0) {
@@ -293,7 +312,8 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
             if (sizeComp != null) {
                 for (int i = 0; i < component.getSlots(); i++) {
                     if (!component.getStackInSlot(i).isEmpty() && component.isItemValid(i, stack) && component.getStackInSlot(i).has(sizeUpgradeComponent) && component.getStackInSlot(i).get(sizeUpgradeComponent).applyFactorModifier(1f) < sizeComp.applyFactorModifier(1f)) {
-                        ItemHandlerHelper.giveItemToPlayer(playerIn, component.getStackInSlot(i).copy());
+                        ItemStack previous = component.getStackInSlot(i).copy();
+                        if (!playerIn.addItem(previous)) playerIn.drop(previous, false);
                         ItemStack upgradeStack = stack.copy();
                         upgradeStack.setCount(1);
                         component.setStackInSlot(i, upgradeStack);
@@ -311,7 +331,7 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
                 }
             }
         }
-        if (super.onActivated(playerIn, hand, facing, hitX, hitY, hitZ) == ItemInteractionResult.SUCCESS) {
+        if (super.onActivated(playerIn, hand, facing, hitX, hitY, hitZ) == InteractionResult.SUCCESS) {
             return InteractionResult.SUCCESS;
         }
         if (slot == -1) {
@@ -509,11 +529,11 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
 
         @Override
         public void deserializeNBT(net.minecraft.core.HolderLookup.Provider provider, CompoundTag nbt) {
-            for (String allKey : nbt.getAllKeys()) {
+            for (String allKey : nbt.keySet()) {
                 if (allKey.startsWith("Advanced: ")) {
-                    this.advancedOptions.put(ConfigurationToolItem.ConfigurationAction.valueOf(allKey.replace("Advanced: ", "")), nbt.getInt(allKey));
+                    this.advancedOptions.put(ConfigurationToolItem.ConfigurationAction.valueOf(allKey.replace("Advanced: ", "")), nbt.getInt(allKey).orElse(0));
                 } else {
-                    this.options.put(ConfigurationToolItem.ConfigurationAction.valueOf(allKey), nbt.getBoolean(allKey));
+                    this.options.put(ConfigurationToolItem.ConfigurationAction.valueOf(allKey), nbt.getBoolean(allKey).orElse(false));
                 }
             }
         }

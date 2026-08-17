@@ -1,19 +1,22 @@
 package com.buuz135.functionalstorage.client.gui;
 
 import com.buuz135.functionalstorage.inventory.ArmoryCabinetMenu;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
 import org.lwjgl.glfw.GLFW;
 
 public class ArmoryCabinetScreen extends AbstractContainerScreen<ArmoryCabinetMenu> {
 
-    private static final ResourceLocation TITANIUM_BACKGROUND = ResourceLocation.fromNamespaceAndPath("titanium", "textures/gui/background.png");
-    private static final ResourceLocation SCROLLER_SPRITE = ResourceLocation.withDefaultNamespace("container/creative_inventory/scroller");
-    private static final ResourceLocation SCROLLER_DISABLED_SPRITE = ResourceLocation.withDefaultNamespace("container/creative_inventory/scroller_disabled");
+    private static final Identifier TITANIUM_BACKGROUND = Identifier.fromNamespaceAndPath("titanium", "textures/gui/background.png");
+    private static final Identifier SCROLLER_SPRITE = Identifier.withDefaultNamespace("container/creative_inventory/scroller");
+    private static final Identifier SCROLLER_DISABLED_SPRITE = Identifier.withDefaultNamespace("container/creative_inventory/scroller_disabled");
     private static final int SLOT_AREA_TOP = 29;
     private static final int SLOT_AREA_HEIGHT = ArmoryCabinetMenu.VISIBLE_ROWS * 18;
     private static final int SLOT_BACKGROUND_U = 1;
@@ -32,9 +35,7 @@ public class ArmoryCabinetScreen extends AbstractContainerScreen<ArmoryCabinetMe
     private boolean scrolling;
 
     public ArmoryCabinetScreen(ArmoryCabinetMenu menu, Inventory inventory, Component title) {
-        super(menu, inventory, title);
-        imageWidth = 176;
-        imageHeight = 194;
+        super(menu, inventory, title, 176, 194);
         inventoryLabelY = 101;
     }
 
@@ -66,44 +67,43 @@ public class ArmoryCabinetScreen extends AbstractContainerScreen<ArmoryCabinetMe
     }
 
     @Override
-    protected void renderBg(GuiGraphics graphics, float partialTick, int mouseX, int mouseY) {
+    public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+        super.extractBackground(graphics, mouseX, mouseY, partialTick);
         int x = leftPos;
         int y = topPos;
-        graphics.blit(TITANIUM_BACKGROUND, x, y, 0, 0, imageWidth, 184);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, TITANIUM_BACKGROUND, x, y, 0, 0, imageWidth, 184, 256, 256);
 
         drawCabinetSlots(graphics);
         drawScrollbar(graphics);
     }
 
 
-    private void drawCabinetSlots(GuiGraphics graphics) {
+    private void drawCabinetSlots(GuiGraphicsExtractor graphics) {
         for (int row = 0; row < ArmoryCabinetMenu.VISIBLE_ROWS; row++) {
             for (int column = 0; column < ArmoryCabinetMenu.COLUMNS; column++) {
-                graphics.blit(TITANIUM_BACKGROUND, leftPos + 7 + column * 18, topPos + 18 + row * 18, SLOT_BACKGROUND_U, SLOT_BACKGROUND_V, 18, 18);
+                graphics.blit(RenderPipelines.GUI_TEXTURED, TITANIUM_BACKGROUND,
+                        leftPos + 7 + column * 18, topPos + 18 + row * 18,
+                        SLOT_BACKGROUND_U, SLOT_BACKGROUND_V, 18, 18, 256, 256);
             }
         }
     }
 
-    private void drawScrollbar(GuiGraphics graphics) {
+    private void drawScrollbar(GuiGraphicsExtractor graphics) {
         int barX = leftPos + SCROLLBAR_X;
         int barY = topPos + SCROLLBAR_Y;
         graphics.fill(barX, barY, barX + SCROLLBAR_WIDTH, barY + SCROLLBAR_HEIGHT, 0xFF8B8B8B);
         graphics.fill(barX + 1, barY + 1, barX + SCROLLBAR_WIDTH - 1, barY + SCROLLBAR_HEIGHT - 1, 0xFFCCCCCC);
         int max = menu.getMaxScrollRow();
         int thumbY = max <= 0 ? barY : barY + (int) ((SCROLLBAR_HEIGHT - THUMB_HEIGHT) * (menu.getScrollRow() / (float) max));
-        graphics.blitSprite(max <= 0 ? SCROLLER_DISABLED_SPRITE : SCROLLER_SPRITE, barX, thumbY, THUMB_WIDTH, THUMB_HEIGHT);
+        graphics.blitSprite(RenderPipelines.GUI_TEXTURED,
+                max <= 0 ? SCROLLER_DISABLED_SPRITE : SCROLLER_SPRITE,
+                barX, thumbY, THUMB_WIDTH, THUMB_HEIGHT);
     }
 
     @Override
-    protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
-        graphics.drawString(font, title, titleLabelX, titleLabelY, 0x404040, false);
-        graphics.drawString(font, playerInventoryTitle, inventoryLabelX, inventoryLabelY - 9, 0x404040, false);
-    }
-
-    @Override
-    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        super.render(graphics, mouseX, mouseY, partialTick);
-        renderTooltip(graphics, mouseX, mouseY);
+    protected void extractLabels(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
+        graphics.text(font, title, titleLabelX, titleLabelY, 0x404040, false);
+        graphics.text(font, playerInventoryTitle, inventoryLabelX, inventoryLabelY - 9, 0x404040, false);
     }
 
     @Override
@@ -117,37 +117,37 @@ public class ArmoryCabinetScreen extends AbstractContainerScreen<ArmoryCabinetMe
     }
 
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (searchBox != null && searchBox.isFocused() && keyCode != GLFW.GLFW_KEY_ESCAPE) {
-            searchBox.keyPressed(keyCode, scanCode, modifiers);
+    public boolean keyPressed(KeyEvent event) {
+        if (searchBox != null && searchBox.isFocused() && event.key() != GLFW.GLFW_KEY_ESCAPE) {
+            searchBox.keyPressed(event);
             return true;
         }
-        return super.keyPressed(keyCode, scanCode, modifiers);
+        return super.keyPressed(event);
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (button == 0 && isInScrollbar(mouseX, mouseY)) {
+    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+        if (event.button() == 0 && isInScrollbar(event.x(), event.y())) {
             scrolling = true;
-            updateScrollFromMouse(mouseY);
+            updateScrollFromMouse(event.y());
             return true;
         }
-        return super.mouseClicked(mouseX, mouseY, button);
+        return super.mouseClicked(event, doubleClick);
     }
 
     @Override
-    public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
+    public boolean mouseDragged(MouseButtonEvent event, double dragX, double dragY) {
         if (scrolling) {
-            updateScrollFromMouse(mouseY);
+            updateScrollFromMouse(event.y());
             return true;
         }
-        return super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
+        return super.mouseDragged(event, dragX, dragY);
     }
 
     @Override
-    public boolean mouseReleased(double mouseX, double mouseY, int button) {
+    public boolean mouseReleased(MouseButtonEvent event) {
         scrolling = false;
-        return super.mouseReleased(mouseX, mouseY, button);
+        return super.mouseReleased(event);
     }
 
     private boolean isInCabinetArea(double mouseX, double mouseY) {

@@ -5,15 +5,17 @@ import com.buuz135.functionalstorage.fluid.BigFluidHandler;
 import com.buuz135.functionalstorage.item.FSAttachments;
 import com.buuz135.functionalstorage.item.component.SizeProvider;
 import com.buuz135.functionalstorage.util.Utils;
+import com.hrznstudio.titanium.component.inventory.InventoryComponent;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
-import net.neoforged.neoforge.items.ItemStackHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.fluid.FluidResource;
+import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import org.jetbrains.annotations.NotNull;
 
-public class FluidDrawerStackItemHandler implements IFluidHandlerItem {
+public class FluidDrawerStackItemHandler implements ResourceHandler<FluidResource> {
 
     private final ItemStack container;
     private final FunctionalStorage.DrawerType type;
@@ -49,11 +51,12 @@ public class FluidDrawerStackItemHandler implements IFluidHandlerItem {
         if (container.has(FSAttachments.TILE)) {
             var access = Utils.registryAccess();
             CompoundTag tile = container.get(FSAttachments.TILE);
-            this.isCreative = tile.contains("isCreative") && tile.getBoolean("isCreative");
-            this.isVoid = tile.contains("isVoid") && tile.getBoolean("isVoid");
+            CompoundTag titaniumData = tile.contains("TitaniumData") ? tile.getCompoundOrEmpty("TitaniumData") : tile;
+            this.isCreative = titaniumData.getBooleanOr("isCreative", false);
+            this.isVoid = titaniumData.getBooleanOr("isVoid", false);
 
-            if (tile.contains("fluidHandler")) {
-                this.fluidHandler.deserializeNBT(access, tile.getCompound("fluidHandler"));
+            if (titaniumData.contains("fluidHandler")) {
+                this.fluidHandler.deserializeNBT(access, titaniumData.getCompoundOrEmpty("fluidHandler"));
             }
 
             var storageUpgrades = getStorageUpgrades(tile);
@@ -63,8 +66,8 @@ public class FluidDrawerStackItemHandler implements IFluidHandlerItem {
                 }
             }
 
-            if (tile.contains("utilityUpgrades")) {
-                for (Tag tag : tile.getCompound("utilityUpgrades").getList("Items", Tag.TAG_COMPOUND)) {
+            if (titaniumData.contains("utilityUpgrades")) {
+                for (Tag tag : titaniumData.getCompoundOrEmpty("utilityUpgrades").getListOrEmpty("Items")) {
                     ItemStack upgrade = Utils.deserialize(access, (CompoundTag) tag);
                     if (upgrade.is(FunctionalStorage.VOID_UPGRADE.get())) {
                         this.isVoid = true;
@@ -76,53 +79,36 @@ public class FluidDrawerStackItemHandler implements IFluidHandlerItem {
         this.fluidHandler.setCapacity(getTankCapacity(getStorageMultiplier()));
     }
 
-    @Override
     public ItemStack getContainer() {
         return container;
     }
 
-    @Override
     public int getTanks() {
         return fluidHandler.getTanks();
     }
 
-    @Override
     public @NotNull FluidStack getFluidInTank(int tank) {
         return fluidHandler.getFluidInTank(tank);
     }
 
-    @Override
     public int getTankCapacity(int tank) {
         return fluidHandler.getTankCapacity(tank);
     }
 
-    @Override
-    public boolean isFluidValid(int tank, @NotNull FluidStack stack) {
-        return fluidHandler.isFluidValid(tank, stack);
+    public boolean isFluidValid(int tank, FluidResource resource) {
+        return fluidHandler.isFluidValid(tank, resource);
     }
 
-    @Override
-    public int fill(FluidStack resource, FluidAction action) {
-        if (container.getCount() != 1) {
-            return 0;
-        }
-        return fluidHandler.fill(resource, action);
+    @Override public int size() { return fluidHandler.size(); }
+    @Override public FluidResource getResource(int index) { return fluidHandler.getResource(index); }
+    @Override public long getAmountAsLong(int index) { return fluidHandler.getAmountAsLong(index); }
+    @Override public long getCapacityAsLong(int index, FluidResource resource) { return fluidHandler.getCapacityAsLong(index, resource); }
+    @Override public boolean isValid(int index, FluidResource resource) { return fluidHandler.isValid(index, resource); }
+    @Override public int insert(int index, FluidResource resource, int amount, TransactionContext transaction) {
+        return container.getCount() == 1 ? fluidHandler.insert(index, resource, amount, transaction) : 0;
     }
-
-    @Override
-    public @NotNull FluidStack drain(FluidStack resource, FluidAction action) {
-        if (container.getCount() != 1) {
-            return FluidStack.EMPTY;
-        }
-        return fluidHandler.drain(resource, action);
-    }
-
-    @Override
-    public @NotNull FluidStack drain(int maxDrain, FluidAction action) {
-        if (container.getCount() != 1) {
-            return FluidStack.EMPTY;
-        }
-        return fluidHandler.drain(maxDrain, action);
+    @Override public int extract(int index, FluidResource resource, int amount, TransactionContext transaction) {
+        return container.getCount() == 1 ? fluidHandler.extract(index, resource, amount, transaction) : 0;
     }
 
     private void onChange() {
@@ -146,10 +132,10 @@ public class FluidDrawerStackItemHandler implements IFluidHandlerItem {
         return SizeProvider.calculateAsFactor(getStorageUpgrades(container.get(FSAttachments.TILE)), FSAttachments.FLUID_STORAGE_MODIFIER, type.getSlotAmount());
     }
 
-    private ItemStackHandler getStorageUpgrades(CompoundTag tile) {
-        var storageUpgrades = new ItemStackHandler(4);
+    private InventoryComponent<?> getStorageUpgrades(CompoundTag tile) {
+        var storageUpgrades = new InventoryComponent<>("storage_upgrades", 0, 0, 4);
         if (tile.contains("storageUpgrades")) {
-            storageUpgrades.deserializeNBT(Utils.registryAccess(), tile.getCompound("storageUpgrades"));
+            storageUpgrades.deserializeNBT(Utils.registryAccess(), tile.getCompoundOrEmpty("storageUpgrades"));
         }
         return storageUpgrades;
     }

@@ -1,8 +1,8 @@
 {
   "neoforge:conditions": [
     {
-      "type": "neoforge:item_exists",
-      "item": "functionalstorage:birch_1"
+      "type": "neoforge:registered",
+      "value": "functionalstorage:birch_1"
     }
   ],
   "parent": "minecraft:recipes/root",

@@ -23,13 +23,15 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
@@ -39,7 +41,8 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
+import net.minecraft.world.level.storage.TagValueInput;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
@@ -56,10 +59,11 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Consumer;
 
 public abstract class Drawer<T extends ControllableDrawerTile<T>> extends RotatableBlock<T> {
 
-    public static final DirectionProperty FACING_HORIZONTAL_CUSTOM = DirectionProperty.create("subfacing", Direction.values());
+    public static final EnumProperty<Direction> FACING_HORIZONTAL_CUSTOM = EnumProperty.create("subfacing", Direction.class);
 
     public Drawer(String name, Properties properties, Class<T> tileClass) {
         super(name, properties, tileClass);
@@ -118,20 +122,20 @@ public abstract class Drawer<T extends ControllableDrawerTile<T>> extends Rotata
     }
 
     @Override
-    protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level worldIn, BlockPos pos, Player player, InteractionHand hand, BlockHitResult ray) {
+    protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level worldIn, BlockPos pos, Player player, InteractionHand hand, BlockHitResult ray) {
         var entity = getBlockEntityAt(worldIn, pos);
         if (entity != null) {
             var result = entity.onSlotActivated(player, hand, ray.getDirection(), ray.getLocation().x, ray.getLocation().y, ray.getLocation().z, getHit(state, worldIn, player));
             if (result == InteractionResult.SUCCESS) {
-                return ItemInteractionResult.SUCCESS;
+                return InteractionResult.SUCCESS;
             } else if (result.consumesAction()) {
-                return ItemInteractionResult.CONSUME;
+                return InteractionResult.CONSUME;
             } else {
                 // TODO - validate if this is ok
-                return ItemInteractionResult.SKIP_DEFAULT_BLOCK_INTERACTION;
+                return InteractionResult.TRY_WITH_EMPTY_HAND;
             }
         }
-        return ItemInteractionResult.SKIP_DEFAULT_BLOCK_INTERACTION;
+        return InteractionResult.TRY_WITH_EMPTY_HAND;
     }
 
     @Override
@@ -167,9 +171,7 @@ public abstract class Drawer<T extends ControllableDrawerTile<T>> extends Rotata
 
     protected void copyTo(T tile, ItemStack stack) {
         if (!tile.isEverythingEmpty()) {
-            var compound = NBTManager.getInstance().writeTileEntity(tile, new CompoundTag());
-            compound.put("storageUpgrades", tile.getStorageUpgrades().serializeNBT(tile.getLevel().registryAccess()));
-            stack.set(FSAttachments.TILE, compound);
+            stack.set(FSAttachments.TILE, tile.saveWithoutMetadata(tile.getLevel().registryAccess()));
         }
         if (tile.isLocked()) {
             stack.set(FSAttachments.LOCKED, tile.isLocked());
@@ -182,7 +184,8 @@ public abstract class Drawer<T extends ControllableDrawerTile<T>> extends Rotata
     protected void copyFrom(ItemStack stack, T tile) {
         tile.setLocked(stack.getOrDefault(FSAttachments.LOCKED, false));
         if (stack.has(FSAttachments.TILE)) {
-            tile.loadAdditional(stack.get(FSAttachments.TILE), tile.getLevel().registryAccess());
+            CompoundTag tileData = stack.get(FSAttachments.TILE);
+            tile.loadCustomOnly(TagValueInput.create(ProblemReporter.DISCARDING, tile.getLevel().registryAccess(), tileData));
             tile.markForUpdate();
         }
         if (stack.has(FSAttachments.STYLE) && tile instanceof FramedTile framed) {
@@ -225,7 +228,7 @@ public abstract class Drawer<T extends ControllableDrawerTile<T>> extends Rotata
     }
 
     @Override
-    public int getAnalogOutputSignal(BlockState state, Level level, BlockPos pos) {
+    public int getAnalogOutputSignal(BlockState state, Level level, BlockPos pos, Direction direction) {
         ControllableDrawerTile<?> tile = TileUtil.getTileEntity(level, pos, ControllableDrawerTile.class).orElse(null);
         if (tile instanceof FluidDrawerTile fluidDrawer) {
             return getFluidComparatorSignal(fluidDrawer.getFluidHandler());
@@ -239,8 +242,8 @@ public abstract class Drawer<T extends ControllableDrawerTile<T>> extends Rotata
         return 0;
     }
 
-    private static int getItemComparatorSignal(net.neoforged.neoforge.items.IItemHandler handler) {
-        int slots = handler instanceof BigInventoryHandler bigInventoryHandler ? bigInventoryHandler.getStoredStacks().size() : handler.getSlots();
+    private static int getItemComparatorSignal(net.neoforged.neoforge.transfer.ResourceHandler<net.neoforged.neoforge.transfer.item.ItemResource> handler) {
+        int slots = handler instanceof BigInventoryHandler bigInventoryHandler ? bigInventoryHandler.getStoredStacks().size() : handler.size();
         if (slots <= 0) {
             return 0;
         }
@@ -248,11 +251,11 @@ public abstract class Drawer<T extends ControllableDrawerTile<T>> extends Rotata
         double fullness = 0;
         boolean hasContents = false;
         for (int slot = 0; slot < slots; slot++) {
-            ItemStack stack = handler.getStackInSlot(slot);
-            if (!stack.isEmpty()) {
+            var resource = handler.getResource(slot);
+            if (!resource.isEmpty()) {
                 hasContents = true;
-                int limit = handler.getSlotLimit(slot);
-                fullness += limit <= 0 ? 0 : Math.min(1D, stack.getCount() / (double) limit);
+                long limit = handler.getCapacityAsLong(slot, resource);
+                fullness += limit <= 0 ? 0 : Math.min(1D, handler.getAmountAsLong(slot) / (double) limit);
             }
         }
         return comparatorSignal(fullness / slots, hasContents);
@@ -262,22 +265,22 @@ public abstract class Drawer<T extends ControllableDrawerTile<T>> extends Rotata
         return comparatorSignal(handler.getAmount() / handler.getTotalAmount(), handler.getAmount() > 0);
     }
 
-    private static int getFluidComparatorSignal(net.neoforged.neoforge.fluids.capability.IFluidHandler handler) {
-        if (handler.getTanks() <= 0) {
+    private static int getFluidComparatorSignal(net.neoforged.neoforge.transfer.ResourceHandler<net.neoforged.neoforge.transfer.fluid.FluidResource> handler) {
+        if (handler.size() <= 0) {
             return 0;
         }
 
         double fullness = 0;
         boolean hasContents = false;
-        for (int tank = 0; tank < handler.getTanks(); tank++) {
-            var stack = handler.getFluidInTank(tank);
-            if (!stack.isEmpty()) {
+        for (int tank = 0; tank < handler.size(); tank++) {
+            var resource = handler.getResource(tank);
+            if (!resource.isEmpty()) {
                 hasContents = true;
-                int capacity = handler.getTankCapacity(tank);
-                fullness += capacity <= 0 ? 0 : Math.min(1D, stack.getAmount() / (double) capacity);
+                long capacity = handler.getCapacityAsLong(tank, resource);
+                fullness += capacity <= 0 ? 0 : Math.min(1D, handler.getAmountAsLong(tank) / (double) capacity);
             }
         }
-        return comparatorSignal(fullness / handler.getTanks(), hasContents);
+        return comparatorSignal(fullness / handler.size(), hasContents);
     }
 
     private static int comparatorSignal(double fullness, boolean hasContents) {
@@ -317,37 +320,33 @@ public abstract class Drawer<T extends ControllableDrawerTile<T>> extends Rotata
         return 0;
     }
 
-    @Override
-    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
-        super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
+    public void appendDrawerHoverText(ItemStack stack, Item.TooltipContext context, TooltipDisplay display, Consumer<Component> tooltipComponents, TooltipFlag tooltipFlag) {
         if (stack.has(FSAttachments.TILE)) {
             MutableComponent text = Component.translatable("drawer.block.contents");
-            tooltipComponents.add(text.withStyle(ChatFormatting.GRAY));
-            tooltipComponents.add(Component.literal(""));
-            tooltipComponents.add(Component.literal(""));
-            CompoundTag tile = stack.get(FSAttachments.TILE);
-            tooltipComponents.add(Component.translatable("drawer.block.upgrades").withStyle(ChatFormatting.GRAY));
+            tooltipComponents.accept(text.withStyle(ChatFormatting.GRAY));
+            CompoundTag tile = stack.get(FSAttachments.TILE).getCompoundOrEmpty("TitaniumData");
+            tooltipComponents.accept(Component.translatable("drawer.block.upgrades").withStyle(ChatFormatting.GRAY));
             var anyupgrade = false;
-            if (tile.contains("isCreative") && tile.getBoolean("isCreative")) {
-                tooltipComponents.add(Component.literal("- ").withStyle(ChatFormatting.GRAY).append(Component.translatable("drawer.block.upgrades.is_creative").withStyle(ChatFormatting.LIGHT_PURPLE)));
+            if (tile.getBooleanOr("isCreative", false)) {
+                tooltipComponents.accept(Component.literal("- ").withStyle(ChatFormatting.GRAY).append(Component.translatable("drawer.block.upgrades.is_creative").withStyle(ChatFormatting.LIGHT_PURPLE)));
                 anyupgrade = true;
             }
-            if (tile.contains("isVoid") && tile.getBoolean("isVoid")) {
-                tooltipComponents.add(Component.literal("- ").withStyle(ChatFormatting.GRAY).append(Component.translatable("drawer.block.upgrades.is_void").withStyle(ChatFormatting.BLUE)));
+            if (tile.getBooleanOr("isVoid", false)) {
+                tooltipComponents.accept(Component.literal("- ").withStyle(ChatFormatting.GRAY).append(Component.translatable("drawer.block.upgrades.is_void").withStyle(ChatFormatting.BLUE)));
                 anyupgrade = true;
             }
             if (!anyupgrade) {
-                tooltipComponents.add(Component.literal("- ").withStyle(ChatFormatting.GRAY).append(Component.translatable("drawer.block.upgrades.none").withStyle(ChatFormatting.GRAY)));
+                tooltipComponents.accept(Component.literal("- ").withStyle(ChatFormatting.GRAY).append(Component.translatable("drawer.block.upgrades.none").withStyle(ChatFormatting.GRAY)));
             }
         }
 
         if (this instanceof FramedBlock) {
-            tooltipComponents.add(Component.translatable("frameddrawer.use").withStyle(ChatFormatting.GRAY));
+            tooltipComponents.accept(Component.translatable("frameddrawer.use").withStyle(ChatFormatting.GRAY));
         }
     }
 
     @Override
-    public ItemStack getCloneItemStack(BlockState state, HitResult target, LevelReader level, BlockPos pos, Player player) {
+    public ItemStack getCloneItemStack(LevelReader level, BlockPos pos, BlockState state, boolean includeData, Player player) {
         BlockEntity entity = level.getBlockEntity(pos);
         ItemStack stack = new ItemStack(this);
         if (entity instanceof FramedTile framedDrawerTile && framedDrawerTile.getFramedDrawerModelData() != null && !framedDrawerTile.getFramedDrawerModelData().getDesign().isEmpty()) {
@@ -361,8 +360,7 @@ public abstract class Drawer<T extends ControllableDrawerTile<T>> extends Rotata
     }
 
     @Override
-    public void onRemove(BlockState state, Level worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
-        if (!state.is(newState.getBlock())){
+    protected void affectNeighborsAfterRemoval(BlockState state, net.minecraft.server.level.ServerLevel worldIn, BlockPos pos, boolean isMoving) {
             TileUtil.getTileEntity(worldIn, pos, ControllableDrawerTile.class).ifPresent(tile -> {
                 if (tile.getControllerPos() != null) {
                     TileUtil.getTileEntity(worldIn, tile.getControllerPos(), StorageControllerTile.class).ifPresent(drawerControllerTile -> {
@@ -370,8 +368,7 @@ public abstract class Drawer<T extends ControllableDrawerTile<T>> extends Rotata
                     });
                 }
             });
-        }
-        super.onRemove(state, worldIn, pos, newState, isMoving);
+        super.affectNeighborsAfterRemoval(state, worldIn, pos, isMoving);
     }
 
     public abstract Collection<VoxelShape> getHitShapes(BlockState state);

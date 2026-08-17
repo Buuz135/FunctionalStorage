@@ -1,7 +1,6 @@
 package com.buuz135.functionalstorage.block.tile;
 
 import com.buuz135.functionalstorage.FunctionalStorage;
-import com.buuz135.functionalstorage.client.gui.DrawerInfoGuiAddon;
 import com.buuz135.functionalstorage.inventory.CompactingInventoryHandler;
 import com.buuz135.functionalstorage.item.FSAttachments;
 import com.buuz135.functionalstorage.util.CompactingUtil;
@@ -21,7 +20,6 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.items.IItemHandler;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
@@ -67,24 +65,6 @@ public class SimpleCompactingDrawerTile extends ItemControllableDrawerTile<Simpl
         this.hasCheckedRecipes = false;
     }
 
-    @OnlyIn(Dist.CLIENT)
-    @Override
-    public void initClient() {
-        super.initClient();
-        addGuiAddonFactory(() -> new DrawerInfoGuiAddon(64, 16,
-                com.buuz135.functionalstorage.util.Utils.resourceLocation(FunctionalStorage.MOD_ID, "textures/block/simple_compacting_drawer_front.png"),
-                2,
-                integer -> {
-                    if (integer == 0) return Pair.of(16, 28);
-                    if (integer == 1) return Pair.of(16, 4);
-                    return Pair.of(16, 4);
-                },
-                integer -> getStorage().getStackInSlot(integer),
-                integer -> getStorage().getSlotLimit(integer),
-                integer -> getHandler().getResultList().get(integer).getResult()
-        ));
-    }
-
     @Override
     public void serverTick(Level level, BlockPos pos, BlockState state, SimpleCompactingDrawerTile blockEntity) {
         super.serverTick(level, pos, state, blockEntity);
@@ -120,7 +100,7 @@ public class SimpleCompactingDrawerTile extends ItemControllableDrawerTile<Simpl
     }
 
     @Override
-    public IItemHandler getStorage() {
+    public CompactingInventoryHandler getStorage() {
         return handler;
     }
 

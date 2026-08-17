@@ -8,11 +8,7 @@ import com.buuz135.functionalstorage.block.tile.FluidDrawerTile;
 import com.buuz135.functionalstorage.block.tile.ItemControllableDrawerTile;
 import com.buuz135.functionalstorage.inventory.BigInventoryHandler;
 import com.buuz135.functionalstorage.inventory.CompactingInventoryHandler;
-import com.buuz135.functionalstorage.inventory.EnderInventoryHandler;
-import com.buuz135.functionalstorage.item.FSAttachments;
 import com.buuz135.functionalstorage.item.UpgradeItem;
-import com.buuz135.functionalstorage.item.component.SizeProvider;
-import com.buuz135.functionalstorage.network.EnderDrawerSyncMessage;
 import com.buuz135.functionalstorage.util.NumberUtils;
 import com.buuz135.functionalstorage.world.EnderSavedData;
 import com.mojang.datafixers.util.Pair;
@@ -57,8 +53,8 @@ public enum DrawerComponentProvider implements IBlockComponentProvider {
                 var stacks = new ArrayList<Pair<ItemStack, Integer>>();
                 if (tile instanceof EnderDrawerTile ed && ed.getFrequency() != null) {
                     var inv = EnderSavedData.getInstance(Minecraft.getInstance().level).getFrequency(ed.getFrequency());
-                    for (int slot = 0; slot < inv.getSlots(); slot++) {
-                        if (inv.isVoid() && slot + 1 == inv.getSlots()) continue;
+                    for (int slot = 0; slot < inv.size(); slot++) {
+                        if (inv.isVoid() && slot + 1 == inv.size()) continue;
                         var stack = inv.getStoredStacks().get(slot);
                         if (stack.getStack().getItem() != Items.AIR) {
                             stacks.add(new Pair<>(stack.getStack().copyWithCount(stack.getAmount()), inv.getSlotLimit(slot)));
@@ -102,9 +98,9 @@ public enum DrawerComponentProvider implements IBlockComponentProvider {
                 if (!tile.isInventoryEmpty()) {
                     var stacks = new ArrayList<Pair<FluidStack, Integer>>();
                     for (int slot = 0; slot < tile.getFluidHandler().getTanks(); slot++) {
-                        var stack = tile.getFluidHandler().getTankList()[slot];
-                        if (stack.getFluid().getFluid() != Fluids.EMPTY) {
-                            stacks.add(new Pair<>(stack.getFluid().copyWithAmount(stack.getFluidAmount()), tile.getFluidHandler().getTankCapacity(slot)));
+                        var stack = tile.getFluidHandler().getFluidInTank(slot);
+                        if (stack.getFluid() != Fluids.EMPTY) {
+                            stacks.add(new Pair<>(stack.copy(), tile.getFluidHandler().getTankCapacity(slot)));
                         }
                     }
 

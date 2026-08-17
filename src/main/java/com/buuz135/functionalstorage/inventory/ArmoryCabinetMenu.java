@@ -12,8 +12,9 @@ import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import com.buuz135.functionalstorage.util.StorageTransferUtil;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 import net.minecraft.world.item.TooltipFlag;
-import net.neoforged.neoforge.items.IItemHandler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +30,7 @@ public class ArmoryCabinetMenu extends AbstractContainerMenu {
     public static final int BUTTON_QUERY_APPEND_BASE = 30_000;
 
     private final Inventory playerInventory;
-    private final IItemHandler handler;
+    private final ArmoryCabinetInventoryHandler handler;
     private final ArmoryCabinetTile tile;
     private final List<ArmorySlot> armorySlots = new ArrayList<>();
     private final List<Integer> filteredSlots = new ArrayList<>();
@@ -44,7 +45,7 @@ public class ArmoryCabinetMenu extends AbstractContainerMenu {
         this(id, playerInventory, data.handler(), data.pos());
     }
 
-    public ArmoryCabinetMenu(int id, Inventory playerInventory, IItemHandler handler, BlockPos pos) {
+    public ArmoryCabinetMenu(int id, Inventory playerInventory, ArmoryCabinetInventoryHandler handler, BlockPos pos) {
         super((MenuType<ArmoryCabinetMenu>) FunctionalStorage.ARMORY_CABINET_MENU.get(), id);
         this.playerInventory = playerInventory;
         this.handler = handler;
@@ -71,7 +72,7 @@ public class ArmoryCabinetMenu extends AbstractContainerMenu {
         rebuildFilter();
     }
 
-    private static IItemHandler getClientHandler(Inventory inventory, BlockPos pos) {
+    private static ArmoryCabinetInventoryHandler getClientHandler(Inventory inventory, BlockPos pos) {
         if (inventory.player.level().getBlockEntity(pos) instanceof ArmoryCabinetTile armory) {
             return armory.getStorage();
         }
@@ -84,7 +85,7 @@ public class ArmoryCabinetMenu extends AbstractContainerMenu {
 
     private static ClientMenuData readClientData(Inventory inventory, RegistryFriendlyByteBuf data) {
         BlockPos pos = data.readBlockPos();
-        IItemHandler handler = getClientHandler(inventory, pos);
+        ArmoryCabinetInventoryHandler handler = getClientHandler(inventory, pos);
         if (handler instanceof ArmoryCabinetInventoryHandler armoryHandler) {
             armoryHandler.deserializeNBT(data.registryAccess(), data.readNbt());
         }
@@ -115,13 +116,13 @@ public class ArmoryCabinetMenu extends AbstractContainerMenu {
     }
 
     public int getTotalArmorySlots() {
-        return handler.getSlots();
+        return handler.size();
     }
 
     private void rebuildFilter() {
         filteredSlots.clear();
-        for (int slot = 0; slot < handler.getSlots(); slot++) {
-            ItemStack stack = handler.getStackInSlot(slot);
+        for (int slot = 0; slot < handler.size(); slot++) {
+            ItemStack stack = StorageTransferUtil.getStack(handler, slot);
             if (query.isEmpty() || matches(stack, query)) {
                 filteredSlots.add(slot);
             }
@@ -176,8 +177,10 @@ public class ArmoryCabinetMenu extends AbstractContainerMenu {
                 if (!moveItemStackTo(stack, VISIBLE_SLOTS, this.slots.size(), true)) return ItemStack.EMPTY;
             } else {
                 ItemStack remainder = stack;
-                for (int armorySlot = 0; armorySlot < handler.getSlots() && !remainder.isEmpty(); armorySlot++) {
-                    remainder = handler.insertItem(armorySlot, remainder, false);
+                ItemResource resource = ItemResource.of(stack);
+                for (int armorySlot = 0; armorySlot < handler.size() && !remainder.isEmpty(); armorySlot++) {
+                    int inserted = StorageTransferUtil.insert(handler, armorySlot, resource, remainder.getCount(), true);
+                    if (inserted > 0) remainder = inserted == remainder.getCount() ? ItemStack.EMPTY : remainder.copyWithCount(remainder.getCount() - inserted);
                 }
                 if (remainder.getCount() == stack.getCount()) return ItemStack.EMPTY;
                 stack.setCount(remainder.getCount());
@@ -195,10 +198,10 @@ public class ArmoryCabinetMenu extends AbstractContainerMenu {
     }
 
     private static class ArmorySlot extends Slot {
-        private final IItemHandler handler;
+        private final ArmoryCabinetInventoryHandler handler;
         private int armoryIndex;
 
-        private ArmorySlot(IItemHandler handler, int visibleIndex, int x, int y) {
+        private ArmorySlot(ArmoryCabinetInventoryHandler handler, int visibleIndex, int x, int y) {
             super(new net.minecraft.world.SimpleContainer(0), visibleIndex, x, y);
             this.handler = handler;
             this.armoryIndex = visibleIndex;
@@ -210,18 +213,18 @@ public class ArmoryCabinetMenu extends AbstractContainerMenu {
 
         @Override
         public boolean mayPlace(ItemStack stack) {
-            return armoryIndex >= 0 && handler.isItemValid(armoryIndex, stack);
+            return armoryIndex >= 0 && !stack.isEmpty() && handler.isValid(armoryIndex, ItemResource.of(stack));
         }
 
         @Override
         public ItemStack getItem() {
-            return armoryIndex >= 0 ? handler.getStackInSlot(armoryIndex) : ItemStack.EMPTY;
+            return armoryIndex >= 0 ? StorageTransferUtil.getStack(handler, armoryIndex) : ItemStack.EMPTY;
         }
 
         @Override
         public void set(ItemStack stack) {
-            if (armoryIndex >= 0 && handler instanceof net.neoforged.neoforge.items.IItemHandlerModifiable modifiable) {
-                modifiable.setStackInSlot(armoryIndex, stack);
+            if (armoryIndex >= 0) {
+                handler.setStackInSlot(armoryIndex, stack);
                 setChanged();
             }
         }
@@ -238,12 +241,16 @@ public class ArmoryCabinetMenu extends AbstractContainerMenu {
 
         @Override
         public boolean mayPickup(Player player) {
-            return armoryIndex >= 0 && !handler.extractItem(armoryIndex, 1, true).isEmpty();
+            if (armoryIndex < 0) return false;
+            ItemResource resource = handler.getResource(armoryIndex);
+            return StorageTransferUtil.extract(handler, armoryIndex, resource, 1, false) > 0;
         }
 
         @Override
         public ItemStack remove(int amount) {
-            return armoryIndex >= 0 ? handler.extractItem(armoryIndex, amount, false) : ItemStack.EMPTY;
+            if (armoryIndex < 0) return ItemStack.EMPTY;
+            ItemResource resource = handler.getResource(armoryIndex);
+            return resource.toStack(StorageTransferUtil.extract(handler, armoryIndex, resource, amount, true));
         }
 
         @Override
@@ -252,6 +259,6 @@ public class ArmoryCabinetMenu extends AbstractContainerMenu {
         }
     }
 
-    private record ClientMenuData(IItemHandler handler, BlockPos pos) {
+    private record ClientMenuData(ArmoryCabinetInventoryHandler handler, BlockPos pos) {
     }
 }

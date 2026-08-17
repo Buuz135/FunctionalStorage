@@ -1,19 +1,15 @@
 {
   "neoforge:conditions": [
     {
-      "type": "neoforge:item_exists",
-      "item": "functionalstorage:acacia_4"
+      "type": "neoforge:registered",
+      "value": "functionalstorage:acacia_4"
     }
   ],
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "C": {
-      "tag": "c:chests/wooden"
-    },
-    "P": {
-      "item": "minecraft:acacia_planks"
-    }
+    "C": "#c:chests/wooden",
+    "P": "minecraft:acacia_planks"
   },
   "pattern": [
     "CPC",

@@ -9,12 +9,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.BucketPickup;
-import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.common.util.FakePlayerFactory;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler;
-import net.neoforged.neoforge.fluids.capability.wrappers.BucketPickupHandlerWrapper;
+import net.neoforged.neoforge.transfer.fluid.FluidUtil;
 
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
@@ -27,33 +23,12 @@ public record CollectFluidsBehavior() implements FunctionalUpgradeBehavior {
 
     @Override
     public void work(Level level, BlockPos pos, ControllableDrawerTile<?> dr, ItemStack upgradeStack, int upgradeSlot) {
-        if (!(dr instanceof FluidDrawerTile drawer)) return;
+        if (!(dr instanceof FluidDrawerTile drawer) || !(level instanceof ServerLevel serverLevel)) return;
 
         var direction = UpgradeItem.getDirection(upgradeStack);
         var fluidstate = level.getFluidState(pos.relative(direction));
         if (!fluidstate.isEmpty() && fluidstate.isSource()) {
-            BlockState state = level.getBlockState(pos.relative(direction));
-            Block block = state.getBlock();
-            IFluidHandler targetFluidHandler = null;
-            if (block instanceof BucketPickup) {
-                targetFluidHandler = new BucketPickupHandlerWrapper(FakePlayerFactory.get((ServerLevel) level, FP), (BucketPickup) block, level, pos.relative(direction));
-            }
-            if (targetFluidHandler != null) {
-                var drained = targetFluidHandler.drain(Integer.MAX_VALUE, IFluidHandler.FluidAction.SIMULATE);
-                if (!drained.isEmpty()) {
-                    for (int tankId = 0; tankId < drawer.getFluidHandler().getTanks(); tankId++) {
-                        var fluidTank = drawer.fluidHandler.getTankList()[tankId];
-                        var insertedAmount = fluidTank.fill(drained, IFluidHandler.FluidAction.SIMULATE);
-                        if (insertedAmount == drained.getAmount()) {
-                            fluidTank.fill(drained, IFluidHandler.FluidAction.EXECUTE);
-                            if (!fluidstate.getType().canConvertToSource(fluidstate, level, pos.relative(direction)))
-                                targetFluidHandler.drain(insertedAmount, IFluidHandler.FluidAction.EXECUTE);
-                            drawer.fluidHandler.onChange();
-                            break;
-                        }
-                    }
-                }
-            }
+            FluidUtil.tryPickupFluid(drawer.getFluidHandler(), FakePlayerFactory.get(serverLevel, FP), level, pos.relative(direction), direction.getOpposite(), null);
         }
     }
 

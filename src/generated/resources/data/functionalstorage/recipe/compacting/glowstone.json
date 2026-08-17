@@ -1,7 +1,6 @@
 {
   "type": "functionalstorage:custom_compacting",
   "higher_input": {
-    "count": 1,
     "id": "minecraft:glowstone"
   },
   "lower_input": {

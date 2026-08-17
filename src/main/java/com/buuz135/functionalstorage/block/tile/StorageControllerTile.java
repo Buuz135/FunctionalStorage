@@ -10,6 +10,7 @@ import com.buuz135.functionalstorage.item.ConfigurationToolItem;
 import com.buuz135.functionalstorage.item.FSAttachments;
 import com.buuz135.functionalstorage.item.LinkingToolItem;
 import com.buuz135.functionalstorage.util.ConnectedDrawers;
+import com.buuz135.functionalstorage.util.StorageTransferUtil;
 import com.hrznstudio.titanium.annotation.Save;
 import com.hrznstudio.titanium.block.BasicTileBlock;
 import com.hrznstudio.titanium.client.screen.addon.TextScreenAddon;
@@ -31,8 +32,9 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler;
-import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.fluid.FluidResource;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -47,6 +49,7 @@ public abstract class StorageControllerTile<T extends StorageControllerTile<T>> 
     protected ConnectedDrawers connectedDrawers;
     public ControllerInventoryHandler inventoryHandler;
     public ControllerFluidHandler fluidHandler;
+    private ResourceHandler<FluidResource> fluidTransferHandler;
 
     public StorageControllerTile(BasicTileBlock<T> base, BlockEntityType<T> entityType, BlockPos pos, BlockState state) {
         super(base, entityType, pos, state, new DrawerProperties(FunctionalStorageConfig.DRAWER_CONTROLLER_LINKING_RANGE, FSAttachments.CONTROLLER_RANGE_MODIFIER));
@@ -83,40 +86,55 @@ public abstract class StorageControllerTile<T extends StorageControllerTile<T>> 
 
     public InteractionResult onSlotActivated(Player playerIn, InteractionHand hand, Direction facing, double hitX, double hitY, double hitZ) {
         ItemStack stack = playerIn.getItemInHand(hand);
+        ItemResource heldResource = ItemResource.of(stack);
         if (stack.getItem().equals(FunctionalStorage.CONFIGURATION_TOOL.get()) || stack.getItem().equals(FunctionalStorage.LINKING_TOOL.get()))
             return InteractionResult.PASS;
         if (isServer()) {
             if (playerIn.isCrouching()) {
                 openGui(playerIn);
             } else {
-                playerIn.displayClientMessage(Component.translatable("gui.functionalstorage.open_gui").withStyle(ChatFormatting.GRAY), true);
+                playerIn.sendOverlayMessage(Component.translatable("gui.functionalstorage.open_gui").withStyle(ChatFormatting.GRAY));
             }
-            for (IItemHandler iItemHandler : this.connectedDrawers.getItemHandlers()) {
+            for (ResourceHandler<ItemResource> iItemHandler : this.connectedDrawers.getItemHandlers()) {
                 if (iItemHandler instanceof ILockable && ((ILockable) iItemHandler).isLocked()) {
-                    for (int slot = 0; slot < iItemHandler.getSlots(); slot++) {
-                        if (!stack.isEmpty() && iItemHandler.insertItem(slot, stack, true).getCount() != stack.getCount()) {
-                            playerIn.setItemInHand(hand, iItemHandler.insertItem(slot, stack, false));
+                    for (int slot = 0; slot < iItemHandler.size(); slot++) {
+                        int inserted = StorageTransferUtil.insert(iItemHandler, slot, heldResource, stack.getCount(), false);
+                        if (!stack.isEmpty() && inserted > 0) {
+                            StorageTransferUtil.insert(iItemHandler, slot, heldResource, inserted, true);
+                            playerIn.setItemInHand(hand, inserted == stack.getCount() ? ItemStack.EMPTY : stack.copyWithCount(stack.getCount() - inserted));
                             return InteractionResult.SUCCESS;
                         } else if (System.currentTimeMillis() - INTERACTION_LOGGER.getOrDefault(playerIn.getUUID(), System.currentTimeMillis()) < 300) {
-                            for (ItemStack itemStack : playerIn.getInventory().items) {
-                                if (!itemStack.isEmpty() && iItemHandler.insertItem(slot, itemStack, true).getCount() != itemStack.getCount()) {
-                                    itemStack.setCount(iItemHandler.insertItem(slot, itemStack.copy(), false).getCount());
+                            var inventory = playerIn.getInventory();
+                            for (int inventorySlot = 0; inventorySlot < inventory.getContainerSize(); inventorySlot++) {
+                                ItemStack itemStack = inventory.getItem(inventorySlot);
+                                ItemResource inventoryResource = ItemResource.of(itemStack);
+                                int inventoryInserted = StorageTransferUtil.insert(iItemHandler, slot, inventoryResource, itemStack.getCount(), false);
+                                if (!itemStack.isEmpty() && inventoryInserted > 0) {
+                                    StorageTransferUtil.insert(iItemHandler, slot, inventoryResource, inventoryInserted, true);
+                                    itemStack.shrink(inventoryInserted);
                                 }
                             }
                         }
                     }
                 }
             }
-            for (IItemHandler iItemHandler : this.connectedDrawers.getItemHandlers()) {
+            for (ResourceHandler<ItemResource> iItemHandler : this.connectedDrawers.getItemHandlers()) {
                 if (iItemHandler instanceof ILockable && !((ILockable) iItemHandler).isLocked()) {
-                    for (int slot = 0; slot < iItemHandler.getSlots(); slot++) {
-                        if (!stack.isEmpty() && !iItemHandler.getStackInSlot(slot).isEmpty() && iItemHandler.insertItem(slot, stack, true).getCount() != stack.getCount()) {
-                            playerIn.setItemInHand(hand, iItemHandler.insertItem(slot, stack, false));
+                    for (int slot = 0; slot < iItemHandler.size(); slot++) {
+                        int inserted = StorageTransferUtil.insert(iItemHandler, slot, heldResource, stack.getCount(), false);
+                        if (!stack.isEmpty() && !iItemHandler.getResource(slot).isEmpty() && inserted > 0) {
+                            StorageTransferUtil.insert(iItemHandler, slot, heldResource, inserted, true);
+                            playerIn.setItemInHand(hand, inserted == stack.getCount() ? ItemStack.EMPTY : stack.copyWithCount(stack.getCount() - inserted));
                             return InteractionResult.SUCCESS;
                         } else if (System.currentTimeMillis() - INTERACTION_LOGGER.getOrDefault(playerIn.getUUID(), System.currentTimeMillis()) < 300) {
-                            for (ItemStack itemStack : playerIn.getInventory().items) {
-                                if (!itemStack.isEmpty() && !iItemHandler.getStackInSlot(slot).isEmpty() && iItemHandler.insertItem(slot, itemStack, true).getCount() != itemStack.getCount()) {
-                                    itemStack.setCount(iItemHandler.insertItem(slot, itemStack.copy(), false).getCount());
+                            var inventory = playerIn.getInventory();
+                            for (int inventorySlot = 0; inventorySlot < inventory.getContainerSize(); inventorySlot++) {
+                                ItemStack itemStack = inventory.getItem(inventorySlot);
+                                ItemResource inventoryResource = ItemResource.of(itemStack);
+                                int inventoryInserted = StorageTransferUtil.insert(iItemHandler, slot, inventoryResource, itemStack.getCount(), false);
+                                if (!itemStack.isEmpty() && !iItemHandler.getResource(slot).isEmpty() && inventoryInserted > 0) {
+                                    StorageTransferUtil.insert(iItemHandler, slot, inventoryResource, inventoryInserted, true);
+                                    itemStack.shrink(inventoryInserted);
                                 }
                             }
                         }
@@ -129,33 +147,14 @@ public abstract class StorageControllerTile<T extends StorageControllerTile<T>> 
     }
 
     @Override
-    @OnlyIn(Dist.CLIENT)
-    public void initClient() {
-        //super.initClient();
-        if (getStorageSlotAmount() > 0) {
-            addGuiAddonFactory(() -> new TextScreenAddon("gui.functionalstorage.storage_range", 10, 59, false, ChatFormatting.DARK_GRAY.getColor()) {
-                @Override
-                public String getText() {
-                    return Component.translatable("gui.functionalstorage.storage_range").getString();
-                }
-            });
-        }
-        addGuiAddonFactory(() -> new TextScreenAddon("key.categories.inventory", 8, 92, false, ChatFormatting.DARK_GRAY.getColor()) {
-            @Override
-            public String getText() {
-                return Component.translatable("key.categories.inventory").getString();
-            }
-        });
-    }
-
-    @Override
-    public IItemHandler getStorage() {
+    public ControllerInventoryHandler getStorage() {
         return inventoryHandler;
     }
 
     @Override
-    public IFluidHandler getFluidHandler(@Nullable Direction direction) {
-        return fluidHandler;
+    public ResourceHandler<FluidResource> getFluidHandler(@Nullable Direction direction) {
+        if (fluidTransferHandler == null) fluidTransferHandler = fluidHandler;
+        return fluidTransferHandler;
     }
 
     @Override

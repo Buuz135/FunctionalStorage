@@ -1,8 +1,8 @@
 {
   "neoforge:conditions": [
     {
-      "type": "neoforge:item_exists",
-      "item": "functionalstorage:mangrove_4"
+      "type": "neoforge:registered",
+      "value": "functionalstorage:mangrove_4"
     }
   ],
   "parent": "minecraft:recipes/root",

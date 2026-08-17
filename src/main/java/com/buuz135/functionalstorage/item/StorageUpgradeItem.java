@@ -2,14 +2,12 @@ package com.buuz135.functionalstorage.item;
 
 import com.buuz135.functionalstorage.block.config.FunctionalStorageConfig;
 import com.buuz135.functionalstorage.item.component.SizeProvider;
-import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
+import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 
 public class StorageUpgradeItem extends UpgradeItem {
 
@@ -40,22 +38,23 @@ public class StorageUpgradeItem extends UpgradeItem {
     }
 
     @Override
-    @OnlyIn(Dist.CLIENT)
     public Component getName(ItemStack p_41458_) {
         Component component = super.getName(p_41458_);
         if (component instanceof MutableComponent) {
-            ((MutableComponent) component).setStyle(Style.EMPTY.withColor(storageTier == StorageTier.NETHERITE && Minecraft.getInstance().level != null ? Mth.hsvToRgb((Minecraft.getInstance().level.getGameTime() % 360) / 360f, 1, 1) : storageTier.getColor()));
+            ((MutableComponent) component).setStyle(Style.EMPTY.withColor(storageTier == StorageTier.NETHERITE
+                    ? Mth.hsvToRgb((System.currentTimeMillis() / 50L % 360L) / 360f, 1, 1)
+                    : storageTier.getColor()));
         }
         return component;
     }
 
     public enum StorageTier {
-        COPPER(1, Mth.color(204/255f, 109/255f, 81/255f)),
-        GOLD(2, Mth.color(233/255f, 177/255f, 21/255f)),
-        DIAMOND(3, Mth.color(32/255f, 197/255f, 181/255f)),
-        NETHERITE(4, Mth.color(49, 41, 42)),
-        IRON(0, Mth.color(130/255f, 130/255f, 130/255f)),
-        MAX_STORAGE(-1, Mth.color(167/255f, 54/255f, 247/255f))
+        COPPER(1, ARGB.color(204, 109, 81)),
+        GOLD(2, ARGB.color(233, 177, 21)),
+        DIAMOND(3, ARGB.color(32, 197, 181)),
+        NETHERITE(4, ARGB.color(49, 41, 42)),
+        IRON(0, ARGB.color(130, 130, 130)),
+        MAX_STORAGE(-1, ARGB.color(167, 54, 247))
         ;
 
         private final int level;

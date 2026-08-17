@@ -2,15 +2,9 @@
   "type": "minecraft:crafting_shapeless",
   "category": "misc",
   "ingredients": [
-    {
-      "item": "functionalstorage:puller_upgrade"
-    }
+    "functionalstorage:puller_upgrade"
   ],
   "result": {
-    "components": {
-      "functionalstorage:direction": "north"
-    },
-    "count": 1,
     "id": "functionalstorage:pusher_upgrade"
   }
 }
