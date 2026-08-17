@@ -103,11 +103,11 @@ public final class ControllerRenderer implements BlockEntityRenderer<StorageCont
             consumer.addVertex(pose.pose(), (float) (x1 + x), (float) (y1 + y), (float) (z1 + z))
                     .setColor(red, green, blue, alpha)
                     .setNormal(pose, nx, ny, nz)
-                    .setLineWidth(2.0F);
+                    .setLineWidth(Minecraft.getInstance().gameRenderer.getGameRenderState().windowRenderState.appropriateLineWidth);
             consumer.addVertex(pose.pose(), (float) (x2 + x), (float) (y2 + y), (float) (z2 + z))
                     .setColor(red, green, blue, alpha)
                     .setNormal(pose, nx, ny, nz)
-                    .setLineWidth(2.0F);
+                    .setLineWidth(Minecraft.getInstance().gameRenderer.getGameRenderState().windowRenderState.appropriateLineWidth);
         });
     }
 
