@@ -204,11 +204,6 @@ public abstract class ItemControllableDrawerTile<T extends ItemControllableDrawe
     }
 
     @Override
-    public int getTitleColor() {
-        return ChatFormatting.DARK_GRAY.getColor();
-    }
-
-    @Override
     public ResourceHandler<ItemResource> getItemHandler(@Nullable Direction direction) {
         if (transferHandler == null) transferHandler = getStorage();
         return transferHandler;

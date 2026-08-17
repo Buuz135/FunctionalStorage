@@ -182,10 +182,10 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
                 }
             });
         }
-        addGuiAddonFactory(() -> new TextScreenAddon("key.categories.inventory", 8, 92, false, ChatFormatting.DARK_GRAY.getColor()) {
+        addGuiAddonFactory(() -> new TextScreenAddon("container.inventory", 8, 92, false, ChatFormatting.DARK_GRAY.getColor()) {
             @Override
             public String getText() {
-                return Component.translatable("key.categories.inventory").getString();
+                return Component.translatable("container.inventory").getString();
             }
         });
         addGuiAddonFactory(() -> new DrawerPriorityGuiAddon(114, 16, this::getPriority, this::getBlockPos));
@@ -478,7 +478,7 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
 
     @Override
     public int getTitleColor() {
-        return ChatFormatting.DARK_GRAY.getColor();
+        return 0xff000000 | ChatFormatting.DARK_GRAY.getColor();
     }
 
     public boolean isStorageUpgradeLocked() {
