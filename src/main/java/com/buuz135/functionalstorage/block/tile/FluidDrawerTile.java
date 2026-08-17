@@ -21,6 +21,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.transfer.RangedResourceHandler;
 import net.neoforged.neoforge.transfer.ResourceHandler;
 import net.neoforged.neoforge.transfer.fluid.FluidUtil;
 import net.neoforged.neoforge.transfer.fluid.FluidResource;
@@ -99,7 +100,7 @@ public class FluidDrawerTile extends ControllableDrawerTile<FluidDrawerTile> {
                 this.fluidHandler.setFilterResource(slot, FluidResource.of(fluidStack));
                 markForUpdate();
             }
-            if (FluidUtil.interactWithFluidHandler(playerIn, hand, getBlockPos(), fluidHandler, null)) {
+            if (FluidUtil.interactWithFluidHandler(playerIn, hand, getBlockPos(), RangedResourceHandler.ofSingleIndex(fluidHandler, slot), null)) {
                 updateComparatorOutput();
                 return InteractionResult.SUCCESS;
             }
@@ -111,7 +112,7 @@ public class FluidDrawerTile extends ControllableDrawerTile<FluidDrawerTile> {
     public void onClicked(Player playerIn, int slot) {
         ItemStack stack = playerIn.getItemInHand(InteractionHand.MAIN_HAND);
         if (slot != -1 && !stack.isEmpty()) {
-            if (FluidUtil.interactWithFluidHandler(playerIn, InteractionHand.MAIN_HAND, getBlockPos(), fluidHandler, null)) updateComparatorOutput();
+            if (FluidUtil.interactWithFluidHandler(playerIn, InteractionHand.MAIN_HAND, getBlockPos(), RangedResourceHandler.ofSingleIndex(fluidHandler, slot), null)) updateComparatorOutput();
         }
     }
 
