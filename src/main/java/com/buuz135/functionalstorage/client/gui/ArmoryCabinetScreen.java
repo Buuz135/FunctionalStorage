@@ -102,8 +102,8 @@ public class ArmoryCabinetScreen extends AbstractContainerScreen<ArmoryCabinetMe
 
     @Override
     protected void extractLabels(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
-        graphics.text(font, title, titleLabelX, titleLabelY, 0x404040, false);
-        graphics.text(font, playerInventoryTitle, inventoryLabelX, inventoryLabelY - 9, 0x404040, false);
+        graphics.text(font, title, titleLabelX, titleLabelY, 0xff404040, false);
+        graphics.text(font, playerInventoryTitle, inventoryLabelX, inventoryLabelY - 9, 0xff404040, false);
     }
 
     @Override
