@@ -17,6 +17,6 @@ public class FSJadePlugin implements IWailaPlugin {
 
     @Override
     public void register(IWailaCommonRegistration registration) {
-        registration.registerBlockDataProvider(ArmoryComponentProvider.INSTANCE, ArmoryCabinetBlock.class);
+        registration.registerBlockDataProvider(ArmoryDataProvider.INSTANCE, ArmoryCabinetBlock.class);
     }
 }

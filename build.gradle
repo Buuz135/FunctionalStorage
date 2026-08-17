@@ -10,9 +10,7 @@ group = modGroup
 sourceSets {
     main {
         java {
-            exclude 'com/buuz135/functionalstorage/compat/jade/**'
             exclude 'com/buuz135/functionalstorage/compat/top/**'
-            exclude 'com/buuz135/functionalstorage/compat/ftb/**'
         }
         resources.srcDir('src/generated/resources')
     }
@@ -77,6 +75,15 @@ dependencies {
     localRuntime "mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}"
 
     implementation "com.hrznstudio:titanium:${titanium_version}"
+
+    compileOnly "curse.maven:jade-324717:8651070"
+    localRuntime "curse.maven:jade-324717:8651070"
+    compileOnly "curse.maven:ftb-library-forge-404465:8574542"
+    compileOnly "curse.maven:ftb-teams-forge-404468:8074003"
+    compileOnly "curse.maven:ftb-chunks-forge-314906:8574590"
+    localRuntime "curse.maven:ftb-library-forge-404465:8574542"
+    localRuntime "curse.maven:ftb-teams-forge-404468:8074003"
+    localRuntime "curse.maven:ftb-chunks-forge-314906:8574590"
 }
 
 jar {

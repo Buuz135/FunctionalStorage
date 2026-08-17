@@ -14,14 +14,11 @@ import com.buuz135.functionalstorage.world.EnderSavedData;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.vehicle.Minecart;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.material.Fluids;
-import net.minecraft.world.phys.Vec2;
 import net.neoforged.neoforge.fluids.FluidStack;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.IBlockComponentProvider;
@@ -29,25 +26,22 @@ import snownee.jade.api.ITooltip;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.fluid.JadeFluidObject;
 import snownee.jade.api.ui.BoxStyle;
-import snownee.jade.api.ui.IElement;
-import snownee.jade.api.ui.IElementHelper;
-import snownee.jade.api.ui.ProgressStyle;
-import snownee.jade.api.view.FluidView;
+import snownee.jade.api.ui.Element;
+import snownee.jade.api.ui.JadeUI;
 
 import java.util.ArrayList;
 
 public enum DrawerComponentProvider implements IBlockComponentProvider {
     INSTANCE;
-    public static final ResourceLocation ITEM_STORAGE = com.buuz135.functionalstorage.util.Utils.resourceLocation("minecraft:item_storage");
+    public static final Identifier ITEM_STORAGE = com.buuz135.functionalstorage.util.Utils.resourceLocation("minecraft:item_storage");
 
-    public static final ResourceLocation ID = com.buuz135.functionalstorage.util.Utils.resourceLocation(FunctionalStorage.MOD_ID, "drawer");
+    public static final Identifier ID = com.buuz135.functionalstorage.util.Utils.resourceLocation(FunctionalStorage.MOD_ID, "drawer");
 
     @Override
     public void appendTooltip(ITooltip iTooltip, BlockAccessor blockAccessor, IPluginConfig iPluginConfig) {
         iTooltip.remove(ITEM_STORAGE);
         iTooltip.remove(com.buuz135.functionalstorage.util.Utils.resourceLocation("minecraft:fluid_storage"));
 
-        var helper = IElementHelper.get();
         if (blockAccessor.getBlockEntity() instanceof ControllableDrawerTile<?> controllable) {
             if (blockAccessor.getBlockEntity() instanceof ItemControllableDrawerTile<?> tile) {
                 var stacks = new ArrayList<Pair<ItemStack, Integer>>();
@@ -78,21 +72,19 @@ public enum DrawerComponentProvider implements IBlockComponentProvider {
                 }
 
                 if (!stacks.isEmpty()) {
-                    var contentsBox = helper.tooltip();
-                    iTooltip.add(helper.text(Component.translatable("drawer.block.contents")));
+                    var contentsBox = JadeUI.tooltip();
                     for (var stack : stacks) {
-                        // Account for locked slots too
                         boolean wasEmpty = stack.getFirst().getCount() == 0;
                         if (stack.getFirst().getCount() == 0) stack.getFirst().setCount(1);
-                        IElement icon = helper.item(stack.getFirst().copy(), 0.86f, "").size(new Vec2(.86f * 18, .86f * 18)).translate(new Vec2(0, -1));
+                        Element icon = JadeUI.item(stack.getFirst().copy(), 0.75f, "").size((int) (0.75f * 18), (int) (0.75f * 18)).offset(0, -1);
                         if (wasEmpty) stack.getFirst().shrink(1);
                         contentsBox.add(icon);
                         contentsBox.append(
-                                helper.text(Component.literal("x ").append(NumberUtils.getFormatedBigNumber(stack.getFirst().getCount()) + " / " + NumberUtils.getFormatedBigNumber(stack.getSecond())))
-                                        .translate(new Vec2(4, (.86f * 18 - 10) / 2))
+                                JadeUI.text(Component.literal("x ").append(NumberUtils.getFormatedBigNumber(stack.getFirst().getCount()) + " / " + NumberUtils.getFormatedBigNumber(stack.getSecond())))
+                                        .offset(4, 1 +(int) ((.75f * 18 - 10) / 2))
                         );
                     }
-                    iTooltip.add(helper.box(contentsBox, BoxStyle.getNestedBox()));
+                    iTooltip.add(JadeUI.box(contentsBox, BoxStyle.transparent()));
                 }
             } else if (blockAccessor.getBlockEntity() instanceof FluidDrawerTile tile) {
                 if (!tile.isInventoryEmpty()) {
@@ -105,29 +97,27 @@ public enum DrawerComponentProvider implements IBlockComponentProvider {
                     }
 
                     if (!stacks.isEmpty()) {
-                        var contentsBox = helper.tooltip();
-                        iTooltip.add(helper.text(Component.translatable("drawer.block.contents")));
+                        var contentsBox = JadeUI.tooltip();
                         for (var stack : stacks) {
-                            var view = new FluidView(helper.fluid(JadeFluidObject.of(stack.getFirst().getFluid())));
-                            ProgressStyle progressStyle = helper.progressStyle().overlay(view.overlay);
-                            contentsBox.add(helper.progress((float) stack.getFirst().getAmount() / stack.getSecond(), Component.empty().append(stack.getFirst().getHoverName()).append(Component.literal(" x ").append(NumberUtils.getFormatedFluidBigNumber(stack.getFirst().getAmount()) + " / " + NumberUtils.getFormatedFluidBigNumber(stack.getSecond()))), progressStyle, BoxStyle.getNestedBox(), true));
+                            contentsBox.add(JadeUI.fluid(JadeFluidObject.of(stack.getFirst().getFluid(), stack.getFirst().getAmount(), stack.getFirst().getComponentsPatch())).size(14, 14));
+                            contentsBox.append(JadeUI.text(Component.empty().append(stack.getFirst().getHoverName()).append(Component.literal(" x ").append(NumberUtils.getFormatedFluidBigNumber(stack.getFirst().getAmount()) + " / " + NumberUtils.getFormatedFluidBigNumber(stack.getSecond())))).offset(4, 4));
                         }
-                        iTooltip.add(helper.box(contentsBox, BoxStyle.getNestedBox()));
+                        iTooltip.add(JadeUI.box(contentsBox, BoxStyle.transparent()));
                     }
                 }
             }
 
             if (controllable instanceof EnderDrawerTile ender && ender.getFrequency() != null) {
                 var freq = EnderDrawerBlock.getFrequencyDisplay(ender.getFrequency());
-                var contentsBox = helper.tooltip();
-                iTooltip.add(helper.text(Component.translatable("linkingtool.ender.frequency")));
+                var contentsBox = JadeUI.tooltip();
+                iTooltip.add(JadeUI.text(Component.translatable("linkingtool.ender.frequency")));
                 for (var stack : freq) {
-                    contentsBox.append(helper.item(stack));
+                    contentsBox.append(JadeUI.item(stack));
                 }
-                iTooltip.add(helper.box(contentsBox, BoxStyle.getNestedBox()));
+                iTooltip.add(JadeUI.box(contentsBox, BoxStyle.nestedBox()));
             }
 
-            if (Screen.hasShiftDown()) {
+            if (JadeUI.hasShiftDown()) {
                 var upInv = controllable.getUtilityUpgrades();
                 for (int i = 0; i < upInv.getSlots(); i++) {
                     var stack = upInv.getStackInSlot(i);
@@ -160,7 +150,7 @@ public enum DrawerComponentProvider implements IBlockComponentProvider {
     }
 
     @Override
-    public ResourceLocation getUid() {
+    public Identifier getUid() {
         return ID;
     }
 }
