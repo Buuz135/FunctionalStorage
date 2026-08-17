@@ -16,7 +16,7 @@ public class CompactingDrawerRenderer extends BaseDrawerRenderer<CompactingDrawe
         if (!stack.isEmpty()) {
             matrixStack.pushPose();
             matrixStack.mulPose(createTransformMatrix(
-                    new Vector3f(.75f, .27f, .0005f), new Vector3f(0), new Vector3f(.5f, .5f, 1.0f)));
+                    new Vector3f(.5f, .77f, .0005f), new Vector3f(0), new Vector3f(.5f, .5f, 1.0f)));
             DrawerRenderer.renderStack(matrixStack, collector, lightCoords, stack, tile.getHandler().getStackInSlot(0).getCount(), tile.getHandler().getSlotLimit(0), 0.02f, tile.getDrawerOptions(), tile.getLevel());
             matrixStack.popPose();
         }
@@ -32,7 +32,7 @@ public class CompactingDrawerRenderer extends BaseDrawerRenderer<CompactingDrawe
         if (!stack.isEmpty()) {
             matrixStack.pushPose();
             matrixStack.mulPose(createTransformMatrix(
-                    new Vector3f(.5f, .77f, .0005f), new Vector3f(0), new Vector3f(.5f, .5f, 1.0f)));
+                    new Vector3f(.75f, .27f, .0005f), new Vector3f(0), new Vector3f(.5f, .5f, 1.0f)));
             DrawerRenderer.renderStack(matrixStack, collector, lightCoords, stack, tile.getHandler().getStackInSlot(2).getCount(), tile.getHandler().getSlotLimit(2), 0.02f, tile.getDrawerOptions(), tile.getLevel());
             matrixStack.popPose();
         }

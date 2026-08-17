@@ -66,21 +66,21 @@ public final class DrawerSpecialRenderer implements SpecialModelRenderer<DrawerS
             if (entries.size() == 1) {
                 renderItem(entries, 0, pose, collector, light, new Vector3f(0.5F, 0.5F, 0.0005F), new Vector3f(1));
             } else if (entries.size() == 2) {
-                renderItem(entries, 0, pose, collector, light, new Vector3f(0.5F, 0.27F, 0.0005F), new Vector3f(0.5F, 0.5F, 1));
-                renderItem(entries, 1, pose, collector, light, new Vector3f(0.5F, 0.77F, 0.0005F), new Vector3f(0.5F, 0.5F, 1));
+                renderItem(entries, 0, pose, collector, light, new Vector3f(0.5F, 0.77F, 0.0005F), new Vector3f(0.5F, 0.5F, 1));
+                renderItem(entries, 1, pose, collector, light, new Vector3f(0.5F, 0.27F, 0.0005F), new Vector3f(0.5F, 0.5F, 1));
             } else {
-                renderItem(entries, 0, pose, collector, light, new Vector3f(0.75F, 0.27F, 0.0005F), new Vector3f(0.5F, 0.5F, 1));
-                renderItem(entries, 1, pose, collector, light, new Vector3f(0.25F, 0.27F, 0.0005F), new Vector3f(0.5F, 0.5F, 1));
-                renderItem(entries, 2, pose, collector, light, new Vector3f(0.75F, 0.77F, 0.0005F), new Vector3f(0.5F, 0.5F, 1));
-                renderItem(entries, 3, pose, collector, light, new Vector3f(0.25F, 0.77F, 0.0005F), new Vector3f(0.5F, 0.5F, 1));
+                renderItem(entries, 0, pose, collector, light, new Vector3f(0.25F, 0.77F, 0.0005F), new Vector3f(0.5F, 0.5F, 1));
+                renderItem(entries, 1, pose, collector, light, new Vector3f(0.75F, 0.77F, 0.0005F), new Vector3f(0.5F, 0.5F, 1));
+                renderItem(entries, 2, pose, collector, light, new Vector3f(0.25F, 0.27F, 0.0005F), new Vector3f(0.5F, 0.5F, 1));
+                renderItem(entries, 3, pose, collector, light, new Vector3f(0.75F, 0.27F, 0.0005F), new Vector3f(0.5F, 0.5F, 1));
             }
         } else if (kind == Kind.SIMPLE_COMPACTING) {
-            renderItem(entries, 0, pose, collector, light, new Vector3f(0.5F, 0.27F, 0.0005F), new Vector3f(0.5F, 0.5F, 1));
-            renderItem(entries, 1, pose, collector, light, new Vector3f(0.5F, 0.77F, 0.0005F), new Vector3f(0.5F, 0.5F, 1));
+            renderItem(entries, 0, pose, collector, light, new Vector3f(0.5F, 0.77F, 0.0005F), new Vector3f(0.5F, 0.5F, 1));
+            renderItem(entries, 1, pose, collector, light, new Vector3f(0.5F, 0.27F, 0.0005F), new Vector3f(0.5F, 0.5F, 1));
         } else {
-            renderItem(entries, 0, pose, collector, light, new Vector3f(0.75F, 0.27F, 0.0005F), new Vector3f(0.5F, 0.5F, 1));
+            renderItem(entries, 0, pose, collector, light, new Vector3f(0.5F, 0.77F, 0.0005F), new Vector3f(0.5F, 0.5F, 1));
             renderItem(entries, 1, pose, collector, light, new Vector3f(0.25F, 0.27F, 0.0005F), new Vector3f(0.5F, 0.5F, 1));
-            renderItem(entries, 2, pose, collector, light, new Vector3f(0.5F, 0.77F, 0.0005F), new Vector3f(0.5F, 0.5F, 1));
+            renderItem(entries, 2, pose, collector, light, new Vector3f(0.75F, 0.27F, 0.0005F), new Vector3f(0.5F, 0.5F, 1));
         }
     }
 
@@ -104,8 +104,11 @@ public final class DrawerSpecialRenderer implements SpecialModelRenderer<DrawerS
             boolean smallBar = slots != 1;
             double maxX = halfText ? 8 / 16D : 15 / 16D;
             double maxY = 1.25 / 16D + (entry.amount() / (double) Math.max(1, entry.capacity())) * ((slots == 1 ? 12.5 : 5.5) / 16D);
-            if (slots >= 2 && slot >= slots / 2) pose.translate(0, 0.5, 0);
-            if (slots == 4 && (slot == 0 || slot == 2)) pose.translate(0.5, 0, 0);
+            if (slots == 2 && slot == 0) pose.translate(0, 0.5, 0);
+            if (slots == 4) {
+                if (slot < 2) pose.translate(0, 0.5, 0);
+                if (slot % 2 == 1) pose.translate(0.5, 0, 0);
+            }
             AABB bounds = new AABB(1 / 16D, 1.25 / 16D, 1 / 16D, maxX, maxY, 15 / 16D);
             FluidDrawerRenderer.renderFluidStack(pose, collector, light, entry.stack(), entry.amount(), entry.capacity(), 0.007F, entry.options(), bounds, halfText, smallBar);
             pose.popPose();

@@ -91,7 +91,7 @@ public class DrawerInfoGuiAddon extends BasicScreenAddon {
                     componentList.add(Component.translatable("gui.functionalstorage.amount").withStyle(ChatFormatting.GOLD).append(Component.literal(amount).withStyle(ChatFormatting.WHITE)));
                 }
                 componentList.add(Component.translatable("gui.functionalstorage.slot").withStyle(ChatFormatting.GOLD).append(Component.literal(i + "").withStyle(ChatFormatting.WHITE)));
-                guiGraphics.setTooltipForNextFrame(Minecraft.getInstance().font, componentList, Optional.empty(), mouseX - guiX, mouseY - guiY);
+                guiGraphics.setTooltipForNextFrame(Minecraft.getInstance().font, componentList, Optional.empty(), mouseX, mouseY);
             }
         }
     }

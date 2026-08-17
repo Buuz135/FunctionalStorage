@@ -163,7 +163,7 @@ public final class FunctionalStorageClient {
             if (!entries.isEmpty()) contents = new DrawerClientTooltipComponent.Contents(entries, 32);
         } else if (handler instanceof CompactingStackItemHandler compactingHandler) {
             List<DrawerClientTooltipComponent.Entry> entries = new java.util.ArrayList<>();
-            for (int slot = compactingHandler.getSlots() - 1; slot >= 0; slot--) {
+            for (int slot = 0; slot < compactingHandler.getSlots(); slot++) {
                 ItemStack stored = compactingHandler.getStackInSlot(slot);
                 if (!stored.isEmpty()) {
                     String amount = NumberUtils.getFormatedBigNumber(stored.getCount()) + "/" + NumberUtils.getFormatedBigNumber(compactingHandler.getSlotLimit(slot));

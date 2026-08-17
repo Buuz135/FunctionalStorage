@@ -1,6 +1,7 @@
 package com.buuz135.functionalstorage.block.tile;
 
 import com.buuz135.functionalstorage.FunctionalStorage;
+import com.buuz135.functionalstorage.client.gui.FluidDrawerInfoGuiAddon;
 import com.buuz135.functionalstorage.fluid.BigFluidHandler;
 import com.buuz135.functionalstorage.item.FSAttachments;
 import com.buuz135.functionalstorage.item.StorageUpgradeItem;
@@ -61,6 +62,26 @@ public class FluidDrawerTile extends ControllableDrawerTile<FluidDrawerTile> {
                 return isCreative();
             }
         };
+    }
+
+    @Override
+    public void initClient() {
+        super.initClient();
+        var slotName = "";
+        if (type.getSlots() == 2) {
+            slotName = "_2";
+        }
+        if (type.getSlots() == 4) {
+            slotName = "_4";
+        }
+        String finalSlotName = slotName;
+        addGuiAddonFactory(() -> new FluidDrawerInfoGuiAddon(64, 16,
+                com.buuz135.functionalstorage.util.Utils.resourceLocation(FunctionalStorage.MOD_ID, "textures/block/fluid_front" + finalSlotName + ".png"),
+                type.getSlots(),
+                type.getSlotPosition(),
+                this::getFluidHandler,
+                integer -> getFluidHandler().getTankCapacity(integer)
+        ));
     }
 
     private int getTankCapacity(double storageMultiplier) {

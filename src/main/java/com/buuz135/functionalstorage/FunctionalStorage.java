@@ -412,14 +412,14 @@ public class FunctionalStorage extends ModuleController {
     public enum DrawerType {
         X_1(1, 32, "1x1", integer -> Pair.of(16, 16)),
         X_2(2, 16, "1x2", integer -> {
-            if (integer == 0) return Pair.of(16, 28);
-            return Pair.of(16, 4);
+            if (integer == 0) return Pair.of(16, 4);
+            return Pair.of(16, 28);
         }),
         X_4(4, 8, "2x2", integer -> {
-            if (integer == 0) return Pair.of(28, 28);
-            if (integer == 1) return Pair.of(4, 28);
-            if (integer == 2) return Pair.of(28, 4);
-            return Pair.of(4, 4);
+            if (integer == 0) return Pair.of(4, 4);
+            if (integer == 1) return Pair.of(28, 4);
+            if (integer == 2) return Pair.of(4, 28);
+            return Pair.of(28, 28);
         });
 
         private final int slots;

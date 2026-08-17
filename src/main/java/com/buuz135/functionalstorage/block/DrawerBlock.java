@@ -192,6 +192,12 @@ public class DrawerBlock extends Drawer<DrawerTile> {
     }
 
     public static Collection<VoxelShape> getDefaultHitShapes(FunctionalStorage.DrawerType type, BlockState state) {
+        List<VoxelShape> shapes = new ArrayList<>(getLegacyOrderedHitShapes(type, state));
+        if (type != FunctionalStorage.DrawerType.X_1) Collections.reverse(shapes);
+        return shapes;
+    }
+
+    private static Collection<VoxelShape> getLegacyOrderedHitShapes(FunctionalStorage.DrawerType type, BlockState state) {
         Direction facing = state.getValue(Drawer.FACING_HORIZONTAL_CUSTOM);
         if (type == FunctionalStorage.DrawerType.X_4 && (facing == Direction.UP || facing == Direction.DOWN)) {
             Direction subfacing = state.getValue(RotatableBlock.FACING_ALL);

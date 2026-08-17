@@ -8,13 +8,14 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.Rect2i;
-import net.minecraft.client.renderer.texture.AbstractTexture;
-import net.minecraft.client.renderer.texture.TextureAtlas;
+import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.renderer.block.FluidModel;
+import net.minecraft.client.renderer.block.FluidStateModelSet;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.neoforged.neoforge.client.fluid.FluidTintSource;
 import net.neoforged.neoforge.fluids.FluidStack;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -46,14 +47,14 @@ public class FluidDrawerInfoGuiAddon extends BasicScreenAddon {
             return new Rect2i(9, 9, 30, 30);
         }
         if (slotAmount == 2) {
-            if (currentSlot == 0) return new Rect2i(0, 30, 48, 13);
-            if (currentSlot == 1) return new Rect2i(0, 6, 48, 13);
+            if (currentSlot == 1) return new Rect2i(0, 30, 48, 13);
+            if (currentSlot == 0) return new Rect2i(0, 6, 48, 13);
         }
         if (slotAmount == 4) {
-            if (currentSlot == 0) return new Rect2i(30, 30, 16, 16);
-            if (currentSlot == 1) return new Rect2i(2, 30, 16, 16);
-            if (currentSlot == 2) return new Rect2i(30, 2, 16, 16);
-            if (currentSlot == 3) return new Rect2i(2, 2, 16, 16);
+            if (currentSlot == 0) return new Rect2i(2, 2, 16, 16);
+            if (currentSlot == 1) return new Rect2i(30, 2, 16, 16);
+            if (currentSlot == 2) return new Rect2i(2, 30, 16, 16);
+            if (currentSlot == 3) return new Rect2i(30, 30, 16, 16);
         }
         return new Rect2i(0, 0, 0, 0);
     }
@@ -63,14 +64,14 @@ public class FluidDrawerInfoGuiAddon extends BasicScreenAddon {
             return new Rect2i(9, 9, 30, 30);
         }
         if (slotAmount == 2) {
-            if (currentSlot == 0) return new Rect2i(6, 30, 36, 12);
-            if (currentSlot == 1) return new Rect2i(6, 6, 36, 12);
+            if (currentSlot == 0) return new Rect2i(6, 6, 36, 12);
+            if (currentSlot == 1) return new Rect2i(6, 30, 36, 12);
         }
         if (slotAmount == 4) {
-            if (currentSlot == 0) return new Rect2i(30, 30, 12, 12);
-            if (currentSlot == 1) return new Rect2i(6, 30, 12, 12);
-            if (currentSlot == 2) return new Rect2i(30, 6, 12, 12);
-            if (currentSlot == 3) return new Rect2i(6, 6, 12, 12);
+            if (currentSlot == 0) return new Rect2i(6, 6, 12, 12);
+            if (currentSlot == 1) return new Rect2i(30, 6, 12, 12);
+            if (currentSlot == 2) return new Rect2i(6, 30, 12, 12);
+            if (currentSlot == 3) return new Rect2i(30, 30, 12, 12);
         }
         return new Rect2i(0, 0, 0, 0);
     }
@@ -136,27 +137,28 @@ public class FluidDrawerInfoGuiAddon extends BasicScreenAddon {
                     componentList.add(Component.translatable("gui.functionalstorage.amount").withStyle(ChatFormatting.GOLD).append(Component.literal(amount).withStyle(ChatFormatting.WHITE)));
                 }
                 componentList.add(Component.translatable("gui.functionalstorage.slot").withStyle(ChatFormatting.GOLD).append(Component.literal(i + "").withStyle(ChatFormatting.WHITE)));
-                guiGraphics.setTooltipForNextFrame(Minecraft.getInstance().font, componentList, Optional.empty(), mouseX - guiX, mouseY - guiY);
+                guiGraphics.setTooltipForNextFrame(Minecraft.getInstance().font, componentList, Optional.empty(), mouseX, mouseY);
             }
         }
     }
 
     public void renderFluid(GuiGraphicsExtractor guiGraphics, Screen screen, int guiX, int guiY, FluidStack fluidStack, int slot, int slotAmount) {
-        var fluidModel = Minecraft.getInstance().getModelManager().getFluidStateModelSet().get(fluidStack.getFluid().defaultFluidState());
-        TextureAtlasSprite sprite = fluidModel.stillMaterial().sprite();
-        if (sprite != null) {
-                    Color color = new Color(fluidModel.tintSource().color(fluidStack.getFluid().defaultFluidState().createLegacyBlock()), true);
-                    var rect = getSizeForSlots(slot, slotAmount);
-                    int tint = color.getRGB();
-                    for (int x = 0; x < rect.getWidth(); x += 16) {
-                        for (int y = 0; y < rect.getHeight(); y += 16) {
-                            guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, sprite, this.getPosX() + guiX + rect.getX() + x,
-                                    this.getPosY() + guiY + rect.getY() + y,
-                                    Math.min(16, rect.getWidth() - x),
-                                    Math.min(16, rect.getHeight() - y),
-                                    tint);
-                        }
-                    }
+        FluidStateModelSet modelSet = Minecraft.getInstance().getModelManager().getFluidStateModelSet();
+        FluidModel fluidModel = modelSet.get(fluidStack.getFluid().defaultFluidState());
+        TextureAtlasSprite still = fluidModel.stillMaterial().sprite();
+        if (still != null) {
+            FluidTintSource tintSource = fluidModel.fluidTintSource();
+            int tint = tintSource != null ? tintSource.colorAsStack(fluidStack) : 0xFFFFFFFF;
+            var rect = getSizeForSlots(slot, slotAmount);
+            for (int x = 0; x < rect.getWidth(); x += 16) {
+                for (int y = 0; y < rect.getHeight(); y += 16) {
+                    guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, still, this.getPosX() + guiX + rect.getX() + x,
+                            this.getPosY() + guiY + rect.getY() + y,
+                            Math.min(16, rect.getWidth() - x),
+                            Math.min(16, rect.getHeight() - y),
+                            tint);
+                }
+            }
         }
     }
 

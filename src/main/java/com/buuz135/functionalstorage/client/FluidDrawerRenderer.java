@@ -199,6 +199,7 @@ public class FluidDrawerRenderer implements BlockEntityRenderer<FluidDrawerTile,
     private void render1Slot(PoseStack matrixStack, SubmitNodeCollector collector, int lightCoords, FluidDrawerTile tile) {
         BigFluidHandler inventoryHandler = tile.getFluidHandler();
         if (!inventoryHandler.getFluidInTank(0).isEmpty() || (tile.isLocked() && !inventoryHandler.getFilterStack()[0].isEmpty())) {
+            matrixStack.pushPose();
             FluidStack fluidStack = inventoryHandler.getFluidInTank(0);
             int displayAmount = fluidStack.getAmount();
             if (fluidStack.isEmpty() && tile.isLocked() && !inventoryHandler.getFilterStack()[0].isEmpty()) {
@@ -207,12 +208,14 @@ public class FluidDrawerRenderer implements BlockEntityRenderer<FluidDrawerTile,
             }
             AABB bounds = new AABB(1 / 16D, 1.25 / 16D, 1 / 16D, 15 / 16D, 1.25 / 16D + (fluidStack.getAmount() / (double) inventoryHandler.getTankCapacity(0)) * (12.5 / 16D), 15 / 16D);
             renderFluidStack(matrixStack, collector, lightCoords, fluidStack, displayAmount, inventoryHandler.getTankCapacity(0), 0.007f, tile.getDrawerOptions(), bounds, false, false);
+            matrixStack.popPose();
         }
     }
 
     private void render2Slot(PoseStack matrixStack, SubmitNodeCollector collector, int lightCoords, FluidDrawerTile tile) {
         BigFluidHandler inventoryHandler = tile.getFluidHandler();
         if (!inventoryHandler.getFluidInTank(0).isEmpty() || (tile.isLocked() && !inventoryHandler.getFilterStack()[0].isEmpty())) {
+            matrixStack.pushPose();
             FluidStack fluidStack = inventoryHandler.getFluidInTank(0);
             int displayAmount = fluidStack.getAmount();
             if (fluidStack.isEmpty() && tile.isLocked() && !inventoryHandler.getFilterStack()[0].isEmpty()) {
@@ -221,10 +224,10 @@ public class FluidDrawerRenderer implements BlockEntityRenderer<FluidDrawerTile,
             }
             AABB bounds = new AABB(1 / 16D, 1.25 / 16D, 1 / 16D, 15 / 16D, 1.25 / 16D + (fluidStack.getAmount() / (double) inventoryHandler.getTankCapacity(0)) * (5.5 / 16D), 15 / 16D);
             renderFluidStack(matrixStack, collector, lightCoords, fluidStack, displayAmount, inventoryHandler.getTankCapacity(0), 0.007f, tile.getDrawerOptions(), bounds, false, true);
+            matrixStack.popPose();
         }
         if (!inventoryHandler.getFluidInTank(1).isEmpty() || (tile.isLocked() && !inventoryHandler.getFilterStack()[1].isEmpty())) {
             matrixStack.pushPose();
-            matrixStack.translate(0, 0.5, 0);
             FluidStack fluidStack = inventoryHandler.getFluidInTank(1);
             int displayAmount = fluidStack.getAmount();
             if (fluidStack.isEmpty() && tile.isLocked() && !inventoryHandler.getFilterStack()[1].isEmpty()) {
@@ -241,7 +244,7 @@ public class FluidDrawerRenderer implements BlockEntityRenderer<FluidDrawerTile,
         BigFluidHandler inventoryHandler = tile.getFluidHandler();
         if (!inventoryHandler.getFluidInTank(0).isEmpty() || (tile.isLocked() && !inventoryHandler.getFilterStack()[0].isEmpty())) {
             matrixStack.pushPose();
-            matrixStack.translate(0.5, 0, 0);
+            matrixStack.translate(0, 0.5, 0);
             FluidStack fluidStack = inventoryHandler.getFluidInTank(0);
             int displayAmount = fluidStack.getAmount();
             if (fluidStack.isEmpty() && tile.isLocked() && !inventoryHandler.getFilterStack()[0].isEmpty()) {
@@ -254,6 +257,7 @@ public class FluidDrawerRenderer implements BlockEntityRenderer<FluidDrawerTile,
         }
         if (!inventoryHandler.getFluidInTank(1).isEmpty() || (tile.isLocked() && !inventoryHandler.getFilterStack()[1].isEmpty())) {
             matrixStack.pushPose();
+            matrixStack.translate(0.5, 0.5, 0);
             FluidStack fluidStack = inventoryHandler.getFluidInTank(1);
             int displayAmount = fluidStack.getAmount();
             if (fluidStack.isEmpty() && tile.isLocked() && !inventoryHandler.getFilterStack()[1].isEmpty()) {
@@ -266,7 +270,6 @@ public class FluidDrawerRenderer implements BlockEntityRenderer<FluidDrawerTile,
         }
         if (!inventoryHandler.getFluidInTank(2).isEmpty() || (tile.isLocked() && !inventoryHandler.getFilterStack()[2].isEmpty())) {
             matrixStack.pushPose();
-            matrixStack.translate(0.5, 0.5, 0);
             FluidStack fluidStack = inventoryHandler.getFluidInTank(2);
             int displayAmount = fluidStack.getAmount();
             if (fluidStack.isEmpty() && tile.isLocked() && !inventoryHandler.getFilterStack()[2].isEmpty()) {
@@ -279,7 +282,7 @@ public class FluidDrawerRenderer implements BlockEntityRenderer<FluidDrawerTile,
         }
         if (!inventoryHandler.getFluidInTank(3).isEmpty() || (tile.isLocked() && !inventoryHandler.getFilterStack()[3].isEmpty())) {
             matrixStack.pushPose();
-            matrixStack.translate(0, 0.5, 0);
+            matrixStack.translate(0.5, 0, 0);
             FluidStack fluidStack = inventoryHandler.getFluidInTank(3);
             int displayAmount = fluidStack.getAmount();
             if (fluidStack.isEmpty() && tile.isLocked() && !inventoryHandler.getFilterStack()[3].isEmpty()) {
