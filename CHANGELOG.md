@@ -1,6 +1,7 @@
 # VERSION 1.6.0
 
 * Fixed compacting drawers having the slots switched and not having the GUI inventory addon, closes #513
+* Added Pale Oak Drawer
 
 # VERSION 1.5.8
 
