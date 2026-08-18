@@ -131,12 +131,6 @@ public class CompactingDrawerBlock extends Drawer<CompactingDrawerTile> {
 
     @Override
     public Collection<VoxelShape> getHitShapes(BlockState state) {
-        List<VoxelShape> shapes = new ArrayList<>(getLegacyOrderedHitShapes(state));
-        Collections.reverse(shapes);
-        return shapes;
-    }
-
-    private Collection<VoxelShape> getLegacyOrderedHitShapes(BlockState state) {
         Direction facing = state.getValue(Drawer.FACING_HORIZONTAL_CUSTOM);
 
         // For UP or DOWN facing, use FACING_ALL to determine rotation

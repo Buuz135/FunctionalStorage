@@ -16,7 +16,7 @@ public class SimpleCompactingDrawerRenderer extends BaseDrawerRenderer<SimpleCom
         if (!stack.isEmpty()) {
             matrixStack.pushPose();
             matrixStack.mulPose(createTransformMatrix(
-                    new Vector3f(0.5f, 0.77f, 0.0005f), new Vector3f(0), new Vector3f(.5f, .5f, 1.0f)));
+                    new Vector3f(0.5f, 0.27f, 0.0005f), new Vector3f(0), new Vector3f(.5f, .5f, 1.0f)));
             DrawerRenderer.renderStack(matrixStack, collector, lightCoords, stack, tile.getHandler().getStackInSlot(0).getCount(), tile.getHandler().getSlotLimit(0), 0.02f, tile.getDrawerOptions(), tile.getLevel());
             matrixStack.popPose();
         }
@@ -24,7 +24,7 @@ public class SimpleCompactingDrawerRenderer extends BaseDrawerRenderer<SimpleCom
         if (!stack.isEmpty()) {
             matrixStack.pushPose();
             matrixStack.mulPose(createTransformMatrix(
-                    new Vector3f(0.5f, 0.27f, 0.0005f), new Vector3f(0), new Vector3f(.5f, .5f, 1.0f)));
+                    new Vector3f(0.5f, 0.77f, 0.0005f), new Vector3f(0), new Vector3f(.5f, .5f, 1.0f)));
             DrawerRenderer.renderStack(matrixStack, collector, lightCoords, stack, tile.getHandler().getStackInSlot(1).getCount(), tile.getHandler().getSlotLimit(1), 0.02f, tile.getDrawerOptions(), tile.getLevel());
             matrixStack.popPose();
         }

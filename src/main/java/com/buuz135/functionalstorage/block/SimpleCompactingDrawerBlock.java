@@ -61,7 +61,7 @@ public class SimpleCompactingDrawerBlock extends Drawer<SimpleCompactingDrawerTi
 
     @Override
     public Collection<VoxelShape> getHitShapes(BlockState state) {
-        return DrawerBlock.getDefaultHitShapes(FunctionalStorage.DrawerType.X_2, state);
+        return DrawerBlock.getLegacyOrderedHitShapes(FunctionalStorage.DrawerType.X_2, state);
     }
 
     @Override

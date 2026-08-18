@@ -1,3 +1,7 @@
+# VERSION 1.6.0
+
+* Fixed compacting drawers having the slots switched and not having the GUI inventory addon, closes #513
+
 # VERSION 1.5.8
 
 * Added a GUI for the armory cabinet

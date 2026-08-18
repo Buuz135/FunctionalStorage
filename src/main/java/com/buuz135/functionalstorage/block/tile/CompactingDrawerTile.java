@@ -1,6 +1,7 @@
 package com.buuz135.functionalstorage.block.tile;
 
 import com.buuz135.functionalstorage.FunctionalStorage;
+import com.buuz135.functionalstorage.client.gui.DrawerInfoGuiAddon;
 import com.buuz135.functionalstorage.inventory.CompactingInventoryHandler;
 import com.buuz135.functionalstorage.item.FSAttachments;
 import com.buuz135.functionalstorage.util.CompactingUtil;
@@ -63,6 +64,23 @@ public class CompactingDrawerTile extends ItemControllableDrawerTile<CompactingD
 
         };
         this.hasCheckedRecipes = false;
+    }
+
+    @Override
+    public void initClient() {
+        super.initClient();
+        addGuiAddonFactory(() -> new DrawerInfoGuiAddon(64, 16,
+                com.buuz135.functionalstorage.util.Utils.resourceLocation(FunctionalStorage.MOD_ID, this instanceof CompactingFramedDrawerTile ? "textures/block/framed_front_compacting.png" : "textures/block/compacting_drawer_front.png"),
+                3,
+                integer -> {
+                    if (integer == 0) return Pair.of(28, 28);
+                    if (integer == 1) return Pair.of(4, 28);
+                    return Pair.of(16, 4);
+                },
+                integer -> getStorage().getStackInSlot(integer),
+                integer -> getStorage().getSlotLimit(integer),
+                integer -> getHandler().getResultList().get(integer).getResult()
+        ));
     }
 
     @Override

@@ -75,12 +75,12 @@ public final class DrawerSpecialRenderer implements SpecialModelRenderer<DrawerS
                 renderItem(entries, 3, pose, collector, light, new Vector3f(0.75F, 0.27F, 0.0005F), new Vector3f(0.5F, 0.5F, 1));
             }
         } else if (kind == Kind.SIMPLE_COMPACTING) {
-            renderItem(entries, 0, pose, collector, light, new Vector3f(0.5F, 0.77F, 0.0005F), new Vector3f(0.5F, 0.5F, 1));
-            renderItem(entries, 1, pose, collector, light, new Vector3f(0.5F, 0.27F, 0.0005F), new Vector3f(0.5F, 0.5F, 1));
+            renderItem(entries, 0, pose, collector, light, new Vector3f(0.5F, 0.27F, 0.0005F), new Vector3f(0.5F, 0.5F, 1));
+            renderItem(entries, 1, pose, collector, light, new Vector3f(0.5F, 0.77F, 0.0005F), new Vector3f(0.5F, 0.5F, 1));
         } else {
-            renderItem(entries, 0, pose, collector, light, new Vector3f(0.5F, 0.77F, 0.0005F), new Vector3f(0.5F, 0.5F, 1));
+            renderItem(entries, 0, pose, collector, light, new Vector3f(0.75F, 0.27F, 0.0005F), new Vector3f(0.5F, 0.5F, 1));
             renderItem(entries, 1, pose, collector, light, new Vector3f(0.25F, 0.27F, 0.0005F), new Vector3f(0.5F, 0.5F, 1));
-            renderItem(entries, 2, pose, collector, light, new Vector3f(0.75F, 0.27F, 0.0005F), new Vector3f(0.5F, 0.5F, 1));
+            renderItem(entries, 2, pose, collector, light, new Vector3f(0.5F, 0.77F, 0.0005F), new Vector3f(0.5F, 0.5F, 1));
         }
     }
 
