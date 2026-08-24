@@ -1,5 +1,6 @@
 package com.buuz135.functionalstorage.util;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.nbt.CompoundTag;
@@ -37,6 +38,6 @@ public class Utils {
         if (ServerLifecycleHooks.getCurrentServer() != null) {
             return ServerLifecycleHooks.getCurrentServer().registryAccess();
         }
-        throw new IllegalStateException("Registry access is unavailable before a world has been loaded");
+        return Minecraft.getInstance().level.registryAccess();
     }
 }

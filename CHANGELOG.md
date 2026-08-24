@@ -1,3 +1,7 @@
+# VERSION 1.6.1
+
+* Fixed Registry Access when connecting to a server closes #516
+
 # VERSION 1.6.0
 
 * Fixed compacting drawers having the slots switched and not having the GUI inventory addon, closes #513
