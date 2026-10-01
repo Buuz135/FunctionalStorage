@@ -1,12 +1,16 @@
 package com.buuz135.functionalstorage.client.gui;
 
+import com.buuz135.functionalstorage.FunctionalStorage;
 import com.buuz135.functionalstorage.inventory.ArmoryCabinetMenu;
+import com.buuz135.functionalstorage.network.ArmoryCabinetFilterMessage;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.Slot;
 import org.lwjgl.glfw.GLFW;
 
 public class ArmoryCabinetScreen extends AbstractContainerScreen<ArmoryCabinetMenu> {
@@ -54,9 +58,21 @@ public class ArmoryCabinetScreen extends AbstractContainerScreen<ArmoryCabinetMe
 
     private void syncQuery(String text) {
         if (minecraft == null || minecraft.gameMode == null) return;
-        minecraft.gameMode.handleInventoryButtonClick(menu.containerId, ArmoryCabinetMenu.BUTTON_QUERY_CLEAR);
-        text.chars().limit(50).forEach(value -> minecraft.gameMode.handleInventoryButtonClick(menu.containerId, ArmoryCabinetMenu.BUTTON_QUERY_APPEND_BASE + value));
+        if (text.isEmpty()) {
+            minecraft.gameMode.handleInventoryButtonClick(menu.containerId, ArmoryCabinetMenu.BUTTON_QUERY_CLEAR);
+        } else {
+            FunctionalStorage.NETWORK.sendToServer(new ArmoryCabinetFilterMessage(menu.containerId, menu.getFilteredSlots()));
+        }
         syncScroll();
+    }
+
+    @Override
+    protected void slotClicked(Slot slot, int slotId, int mouseButton, ClickType type) {
+        super.slotClicked(slot, slotId, mouseButton, type);
+        // Clicks can insert items and change the filter, the server can't recompute it on its own
+        if (searchBox != null && !searchBox.getValue().isEmpty()) {
+            syncQuery(searchBox.getValue());
+        }
     }
 
     private void syncScroll() {
