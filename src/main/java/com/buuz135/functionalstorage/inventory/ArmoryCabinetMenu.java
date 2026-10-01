@@ -16,6 +16,7 @@ import net.minecraft.world.item.TooltipFlag;
 import net.neoforged.neoforge.items.IItemHandler;
 
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.List;
 import java.util.Locale;
 
@@ -26,7 +27,6 @@ public class ArmoryCabinetMenu extends AbstractContainerMenu {
     public static final int VISIBLE_SLOTS = COLUMNS * VISIBLE_ROWS;
     public static final int BUTTON_SCROLL_BASE = 10_000;
     public static final int BUTTON_QUERY_CLEAR = 20_000;
-    public static final int BUTTON_QUERY_APPEND_BASE = 30_000;
 
     private final Inventory playerInventory;
     private final IItemHandler handler;
@@ -129,6 +129,21 @@ public class ArmoryCabinetMenu extends AbstractContainerMenu {
         setScrollRow(scrollRow);
     }
 
+    // Tooltips are client-only, so the client computes the filter and the server just receives the result
+    public void setFilteredSlots(BitSet slots) {
+        filteredSlots.clear();
+        for (int slot = slots.nextSetBit(0); slot >= 0 && slot < handler.getSlots(); slot = slots.nextSetBit(slot + 1)) {
+            filteredSlots.add(slot);
+        }
+        setScrollRow(scrollRow);
+    }
+
+    public BitSet getFilteredSlots() {
+        BitSet slots = new BitSet(handler.getSlots());
+        filteredSlots.forEach(slots::set);
+        return slots;
+    }
+
     private boolean matches(ItemStack stack, String query) {
         if (stack.isEmpty()) return false;
         if (stack.getHoverName().getString().toLowerCase(Locale.ROOT).contains(query)) return true;
@@ -158,10 +173,6 @@ public class ArmoryCabinetMenu extends AbstractContainerMenu {
             setQuery("");
             return true;
         }
-        if (button >= BUTTON_QUERY_APPEND_BASE && button <= BUTTON_QUERY_APPEND_BASE + Character.MAX_VALUE) {
-            setQuery(query + (char) (button - BUTTON_QUERY_APPEND_BASE));
-            return true;
-        }
         return super.clickMenuButton(player, button);
     }
 
@@ -181,7 +192,8 @@ public class ArmoryCabinetMenu extends AbstractContainerMenu {
                 }
                 if (remainder.getCount() == stack.getCount()) return ItemStack.EMPTY;
                 stack.setCount(remainder.getCount());
-                rebuildFilter();
+                // The server filter is owned by the client, which resyncs it after the click
+                if (player.level().isClientSide()) rebuildFilter();
             }
             if (stack.isEmpty()) slot.setByPlayer(ItemStack.EMPTY);
             else slot.setChanged();
