@@ -1,3 +1,7 @@
+# VERSION 1.6.2
+
+* Fixed inventories calling on change when it should be called on root commit, closes #531 closes #525 closes #524
+
 # VERSION 1.6.1
 
 * Fixed Registry Access when connecting to a server closes #516

@@ -34,13 +34,17 @@ public abstract class BigFluidHandler extends SnapshotJournal<List<BigFluidHandl
         this.capacity = capacity;
     }
 
-    public int getTanks() { return tankResources.length; }
+    public int getTanks() {
+        return tankResources.length;
+    }
 
     public FluidStack getFluidInTank(int tank) {
         return tankResources[tank].toStack(!tankResources[tank].isEmpty() && isDrawerCreative() ? Integer.MAX_VALUE : amounts[tank]);
     }
 
-    public int getTankCapacity(int tank) { return isDrawerCreative() ? Integer.MAX_VALUE : capacity; }
+    public int getTankCapacity(int tank) {
+        return isDrawerCreative() ? Integer.MAX_VALUE : capacity;
+    }
 
     public boolean isFluidValid(int tank, FluidResource resource) {
         if (resource.isEmpty() || resource.typeHolder().is(StorageTags.FLUID_DRAWER_STORAGE_DENYLIST)) return false;
@@ -78,14 +82,15 @@ public abstract class BigFluidHandler extends SnapshotJournal<List<BigFluidHandl
     }
 
     public abstract void onChange();
+
     public abstract boolean isDrawerLocked();
+
     public abstract boolean isDrawerVoid();
+
     public abstract boolean isDrawerCreative();
 
     public void lockHandler() {
-        for (int i = 0; i < tankResources.length; i++) {
-            filterResources[i] = tankResources[i];
-        }
+        System.arraycopy(tankResources, 0, filterResources, 0, tankResources.length);
     }
 
     public FluidStack[] getFilterStack() {
@@ -94,13 +99,34 @@ public abstract class BigFluidHandler extends SnapshotJournal<List<BigFluidHandl
         return stacks;
     }
 
-    public void setFilterResource(int tank, FluidResource resource) { filterResources[tank] = resource; }
+    public void setFilterResource(int tank, FluidResource resource) {
+        filterResources[tank] = resource;
+    }
 
-    @Override public int size() { return getTanks(); }
-    @Override public FluidResource getResource(int index) { return tankResources[index]; }
-    @Override public long getAmountAsLong(int index) { return isDrawerCreative() && !tankResources[index].isEmpty() ? Integer.MAX_VALUE : amounts[index]; }
-    @Override public long getCapacityAsLong(int index, FluidResource resource) { return resource.isEmpty() || isValid(index, resource) ? getTankCapacity(index) : 0; }
-    @Override public boolean isValid(int index, FluidResource resource) { return isFluidValid(index, resource); }
+    @Override
+    public int size() {
+        return getTanks();
+    }
+
+    @Override
+    public FluidResource getResource(int index) {
+        return tankResources[index];
+    }
+
+    @Override
+    public long getAmountAsLong(int index) {
+        return isDrawerCreative() && !tankResources[index].isEmpty() ? Integer.MAX_VALUE : amounts[index];
+    }
+
+    @Override
+    public long getCapacityAsLong(int index, FluidResource resource) {
+        return resource.isEmpty() || isValid(index, resource) ? getTankCapacity(index) : 0;
+    }
+
+    @Override
+    public boolean isValid(int index, FluidResource resource) {
+        return isFluidValid(index, resource);
+    }
 
     @Override
     public int insert(int index, FluidResource resource, int amount, TransactionContext transaction) {
@@ -115,7 +141,6 @@ public abstract class BigFluidHandler extends SnapshotJournal<List<BigFluidHandl
         if (stored.isEmpty()) tankResources[index] = resource;
         if (!isDrawerCreative()) amounts[index] = (int) Math.min(capacity, (long) amounts[index] + inserted);
         else if (amounts[index] == 0) amounts[index] = 1;
-        onChange();
         return inserted;
     }
 
@@ -129,7 +154,6 @@ public abstract class BigFluidHandler extends SnapshotJournal<List<BigFluidHandl
         if (!isDrawerCreative()) {
             amounts[index] -= extracted;
             if (amounts[index] == 0) tankResources[index] = FluidResource.EMPTY;
-            onChange();
         }
         return extracted;
     }
@@ -149,5 +173,12 @@ public abstract class BigFluidHandler extends SnapshotJournal<List<BigFluidHandl
         }
     }
 
-    protected record StoredFluid(FluidResource resource, int amount) {}
+    @Override
+    protected void onRootCommit(List<StoredFluid> originalState) {
+        super.onRootCommit(originalState);
+        onChange();
+    }
+
+    protected record StoredFluid(FluidResource resource, int amount) {
+    }
 }
