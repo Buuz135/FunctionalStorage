@@ -1,6 +1,7 @@
 # VERSION 1.6.2
 
 * Fixed inventories calling on change when it should be called on root commit, closes #531 closes #525 closes #524
+* Fixed item drawers not being able to be cleared of locked slots, closes #530
 
 # VERSION 1.6.1
 

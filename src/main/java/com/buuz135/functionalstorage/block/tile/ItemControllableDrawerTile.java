@@ -1,6 +1,7 @@
 package com.buuz135.functionalstorage.block.tile;
 
 import com.buuz135.functionalstorage.FunctionalStorage;
+import com.buuz135.functionalstorage.inventory.BigInventoryHandler;
 import com.buuz135.functionalstorage.item.FSAttachments;
 import com.buuz135.functionalstorage.item.component.SizeProvider;
 import com.buuz135.functionalstorage.util.StorageTransferUtil;
@@ -96,6 +97,10 @@ public abstract class ItemControllableDrawerTile<T extends ItemControllableDrawe
                     if (facing.equals(this.getFacingDirection())) {
                         if (preventInteraction(blockResult.getBlockPos(), playerIn)) return;
                     ItemResource resource = getStorage().getResource(slot);
+                    if (resource.isEmpty() && !isLocked() && getStorage() instanceof BigInventoryHandler bigInventoryHandler) {
+                        bigInventoryHandler.getStoredStacks().get(slot).setStack(ItemStack.EMPTY);
+                        syncObject(getStorage());
+                    }
                     int extractedAmount = StorageTransferUtil.extract(getStorage(), slot, resource, playerIn.isShiftKeyDown() ? resource.getMaxStackSize() : 1, true);
                     ItemStack extracted = resource.toStack(extractedAmount);
                     if (!playerIn.addItem(extracted)) playerIn.drop(extracted, false);
