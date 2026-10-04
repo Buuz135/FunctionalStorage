@@ -30,6 +30,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.access.ItemAccess;
 import net.neoforged.neoforge.transfer.fluid.FluidResource;
 
 import java.util.ArrayList;
@@ -152,6 +153,10 @@ public class FluidDrawerBlock extends Drawer<FluidDrawerTile>{
 
         public ResourceHandler<FluidResource> initCapabilities(ItemStack stack) {
             return new FluidDrawerStackItemHandler(stack, this.drawerBlock.getType());
+        }
+
+        public ResourceHandler<FluidResource> initCapabilities(ItemStack stack, ItemAccess itemAccess) {
+            return new FluidDrawerStackItemHandler(stack, this.drawerBlock.getType(), itemAccess);
         }
 
         @Override

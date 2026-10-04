@@ -239,7 +239,7 @@ public class FunctionalStorage extends ModuleController {
 
             event.registerItem(Capabilities.Fluid.ITEM, (object, context) -> {
                 if (object.getItem() instanceof FluidDrawerBlock.FluidDrawerItem di) {
-                    return di.initCapabilities(object);
+                    return di.initCapabilities(object, context);
                 }
                 return null;
             }, FLUID_DRAWER_1.asItem(), FLUID_DRAWER_2.asItem(), FLUID_DRAWER_4.asItem(), FRAMED_FLUID_DRAWER_1.asItem(), FRAMED_FLUID_DRAWER_2.asItem(), FRAMED_FLUID_DRAWER_4.asItem());

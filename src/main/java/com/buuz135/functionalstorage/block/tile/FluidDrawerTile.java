@@ -6,6 +6,7 @@ import com.buuz135.functionalstorage.fluid.BigFluidHandler;
 import com.buuz135.functionalstorage.item.FSAttachments;
 import com.buuz135.functionalstorage.item.StorageUpgradeItem;
 import com.buuz135.functionalstorage.item.component.SizeProvider;
+import com.buuz135.functionalstorage.util.StorageTransferUtil;
 import com.hrznstudio.titanium.annotation.Save;
 import com.hrznstudio.titanium.block.BasicTileBlock;
 import com.hrznstudio.titanium.component.inventory.InventoryComponent;
@@ -20,12 +21,15 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.transfer.RangedResourceHandler;
 import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.access.ItemAccess;
 import net.neoforged.neoforge.transfer.fluid.FluidUtil;
 import net.neoforged.neoforge.transfer.fluid.FluidResource;
 import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.neoforged.neoforge.transfer.transaction.Transaction;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -100,9 +104,18 @@ public class FluidDrawerTile extends ControllableDrawerTile<FluidDrawerTile> {
                 this.fluidHandler.setFilterResource(slot, FluidResource.of(fluidStack));
                 markForUpdate();
             }
-            if (FluidUtil.interactWithFluidHandler(playerIn, hand, getBlockPos(), RangedResourceHandler.ofSingleIndex(fluidHandler, slot), null)) {
-                updateComparatorOutput();
-                return InteractionResult.SUCCESS;
+            if (isServer()) {
+                var itemAccess = ItemAccess.forPlayerInteraction(playerIn, InteractionHand.MAIN_HAND).oneByOne();
+                var handHandler = itemAccess.getCapability(Capabilities.Fluid.ITEM);
+                if (handHandler != null) {
+                    try (Transaction transaction = Transaction.openRoot()) {
+                        if (StorageTransferUtil.moveWithSound(handHandler, RangedResourceHandler.ofSingleIndex(fluidHandler, slot), playerIn.level(), getBlockPos(), playerIn, transaction, true) != null) {
+                            transaction.commit();
+                            updateComparatorOutput();
+                            return InteractionResult.SUCCESS;
+                        }
+                    }
+                }
             }
         }
         return super.onSlotActivated(playerIn, hand, facing, hitX, hitY, hitZ, slot);
@@ -111,8 +124,18 @@ public class FluidDrawerTile extends ControllableDrawerTile<FluidDrawerTile> {
     @Override
     public void onClicked(Player playerIn, int slot) {
         ItemStack stack = playerIn.getItemInHand(InteractionHand.MAIN_HAND);
-        if (slot != -1 && !stack.isEmpty()) {
-            if (FluidUtil.interactWithFluidHandler(playerIn, InteractionHand.MAIN_HAND, getBlockPos(), RangedResourceHandler.ofSingleIndex(fluidHandler, slot), null)) updateComparatorOutput();
+        if (slot != -1 && !stack.isEmpty() && isServer()) {
+            var itemAccess = ItemAccess.forPlayerInteraction(playerIn, InteractionHand.MAIN_HAND).oneByOne();
+            var handHandler = itemAccess.getCapability(Capabilities.Fluid.ITEM);
+            if (handHandler == null) {
+                return;
+            }
+            try (Transaction transaction = Transaction.openRoot()) {
+                if (StorageTransferUtil.moveWithSound(RangedResourceHandler.ofSingleIndex(fluidHandler, slot), handHandler, playerIn.level(), getBlockPos(), playerIn, transaction, true) != null) {
+                    transaction.commit();
+                    updateComparatorOutput();
+                }
+            }
         }
     }
 

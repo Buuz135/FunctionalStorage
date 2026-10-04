@@ -11,25 +11,31 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.access.ItemAccess;
 import net.neoforged.neoforge.transfer.fluid.FluidResource;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import org.jetbrains.annotations.NotNull;
 
 public class FluidDrawerStackItemHandler implements ResourceHandler<FluidResource> {
 
-    private final ItemStack container;
+    private final ItemAccess itemAccess;
     private final FunctionalStorage.DrawerType type;
     private final BigFluidHandler fluidHandler;
     private boolean isVoid;
     private boolean isCreative;
 
     public FluidDrawerStackItemHandler(ItemStack container, FunctionalStorage.DrawerType type) {
-        this.container = container;
+        this(container, type, ItemAccess.forStack(container));
+    }
+
+    public FluidDrawerStackItemHandler(ItemStack container, FunctionalStorage.DrawerType type, ItemAccess itemAccess) {
+        this.itemAccess = itemAccess;
         this.type = type;
         this.fluidHandler = new BigFluidHandler(type.getSlots(), getTankCapacity(getStorageMultiplier())) {
             @Override
             public void onChange() {
-                FluidDrawerStackItemHandler.this.onChange();
             }
 
             @Override
@@ -80,7 +86,7 @@ public class FluidDrawerStackItemHandler implements ResourceHandler<FluidResourc
     }
 
     public ItemStack getContainer() {
-        return container;
+        return itemAccess.getResource().toStack(itemAccess.getAmount());
     }
 
     public int getTanks() {
@@ -99,26 +105,59 @@ public class FluidDrawerStackItemHandler implements ResourceHandler<FluidResourc
         return fluidHandler.isFluidValid(tank, resource);
     }
 
-    @Override public int size() { return fluidHandler.size(); }
-    @Override public FluidResource getResource(int index) { return fluidHandler.getResource(index); }
-    @Override public long getAmountAsLong(int index) { return fluidHandler.getAmountAsLong(index); }
-    @Override public long getCapacityAsLong(int index, FluidResource resource) { return fluidHandler.getCapacityAsLong(index, resource); }
-    @Override public boolean isValid(int index, FluidResource resource) { return fluidHandler.isValid(index, resource); }
-    @Override public int insert(int index, FluidResource resource, int amount, TransactionContext transaction) {
-        return container.getCount() == 1 ? fluidHandler.insert(index, resource, amount, transaction) : 0;
-    }
-    @Override public int extract(int index, FluidResource resource, int amount, TransactionContext transaction) {
-        return container.getCount() == 1 ? fluidHandler.extract(index, resource, amount, transaction) : 0;
+    @Override
+    public int size() {
+        return fluidHandler.size();
     }
 
-    private void onChange() {
-        CompoundTag tile = container.getOrDefault(FSAttachments.TILE, new CompoundTag()).copy();
-        tile.put("fluidHandler", fluidHandler.serializeNBT(Utils.registryAccess()));
-        container.set(FSAttachments.TILE, tile);
+    @Override
+    public FluidResource getResource(int index) {
+        return fluidHandler.getResource(index);
+    }
+
+    @Override
+    public long getAmountAsLong(int index) {
+        return fluidHandler.getAmountAsLong(index);
+    }
+
+    @Override
+    public long getCapacityAsLong(int index, FluidResource resource) {
+        return fluidHandler.getCapacityAsLong(index, resource);
+    }
+
+    @Override
+    public boolean isValid(int index, FluidResource resource) {
+        return fluidHandler.isValid(index, resource);
+    }
+
+    @Override
+    public int insert(int index, FluidResource resource, int amount, TransactionContext transaction) {
+        return transfer(index, resource, amount, transaction, true);
+    }
+
+    @Override
+    public int extract(int index, FluidResource resource, int amount, TransactionContext transaction) {
+        return transfer(index, resource, amount, transaction, false);
+    }
+
+    private int transfer(int index, FluidResource resource, int amount, TransactionContext transaction, boolean insert) {
+        if (itemAccess.getAmount() != 1) return 0;
+        try (Transaction transfer = Transaction.open(transaction)) {
+            int transferred = insert ? fluidHandler.insert(index, resource, amount, transfer) : fluidHandler.extract(index, resource, amount, transfer);
+            if (transferred == 0) return 0;
+            ItemStack container = getContainer();
+            CompoundTag tile = container.getOrDefault(FSAttachments.TILE, new CompoundTag()).copy();
+            CompoundTag titaniumData = tile.contains("TitaniumData") ? tile.getCompoundOrEmpty("TitaniumData") : tile;
+            titaniumData.put("fluidHandler", fluidHandler.serializeNBT(Utils.registryAccess()));
+            container.set(FSAttachments.TILE, tile);
+            if (itemAccess.exchange(ItemResource.of(container), 1, transfer) != 1) return 0;
+            transfer.commit();
+            return transferred;
+        }
     }
 
     private boolean isLocked() {
-        return container.getOrDefault(FSAttachments.LOCKED, false);
+        return getContainer().getOrDefault(FSAttachments.LOCKED, false);
     }
 
     private int getTankCapacity(float storageMultiplier) {
@@ -126,6 +165,7 @@ public class FluidDrawerStackItemHandler implements ResourceHandler<FluidResourc
     }
 
     private float getStorageMultiplier() {
+        ItemStack container = getContainer();
         if (!container.has(FSAttachments.TILE)) {
             return type.getSlotAmount();
         }
