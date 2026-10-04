@@ -206,7 +206,7 @@ public class FluidDrawerRenderer implements BlockEntityRenderer<FluidDrawerTile,
                 fluidStack = inventoryHandler.getFilterStack()[0];
                 displayAmount = 0;
             }
-            AABB bounds = new AABB(1 / 16D, 1.25 / 16D, 1 / 16D, 15 / 16D, 1.25 / 16D + (fluidStack.getAmount() / (double) inventoryHandler.getTankCapacity(0)) * (12.5 / 16D), 15 / 16D);
+            AABB bounds = new AABB(1 / 16D, 1.53 / 16D, 1 / 16D, 15 / 16D, 1.53 / 16D + (fluidStack.getAmount() / (double) inventoryHandler.getTankCapacity(0)) * (12.5 / 16D), 15 / 16D);
             renderFluidStack(matrixStack, collector, lightCoords, fluidStack, displayAmount, inventoryHandler.getTankCapacity(0), 0.007f, tile.getDrawerOptions(), bounds, false, false);
             matrixStack.popPose();
         }
@@ -216,13 +216,14 @@ public class FluidDrawerRenderer implements BlockEntityRenderer<FluidDrawerTile,
         BigFluidHandler inventoryHandler = tile.getFluidHandler();
         if (!inventoryHandler.getFluidInTank(0).isEmpty() || (tile.isLocked() && !inventoryHandler.getFilterStack()[0].isEmpty())) {
             matrixStack.pushPose();
+            matrixStack.translate(0, 0.5, 0);
             FluidStack fluidStack = inventoryHandler.getFluidInTank(0);
             int displayAmount = fluidStack.getAmount();
             if (fluidStack.isEmpty() && tile.isLocked() && !inventoryHandler.getFilterStack()[0].isEmpty()) {
                 fluidStack = inventoryHandler.getFilterStack()[0];
                 displayAmount = 0;
             }
-            AABB bounds = new AABB(1 / 16D, 1.25 / 16D, 1 / 16D, 15 / 16D, 1.25 / 16D + (fluidStack.getAmount() / (double) inventoryHandler.getTankCapacity(0)) * (5.5 / 16D), 15 / 16D);
+            AABB bounds = new AABB(1 / 16D, 1.53 / 16D, 1 / 16D, 15 / 16D, 1.53 / 16D + (fluidStack.getAmount() / (double) inventoryHandler.getTankCapacity(0)) * (5.5 / 16D), 15 / 16D);
             renderFluidStack(matrixStack, collector, lightCoords, fluidStack, displayAmount, inventoryHandler.getTankCapacity(0), 0.007f, tile.getDrawerOptions(), bounds, false, true);
             matrixStack.popPose();
         }
@@ -234,7 +235,7 @@ public class FluidDrawerRenderer implements BlockEntityRenderer<FluidDrawerTile,
                 fluidStack = inventoryHandler.getFilterStack()[1];
                 displayAmount = 0;
             }
-            AABB bounds = new AABB(1 / 16D, 1.25 / 16D, 1 / 16D, 15 / 16D, 1.25 / 16D + (fluidStack.getAmount() / (double) inventoryHandler.getTankCapacity(1)) * (5.5 / 16D), 15 / 16D);
+            AABB bounds = new AABB(1 / 16D, 1.53 / 16D, 1 / 16D, 15 / 16D, 1.53/ 16D + (fluidStack.getAmount() / (double) inventoryHandler.getTankCapacity(1)) * (5.5 / 16D), 15 / 16D);
             renderFluidStack(matrixStack, collector, lightCoords, fluidStack, displayAmount, inventoryHandler.getTankCapacity(1), 0.007f, tile.getDrawerOptions(), bounds, false, true);
             matrixStack.popPose();
         }
@@ -251,7 +252,7 @@ public class FluidDrawerRenderer implements BlockEntityRenderer<FluidDrawerTile,
                 fluidStack = inventoryHandler.getFilterStack()[0];
                 displayAmount = 0;
             }
-            AABB bounds = new AABB(1 / 16D, 1.25 / 16D, 1 / 16D, 8 / 16D, 1.25 / 16D + (fluidStack.getAmount() / (double) inventoryHandler.getTankCapacity(0)) * (5.5 / 16D), 15 / 16D);
+            AABB bounds = new AABB(1 / 16D, 1.53 / 16D, 1 / 16D, 8 / 16D, 1.53 / 16D + (fluidStack.getAmount() / (double) inventoryHandler.getTankCapacity(0)) * (5.5 / 16D), 15 / 16D);
             renderFluidStack(matrixStack, collector, lightCoords, fluidStack, displayAmount, inventoryHandler.getTankCapacity(0), 0.007f, tile.getDrawerOptions(), bounds, true, true);
             matrixStack.popPose();
         }
@@ -264,7 +265,7 @@ public class FluidDrawerRenderer implements BlockEntityRenderer<FluidDrawerTile,
                 fluidStack = inventoryHandler.getFilterStack()[1];
                 displayAmount = 0;
             }
-            AABB bounds = new AABB(1 / 16D, 1.25 / 16D, 1 / 16D, 8 / 16D, 1.25 / 16D + (fluidStack.getAmount() / (double) inventoryHandler.getTankCapacity(1)) * (5.5 / 16D), 15 / 16D);
+            AABB bounds = new AABB(1 / 16D, 1.53 / 16D, 1 / 16D, 8 / 16D, 1.53 / 16D + (fluidStack.getAmount() / (double) inventoryHandler.getTankCapacity(1)) * (5.5 / 16D), 15 / 16D);
             renderFluidStack(matrixStack, collector, lightCoords, fluidStack, displayAmount, inventoryHandler.getTankCapacity(1), 0.007f, tile.getDrawerOptions(), bounds, true, true);
             matrixStack.popPose();
         }
@@ -276,7 +277,7 @@ public class FluidDrawerRenderer implements BlockEntityRenderer<FluidDrawerTile,
                 fluidStack = inventoryHandler.getFilterStack()[2];
                 displayAmount = 0;
             }
-            AABB bounds = new AABB(1 / 16D, 1.25 / 16D, 1 / 16D, 8 / 16D, 1.25 / 16D + (fluidStack.getAmount() / (double) inventoryHandler.getTankCapacity(2)) * (5.5 / 16D), 15 / 16D);
+            AABB bounds = new AABB(1 / 16D, 1.53 / 16D, 1 / 16D, 8 / 16D, 1.53 / 16D + (fluidStack.getAmount() / (double) inventoryHandler.getTankCapacity(2)) * (5.5 / 16D), 15 / 16D);
             renderFluidStack(matrixStack, collector, lightCoords, fluidStack, displayAmount, inventoryHandler.getTankCapacity(2), 0.007f, tile.getDrawerOptions(), bounds, true, true);
             matrixStack.popPose();
         }
@@ -289,7 +290,7 @@ public class FluidDrawerRenderer implements BlockEntityRenderer<FluidDrawerTile,
                 fluidStack = inventoryHandler.getFilterStack()[3];
                 displayAmount = 0;
             }
-            AABB bounds = new AABB(1 / 16D, 1.25 / 16D, 1 / 16D, 8 / 16D, 1.25 / 16D + (fluidStack.getAmount() / (double) inventoryHandler.getTankCapacity(3)) * (5.5 / 16D), 15 / 16D);
+            AABB bounds = new AABB(1 / 16D, 1.53 / 16D, 1 / 16D, 8 / 16D, 1.53 / 16D + (fluidStack.getAmount() / (double) inventoryHandler.getTankCapacity(3)) * (5.5 / 16D), 15 / 16D);
             renderFluidStack(matrixStack, collector, lightCoords, fluidStack, displayAmount, inventoryHandler.getTankCapacity(3), 0.007f, tile.getDrawerOptions(), bounds, true, true);
             matrixStack.popPose();
         }
