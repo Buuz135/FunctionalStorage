@@ -84,6 +84,9 @@ dependencies {
     localRuntime "curse.maven:ftb-library-forge-404465:8574542"
     localRuntime "curse.maven:ftb-teams-forge-404468:8074003"
     localRuntime "curse.maven:ftb-chunks-forge-314906:8574590"
+
+    localRuntime "curse.maven:applied-energistics-2-223794:9022271"
+    localRuntime "curse.maven:guideme-1173950:9022838"
 }
 
 jar {

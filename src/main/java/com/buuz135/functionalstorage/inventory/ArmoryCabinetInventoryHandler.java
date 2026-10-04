@@ -3,17 +3,15 @@ package com.buuz135.functionalstorage.inventory;
 import com.buuz135.functionalstorage.block.config.FunctionalStorageConfig;
 import com.buuz135.functionalstorage.util.StorageTags;
 import com.buuz135.functionalstorage.util.Utils;
+import com.hrznstudio.titanium.nbthandler.INBTSerializable;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtOps;
-import net.minecraft.resources.RegistryOps;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import com.hrznstudio.titanium.nbthandler.INBTSerializable;
-import net.neoforged.neoforge.transfer.access.ItemAccess;
 import net.neoforged.neoforge.transfer.ResourceHandler;
 import net.neoforged.neoforge.transfer.TransferPreconditions;
+import net.neoforged.neoforge.transfer.access.ItemAccess;
 import net.neoforged.neoforge.transfer.item.ItemResource;
 import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
@@ -38,7 +36,7 @@ public abstract class ArmoryCabinetInventoryHandler extends SnapshotJournal<List
 
     @NotNull
     public ItemStack getStackInSlot(int slot) {
-        if (slot < this.stackList.size()){
+        if (slot < this.stackList.size()) {
             return this.stackList.get(slot);
         }
         return ItemStack.EMPTY;
@@ -65,7 +63,7 @@ public abstract class ArmoryCabinetInventoryHandler extends SnapshotJournal<List
         return slot >= 0 && slot < stackList.size() && !resource.isEmpty() && stackList.get(slot).isEmpty() && isCertifiedResource(resource);
     }
 
-    private boolean isCertifiedResource(ItemResource resource){
+    private boolean isCertifiedResource(ItemResource resource) {
         ItemStack stack = resource.toStack();
         if (stack.getCapability(Capabilities.Item.ITEM, ItemAccess.forStack(stack)) != null) return false;
         if (resource.typeHolder().is(StorageTags.ARMORY_CABINET_INSERTABLE)) return true;
@@ -78,14 +76,14 @@ public abstract class ArmoryCabinetInventoryHandler extends SnapshotJournal<List
         CompoundTag compoundTag = new CompoundTag();
         for (int i = 0; i < this.stackList.size(); i++) {
             ItemStack stack = this.stackList.get(i);
-            if (!stack.isEmpty()){
+            if (!stack.isEmpty()) {
                 compoundTag.put(String.valueOf(i), Utils.serialize(provider, stack));
             }
         }
         return compoundTag;
     }
 
-    private List<ItemStack> create(){
+    private List<ItemStack> create() {
         List<ItemStack> stackList = new ArrayList<>();
         for (int i = 0; i < FunctionalStorageConfig.ARMORY_CABINET_SIZE; i++) {
             stackList.add(ItemStack.EMPTY);
@@ -105,7 +103,7 @@ public abstract class ArmoryCabinetInventoryHandler extends SnapshotJournal<List
         this.resourceList = createResources();
         for (String allKey : nbt.keySet()) {
             int pos = Integer.parseInt(allKey);
-            if (pos < this.stackList.size()){
+            if (pos < this.stackList.size()) {
                 ItemStack stack = Utils.deserialize(provider, nbt.getCompoundOrEmpty(allKey));
                 this.stackList.set(pos, stack);
                 this.resourceList.set(pos, ItemResource.of(stack));
@@ -113,11 +111,30 @@ public abstract class ArmoryCabinetInventoryHandler extends SnapshotJournal<List
         }
     }
 
-    @Override public int size() { return getSlots(); }
-    @Override public ItemResource getResource(int index) { return index >= 0 && index < resourceList.size() ? resourceList.get(index) : ItemResource.EMPTY; }
-    @Override public long getAmountAsLong(int index) { return getStackInSlot(index).isEmpty() ? 0 : 1; }
-    @Override public long getCapacityAsLong(int index, ItemResource resource) { return resource.isEmpty() || canInsert(index, resource) ? 1 : 0; }
-    @Override public boolean isValid(int index, ItemResource resource) { return isItemValid(index, resource); }
+    @Override
+    public int size() {
+        return getSlots();
+    }
+
+    @Override
+    public ItemResource getResource(int index) {
+        return index >= 0 && index < resourceList.size() ? resourceList.get(index) : ItemResource.EMPTY;
+    }
+
+    @Override
+    public long getAmountAsLong(int index) {
+        return getStackInSlot(index).isEmpty() ? 0 : 1;
+    }
+
+    @Override
+    public long getCapacityAsLong(int index, ItemResource resource) {
+        return resource.isEmpty() || canInsert(index, resource) ? 1 : 0;
+    }
+
+    @Override
+    public boolean isValid(int index, ItemResource resource) {
+        return isItemValid(index, resource);
+    }
 
     @Override
     public int insert(int index, ItemResource resource, int amount, TransactionContext transaction) {
@@ -126,7 +143,6 @@ public abstract class ArmoryCabinetInventoryHandler extends SnapshotJournal<List
         updateSnapshots(transaction);
         stackList.set(index, resource.toStack(1));
         resourceList.set(index, resource);
-        onChange();
         return 1;
     }
 
@@ -137,14 +153,14 @@ public abstract class ArmoryCabinetInventoryHandler extends SnapshotJournal<List
         updateSnapshots(transaction);
         stackList.set(index, ItemStack.EMPTY);
         resourceList.set(index, ItemResource.EMPTY);
-        onChange();
         return 1;
     }
 
     @Override
     protected List<StoredItem> createSnapshot() {
         List<StoredItem> snapshot = new ArrayList<>(stackList.size());
-        for (int i = 0; i < stackList.size(); i++) snapshot.add(new StoredItem(stackList.get(i).copy(), resourceList.get(i)));
+        for (int i = 0; i < stackList.size(); i++)
+            snapshot.add(new StoredItem(stackList.get(i).copy(), resourceList.get(i)));
         return snapshot;
     }
 
@@ -156,8 +172,14 @@ public abstract class ArmoryCabinetInventoryHandler extends SnapshotJournal<List
             stackList.add(item.stack().copy());
             resourceList.add(item.resource());
         }
+    }
+
+    @Override
+    protected void onRootCommit(List<StoredItem> originalState) {
+        super.onRootCommit(originalState);
         onChange();
     }
 
-    protected record StoredItem(ItemStack stack, ItemResource resource) {}
+    protected record StoredItem(ItemStack stack, ItemResource resource) {
+    }
 }

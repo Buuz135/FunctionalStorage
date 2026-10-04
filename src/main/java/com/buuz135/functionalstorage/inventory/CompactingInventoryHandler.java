@@ -3,14 +3,15 @@ package com.buuz135.functionalstorage.inventory;
 import com.buuz135.functionalstorage.util.CompactingUtil;
 import com.buuz135.functionalstorage.util.StorageTags;
 import com.buuz135.functionalstorage.util.Utils;
+import com.hrznstudio.titanium.nbthandler.INBTSerializable;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
-import com.hrznstudio.titanium.nbthandler.INBTSerializable;
 import net.neoforged.neoforge.transfer.ResourceHandler;
 import net.neoforged.neoforge.transfer.TransferPreconditions;
 import net.neoforged.neoforge.transfer.item.ItemResource;
 import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
+
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +27,7 @@ public abstract class CompactingInventoryHandler extends SnapshotJournal<Integer
     private int amount;
     private ItemStack parent;
     private List<CompactingUtil.Result> resultList;
-    private int slots;
+    private final int slots;
     private int configuredSlots;
 
     public CompactingInventoryHandler(int slots) {
@@ -64,7 +65,7 @@ public abstract class CompactingInventoryHandler extends SnapshotJournal<Integer
         return resultList.stream().anyMatch(result -> !result.getResult().isEmpty());
     }
 
-    public void setup(CompactingUtil compactingUtil){
+    public void setup(CompactingUtil compactingUtil) {
         this.resultList = compactingUtil.getResults();
         this.parent = compactingUtil.getResults().get(0).getResult();
         if (this.parent.isEmpty()) {
@@ -77,7 +78,7 @@ public abstract class CompactingInventoryHandler extends SnapshotJournal<Integer
         onChange();
     }
 
-    public void setupWithRearrangedResults(List<CompactingUtil.Result> rearrangedResults){
+    public void setupWithRearrangedResults(List<CompactingUtil.Result> rearrangedResults) {
         this.resultList = rearrangedResults;
         this.parent = rearrangedResults.get(0).getResult();
         if (this.parent.isEmpty()) {
@@ -90,7 +91,7 @@ public abstract class CompactingInventoryHandler extends SnapshotJournal<Integer
         onChange();
     }
 
-    public void reset(){
+    public void reset() {
         if (isLocked()) return;
         this.resultList.forEach(result -> {
             result.setResult(ItemStack.EMPTY);
@@ -110,14 +111,14 @@ public abstract class CompactingInventoryHandler extends SnapshotJournal<Integer
 
     public int getSlotLimitBase(int slot) {
         if (slot == this.slots) return Integer.MAX_VALUE;
-        return (int) Math.min(Integer.MAX_VALUE, Math.floor((configuredSlots == 2 ? 64 * 9d  : 64 * 9d * 9)/ this.resultList.get(slot).getNeeded()));
+        return (int) Math.min(Integer.MAX_VALUE, Math.floor((configuredSlots == 2 ? 64 * 9d : 64 * 9d * 9) / this.resultList.get(slot).getNeeded()));
     }
 
     public boolean isItemValid(int slot, ItemResource resource) {
         return isSetup() && !resource.isEmpty() && !resource.typeHolder().is(StorageTags.DRAWER_STORAGE_DENYLIST);
     }
 
-    private boolean canInsert(int slot, ItemResource resource){
+    private boolean canInsert(int slot, ItemResource resource) {
         if (resource.typeHolder().is(StorageTags.DRAWER_STORAGE_DENYLIST)) {
             return false;
         }
@@ -178,17 +179,37 @@ public abstract class CompactingInventoryHandler extends SnapshotJournal<Integer
 
     public abstract boolean isCreative();
 
-    @Override public int size() { return getSlots(); }
-    @Override public ItemResource getResource(int index) { return index >= slots ? ItemResource.EMPTY : resultList.get(index).getResource(); }
-    @Override public long getAmountAsLong(int index) { return index >= slots ? 0 : isCreative() && !getResource(index).isEmpty() ? Integer.MAX_VALUE : amount / resultList.get(index).getNeeded(); }
-    @Override public long getCapacityAsLong(int index, ItemResource resource) { return resource.isEmpty() || canInsert(index, resource) ? getSlotLimit(index) : 0; }
-    @Override public boolean isValid(int index, ItemResource resource) { return isItemValid(index, resource); }
+    @Override
+    public int size() {
+        return getSlots();
+    }
+
+    @Override
+    public ItemResource getResource(int index) {
+        return index >= slots ? ItemResource.EMPTY : resultList.get(index).getResource();
+    }
+
+    @Override
+    public long getAmountAsLong(int index) {
+        return index >= slots ? 0 : isCreative() && !getResource(index).isEmpty() ? Integer.MAX_VALUE : amount / resultList.get(index).getNeeded();
+    }
+
+    @Override
+    public long getCapacityAsLong(int index, ItemResource resource) {
+        return resource.isEmpty() || canInsert(index, resource) ? getSlotLimit(index) : 0;
+    }
+
+    @Override
+    public boolean isValid(int index, ItemResource resource) {
+        return isItemValid(index, resource);
+    }
 
     @Override
     public int insert(int index, ItemResource resource, int requested, TransactionContext transaction) {
         TransferPreconditions.checkNonEmptyNonNegative(resource, requested);
         if (requested == 0) return 0;
-        if (isVoid() && index == slots && isVoidValid(resource) || isCreative() && isVoidValid(resource)) return requested;
+        if (isVoid() && index == slots && isVoidValid(resource) || isCreative() && isVoidValid(resource))
+            return requested;
         if (!canInsert(index, resource)) return 0;
         CompactingUtil.Result result = resultList.get(index);
         long availableBaseUnits = (long) getSlotLimit(index) * result.getNeeded() - amount;
@@ -197,7 +218,6 @@ public abstract class CompactingInventoryHandler extends SnapshotJournal<Integer
         if (accepted <= 0) return 0;
         updateSnapshots(transaction);
         amount = (int) Math.min((long) amount + (long) accepted * result.getNeeded(), (int) Math.floor(getTotalAmount()));
-        onChange();
         return accepted;
     }
 
@@ -212,11 +232,24 @@ public abstract class CompactingInventoryHandler extends SnapshotJournal<Integer
         if (!isCreative()) {
             amount -= extracted * result.getNeeded();
             if (amount == 0) reset();
-            onChange();
+
         }
         return extracted;
     }
 
-    @Override protected Integer createSnapshot() { return amount; }
-    @Override protected void revertToSnapshot(Integer snapshot) { amount = snapshot; }
+    @Override
+    protected void onRootCommit(Integer originalState) {
+        super.onRootCommit(originalState);
+        onChange();
+    }
+
+    @Override
+    protected Integer createSnapshot() {
+        return amount;
+    }
+
+    @Override
+    protected void revertToSnapshot(Integer snapshot) {
+        amount = snapshot;
+    }
 }

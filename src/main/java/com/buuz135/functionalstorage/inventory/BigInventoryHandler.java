@@ -170,7 +170,6 @@ public abstract class BigInventoryHandler extends SnapshotJournal<List<BigInvent
         updateSnapshots(transaction);
         if (stored.getResource().isEmpty()) stored.setResource(resource);
         stored.setAmount((int) Math.min((long) stored.getAmount() + inserted, getSlotLimit(index, resource)));
-        onChange();
         return inserted;
     }
 
@@ -187,7 +186,6 @@ public abstract class BigInventoryHandler extends SnapshotJournal<List<BigInvent
             int remaining = stored.getAmount() - extracted;
             stored.setAmount(remaining);
             if (remaining == 0 && !isLocked()) stored.setResource(ItemResource.EMPTY);
-            onChange();
         }
         return extracted;
     }
@@ -207,6 +205,12 @@ public abstract class BigInventoryHandler extends SnapshotJournal<List<BigInvent
             target.setResource(wanted.resource());
             target.setAmount(wanted.amount());
         }
+    }
+
+    @Override
+    protected void onRootCommit(List<StoredResource> originalState) {
+        super.onRootCommit(originalState);
+        onChange();
     }
 
     protected record StoredResource(ItemResource resource, int amount) {}
