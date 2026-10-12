@@ -74,7 +74,9 @@ public abstract class ControllerInventoryHandler implements IItemHandler {
     @Override
     public ItemStack getStackInSlot(int slot) {
         HandlerSlotSelector selector = selectorForSlot(slot);
-        if (null == selector) return ItemStack.EMPTY;
+        if (selector == null) {
+            return ItemStack.EMPTY;
+        }
 
         return selector.getStackInSlot();
     }
@@ -83,7 +85,10 @@ public abstract class ControllerInventoryHandler implements IItemHandler {
     @Override
     public ItemStack insertItem(int slot, @NotNull ItemStack stack, boolean simulate) {
         HandlerSlotSelector selector = selectorForSlot(slot);
-        if (null == selector) return stack;
+        if (selector == null) {
+            return ItemStack.EMPTY;
+        }
+
         return selector.insertItem(stack, simulate);
     }
 
@@ -91,7 +96,10 @@ public abstract class ControllerInventoryHandler implements IItemHandler {
     @Override
     public ItemStack extractItem(int slot, int amount, boolean simulate) {
         HandlerSlotSelector selector = selectorForSlot(slot);
-        if (null == selector) return ItemStack.EMPTY;
+        if (selector == null) {
+            return ItemStack.EMPTY;
+        }
+
         return selector.extractItem(amount, simulate);
     }
 
