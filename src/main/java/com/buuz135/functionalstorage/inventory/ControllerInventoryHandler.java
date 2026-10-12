@@ -1,6 +1,5 @@
 package com.buuz135.functionalstorage.inventory;
 
-import com.buuz135.functionalstorage.block.tile.DrawerControllerTile;
 import com.buuz135.functionalstorage.util.ConnectedDrawers;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.items.IItemHandler;
@@ -75,11 +74,7 @@ public abstract class ControllerInventoryHandler implements IItemHandler {
     @Override
     public ItemStack getStackInSlot(int slot) {
         HandlerSlotSelector selector = selectorForSlot(slot);
-        if (null == selector) return ItemStack.EMPTY;
-
-        // Block access to invalid handlers
-        if (!getDrawers().getItemHandlers().contains(selector.handler)) {
-            invalidateSlots();
+        if (selector == null) {
             return ItemStack.EMPTY;
         }
 
@@ -90,13 +85,10 @@ public abstract class ControllerInventoryHandler implements IItemHandler {
     @Override
     public ItemStack insertItem(int slot, @NotNull ItemStack stack, boolean simulate) {
         HandlerSlotSelector selector = selectorForSlot(slot);
-        if (null == selector) return stack;
-        //Verify if the handler is still valid before extraction
-        if (!getDrawers().getItemHandlers().contains(selector.handler)) {
-            // Invalid handler: Rebuild slots and return empty stack
-            invalidateSlots();
-            return stack;
+        if (selector == null) {
+            return ItemStack.EMPTY;
         }
+
         return selector.insertItem(stack, simulate);
     }
 
@@ -104,12 +96,7 @@ public abstract class ControllerInventoryHandler implements IItemHandler {
     @Override
     public ItemStack extractItem(int slot, int amount, boolean simulate) {
         HandlerSlotSelector selector = selectorForSlot(slot);
-        if (null == selector) return ItemStack.EMPTY;
-
-        //Verify if the handler is still valid before extraction
-        if (!getDrawers().getItemHandlers().contains(selector.handler)) {
-            // Invalid handler: Rebuild slots and return empty stack
-            invalidateSlots();
+        if (selector == null) {
             return ItemStack.EMPTY;
         }
 
