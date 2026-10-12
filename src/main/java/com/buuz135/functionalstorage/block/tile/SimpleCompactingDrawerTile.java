@@ -40,7 +40,6 @@ public class SimpleCompactingDrawerTile extends ItemControllableDrawerTile<Simpl
             @Override
             public void onChange() {
                 SimpleCompactingDrawerTile.this.markForUpdate();
-                SimpleCompactingDrawerTile.this.updateComparatorOutput();
             }
 
             @Override
