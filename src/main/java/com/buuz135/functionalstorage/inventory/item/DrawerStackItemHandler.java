@@ -103,9 +103,6 @@ public class DrawerStackItemHandler implements IItemHandler, INBTSerializable<Co
     @Nonnull
     @Override
     public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
-        if (stack.is(StorageTags.DRAWER_STORAGE_DENYLIST)) {
-            return stack;
-        }
         if (isValid(slot, stack)) {
             BigStack bigStack = this.storedStacks.get(slot);
             int inserted = Math.min(getSlotLimit(slot) - bigStack.getAmount(), stack.getCount());
