@@ -60,7 +60,7 @@ public abstract class BigFluidHandler implements IFluidHandler, INBTSerializable
 
     @Override
     public boolean isFluidValid(int tank, @NotNull FluidStack stack) {
-        return !stack.is(StorageTags.FLUID_DRAWER_STORAGE_DENYLIST) && this.tanks[tank].isFluidValid(stack);
+        return this.tanks[tank].isFluidValid(stack);
     }
 
     @Override
@@ -170,7 +170,7 @@ public abstract class BigFluidHandler implements IFluidHandler, INBTSerializable
 
 
         public CustomFluidTank(int capacity) {
-            super(capacity);
+            super(capacity, fluidStack -> !fluidStack.is(StorageTags.FLUID_DRAWER_STORAGE_DENYLIST));
         }
 
         public CustomFluidTank(int capacity, Predicate<FluidStack> validator) {
@@ -183,7 +183,7 @@ public abstract class BigFluidHandler implements IFluidHandler, INBTSerializable
                 return 0;
             }
             int amount = super.fill(resource, action);
-            if (isDrawerVoid()
+            if (amount < resource.getAmount() && isDrawerVoid()
                     && ((isDrawerLocked() && isFluidValid(resource)) || (!getFluid().isEmpty() && FluidStack.isSameFluidSameComponents(getFluid(), resource))))
                 return resource.getAmount();
             return amount;

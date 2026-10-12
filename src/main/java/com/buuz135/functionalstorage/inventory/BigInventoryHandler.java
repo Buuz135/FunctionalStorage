@@ -49,7 +49,7 @@ public abstract class BigInventoryHandler implements IItemHandler, INBTSerializa
     @Nonnull
     @Override
     public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
-        if (stack.is(StorageTags.DRAWER_STORAGE_DENYLIST)) {
+        if (!this.isItemValid(slot, stack)) {
             return stack;
         }
         if (isVoid() && type.getSlots() == slot && isVoidValid(stack) || (isVoidValid(stack) && isCreative()))
@@ -125,9 +125,6 @@ public abstract class BigInventoryHandler implements IItemHandler, INBTSerializa
     }
 
     private boolean isValid(int slot, @Nonnull ItemStack stack){
-        if (stack.is(StorageTags.DRAWER_STORAGE_DENYLIST)) {
-            return false;
-        }
         if (slot < type.getSlots()){
             BigStack bigStack = this.storedStacks.get(slot);
             ItemStack fl = bigStack.getStack();
