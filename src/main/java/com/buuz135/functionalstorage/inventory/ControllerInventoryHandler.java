@@ -1,6 +1,5 @@
 package com.buuz135.functionalstorage.inventory;
 
-import com.buuz135.functionalstorage.block.tile.DrawerControllerTile;
 import com.buuz135.functionalstorage.util.ConnectedDrawers;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.items.IItemHandler;
@@ -77,12 +76,6 @@ public abstract class ControllerInventoryHandler implements IItemHandler {
         HandlerSlotSelector selector = selectorForSlot(slot);
         if (null == selector) return ItemStack.EMPTY;
 
-        // Block access to invalid handlers
-        if (!getDrawers().getItemHandlers().contains(selector.handler)) {
-            invalidateSlots();
-            return ItemStack.EMPTY;
-        }
-
         return selector.getStackInSlot();
     }
 
@@ -91,12 +84,6 @@ public abstract class ControllerInventoryHandler implements IItemHandler {
     public ItemStack insertItem(int slot, @NotNull ItemStack stack, boolean simulate) {
         HandlerSlotSelector selector = selectorForSlot(slot);
         if (null == selector) return stack;
-        //Verify if the handler is still valid before extraction
-        if (!getDrawers().getItemHandlers().contains(selector.handler)) {
-            // Invalid handler: Rebuild slots and return empty stack
-            invalidateSlots();
-            return stack;
-        }
         return selector.insertItem(stack, simulate);
     }
 
@@ -105,14 +92,6 @@ public abstract class ControllerInventoryHandler implements IItemHandler {
     public ItemStack extractItem(int slot, int amount, boolean simulate) {
         HandlerSlotSelector selector = selectorForSlot(slot);
         if (null == selector) return ItemStack.EMPTY;
-
-        //Verify if the handler is still valid before extraction
-        if (!getDrawers().getItemHandlers().contains(selector.handler)) {
-            // Invalid handler: Rebuild slots and return empty stack
-            invalidateSlots();
-            return ItemStack.EMPTY;
-        }
-
         return selector.extractItem(amount, simulate);
     }
 
