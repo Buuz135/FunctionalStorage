@@ -1,6 +1,5 @@
 package com.buuz135.functionalstorage.inventory;
 
-import com.buuz135.functionalstorage.block.tile.DrawerControllerTile;
 import com.buuz135.functionalstorage.util.ConnectedDrawers;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.items.IItemHandler;
@@ -54,7 +53,7 @@ public abstract class ControllerInventoryHandler implements IItemHandler {
     }
 
     public void invalidateSlots() {
-        List<HandlerSlotSelector> selectors = new ArrayList<HandlerSlotSelector>();
+        List<HandlerSlotSelector> selectors = new ArrayList<>();
         this.slots = 0;
         for (IItemHandler handler : getDrawers().getItemHandlers()) {
             if (handler instanceof ControllerInventoryHandler) continue;
@@ -64,7 +63,7 @@ public abstract class ControllerInventoryHandler implements IItemHandler {
             }
             this.slots += handlerSlots;
         }
-        this.selectors = selectors.toArray(new HandlerSlotSelector[selectors.size()]);
+        this.selectors = selectors.toArray(new HandlerSlotSelector[0]);
     }
 
     private HandlerSlotSelector selectorForSlot(int slot) {
