@@ -59,7 +59,7 @@ side = "BOTH"
 [[dependencies.functionalstorage]]
 modId = "titanium"
 type = "required"
-versionRange = "[4.0.1,)"
+versionRange = "[4.0.12,)"
 # This version range declares a minimum of the current minecraft version up to but not including the next major version
 ordering = "NONE"
 side = "BOTH"
