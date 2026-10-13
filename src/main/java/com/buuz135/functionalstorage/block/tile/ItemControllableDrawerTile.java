@@ -144,6 +144,19 @@ public abstract class ItemControllableDrawerTile<T extends ItemControllableDrawe
                 return super.extractItem(slot, amount, simulate);
             }
         }
+        .setExtractGUIPredicate((stack, slot) -> {
+            if (isStorageUpgradeLocked()) return false;
+            if (stack.has(FSAttachments.ITEM_STORAGE_MODIFIER)) {
+                var replacement = new ItemStack[this.getStorageUpgrades().getSlots()];
+                replacement[slot] = ItemStack.EMPTY;
+
+                var newSize = (double) SizeProvider.calculateAsFactor(this.getStorageUpgrades(), FSAttachments.ITEM_STORAGE_MODIFIER, baseSize, replacement);
+                if (!canChangeMultiplier(newSize)) {
+                    return false;
+                }
+            }
+            return true;
+        })
                 .setInputFilter((stack, integer) -> {
                     if (isStorageUpgradeLocked()) return false;
                     if (!canUseStorageUpgradeWithCreative(stack, integer)) return false;

@@ -217,6 +217,19 @@ public class FluidDrawerTile extends ControllableDrawerTile<FluidDrawerTile> {
                 return super.extractItem(slot, amount, simulate);
             }
         }
+                .setExtractGUIPredicate((stack, slot) -> {
+                    if (isStorageUpgradeLocked()) return false;
+                    if (stack.has(FSAttachments.FLUID_STORAGE_MODIFIER)) {
+                        var replacement = new ItemStack[this.getStorageUpgrades().getSlots()];
+                        replacement[slot] = ItemStack.EMPTY;
+
+                        var newSize = (double) SizeProvider.calculateAsFactor(this.getStorageUpgrades(), FSAttachments.FLUID_STORAGE_MODIFIER, baseSize, replacement);
+                        if (!canChangeMultiplier(newSize)) {
+                            return false;
+                        }
+                    }
+                    return true;
+                })
                 .setInputFilter((stack, integer) -> {
                     if (isStorageUpgradeLocked()) return false;
                     if (!canUseStorageUpgradeWithCreative(stack, integer)) return false;
