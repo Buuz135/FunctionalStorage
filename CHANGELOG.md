@@ -1,6 +1,7 @@
 # VERSION 1.6.3
 
 * Fixed being able to extract upgrades from drawers when you shouldn't closes #537
+* Improved capability detection for armory cabinet closes #532
 
 # VERSION 1.6.2
 

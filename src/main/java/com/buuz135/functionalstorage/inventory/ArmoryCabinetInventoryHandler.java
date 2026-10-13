@@ -1,6 +1,7 @@
 package com.buuz135.functionalstorage.inventory;
 
 import com.buuz135.functionalstorage.block.config.FunctionalStorageConfig;
+import com.buuz135.functionalstorage.util.DummyItemAccess;
 import com.buuz135.functionalstorage.util.StorageTags;
 import com.buuz135.functionalstorage.util.Utils;
 import com.hrznstudio.titanium.nbthandler.INBTSerializable;
@@ -48,10 +49,6 @@ public abstract class ArmoryCabinetInventoryHandler extends SnapshotJournal<List
         return 1;
     }
 
-    public boolean isItemValid(int slot, ItemResource resource) {
-        return isCertifiedResource(resource);
-    }
-
     public void setStackInSlot(int slot, @NotNull ItemStack stack) {
         if (slot < 0 || slot >= this.stackList.size()) return;
         this.stackList.set(slot, stack.isEmpty() ? ItemStack.EMPTY : stack.copyWithCount(Math.min(1, stack.getCount())));
@@ -64,8 +61,9 @@ public abstract class ArmoryCabinetInventoryHandler extends SnapshotJournal<List
     }
 
     private boolean isCertifiedResource(ItemResource resource) {
+        if (resource.isEmpty()) return false;
         ItemStack stack = resource.toStack();
-        if (stack.getCapability(Capabilities.Item.ITEM, ItemAccess.forStack(stack)) != null) return false;
+        if (stack.getCapability(Capabilities.Item.ITEM, new DummyItemAccess(resource)) != null) return false;
         if (resource.typeHolder().is(StorageTags.ARMORY_CABINET_INSERTABLE)) return true;
         if (resource.getMaxStackSize() > 1) return false;
         return stack.isDamageableItem() || stack.isEnchantable() || resource.has(DataComponents.JUKEBOX_PLAYABLE) || resource.has(DataComponents.EQUIPPABLE) || resource.is(Items.ENCHANTED_BOOK);
@@ -133,7 +131,7 @@ public abstract class ArmoryCabinetInventoryHandler extends SnapshotJournal<List
 
     @Override
     public boolean isValid(int index, ItemResource resource) {
-        return isItemValid(index, resource);
+        return isCertifiedResource(resource);
     }
 
     @Override
