@@ -231,8 +231,6 @@ public abstract class CompactingInventoryHandler extends SnapshotJournal<Integer
         updateSnapshots(transaction);
         if (!isCreative()) {
             amount -= extracted * result.getNeeded();
-            if (amount == 0) reset();
-
         }
         return extracted;
     }
@@ -240,6 +238,9 @@ public abstract class CompactingInventoryHandler extends SnapshotJournal<Integer
     @Override
     protected void onRootCommit(Integer originalState) {
         super.onRootCommit(originalState);
+        if (!isCreative() && amount == 0) {
+            reset();
+        }
         onChange();
     }
 

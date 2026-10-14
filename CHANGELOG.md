@@ -1,3 +1,7 @@
+# VERSION 1.6.4
+
+* Execute drawer reset when amount is 0 when committing changes, closes #540
+
 # VERSION 1.6.3
 
 * Fixed being able to extract upgrades from drawers when you shouldn't closes #537
