@@ -87,6 +87,8 @@ dependencies {
 
     localRuntime "curse.maven:applied-energistics-2-223794:9022271"
     localRuntime "curse.maven:guideme-1173950:9022838"
+
+    localRuntime "curse.maven:modernfix-790626:9101896"
 }
 
 jar {

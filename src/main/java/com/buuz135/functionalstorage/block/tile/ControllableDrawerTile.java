@@ -77,6 +77,7 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
         super(base, entityType, pos, state);
         this.drawerOptions = new DrawerOptions();
         this.storageUpgrades = getStorageUpgradesConstructor();
+        this.storageUpgrades.setInsertGUIPredicate((stack, slot) -> this.storageUpgrades.isItemValid(slot, stack));
         if (getStorageSlotAmount() > 0) {
             this.addInventory((InventoryComponent<T>) this.storageUpgrades);
         }
@@ -103,6 +104,7 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
                             })
                     )
             );
+            this.utilityUpgrades.setInsertGUIPredicate((stack, slot) -> this.utilityUpgrades.isItemValid(slot, stack));
         }
 
         this.baseSize = props.baseSize();

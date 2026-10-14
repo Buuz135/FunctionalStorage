@@ -1,6 +1,7 @@
 # VERSION 1.6.4
 
 * Execute drawer reset when amount is 0 when committing changes, closes #540
+* Fixed Sneak + Clicking an upgrade into a drawer freezing the client, closes #538
 
 # VERSION 1.6.3
 
