@@ -78,7 +78,7 @@ public abstract class ControllerInventoryHandler implements IItemHandler {
         if (null == selector) return ItemStack.EMPTY;
 
         // Block access to invalid handlers
-        if (!getDrawers().getItemHandlers().contains(selector.handler)) {
+        if (!getDrawers().containsItemHandler(selector.handler)) {
             invalidateSlots();
             return ItemStack.EMPTY;
         }
@@ -92,7 +92,7 @@ public abstract class ControllerInventoryHandler implements IItemHandler {
         HandlerSlotSelector selector = selectorForSlot(slot);
         if (null == selector) return stack;
         //Verify if the handler is still valid before extraction
-        if (!getDrawers().getItemHandlers().contains(selector.handler)) {
+        if (!getDrawers().containsItemHandler(selector.handler)) {
             // Invalid handler: Rebuild slots and return empty stack
             invalidateSlots();
             return stack;
@@ -107,7 +107,7 @@ public abstract class ControllerInventoryHandler implements IItemHandler {
         if (null == selector) return ItemStack.EMPTY;
 
         //Verify if the handler is still valid before extraction
-        if (!getDrawers().getItemHandlers().contains(selector.handler)) {
+        if (!getDrawers().containsItemHandler(selector.handler)) {
             // Invalid handler: Rebuild slots and return empty stack
             invalidateSlots();
             return ItemStack.EMPTY;

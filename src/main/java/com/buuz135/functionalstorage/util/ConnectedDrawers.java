@@ -18,7 +18,9 @@ import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.items.IItemHandler;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class ConnectedDrawers implements INBTSerializable<CompoundTag> {
 
@@ -26,6 +28,7 @@ public class ConnectedDrawers implements INBTSerializable<CompoundTag> {
 
     private List<Long> connectedDrawers;
     private List<IItemHandler> itemHandlers;
+    private Set<IItemHandler> itemHandlerLookup;
     private List<IFluidHandler> fluidHandlers;
     private Level level;
     private int extensions;
@@ -38,6 +41,7 @@ public class ConnectedDrawers implements INBTSerializable<CompoundTag> {
 
         this.connectedDrawers = new ArrayList<>();
         this.itemHandlers = new ArrayList<>();
+        this.itemHandlerLookup = new HashSet<>();
         this.fluidHandlers = new ArrayList<>();
         this.level = level;
         this.extensions = 0;
@@ -61,6 +65,7 @@ public class ConnectedDrawers implements INBTSerializable<CompoundTag> {
             this.rebuildQueued = false;
             try {
                 this.itemHandlers = new ArrayList<>();
+                this.itemHandlerLookup = new HashSet<>();
                 this.fluidHandlers = new ArrayList<>();
                 this.extensions = 0;
                 if (level != null && !level.isClientSide()) {
@@ -96,7 +101,9 @@ public class ConnectedDrawers implements INBTSerializable<CompoundTag> {
                             continue;
                         }
                         if (entity instanceof ItemControllableDrawerTile<?> itemControllableDrawerTile) {
-                            this.itemHandlers.add(itemControllableDrawerTile.getStorage());
+                            IItemHandler itemHandler = itemControllableDrawerTile.getStorage();
+                            this.itemHandlers.add(itemHandler);
+                            this.itemHandlerLookup.add(itemHandler);
                         }
                         if (entity instanceof FluidDrawerTile fluidDrawerTile) {
                             this.fluidHandlers.add(fluidDrawerTile.getFluidHandler());
@@ -162,6 +169,10 @@ public class ConnectedDrawers implements INBTSerializable<CompoundTag> {
 
     public List<IItemHandler> getItemHandlers() {
         return itemHandlers;
+    }
+
+    public boolean containsItemHandler(IItemHandler itemHandler) {
+        return itemHandlerLookup.contains(itemHandler);
     }
 
     public List<IFluidHandler> getFluidHandlers() {
