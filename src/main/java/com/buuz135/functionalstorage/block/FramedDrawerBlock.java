@@ -50,7 +50,6 @@ public class FramedDrawerBlock extends DrawerBlock implements FramedBlock {
 
     public static ItemStack fill(ItemStack first, ItemStack second, ItemStack drawer, ItemStack divider){
         drawer = drawer.copyWithCount(1);
-        // ItemStack#copy shares component values, so edit a copy or the drawer left in the grid gets re-styled too
         CompoundTag style = drawer.getOrDefault(FSAttachments.STYLE, new CompoundTag()).copy();
         style.putString("particle", BuiltInRegistries.ITEM.getKey(first.getItem()).toString());
         style.putString("side", BuiltInRegistries.ITEM.getKey(first.getItem()).toString());
