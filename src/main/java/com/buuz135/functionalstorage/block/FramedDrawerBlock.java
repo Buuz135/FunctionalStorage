@@ -50,7 +50,7 @@ public class FramedDrawerBlock extends DrawerBlock implements FramedBlock {
 
     public static ItemStack fill(ItemStack first, ItemStack second, ItemStack drawer, ItemStack divider){
         drawer = drawer.copyWithCount(1);
-        CompoundTag style = drawer.getOrDefault(FSAttachments.STYLE, new CompoundTag());
+        CompoundTag style = drawer.getOrDefault(FSAttachments.STYLE, new CompoundTag()).copy();
         style.putString("particle", BuiltInRegistries.ITEM.getKey(first.getItem()).toString());
         style.putString("side", BuiltInRegistries.ITEM.getKey(first.getItem()).toString());
         style.putString("front", BuiltInRegistries.ITEM.getKey(second.getItem()).toString());
