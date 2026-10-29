@@ -13,6 +13,7 @@ import com.hrznstudio.titanium.component.inventory.InventoryComponent;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -50,6 +51,9 @@ public class FluidDrawerTile extends ControllableDrawerTile<FluidDrawerTile> {
             public void onChange() {
                 syncObject(fluidHandler);
                 FluidDrawerTile.this.updateComparatorOutput();
+                if (level instanceof ServerLevel serverLevel) {
+                    serverLevel.blockEntityChanged(worldPosition);
+                }
             }
 
             @Override
