@@ -179,16 +179,15 @@ public class DrawerStackItemHandler extends SnapshotJournal<List<DrawerStackItem
     public int extract(int index, ItemResource resource, int amount, TransactionContext transaction) {
         TransferPreconditions.checkNonEmptyNonNegative(resource, amount);
         if (amount == 0 || !resource.equals(getResource(index))) return 0;
+        if (isCreative) return amount;
         BigStack stored = storedStacks.get(index);
         int extracted = Math.min(amount, stored.getAmount());
         if (extracted <= 0) return 0;
         updateSnapshots(transaction);
-        if (!isCreative) {
-            int remaining = stored.getAmount() - extracted;
-            stored.setAmount(remaining);
-            if (remaining == 0 && !isLocked()) stored.setResource(ItemResource.EMPTY);
-            onChange();
-        }
+        int remaining = stored.getAmount() - extracted;
+        stored.setAmount(remaining);
+        if (remaining == 0 && !isLocked()) stored.setResource(ItemResource.EMPTY);
+        onChange();
         return extracted;
     }
 

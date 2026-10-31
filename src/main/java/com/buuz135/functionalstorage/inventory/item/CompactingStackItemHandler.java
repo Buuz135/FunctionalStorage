@@ -219,15 +219,14 @@ public class CompactingStackItemHandler extends SnapshotJournal<Integer> impleme
     public int extract(int index, ItemResource resource, int requested, TransactionContext transaction) {
         TransferPreconditions.checkNonEmptyNonNegative(resource, requested);
         if (requested == 0 || index >= slots || !resource.equals(getResource(index))) return 0;
+        if (isCreative()) return requested;
         CompactingUtil.Result result = resultList.get(index);
         int extracted = Math.min(requested, amount / result.getNeeded());
         if (extracted <= 0) return 0;
         updateSnapshots(transaction);
-        if (!isCreative()) {
-            amount -= extracted * result.getNeeded();
-            if (amount == 0) reset();
-            onChange();
-        }
+        amount -= extracted * result.getNeeded();
+        if (amount == 0) reset();
+        onChange();
         return extracted;
     }
 

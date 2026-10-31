@@ -161,7 +161,17 @@ public abstract class BigInventoryHandler extends SnapshotJournal<List<BigInvent
     public int insert(int index, ItemResource resource, int amount, TransactionContext transaction) {
         TransferPreconditions.checkNonEmptyNonNegative(resource, amount);
         if (amount == 0) return 0;
-        if (isVoid() && index == type.getSlots() && isVoidValid(resource) || isCreative() && isVoidValid(resource)) return amount;
+        if (isCreative()) {
+            // If empty, insert the stack into the drawer to "configure" the item to be creatively vended
+            if (storedStacks.get(index).getAmount() <= 0 && canInsert(index, resource)) {
+                updateSnapshots(transaction);
+                storedStacks.get(index).setAmount(Math.min(amount, getSlotLimit(index, resource)));
+                return amount;
+            } else if (isVoidValid(resource)) {
+                return amount;
+            }
+        }
+        if (isVoid() && index == type.getSlots() && isVoidValid(resource)) return amount;
         if (!canInsert(index, resource)) return 0;
         BigStack stored = storedStacks.get(index);
         int inserted = Math.min(getSlotLimit(index, resource) - stored.getAmount(), amount);
@@ -179,14 +189,13 @@ public abstract class BigInventoryHandler extends SnapshotJournal<List<BigInvent
         if (amount == 0 || index >= type.getSlots()) return 0;
         BigStack stored = storedStacks.get(index);
         if (!resource.equals(stored.getResource())) return 0;
+        if (isCreative()) return amount;
         int extracted = Math.min(amount, Math.min(getSlotLimit(index), stored.getAmount()));
         if (extracted <= 0) return 0;
         updateSnapshots(transaction);
-        if (!isCreative()) {
-            int remaining = stored.getAmount() - extracted;
-            stored.setAmount(remaining);
-            if (remaining == 0 && !isLocked()) stored.setResource(ItemResource.EMPTY);
-        }
+        int remaining = stored.getAmount() - extracted;
+        stored.setAmount(remaining);
+        if (remaining == 0 && !isLocked()) stored.setResource(ItemResource.EMPTY);
         return extracted;
     }
 
