@@ -4,6 +4,7 @@ import com.buuz135.functionalstorage.FunctionalStorage;
 import com.buuz135.functionalstorage.inventory.BigInventoryHandler;
 import com.buuz135.functionalstorage.item.FSAttachments;
 import com.buuz135.functionalstorage.item.component.SizeProvider;
+import com.buuz135.functionalstorage.util.StorageTags;
 import com.buuz135.functionalstorage.util.StorageTransferUtil;
 import com.hrznstudio.titanium.block.BasicTileBlock;
 import com.hrznstudio.titanium.component.inventory.InventoryComponent;
@@ -160,7 +161,14 @@ public abstract class ItemControllableDrawerTile<T extends ItemControllableDrawe
                 .setInputFilter((stack, integer) -> {
                     if (isStorageUpgradeLocked()) return false;
                     if (!canUseStorageUpgradeWithCreative(stack, integer)) return false;
-                    if (stack.is(FunctionalStorage.CREATIVE_UPGRADE)) return true;
+                    if (stack.is(FunctionalStorage.CREATIVE_UPGRADE)) {
+                        for (int i = 0; i < getStorage().size(); i++) {
+                            if (getStorage().getResource(i).is(StorageTags.CREATIVE_VENDING_DENYLIST)) {
+                                return false;
+                            }
+                        }
+                        return true;
+                    }
                     if (!stack.has(FSAttachments.ITEM_STORAGE_MODIFIER)) return false;
 
                     var replacement = new ItemStack[getStorageUpgrades().getSlots()];

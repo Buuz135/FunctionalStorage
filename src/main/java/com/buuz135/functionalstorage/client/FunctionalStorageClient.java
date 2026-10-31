@@ -13,6 +13,7 @@ import com.buuz135.functionalstorage.inventory.item.DrawerStackItemHandler;
 import com.buuz135.functionalstorage.item.FSAttachments;
 import com.buuz135.functionalstorage.item.UpgradeItem;
 import com.buuz135.functionalstorage.util.NumberUtils;
+import com.buuz135.functionalstorage.util.StorageTags;
 import com.buuz135.functionalstorage.util.Utils;
 import com.mojang.datafixers.util.Either;
 import com.hrznstudio.titanium.block.RotatableBlock;
@@ -107,6 +108,26 @@ public final class FunctionalStorageClient {
                         event.getToolTip().add(3, Component.translatable("drawer_upgrade.functionalstorage.relative_direction", UpgradeItem.getRelativeDirection(direction, UpgradeItem.getDirection(event.getItemStack()))).withStyle(ChatFormatting.YELLOW));
                     }
                 }).subscribe();
+
+        EventManager.forge(ItemTooltipEvent.class).process(event -> {
+            if (!(Minecraft.getInstance().screen != null && Minecraft.getInstance().screen instanceof BasicAddonScreen bcs && bcs.getMenu().getObject() instanceof ItemControllableDrawerTile<?> tile)) {
+                return;
+            }
+            var storage = tile.getStorage();
+
+            if (event.getItemStack().is(FunctionalStorage.CREATIVE_UPGRADE)) {
+                for (int i = 0; i < storage.size(); i++) {
+                    if (storage.getResource(i).is(StorageTags.CREATIVE_VENDING_DENYLIST)) {
+                        event.getToolTip().add(Component.translatable("tooltip.functional_storage.creative_vending_incompatible_with_item", storage.getResource(i).toStack().getHoverName().copy().withStyle(ChatFormatting.GOLD)).withStyle(ChatFormatting.RED));
+                        return;
+                    }
+                }
+            }
+
+            if (tile.isCreative() && event.getItemStack().is(StorageTags.CREATIVE_VENDING_DENYLIST)) {
+                event.getToolTip().add(Component.translatable("tooltip.functional_storage.item_incompatible_with_creative_vending").withStyle(ChatFormatting.RED));
+            }
+        }).subscribe();
 
         EventManager.forge(ItemTooltipEvent.class).process(event -> {
             var stack = event.getItemStack();

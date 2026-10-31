@@ -115,7 +115,7 @@ public class DrawerStackItemHandler extends SnapshotJournal<List<DrawerStackItem
     }
 
     private boolean canInsert(int slot, ItemResource resource) {
-        if (resource.typeHolder().is(StorageTags.DRAWER_STORAGE_DENYLIST)) {
+        if (!isItemValid(slot, resource)) {
             return false;
         }
         if (slot < type.getSlots()) {
@@ -142,6 +142,9 @@ public class DrawerStackItemHandler extends SnapshotJournal<List<DrawerStackItem
     }
 
     public boolean isItemValid(int slot, ItemResource resource) {
+        if (isCreative() && resource.is(StorageTags.CREATIVE_VENDING_DENYLIST)) {
+            return false;
+        }
         return !resource.isEmpty() && !resource.typeHolder().is(StorageTags.DRAWER_STORAGE_DENYLIST);
     }
 

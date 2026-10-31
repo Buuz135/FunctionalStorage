@@ -4,8 +4,10 @@ import com.buuz135.functionalstorage.FunctionalStorage;
 import com.buuz135.functionalstorage.util.StorageTags;
 import com.buuz135.functionalstorage.util.Utils;
 import com.hrznstudio.titanium.nbthandler.INBTSerializable;
+import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.transfer.ResourceHandler;
 import net.neoforged.neoforge.transfer.TransferPreconditions;
@@ -71,11 +73,14 @@ public abstract class BigInventoryHandler extends SnapshotJournal<List<BigInvent
     }
 
     public boolean isItemValid(int slot, ItemResource resource) {
+        if (isCreative() && resource.is(StorageTags.CREATIVE_VENDING_DENYLIST)) {
+            return false;
+        }
         return !resource.isEmpty() && !resource.typeHolder().is(StorageTags.DRAWER_STORAGE_DENYLIST);
     }
 
     private boolean canInsert(int slot, ItemResource resource) {
-        if (resource.typeHolder().is(StorageTags.DRAWER_STORAGE_DENYLIST)) {
+        if (!isItemValid(slot, resource)) {
             return false;
         }
         if (slot < type.getSlots()) {
