@@ -4,7 +4,9 @@ import com.buuz135.functionalstorage.util.CompactingUtil;
 import com.buuz135.functionalstorage.util.StorageTags;
 import com.buuz135.functionalstorage.util.Utils;
 import com.hrznstudio.titanium.nbthandler.INBTSerializable;
+import net.minecraft.core.Holder;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.transfer.ResourceHandler;
 import net.neoforged.neoforge.transfer.TransferPreconditions;
@@ -114,12 +116,8 @@ public abstract class CompactingInventoryHandler extends SnapshotJournal<Integer
         return (int) Math.min(Integer.MAX_VALUE, Math.floor((configuredSlots == 2 ? 64 * 9d : 64 * 9d * 9) / this.resultList.get(slot).getNeeded()));
     }
 
-    public boolean isItemValid(int slot, ItemResource resource) {
-        return isSetup() && !resource.isEmpty() && !resource.typeHolder().is(StorageTags.DRAWER_STORAGE_DENYLIST);
-    }
-
     private boolean canInsert(int slot, ItemResource resource) {
-        if (resource.typeHolder().is(StorageTags.DRAWER_STORAGE_DENYLIST)) {
+        if (!isValid(slot, resource)) {
             return false;
         }
         if (slot < this.slots) {
@@ -201,7 +199,10 @@ public abstract class CompactingInventoryHandler extends SnapshotJournal<Integer
 
     @Override
     public boolean isValid(int index, ItemResource resource) {
-        return isItemValid(index, resource);
+        if (isCreative() && resource.is(StorageTags.CREATIVE_VENDING_DENYLIST)) {
+            return false;
+        }
+        return !resource.isEmpty() && !resource.is(StorageTags.DRAWER_STORAGE_DENYLIST);
     }
 
     @Override
