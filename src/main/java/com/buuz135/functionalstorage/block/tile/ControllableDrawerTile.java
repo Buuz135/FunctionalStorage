@@ -15,6 +15,7 @@ import com.hrznstudio.titanium.block.RotatableBlock;
 import com.hrznstudio.titanium.block.tile.ActiveTile;
 import com.hrznstudio.titanium.client.screen.addon.TextScreenAddon;
 import com.hrznstudio.titanium.component.inventory.InventoryComponent;
+import com.hrznstudio.titanium.nbthandler.INBTSerializable;
 import com.hrznstudio.titanium.util.TileUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -23,11 +24,9 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.core.SectionPos;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.Connection;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -36,12 +35,9 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
-import net.minecraft.world.level.chunk.LevelChunk;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
-import com.hrznstudio.titanium.nbthandler.INBTSerializable;
 
 import java.util.HashMap;
 import java.util.function.Supplier;
@@ -253,12 +249,6 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
                 controllerTile.getConnectedDrawers().rebuild();
                 controllerTile.markForUpdate();
             });
-        }
-    }
-
-    public void updateComparatorOutput() {
-        if (level != null && !level.isClientSide()) {
-            level.updateNeighbourForOutputSignal(worldPosition, getBlockState().getBlock());
         }
     }
 
