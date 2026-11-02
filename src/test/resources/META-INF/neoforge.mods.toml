@@ -1,0 +1,9 @@
+license = "MIT"
+[[mods]] 
+modId = "functionalstorage_test" 
+version = "${file.jarVersion}" 
+displayName = "Functional Storage Test Mod" 
+authors = "Buuz135, Rid"
+description = '''
+Functional Storage
+'''

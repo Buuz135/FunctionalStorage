@@ -9,6 +9,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.transfer.ResourceHandler;
 import net.neoforged.neoforge.transfer.TransferPreconditions;
+import net.neoforged.neoforge.transfer.access.ItemAccess;
 import net.neoforged.neoforge.transfer.item.ItemResource;
 import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
@@ -118,7 +119,19 @@ public abstract class BigInventoryHandler extends SnapshotJournal<List<BigInvent
         }
     }
 
+    /**
+     * Called as part of {@link #onRootCommit(List)} to notify the tile entity that the transaction has concluded by being committed (and it can mark itself as changed).
+     */
     public abstract void onChange();
+
+    /**
+     * Called every time an operation causes modification to the contents, so that if this storage is backed by {@link ItemAccess}, the backing item can be updated using {@link ItemAccess#exchange(ItemResource, int, TransactionContext)}
+     *
+     * @param context transaction context
+     */
+    public void onContentsUpdated(TransactionContext context) {
+
+    }
 
     public abstract float getMultiplier();
 
@@ -165,7 +178,9 @@ public abstract class BigInventoryHandler extends SnapshotJournal<List<BigInvent
             // If empty, insert the stack into the drawer to "configure" the item to be creatively vended
             if (storedStacks.get(index).getAmount() <= 0 && canInsert(index, resource)) {
                 updateSnapshots(transaction);
+                storedStacks.get(index).setResource(resource);
                 storedStacks.get(index).setAmount(Math.min(amount, getSlotLimit(index, resource)));
+                onContentsUpdated(transaction);
                 return amount;
             } else if (isVoidValid(resource)) {
                 return amount;
@@ -180,6 +195,7 @@ public abstract class BigInventoryHandler extends SnapshotJournal<List<BigInvent
         updateSnapshots(transaction);
         if (stored.getResource().isEmpty()) stored.setResource(resource);
         stored.setAmount((int) Math.min((long) stored.getAmount() + inserted, getSlotLimit(index, resource)));
+        onContentsUpdated(transaction);
         return inserted;
     }
 
@@ -196,6 +212,7 @@ public abstract class BigInventoryHandler extends SnapshotJournal<List<BigInvent
         int remaining = stored.getAmount() - extracted;
         stored.setAmount(remaining);
         if (remaining == 0 && !isLocked()) stored.setResource(ItemResource.EMPTY);
+        onContentsUpdated(transaction);
         return extracted;
     }
 
@@ -222,7 +239,8 @@ public abstract class BigInventoryHandler extends SnapshotJournal<List<BigInvent
         onChange();
     }
 
-    protected record StoredResource(ItemResource resource, int amount) {}
+    protected record StoredResource(ItemResource resource, int amount) {
+    }
 
     public static class BigStack {
 

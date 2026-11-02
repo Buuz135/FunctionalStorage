@@ -30,6 +30,7 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.access.ItemAccess;
 import net.neoforged.neoforge.transfer.item.ItemResource;
 import org.jetbrains.annotations.Nullable;
 
@@ -312,8 +313,8 @@ public class DrawerBlock extends Drawer<DrawerTile> {
         }
 
         @Nullable
-        public ResourceHandler<ItemResource> initCapabilities(ItemStack stack) {
-            return new DrawerStackItemHandler(stack, this.drawerBlock.getType());
+        public ResourceHandler<ItemResource> initCapabilities(ItemAccess access) {
+            return new DrawerStackItemHandler(access, this.drawerBlock.getType());
         }
 
         @Override
