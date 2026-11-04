@@ -14,8 +14,10 @@ import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
 import javax.annotation.Nonnull;
+import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
 
 public abstract class BigInventoryHandler extends SnapshotJournal<List<BigInventoryHandler.StoredResource>> implements ResourceHandler<ItemResource>, INBTSerializable<CompoundTag>, ILockable {
 
@@ -25,10 +27,60 @@ public abstract class BigInventoryHandler extends SnapshotJournal<List<BigInvent
 
     private final FunctionalStorage.DrawerType type;
     private final List<BigStack> storedStacks;
+    private long resourceVersion;
+    private int unversionedStacks;
+    // A conservative invalidation hint, not a cache of another controller's data.
+    // Amount-only updates do not change resource identity and need no index work.
+    private static final AtomicLong RESOURCE_GENERATION = new AtomicLong();
+    private final Runnable resourceChanged = () -> {
+        resourceVersion++;
+        RESOURCE_GENERATION.incrementAndGet();
+    };
+
+    static long resourceGeneration() {
+        return RESOURCE_GENERATION.get();
+    }
+
+    /** Changes on resource identity updates, including uncommitted changes and rollback. */
+    final long resourceVersion() {
+        return resourceVersion;
+    }
+
+    final boolean hasVersionedResources() {
+        return unversionedStacks == 0 && storedStacks.size() == type.getSlots();
+    }
 
     public BigInventoryHandler(FunctionalStorage.DrawerType type) {
         this.type = type;
-        this.storedStacks = new ArrayList<>();
+        this.storedStacks = new AbstractList<>() {
+            private final List<BigStack> values = new ArrayList<>();
+            @Override public BigStack get(int index) { return values.get(index); }
+            @Override public int size() { return values.size(); }
+            @Override public void add(int index, BigStack value) {
+                values.add(index, value);
+                value.resourceListeners.add(resourceChanged);
+                if (value.getClass() != BigStack.class) unversionedStacks++;
+                resourceChanged.run();
+                modCount++;
+            }
+            @Override public BigStack set(int index, BigStack value) {
+                BigStack previous = values.set(index, value);
+                previous.resourceListeners.remove(resourceChanged);
+                value.resourceListeners.add(resourceChanged);
+                if (previous.getClass() != BigStack.class) unversionedStacks--;
+                if (value.getClass() != BigStack.class) unversionedStacks++;
+                resourceChanged.run();
+                return previous;
+            }
+            @Override public BigStack remove(int index) {
+                BigStack previous = values.remove(index);
+                previous.resourceListeners.remove(resourceChanged);
+                if (previous.getClass() != BigStack.class) unversionedStacks--;
+                resourceChanged.run();
+                modCount++;
+                return previous;
+            }
+        };
         for (int i = 0; i < type.getSlots(); i++) {
             this.storedStacks.add(i, new BigStack(ItemStack.EMPTY, 0));
         }
@@ -217,6 +269,12 @@ public abstract class BigInventoryHandler extends SnapshotJournal<List<BigInvent
 
     public static class BigStack {
 
+        private final List<Runnable> resourceListeners = new ArrayList<>();
+
+        private void resourceChanged(ItemResource previous) {
+            if (!resource.equals(previous)) resourceListeners.forEach(Runnable::run);
+        }
+
         private ItemStack stack;
         private ItemStack slotStack;
         private ItemResource resource;
@@ -234,9 +292,11 @@ public abstract class BigInventoryHandler extends SnapshotJournal<List<BigInvent
         }
 
         public void setStack(ItemStack stack) {
+            ItemResource previous = this.resource;
             this.stack = stack.copy();
             this.resource = ItemResource.of(stack);
             this.slotStack = stack.copyWithCount(amount);
+            resourceChanged(previous);
         }
 
         public ItemResource getResource() {
@@ -244,9 +304,11 @@ public abstract class BigInventoryHandler extends SnapshotJournal<List<BigInvent
         }
 
         public void setResource(ItemResource resource) {
+            ItemResource previous = this.resource;
             this.resource = resource;
             this.stack = resource.toStack(resource.isEmpty() ? 0 : resource.getMaxStackSize());
             this.slotStack = resource.toStack(amount);
+            resourceChanged(previous);
         }
 
         public int getAmount() {
