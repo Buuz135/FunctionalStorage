@@ -46,6 +46,8 @@ public abstract class ControllerInventoryHandler implements ResourceHandler<Item
             try {
                 Class<?> owner = type.getMethod("insert", int.class, ItemResource.class, int.class,
                         TransactionContext.class).getDeclaringClass();
+                if (owner == BigInventoryHandler.class
+                        && type.getMethod("size").getDeclaringClass() != BigInventoryHandler.class) return false;
                 return owner == BigInventoryHandler.class || owner == ControllerInventoryHandler.class;
             } catch (NoSuchMethodException e) {
                 return false;
@@ -137,11 +139,13 @@ public abstract class ControllerInventoryHandler implements ResourceHandler<Item
         refreshResourceSlots();
         int[] matching = slotsFor(resource);
         int[] empty = slotsFor(ItemResource.EMPTY);
-        int[] fallback = insertionFallback();
+        int[] fallback = insertFallbackSlots;
         long generation = indexGeneration;
         long resources = BigInventoryHandler.resourceGeneration();
         int inserted = 0, match = 0, vacancy = 0, other = 0;
-        // Empty, matching, creative and extension slots retain their global order.
+        // Slots of each ordinary drawer are contiguous. A native creative drawer
+        // still consumes before the next drawer through its matching/empty slot;
+        // custom views and insert implementations retain all their original slots.
         while (match < matching.length || vacancy < empty.length || other < fallback.length) {
             int slot = Math.min(match < matching.length ? matching[match] : Integer.MAX_VALUE,
                     Math.min(vacancy < empty.length ? empty[vacancy] : Integer.MAX_VALUE,
@@ -174,22 +178,6 @@ public abstract class ControllerInventoryHandler implements ResourceHandler<Item
     private int[] slotsFor(ItemResource resource) {
         var slots = resourceSlots.get(resource);
         return slots == null ? NO_SLOTS : slots.snapshot();
-    }
-
-    private int[] insertionFallback() {
-        IntArrayList creative = null;
-        for (var tracked : versionedHandlers) {
-            // Native creative drawers can consume matching resources through any
-            // slot. Read the flag live: upgrade changes need not change the item.
-            if (tracked.nativeInsert && tracked.handler.isCreative()) {
-                if (creative == null) creative = new IntArrayList(insertFallbackSlots);
-                for (int slot : tracked.slots) creative.add(slot);
-            }
-        }
-        if (creative == null) return insertFallbackSlots;
-        int[] result = creative.toIntArray();
-        Arrays.sort(result);
-        return result;
     }
 
     @Override

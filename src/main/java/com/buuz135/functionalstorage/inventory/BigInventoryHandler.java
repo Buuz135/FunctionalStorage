@@ -47,7 +47,7 @@ public abstract class BigInventoryHandler extends SnapshotJournal<List<BigInvent
     }
 
     final boolean hasVersionedResources() {
-        return unversionedStacks == 0;
+        return unversionedStacks == 0 && storedStacks.size() == type.getSlots();
     }
 
     public BigInventoryHandler(FunctionalStorage.DrawerType type) {

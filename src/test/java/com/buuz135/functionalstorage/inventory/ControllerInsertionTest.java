@@ -157,6 +157,37 @@ class ControllerInsertionTest {
     }
 
     @Test
+    void customSizeCreativeDrawerRetainsHiddenResourceBehavior() {
+        var drawer = new Drawer() {
+            @Override public int size() { return 2; }
+        };
+        drawer.creative = true;
+        drawer.set(0, ItemResource.of(Items.STONE), 64);
+        drawer.set(1, ItemResource.of(Items.STONE), 64);
+        drawer.set(3, ItemResource.of(Items.DIAMOND), 64);
+        var controller = controller(drawer);
+        try (var tx = Transaction.openRoot()) {
+            assertEquals(10000, controller.insert(ItemResource.of(Items.DIAMOND), 10000, tx));
+        }
+        assertEquals(64, drawer.getStoredStacks().get(3).getAmount());
+    }
+
+    @Test
+    void nonstandardStackListFallsBackAfterCacheWarmup() {
+        var drawer = new Drawer();
+        drawer.creative = true;
+        for (int slot = 0; slot < 4; slot++) drawer.set(slot, ItemResource.of(Items.STONE), 64);
+        var controller = controller(drawer);
+        try (var tx = Transaction.openRoot()) {
+            assertEquals(0, controller.insert(ItemResource.of(Items.DIAMOND), 10, tx));
+        }
+        drawer.getStoredStacks().add(new BigInventoryHandler.BigStack(new ItemStack(Items.DIAMOND), 64));
+        try (var tx = Transaction.openRoot()) {
+            assertEquals(10, controller.insert(ItemResource.of(Items.DIAMOND), 10, tx));
+        }
+    }
+
+    @Test
     void nativeMoveConservesItemsAcrossAbortCommitAndReopen() {
         var source = new ItemStacksResourceHandler(2);
         var wanted = ItemResource.of(Items.DIAMOND);
