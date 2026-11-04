@@ -2,6 +2,7 @@ package com.buuz135.functionalstorage.inventory;
 
 import com.buuz135.functionalstorage.util.ConnectedDrawers;
 import it.unimi.dsi.fastutil.ints.IntAVLTreeSet;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
 import net.neoforged.neoforge.transfer.ResourceHandler;
 import net.neoforged.neoforge.transfer.TransferPreconditions;
 import net.neoforged.neoforge.transfer.item.ItemResource;
@@ -19,8 +20,11 @@ public abstract class ControllerInventoryHandler implements ResourceHandler<Item
     private HandlerIndex[] indices;
     private VersionedHandler[] versionedHandlers;
     private int[] fallbackSlots;
+    private int[] insertFallbackSlots;
+    private boolean[] indexedInsertion;
     private Map<ItemResource, ResourceSlots> resourceSlots;
     private long indexGeneration;
+    private long observedResourceGeneration = Long.MIN_VALUE;
     private static final int[] NO_SLOTS = new int[0];
 
     // Extensions with a different resource view must keep using live slot reads.
@@ -30,6 +34,18 @@ public abstract class ControllerInventoryHandler implements ResourceHandler<Item
                 Class<?> owner = type.getMethod("getResource", int.class).getDeclaringClass();
                 if (owner == ControllerInventoryHandler.class
                         && type.getMethod("size").getDeclaringClass() != ControllerInventoryHandler.class) return false;
+                return owner == BigInventoryHandler.class || owner == ControllerInventoryHandler.class;
+            } catch (NoSuchMethodException e) {
+                return false;
+            }
+        }
+    };
+
+    private static final ClassValue<Boolean> NATIVE_INSERT = new ClassValue<>() {
+        @Override protected Boolean computeValue(Class<?> type) {
+            try {
+                Class<?> owner = type.getMethod("insert", int.class, ItemResource.class, int.class,
+                        TransactionContext.class).getDeclaringClass();
                 return owner == BigInventoryHandler.class || owner == ControllerInventoryHandler.class;
             } catch (NoSuchMethodException e) {
                 return false;
@@ -62,7 +78,16 @@ public abstract class ControllerInventoryHandler implements ResourceHandler<Item
         versionedHandlers = handlers.entrySet().stream().map(entry -> new VersionedHandler(entry.getKey(),
                 entry.getValue().stream().mapToInt(Integer::intValue).toArray())).toArray(VersionedHandler[]::new);
         fallbackSlots = fallback.stream().mapToInt(Integer::intValue).toArray();
+        var insertionFallback = new IntArrayList(fallbackSlots);
+        indexedInsertion = new boolean[indices.length];
+        for (var handler : versionedHandlers) {
+            if (!handler.nativeInsert) for (int slot : handler.slots) insertionFallback.add(slot);
+            if (handler.nativeInsert) for (int slot : handler.slots) indexedInsertion[slot] = true;
+        }
+        insertFallbackSlots = insertionFallback.toIntArray();
+        Arrays.sort(insertFallbackSlots);
         resourceSlots = new HashMap<>();
+        observedResourceGeneration = Long.MIN_VALUE;
         indexGeneration++;
     }
 
@@ -103,6 +128,71 @@ public abstract class ControllerInventoryHandler implements ResourceHandler<Item
     }
 
     @Override
+    public int insert(ItemResource resource, int amount, TransactionContext transaction) {
+        TransferPreconditions.checkNonEmptyNonNegative(resource, amount);
+        if (amount == 0) return 0;
+        if (!CACHEABLE.get(getClass()) || !NATIVE_INSERT.get(getClass())) {
+            return ResourceHandler.super.insert(resource, amount, transaction);
+        }
+        refreshResourceSlots();
+        int[] matching = slotsFor(resource);
+        int[] empty = slotsFor(ItemResource.EMPTY);
+        int[] fallback = insertionFallback();
+        long generation = indexGeneration;
+        long resources = BigInventoryHandler.resourceGeneration();
+        int inserted = 0, match = 0, vacancy = 0, other = 0;
+        // Empty, matching, creative and extension slots retain their global order.
+        while (match < matching.length || vacancy < empty.length || other < fallback.length) {
+            int slot = Math.min(match < matching.length ? matching[match] : Integer.MAX_VALUE,
+                    Math.min(vacancy < empty.length ? empty[vacancy] : Integer.MAX_VALUE,
+                            other < fallback.length ? fallback[other] : Integer.MAX_VALUE));
+            boolean emptySlot = vacancy < empty.length && empty[vacancy] == slot;
+            if (match < matching.length && matching[match] == slot) match++;
+            if (vacancy < empty.length && empty[vacancy] == slot) vacancy++;
+            if (other < fallback.length && fallback[other] == slot) other++;
+            if (emptySlot && indexedInsertion[slot]) {
+                var selectedSlot = indices[slot];
+                var handler = (BigInventoryHandler) selectedSlot.handler;
+                // Ordinary empty locked slots always reject. Keep native creative
+                // sinks and the synthetic void slot in the ordered candidate set.
+                if (handler.isLocked() && !handler.isCreative()
+                        && selectedSlot.index < handler.getStoredStacks().size()) continue;
+            }
+            inserted += insert(slot, resource, amount - inserted, transaction);
+            if (inserted == amount) break;
+            if (resourcesChanged(generation, resources)) {
+                for (int remaining = slot + 1; remaining < size(); remaining++) {
+                    inserted += insert(remaining, resource, amount - inserted, transaction);
+                    if (inserted == amount) break;
+                }
+                break;
+            }
+        }
+        return inserted;
+    }
+
+    private int[] slotsFor(ItemResource resource) {
+        var slots = resourceSlots.get(resource);
+        return slots == null ? NO_SLOTS : slots.snapshot();
+    }
+
+    private int[] insertionFallback() {
+        IntArrayList creative = null;
+        for (var tracked : versionedHandlers) {
+            // Native creative drawers can consume matching resources through any
+            // slot. Read the flag live: upgrade changes need not change the item.
+            if (tracked.nativeInsert && tracked.handler.isCreative()) {
+                if (creative == null) creative = new IntArrayList(insertFallbackSlots);
+                for (int slot : tracked.slots) creative.add(slot);
+            }
+        }
+        if (creative == null) return insertFallbackSlots;
+        int[] result = creative.toIntArray();
+        Arrays.sort(result);
+        return result;
+    }
+
+    @Override
     public int extract(int index, ItemResource resource, int amount, TransactionContext transaction) {
         HandlerIndex selected = index(index);
         return selected == null ? 0 : selected.handler.extract(selected.index, resource, amount, transaction);
@@ -117,6 +207,7 @@ public abstract class ControllerInventoryHandler implements ResourceHandler<Item
         var selected = resourceSlots.get(resource);
         int[] matching = selected == null ? NO_SLOTS : selected.snapshot();
         long generation = indexGeneration;
+        long resources = BigInventoryHandler.resourceGeneration();
         int extracted = 0, match = 0, fallback = 0;
         // Merge in controller order; unversioned handlers are always read live.
         while (match < matching.length || fallback < fallbackSlots.length) {
@@ -131,7 +222,7 @@ public abstract class ControllerInventoryHandler implements ResourceHandler<Item
             if (extracted == amount) break;
             // An extension can change another slot during extraction. Once the
             // resource view changes, finish this request with live slot reads.
-            if (resourcesChanged(generation)) {
+            if (resourcesChanged(generation, resources)) {
                 for (int remaining = slot + 1; remaining < size(); remaining++) {
                     extracted += extract(remaining, resource, amount - extracted, transaction);
                     if (extracted == amount) break;
@@ -143,6 +234,8 @@ public abstract class ControllerInventoryHandler implements ResourceHandler<Item
     }
 
     private void refreshResourceSlots() {
+        long generation = BigInventoryHandler.resourceGeneration();
+        if (observedResourceGeneration == generation) return;
         for (var tracked : versionedHandlers) {
             if (!tracked.handler.hasVersionedResources()) {
                 invalidateSlots();
@@ -155,38 +248,36 @@ public abstract class ControllerInventoryHandler implements ResourceHandler<Item
                 int slot = tracked.slots[i];
                 var previous = tracked.resources[i];
                 var resource = getResource(slot);
-                if (previous.equals(resource)) continue;
+                if (resource.equals(previous)) continue;
                 indexGeneration++;
-                if (!previous.isEmpty()) {
+                if (previous != null) {
                     var old = resourceSlots.get(previous);
                     old.remove(slot);
                     if (old.slots.isEmpty()) resourceSlots.remove(previous);
                 }
-                if (!resource.isEmpty()) resourceSlots.computeIfAbsent(resource, key -> new ResourceSlots()).add(slot);
+                resourceSlots.computeIfAbsent(resource, key -> new ResourceSlots()).add(slot);
                 tracked.resources[i] = resource;
             }
             tracked.version = current;
         }
+        observedResourceGeneration = generation;
     }
 
-    private boolean resourcesChanged(long generation) {
-        if (indexGeneration != generation) return true;
-        for (var tracked : versionedHandlers) {
-            if (tracked.version != tracked.handler.resourceVersion()) return true;
-        }
-        return false;
+    private boolean resourcesChanged(long generation, long resources) {
+        return indexGeneration != generation || resources != BigInventoryHandler.resourceGeneration();
     }
 
     private static final class VersionedHandler {
         final BigInventoryHandler handler;
         final int[] slots;
         final ItemResource[] resources;
+        final boolean nativeInsert;
         long version = Long.MIN_VALUE;
         VersionedHandler(BigInventoryHandler handler, int[] slots) {
             this.handler = handler;
             this.slots = slots;
             resources = new ItemResource[slots.length];
-            Arrays.fill(resources, ItemResource.EMPTY);
+            nativeInsert = NATIVE_INSERT.get(handler.getClass());
         }
     }
 

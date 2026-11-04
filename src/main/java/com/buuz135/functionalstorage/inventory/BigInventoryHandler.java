@@ -17,6 +17,7 @@ import javax.annotation.Nonnull;
 import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
 
 public abstract class BigInventoryHandler extends SnapshotJournal<List<BigInventoryHandler.StoredResource>> implements ResourceHandler<ItemResource>, INBTSerializable<CompoundTag>, ILockable {
 
@@ -28,7 +29,17 @@ public abstract class BigInventoryHandler extends SnapshotJournal<List<BigInvent
     private final List<BigStack> storedStacks;
     private long resourceVersion;
     private int unversionedStacks;
-    private final Runnable resourceChanged = () -> resourceVersion++;
+    // A conservative invalidation hint, not a cache of another controller's data.
+    // Amount-only updates do not change resource identity and need no index work.
+    private static final AtomicLong RESOURCE_GENERATION = new AtomicLong();
+    private final Runnable resourceChanged = () -> {
+        resourceVersion++;
+        RESOURCE_GENERATION.incrementAndGet();
+    };
+
+    static long resourceGeneration() {
+        return RESOURCE_GENERATION.get();
+    }
 
     /** Changes on resource identity updates, including uncommitted changes and rollback. */
     final long resourceVersion() {
@@ -49,7 +60,7 @@ public abstract class BigInventoryHandler extends SnapshotJournal<List<BigInvent
                 values.add(index, value);
                 value.resourceListeners.add(resourceChanged);
                 if (value.getClass() != BigStack.class) unversionedStacks++;
-                resourceVersion++;
+                resourceChanged.run();
                 modCount++;
             }
             @Override public BigStack set(int index, BigStack value) {
@@ -58,14 +69,14 @@ public abstract class BigInventoryHandler extends SnapshotJournal<List<BigInvent
                 value.resourceListeners.add(resourceChanged);
                 if (previous.getClass() != BigStack.class) unversionedStacks--;
                 if (value.getClass() != BigStack.class) unversionedStacks++;
-                resourceVersion++;
+                resourceChanged.run();
                 return previous;
             }
             @Override public BigStack remove(int index) {
                 BigStack previous = values.remove(index);
                 previous.resourceListeners.remove(resourceChanged);
                 if (previous.getClass() != BigStack.class) unversionedStacks--;
-                resourceVersion++;
+                resourceChanged.run();
                 modCount++;
                 return previous;
             }
