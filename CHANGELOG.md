@@ -5,6 +5,7 @@
 * Call setChanged in the fluid handler - Matyrobbrt
 * Add a functionalstorage:creative_vending_denylist tag - Matyrobbrt
 * Fix being unable to modify upgrade direction in drawer GUI - Matyrobbrt
+* Add Simplified Chinese translations for pale oak drawers and fluid hints - UraraChiya 
 
 # VERSION 1.6.4
 
