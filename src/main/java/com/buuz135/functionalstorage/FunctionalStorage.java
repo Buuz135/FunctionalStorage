@@ -225,7 +225,7 @@ public class FunctionalStorage extends ModuleController {
         modBus.addListener((final RegisterCapabilitiesEvent event) -> {
             event.registerItem(Capabilities.Item.ITEM, (object, context) -> {
                 if (object.getItem() instanceof DrawerBlock.DrawerItem di) {
-                    return di.initCapabilities(object);
+                    return di.initCapabilities(context);
                 }
                 return null;
             }, DRAWER_TYPES.values().stream().flatMap(List::stream).map(bl -> (ItemLike)bl.block().get()).toArray(ItemLike[]::new));

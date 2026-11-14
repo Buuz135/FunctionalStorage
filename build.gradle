@@ -37,30 +37,47 @@ java.toolchain.languageVersion = JavaLanguageVersion.of(25)
 
 neoForge {
     version = "${neo_version}"
+    addModdingDependenciesTo(sourceSets.test)
 
     validateAccessTransformers = true
-
-    runs {
-        client {
-            client()
-        }
-        server {
-            server()
-            programArgument '--nogui'
-        }
-        clientData {
-            clientData()
-            programArguments.addAll '--mod', 'functionalstorage', '--all', '--uncached', '--output', file('src/generated/resources/').getAbsolutePath(), '--existing', file('src/main/resources/').getAbsolutePath()
-        }
-        serverData {
-            serverData()
-            programArguments.addAll '--mod', 'functionalstorage', '--all', '--uncached', '--output', file('src/generated/resources/').getAbsolutePath(), '--existing', file('src/main/resources/').getAbsolutePath()
-        }
-    }
 
     mods {
         functionalstorage {
             sourceSet sourceSets.main
+        }
+        functionalstoragetest {
+            sourceSet sourceSets.test
+        }
+    }
+
+    runs {
+        client {
+            client()
+            loadedMods = [mods.functionalstorage]
+        }
+        server {
+            server()
+            programArgument '--nogui'
+            loadedMods = [mods.functionalstorage]
+        }
+        clientData {
+            clientData()
+            programArguments.addAll '--mod', 'functionalstorage', '--all', '--uncached', '--output', file('src/generated/resources/').getAbsolutePath(), '--existing', file('src/main/resources/').getAbsolutePath()
+            loadedMods = [mods.functionalstorage]
+        }
+        serverData {
+            serverData()
+            programArguments.addAll '--mod', 'functionalstorage', '--all', '--uncached', '--output', file('src/generated/resources/').getAbsolutePath(), '--existing', file('src/main/resources/').getAbsolutePath()
+            loadedMods = [mods.functionalstorage]
+        }
+
+        gameTestClient {
+            client()
+            sourceSet = sourceSets.test
+        }
+        gameTestServer {
+            type = "gameTestServer"
+            sourceSet = sourceSets.test
         }
     }
 }
@@ -89,6 +106,8 @@ dependencies {
     localRuntime "curse.maven:guideme-1173950:9022838"
 
     localRuntime "curse.maven:modernfix-790626:9101896"
+
+    testImplementation "net.neoforged:testframework:${neo_version}"
 }
 
 jar {
