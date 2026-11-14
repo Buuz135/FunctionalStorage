@@ -48,8 +48,8 @@ public class FluidDrawerTile extends ControllableDrawerTile<FluidDrawerTile> {
         this.fluidHandler = new BigFluidHandler(type.getSlots(), getTankCapacity(getStorageMultiplier())) {
             @Override
             public void onChange() {
-                syncObject(fluidHandler);
-                FluidDrawerTile.this.updateComparatorOutput();
+                FluidDrawerTile.this.markForUpdate();
+                syncObject(FluidDrawerTile.this.fluidHandler);
             }
 
             @Override
@@ -111,7 +111,7 @@ public class FluidDrawerTile extends ControllableDrawerTile<FluidDrawerTile> {
                     try (Transaction transaction = Transaction.openRoot()) {
                         if (StorageTransferUtil.moveWithSound(handHandler, RangedResourceHandler.ofSingleIndex(fluidHandler, slot), playerIn.level(), getBlockPos(), playerIn, transaction, true) != null) {
                             transaction.commit();
-                            updateComparatorOutput();
+                            setChanged();
                             return InteractionResult.SUCCESS;
                         }
                     }
@@ -133,7 +133,7 @@ public class FluidDrawerTile extends ControllableDrawerTile<FluidDrawerTile> {
             try (Transaction transaction = Transaction.openRoot()) {
                 if (StorageTransferUtil.moveWithSound(RangedResourceHandler.ofSingleIndex(fluidHandler, slot), handHandler, playerIn.level(), getBlockPos(), playerIn, transaction, true) != null) {
                     transaction.commit();
-                    updateComparatorOutput();
+                    setChanged();
                 }
             }
         }
@@ -242,7 +242,7 @@ public class FluidDrawerTile extends ControllableDrawerTile<FluidDrawerTile> {
                     setNeedsUpgradeCache(true);
                     this.fluidHandler.setCapacity(getTankCapacity(getStorageMultiplier()));
                     syncObject(this.fluidHandler);
-                    updateComparatorOutput();
+                    setChanged();
                 })
                 .setSlotLimit(1);
     }

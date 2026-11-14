@@ -34,7 +34,6 @@ public class DrawerTile extends ItemControllableDrawerTile<DrawerTile> {
             @Override
             public void onChange() {
                 DrawerTile.this.markForUpdate();
-                DrawerTile.this.updateComparatorOutput();
                 syncObject(DrawerTile.this.handler);
             }
 
