@@ -24,12 +24,12 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import org.apache.commons.lang3.text.WordUtils;
 
-import java.awt.Color;
 import java.util.Locale;
 import java.util.function.Function;
 
 public class FunctionalDrawerProvider implements IProbeInfoProvider {
-
+    public static final int DARKER_CYAN = 0xFF00B2B2;
+    
     public static final Function<ITheOneProbe, Void> REGISTER = iTheOneProbe -> {
         iTheOneProbe.registerProvider(new FunctionalDrawerProvider());
         iTheOneProbe.registerElementFactory(new IElementFactory() {
@@ -61,7 +61,7 @@ public class FunctionalDrawerProvider implements IProbeInfoProvider {
                 BigInventoryHandler handler = ((DrawerTile) blockEntity).getHandler();
                 if (handler.size() == 1 || player.isShiftKeyDown() || probeMode == ProbeMode.EXTENDED) {
                     ElementVertical elementVertical = new ElementVertical(iProbeInfo.defaultLayoutStyle().spacing(2).leftPadding(7).rightPadding(7));
-                    elementVertical.getStyle().borderColor(Color.CYAN.darker().getRGB());
+                    elementVertical.getStyle().borderColor(DARKER_CYAN);
                     for (int i = 0; i < handler.getStoredStacks().size(); i++) {
                         BigInventoryHandler.BigStack storedStack = handler.getStoredStacks().get(i);
                         if (storedStack.getAmount() > 0 || (handler.isLocked() && !storedStack.getStack().isEmpty())) {
@@ -72,7 +72,7 @@ public class FunctionalDrawerProvider implements IProbeInfoProvider {
                     vertical.element(new ElementVertical(iProbeInfo.defaultLayoutStyle().topPadding(4)));
                 } else {
                     ElementHorizontal abstractElementPanel = new ElementHorizontal(iProbeInfo.defaultLayoutStyle().spacing(8).leftPadding(7).rightPadding(7));
-                    abstractElementPanel.getStyle().borderColor(Color.CYAN.darker().getRGB());
+                    abstractElementPanel.getStyle().borderColor(DARKER_CYAN);
                     for (int i = 0; i < handler.getStoredStacks().size(); i++) {
                         BigInventoryHandler.BigStack storedStack = handler.getStoredStacks().get(i);
                         if (storedStack.getAmount() > 0 || (handler.isLocked() && !storedStack.getStack().isEmpty())) {
@@ -85,7 +85,7 @@ public class FunctionalDrawerProvider implements IProbeInfoProvider {
             }
             if (blockEntity instanceof EnderDrawerTile) {
                 ElementHorizontal abstractElementPanel = new ElementHorizontal(iProbeInfo.defaultLayoutStyle().spacing(8).leftPadding(7).rightPadding(7));
-                abstractElementPanel.getStyle().borderColor(Color.CYAN.darker().getRGB());
+                abstractElementPanel.getStyle().borderColor(DARKER_CYAN);
                 EnderInventoryHandler savedData = EnderSavedData.getInstance(level).getFrequency(((EnderDrawerTile) blockEntity).getFrequency());
                 for (int i = 0; i < savedData.getStoredStacks().size(); i++) {
                     BigInventoryHandler.BigStack storedStack = savedData.getStoredStacks().get(i);
@@ -95,7 +95,7 @@ public class FunctionalDrawerProvider implements IProbeInfoProvider {
                 }
                 if (!abstractElementPanel.getElements().isEmpty()) vertical.element(abstractElementPanel);
                 ElementVertical elementVertical = new ElementVertical(iProbeInfo.defaultLayoutStyle());
-                elementVertical.getStyle().borderColor(Color.CYAN.darker().getRGB());
+                elementVertical.getStyle().borderColor(DARKER_CYAN);
                 elementVertical.text(Component.translatable("linkingtool.ender.frequency"));
                 vertical.element(new ElementVertical(iProbeInfo.defaultLayoutStyle().topPadding(4)));
                 abstractElementPanel = new ElementHorizontal(iProbeInfo.defaultLayoutStyle().leftPadding(4).topPadding(2).rightPadding(4));
@@ -110,14 +110,14 @@ public class FunctionalDrawerProvider implements IProbeInfoProvider {
                 CompactingInventoryHandler inventoryHandler = ((CompactingDrawerTile) blockEntity).getHandler();
                 if (player.isShiftKeyDown() || probeMode == ProbeMode.EXTENDED || inventoryHandler.isCreative()) {
                     ElementVertical abstractElementPanel = new ElementVertical(iProbeInfo.defaultLayoutStyle().spacing(2).leftPadding(7).rightPadding(7));
-                    abstractElementPanel.getStyle().borderColor(Color.CYAN.darker().getRGB());
+                    abstractElementPanel.getStyle().borderColor(DARKER_CYAN);
                     for (int slot = 0; slot < inventoryHandler.getResultList().size(); slot++) {
                         abstractElementPanel.element(new CustomElementItemStack(inventoryHandler.getResultList().get(slot).getResult(), NumberUtils.getFormatedBigNumber(inventoryHandler.getStackInSlot(slot).getCount()) + "/" + NumberUtils.getFormatedBigNumber(inventoryHandler.getSlotLimit(slot)), iProbeInfo.defaultItemStyle(), true));
                     }
                     if (!abstractElementPanel.getElements().isEmpty()) vertical.element(abstractElementPanel);
                 } else {
                     ElementHorizontal abstractElementPanel = new ElementHorizontal(iProbeInfo.defaultLayoutStyle().spacing(8).leftPadding(7).rightPadding(7));
-                    abstractElementPanel.getStyle().borderColor(Color.CYAN.darker().getRGB());
+                    abstractElementPanel.getStyle().borderColor(DARKER_CYAN);
                     int amount = inventoryHandler.getAmount();
                     int[] displayedAmounts = new int[inventoryHandler.getResultList().size()];
                     for (int slot = displayedAmounts.length - 1; slot >= 0; slot--) {
@@ -135,14 +135,14 @@ public class FunctionalDrawerProvider implements IProbeInfoProvider {
                 CompactingInventoryHandler inventoryHandler = ((SimpleCompactingDrawerTile) blockEntity).getHandler();
                 if (player.isShiftKeyDown() || probeMode == ProbeMode.EXTENDED || inventoryHandler.isCreative()) {
                     ElementVertical abstractElementPanel = new ElementVertical(iProbeInfo.defaultLayoutStyle().spacing(2).leftPadding(7).rightPadding(7));
-                    abstractElementPanel.getStyle().borderColor(Color.CYAN.darker().getRGB());
+                    abstractElementPanel.getStyle().borderColor(DARKER_CYAN);
                     for (int slot = 0; slot < inventoryHandler.getResultList().size(); slot++) {
                         abstractElementPanel.element(new CustomElementItemStack(inventoryHandler.getResultList().get(slot).getResult(), NumberUtils.getFormatedBigNumber(inventoryHandler.getStackInSlot(slot).getCount()) + "/" + NumberUtils.getFormatedBigNumber(inventoryHandler.getSlotLimit(slot)), iProbeInfo.defaultItemStyle(), true));
                     }
                     if (!abstractElementPanel.getElements().isEmpty()) vertical.element(abstractElementPanel);
                 } else {
                     ElementHorizontal abstractElementPanel = new ElementHorizontal(iProbeInfo.defaultLayoutStyle().spacing(8).leftPadding(7).rightPadding(7));
-                    abstractElementPanel.getStyle().borderColor(Color.CYAN.darker().getRGB());
+                    abstractElementPanel.getStyle().borderColor(DARKER_CYAN);
                     int amount = inventoryHandler.getAmount();
                     int[] displayedAmounts = new int[inventoryHandler.getResultList().size()];
                     for (int slot = displayedAmounts.length - 1; slot >= 0; slot--) {
@@ -166,7 +166,7 @@ public class FunctionalDrawerProvider implements IProbeInfoProvider {
             }
             if (player.isShiftKeyDown() || probeMode == ProbeMode.EXTENDED) {
                 ElementHorizontal abstractElementPanel = new ElementHorizontal(iProbeInfo.defaultLayoutStyle().topPadding(0).spacing(8).leftPadding(7).rightPadding(7));
-                abstractElementPanel.getStyle().borderColor(Color.CYAN.darker().getRGB());
+                abstractElementPanel.getStyle().borderColor(DARKER_CYAN);
                 for (int i = 0; i < ((ControllableDrawerTile) blockEntity).getUtilityUpgrades().getSlots(); i++) {
                     ItemStack stack = ((ControllableDrawerTile) blockEntity).getUtilityUpgrades().getStackInSlot(i);
                     if (!stack.isEmpty()) {

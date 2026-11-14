@@ -25,13 +25,11 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.neoforged.fml.LogicalSide;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import org.jetbrains.annotations.Nullable;
 
-import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -207,8 +205,8 @@ public class LinkingToolItem extends FSItem {
     }
 
     public enum LinkingMode implements StringRepresentable {
-        SINGLE(TextColor.fromRgb(Color.cyan.getRGB())),
-        MULTIPLE(TextColor.fromRgb(Color.GREEN.getRGB()));
+        SINGLE(TextColor.fromRgb(0xFF00FFFF)),
+        MULTIPLE(TextColor.fromRgb(0xFF00FF00));
 
         public static final Codec<LinkingMode> CODEC = StringRepresentable.fromValues(LinkingMode::values);
 
@@ -229,8 +227,8 @@ public class LinkingToolItem extends FSItem {
     }
 
     public enum ActionMode implements StringRepresentable {
-        ADD(TextColor.fromRgb(new Color(40, 131, 250).getRGB())),
-        REMOVE(TextColor.fromRgb(new Color(250, 145, 40).getRGB()));
+        ADD(TextColor.fromRgb(0xFF2883FA)),
+        REMOVE(TextColor.fromRgb(0xFFFA9128));
 
         public static final Codec<ActionMode> CODEC = StringRepresentable.fromValues(ActionMode::values);
 
