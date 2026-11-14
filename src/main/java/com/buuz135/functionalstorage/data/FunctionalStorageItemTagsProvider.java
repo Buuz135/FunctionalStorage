@@ -5,6 +5,7 @@ import com.buuz135.functionalstorage.util.StorageTags;
 import com.hrznstudio.titanium.module.BlockWithTile;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
+import net.minecraft.world.item.Item;
 import net.neoforged.neoforge.common.data.ItemTagsProvider;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.Items;
@@ -50,6 +51,7 @@ public class FunctionalStorageItemTagsProvider extends ItemTagsProvider {
                 .addTag(ItemTags.MACE_ENCHANTABLE)
                 .add(Items.ELYTRA, Items.SHIELD, Items.FISHING_ROD, Items.FLINT_AND_STEEL, Items.SHEARS, Items.BRUSH, Items.ENCHANTED_BOOK);
         this.tag(StorageTags.DRAWER_STORAGE_DENYLIST);
+        this.tag(StorageTags.CREATIVE_VENDING_DENYLIST);
         this.tag(StorageTags.CREATIVE_VENDING_UPGRADE_INCOMPATIBLE);
     }
 

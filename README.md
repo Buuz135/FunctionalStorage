@@ -32,4 +32,5 @@
 *   **functionalstorage:armory_cabinet_insertable`**: Item tag. Items in this tag are allowed to be inserted into the Armory Cabinet.
 *   **`functionalstorage:drawer_storage_denylist`**: Item tag. Items in this tag cannot be stored in drawers, including normal drawers, compacting drawers, controller access, and drawer item capabilities.
 *   **`functionalstorage:fluid_drawer_storage_denylist`**: Fluid tag. Fluids in this tag cannot be stored in fluid drawers.
+*   **`functionalstorage:creative_vending_denylist`**: Item tag. Items in this tag _cannot be stored_ in drawers with creative vending upgrades. **Not to be confused with `creative_vending_upgrade_incompatible`, which is for _upgrades_ incompatible with the creative vending upgrade.**
 *   **`functionalstorage:creative_vending_upgrade_incompatible`**: Item tag. Items in this tag cannot be used in a drawer storage upgrade slot together with the Creative Vending Upgrade.

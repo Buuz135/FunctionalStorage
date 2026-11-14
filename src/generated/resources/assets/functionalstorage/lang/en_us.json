@@ -160,6 +160,8 @@
   "storageupgrade.obj.controller_range": "controller radius",
   "storageupgrade.obj.fluid_storage": "the block fluid storage",
   "storageupgrade.obj.item_storage": "the block item storage",
+  "tooltip.functional_storage.creative_vending_incompatible_with_item": "The Creative Vending Upgrade is incompatible with %s and thus cannot be installed in this drawer.",
+  "tooltip.functional_storage.item_incompatible_with_creative_vending": "This item is incompatible with the Creative Vending Upgrade and thus cannot be inserted into this drawer.",
   "upgrade.type": "Type: ",
   "upgrade.type.storage": "Storage",
   "upgrade.type.utility": "Utility"

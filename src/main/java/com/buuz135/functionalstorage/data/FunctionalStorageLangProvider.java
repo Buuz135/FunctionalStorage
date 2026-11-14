@@ -163,5 +163,8 @@ public class FunctionalStorageLangProvider extends LanguageProvider {
         this.add("drawer.block.upgrades.is_creative", "Creative");
         this.add("drawer.block.upgrades.is_void", "Void");
         this.add("drawer.block.upgrades.none", "None");
+
+        this.add("tooltip.functional_storage.creative_vending_incompatible_with_item", "The Creative Vending Upgrade is incompatible with %s and thus cannot be installed in this drawer.");
+        this.add("tooltip.functional_storage.item_incompatible_with_creative_vending", "This item is incompatible with the Creative Vending Upgrade and thus cannot be inserted into this drawer.");
     }
 }
