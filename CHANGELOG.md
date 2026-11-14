@@ -1,3 +1,11 @@
+# VERSION 1.6.5
+
+* Change how creative vending works to make it more reliable - Matyrobbrt
+* Removed AWT references - Matyrobbrt
+* Call setChanged in the fluid handler - Matyrobbrt
+* Add a functionalstorage:creative_vending_denylist tag - Matyrobbrt
+* Fix being unable to modify upgrade direction in drawer GUI - Matyrobbrt
+
 # VERSION 1.6.4
 
 * Execute drawer reset when amount is 0 when committing changes, closes #540
