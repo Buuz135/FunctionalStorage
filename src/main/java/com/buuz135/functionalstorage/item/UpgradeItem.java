@@ -78,24 +78,30 @@ public class UpgradeItem extends FSItem {
     }
 
     @Override
-    public boolean overrideOtherStackedOnMe(ItemStack first, ItemStack second, Slot p_150894_, ClickAction clickAction, Player p_150896_, SlotAccess p_150897_) {
-        if (clickAction == ClickAction.SECONDARY && first.getCount() == 1){
-            Item item = first.getItem();
+    public boolean overrideOtherStackedOnMe(ItemStack self, ItemStack other, Slot slot, ClickAction clickAction, Player player, SlotAccess carriedAccess) {
+        if (clickAction == ClickAction.SECONDARY && self.getCount() == 1){
+            Item item = self.getItem();
+
+            boolean modified = false;
             if (item.equals(FunctionalStorage.PULLING_UPGRADE.get()) || item.equals(FunctionalStorage.PUSHING_UPGRADE.get()) || item.equals(FunctionalStorage.COLLECTOR_UPGRADE.get())){
-                Direction direction = getDirection(first);
+                Direction direction = getDirection(self);
                 Direction next = Direction.values()[(Arrays.asList(Direction.values()).indexOf(direction) + 1 ) % Direction.values().length];
-                first.set(FSAttachments.DIRECTION, next);
-                p_150896_.playSound(SoundEvents.UI_BUTTON_CLICK.value(), 0.5f, 1);
-                return true;
+                self.set(FSAttachments.DIRECTION, next);
+                modified = true;
             }
             if (item.equals(FunctionalStorage.REDSTONE_UPGRADE.get())){
-                int slot = first.getOrDefault(FSAttachments.SLOT, 0);
-                first.set(FSAttachments.SLOT, (slot + 1) % MAX_SLOT);
-                p_150896_.playSound(SoundEvents.UI_BUTTON_CLICK.value(), 0.5f, 1);
+                int slotIndex = self.getOrDefault(FSAttachments.SLOT, 0);
+                self.set(FSAttachments.SLOT, (slotIndex + 1) % MAX_SLOT);
+                modified = true;
+            }
+
+            if (modified) {
+                slot.set(self); // Set the item in the slot to self because resource-handler based slots return copies in getItem so simply modifying `self` does not do anything
+                player.playSound(SoundEvents.UI_BUTTON_CLICK.value(), 0.5f, 1);
                 return true;
             }
         }
-        return super.overrideOtherStackedOnMe(first, second, p_150894_, clickAction, p_150896_, p_150897_);
+        return super.overrideOtherStackedOnMe(self, other, slot, clickAction, player, carriedAccess);
     }
 
     @Override
