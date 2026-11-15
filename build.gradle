@@ -129,6 +129,10 @@ tasks.withType(JavaCompile).configureEach {
     options.compilerArgs << '-Xmaxerrs' << '500'
 }
 
+tasks.named('test', Test) {
+    failOnNoDiscoveredTests.set(false)
+}
+
 publishing {
   publications {
     mavenJava(MavenPublication) {
