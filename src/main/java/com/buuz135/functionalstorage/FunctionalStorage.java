@@ -18,6 +18,7 @@ import com.buuz135.functionalstorage.block.FramedSimpleCompactingDrawerBlock;
 import com.buuz135.functionalstorage.block.SimpleCompactingDrawerBlock;
 import com.buuz135.functionalstorage.block.config.FunctionalStorageConfig;
 import com.buuz135.functionalstorage.block.tile.CompactingFramedDrawerTile;
+import com.buuz135.functionalstorage.block.tile.ControllableDrawerTile;
 import com.buuz135.functionalstorage.block.tile.FluidDrawerTile;
 import com.buuz135.functionalstorage.block.tile.FramedDrawerTile;
 import com.buuz135.functionalstorage.block.tile.FramedFluidDrawerTile;
@@ -58,6 +59,8 @@ import com.buuz135.functionalstorage.recipe.FramedDrawerRecipe;
 import com.buuz135.functionalstorage.recipe.TagWithoutComponentIngredient;
 import com.buuz135.functionalstorage.util.DrawerWoodType;
 import com.buuz135.functionalstorage.util.IWoodType;
+import com.hrznstudio.titanium.container.BasicAddonContainer;
+import com.hrznstudio.titanium.container.addon.UpdatableSlotItemHandler;
 import com.hrznstudio.titanium.datagenerator.loot.TitaniumLootTableProvider;
 import com.hrznstudio.titanium.event.handler.EventManager;
 import com.hrznstudio.titanium.module.BlockWithTile;
@@ -100,6 +103,7 @@ import net.neoforged.neoforge.common.crafting.IngredientType;
 import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
 import net.neoforged.neoforge.common.util.Lazy;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
+import net.neoforged.neoforge.event.ItemStackedOnOtherEvent;
 import net.neoforged.neoforge.event.ModifyDefaultComponentsEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.fluids.FluidStackTemplate;
@@ -107,6 +111,7 @@ import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import net.neoforged.neoforge.registries.NewRegistryEvent;
 import net.neoforged.neoforge.registries.RegisterEvent;
+import net.neoforged.neoforge.transfer.item.ResourceHandlerSlot;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.ArrayList;
@@ -200,6 +205,20 @@ public class FunctionalStorage extends ModuleController {
                                 be.onClicked(event.getEntity(), hit);
                                 event.setCanceled(true);
                             }
+                        }
+                    }
+                })
+                .subscribe();
+
+        EventManager.forge(ItemStackedOnOtherEvent.class)
+                .process(event -> {
+                    if (event.getPlayer().containerMenu instanceof BasicAddonContainer bac && bac.getProvider() instanceof ControllableDrawerTile<?> controllable
+                            && event.getSlot() instanceof ResourceHandlerSlot rhs && rhs.getResourceHandler() == controllable.getStorageUpgrades()) {
+                        if (!event.getStackedOnItem().isEmpty() && controllable.canReplaceStorageUpgradeInSlot(event.getSlot().getSlotIndex(), event.getCarriedItem())) {
+                            var oldUpgrade = event.getStackedOnItem().copy();
+                            event.getSlot().setByPlayer(event.getCarriedItem().copy(), oldUpgrade.copy());
+                            event.getCarriedSlotAccess().set(oldUpgrade);
+                            event.setCanceled(true);
                         }
                     }
                 })

@@ -244,4 +244,9 @@ public abstract class StorageControllerTile<T extends StorageControllerTile<T>> 
                 })
                 .setSlotLimit(1);
     }
+
+    @Override
+    public boolean canReplaceStorageUpgradeInSlot(int slot, ItemStack newUpgrade) {
+        return false;
+    }
 }

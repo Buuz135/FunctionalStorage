@@ -4,6 +4,9 @@ import com.buuz135.functionalstorage.FunctionalStorage;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.gametest.framework.GameTestInfo;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.ContainerInput;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -19,6 +22,11 @@ public class FSTestHelper extends ExtendedGameTestHelper {
         super(info);
     }
 
+    public void assertItem(ItemStack input, Item expected, int expectedCount) {
+        assertValueEqual(expected, input.getItem(), "item");
+        assertValueEqual(expectedCount, input.getCount(), "count");
+    }
+
     public <T> T requireCapability(ItemCapability<T, ItemAccess> cap, ItemStack item) {
         var capability = ItemAccess.forStack(item).getCapability(cap);
         assertNotNull(capability, "item capability");
@@ -30,7 +38,7 @@ public class FSTestHelper extends ExtendedGameTestHelper {
     }
 
     public void insertAll(BlockPos pos, ItemStack stack, Direction direction) {
-        assertValueEqual(insert(pos, stack, direction), stack.count(), "amount inserted");
+        assertValueEqual(stack.count(), insert(pos, stack, direction), "amount inserted");
     }
 
     public int insert(BlockPos pos, ItemStack stack, Direction direction) {
@@ -54,5 +62,14 @@ public class FSTestHelper extends ExtendedGameTestHelper {
         assertValueEqual(1, drops.size(), "block drops");
         getLevel().setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState());
         return drops.getFirst();
+    }
+
+    public ItemStack swapInContainer(Player player, int slot, ItemStack toSwapWith) {
+        var container = player.containerMenu;
+        container.setCarried(toSwapWith.copy());
+        container.clicked(slot, 0, ContainerInput.PICKUP, player);
+        var carried = container.getCarried().copy();
+        container.setCarried(ItemStack.EMPTY);
+        return carried;
     }
 }

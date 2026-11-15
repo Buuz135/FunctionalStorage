@@ -467,6 +467,7 @@ public abstract class ControllableDrawerTile<T extends ControllableDrawerTile<T>
     }
 
     public abstract InventoryComponent<ControllableDrawerTile<T>> getStorageUpgradesConstructor();
+    public abstract boolean canReplaceStorageUpgradeInSlot(int slot, ItemStack newUpgrade);
 
     @Override
     public int getTitleColor() {
