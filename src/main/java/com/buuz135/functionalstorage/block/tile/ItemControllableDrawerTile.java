@@ -131,33 +131,11 @@ public abstract class ItemControllableDrawerTile<T extends ItemControllableDrawe
             @NotNull
             @Override
             public ItemStack extractItem(int slot, int amount, boolean simulate) {
-                if (isStorageUpgradeLocked()) return ItemStack.EMPTY;
-                ItemStack stack = this.getStackInSlot(slot);
-                if (stack.has(FSAttachments.ITEM_STORAGE_MODIFIER)) {
-                    var replacement = new ItemStack[this.getSlots()];
-                    replacement[slot] = ItemStack.EMPTY;
-
-                    var newSize = (double) SizeProvider.calculateAsFactor(this, FSAttachments.ITEM_STORAGE_MODIFIER, baseSize, replacement);
-                    if (!canChangeMultiplier(newSize)) {
-                        return ItemStack.EMPTY;
-                    }
-                }
+                if (!canReplaceStorageUpgradeInSlot(slot, ItemStack.EMPTY)) return ItemStack.EMPTY;
                 return super.extractItem(slot, amount, simulate);
             }
         }
-        .setExtractGUIPredicate((stack, slot) -> {
-            if (isStorageUpgradeLocked()) return false;
-            if (stack.has(FSAttachments.ITEM_STORAGE_MODIFIER)) {
-                var replacement = new ItemStack[this.getStorageUpgrades().getSlots()];
-                replacement[slot] = ItemStack.EMPTY;
-
-                var newSize = (double) SizeProvider.calculateAsFactor(this.getStorageUpgrades(), FSAttachments.ITEM_STORAGE_MODIFIER, baseSize, replacement);
-                if (!canChangeMultiplier(newSize)) {
-                    return false;
-                }
-            }
-            return true;
-        })
+        .setExtractGUIPredicate((stack, slot) -> canReplaceStorageUpgradeInSlot(slot, ItemStack.EMPTY))
                 .setInputFilter((stack, integer) -> {
                     if (isStorageUpgradeLocked()) return false;
                     if (!canUseStorageUpgradeWithCreative(stack, integer)) return false;
@@ -169,23 +147,22 @@ public abstract class ItemControllableDrawerTile<T extends ItemControllableDrawe
                         }
                         return true;
                     }
-                    if (!stack.has(FSAttachments.ITEM_STORAGE_MODIFIER)) return false;
-
-                    var replacement = new ItemStack[getStorageUpgrades().getSlots()];
-                    replacement[integer] = stack;
-
-                    var newSize = (double) SizeProvider.calculateAsFactor(getStorageUpgrades(), FSAttachments.ITEM_STORAGE_MODIFIER, baseSize, replacement);
-                    if (!canChangeMultiplier(newSize)) {
-                        return false;
-                    }
-
-                    return true;
+                    return canReplaceStorageUpgradeInSlot(integer, stack);
                 })
                 .setOnSlotChanged((stack, integer) -> {
                     setNeedsUpgradeCache(true);
                     setChanged();
                 })
                 .setSlotLimit(1);
+    }
+
+    @Override
+    public boolean canReplaceStorageUpgradeInSlot(int slot, ItemStack newUpgrade) {
+        if (isStorageUpgradeLocked()) return false;
+        var replacement = new ItemStack[getStorageUpgrades().getSlots()];
+        replacement[slot] = newUpgrade;
+        var newSize = (double) SizeProvider.calculateAsFactor(getStorageUpgrades(), FSAttachments.ITEM_STORAGE_MODIFIER, baseSize, replacement);
+        return canChangeMultiplier(newSize);
     }
 
     protected boolean canChangeMultiplier(double newSizeMultiplier) {
