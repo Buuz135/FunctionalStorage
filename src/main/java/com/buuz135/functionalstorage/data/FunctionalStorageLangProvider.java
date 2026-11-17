@@ -132,6 +132,16 @@ public class FunctionalStorageLangProvider extends LanguageProvider {
         this.add("gui.functionalstorage.fluid_drawer_hint.fill", "%s: Fill container from drawer");
         this.add("gui.functionalstorage.open_gui", "Right Click while Crouching to open the GUI");
         this.add("gui.functionalstorage.priority", "Priority");
+        this.add("gui.functionalstorage.consolidate", "Consolidate");
+        this.add("gui.functionalstorage.consolidate.checking", "Checking: %s/%s drawers");
+        this.add("gui.functionalstorage.consolidate.done", "Done: %s slots freed");
+        this.add("gui.functionalstorage.consolidate.error", "Stopped after an error");
+        this.add("gui.functionalstorage.consolidate.failed", "Consolidation stopped after an error. Moved %s items; freed %s slots.");
+        this.add("gui.functionalstorage.consolidate.moving", "Types: %s/%s");
+        this.add("gui.functionalstorage.consolidate.result", "Moved %s items; freed %s slots.");
+        this.add("gui.functionalstorage.consolidate.running", "Runs in the background. You can close this menu.");
+        this.add("gui.functionalstorage.consolidate.stopped", "Stopped");
+        this.add("gui.functionalstorage.consolidate.tooltip", "Combine duplicate items in ordinary drawers. Locked assignments stay in place.");
         this.add("gui.functionalstorage.storage", "Storage");
         this.add("gui.functionalstorage.utility", "Utility");
         this.add("gui.functionalstorage.storage_range", "Range");

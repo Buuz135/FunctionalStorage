@@ -155,5 +155,15 @@
   "storageupgrade.obj.item_storage": "вместимость предметов",
   "upgrade.type": "Тип: ",
   "upgrade.type.storage": "Хранилище",
-  "upgrade.type.utility": "Утилита"
+  "upgrade.type.utility": "Утилита",
+  "gui.functionalstorage.consolidate": "Уплотнить",
+  "gui.functionalstorage.consolidate.checking": "Проверка: %s/%s ящиков",
+  "gui.functionalstorage.consolidate.done": "Готово: освобождено %s",
+  "gui.functionalstorage.consolidate.error": "Остановлено из-за ошибки",
+  "gui.functionalstorage.consolidate.failed": "Уплотнение остановлено из-за ошибки. Перемещено предметов: %s. Освобождено слотов: %s.",
+  "gui.functionalstorage.consolidate.moving": "Типы: %s/%s",
+  "gui.functionalstorage.consolidate.result": "Перемещено предметов: %s. Освобождено слотов: %s.",
+  "gui.functionalstorage.consolidate.running": "Работает в фоне. Это окно можно закрыть.",
+  "gui.functionalstorage.consolidate.stopped": "Остановлено",
+  "gui.functionalstorage.consolidate.tooltip": "Объединить одинаковые предметы в обычных ящиках. Закреплённые ящики сохраняются."
 }

@@ -133,5 +133,15 @@
   "storageupgrade.desc.range": "コントローラーの半径を%sブロック増加します",
   "upgrade.type": "タイプ: ",
   "upgrade.type.storage": "ストレージ",
-  "upgrade.type.utility": "ユーティリティー"
+  "upgrade.type.utility": "ユーティリティー",
+  "gui.functionalstorage.consolidate": "まとめる",
+  "gui.functionalstorage.consolidate.checking": "確認中：引き出し %s/%s",
+  "gui.functionalstorage.consolidate.done": "完了：%sスロット解放",
+  "gui.functionalstorage.consolidate.error": "エラーにより停止",
+  "gui.functionalstorage.consolidate.failed": "エラーにより整理を停止しました。アイテムを%s個移動し、%sスロットを空けました。",
+  "gui.functionalstorage.consolidate.moving": "種類：%s/%s",
+  "gui.functionalstorage.consolidate.result": "アイテムを%s個移動し、%sスロットを空けました。",
+  "gui.functionalstorage.consolidate.running": "バックグラウンドで続行します。この画面は閉じられます。",
+  "gui.functionalstorage.consolidate.stopped": "停止しました",
+  "gui.functionalstorage.consolidate.tooltip": "通常の引き出しに分散した同じアイテムをまとめます。ロックされた引き出しの割り当ては保持されます。"
 }
