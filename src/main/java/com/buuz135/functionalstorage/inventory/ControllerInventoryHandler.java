@@ -2,6 +2,7 @@ package com.buuz135.functionalstorage.inventory;
 
 import com.buuz135.functionalstorage.util.ConnectedDrawers;
 import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.item.ItemResource;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
@@ -53,6 +54,13 @@ public abstract class ControllerInventoryHandler implements ResourceHandler<Item
     public boolean isValid(int index, ItemResource resource) {
         HandlerIndex selected = index(index);
         return selected != null && selected.handler.isValid(selected.index, resource);
+    }
+
+    @Override
+    public int insert(ItemResource resource, int amount, TransactionContext transaction) {
+        // Preserve slot identity for indexed insertion, but fill existing types
+        // before claiming an empty drawer for bulk insertion from automation.
+        return ResourceHandlerUtil.insertStacking(this, resource, amount, transaction);
     }
 
     @Override

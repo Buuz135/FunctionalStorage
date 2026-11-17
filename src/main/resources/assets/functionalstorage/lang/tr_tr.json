@@ -138,5 +138,15 @@
   
   "upgrade.type": "Tür: ",
   "upgrade.type.storage": "Depo",
-  "upgrade.type.utility": "Yardımcı"
+  "upgrade.type.utility": "Yardımcı",
+  "gui.functionalstorage.consolidate": "Birleştir",
+  "gui.functionalstorage.consolidate.checking": "Kontrol: %s/%s çekmece",
+  "gui.functionalstorage.consolidate.done": "Bitti: %s yuva boşaltıldı",
+  "gui.functionalstorage.consolidate.error": "Bir hata nedeniyle durdu",
+  "gui.functionalstorage.consolidate.failed": "Bir hata nedeniyle birleştirme durduruldu. Taşınan eşya: %s. Boşaltılan yuva: %s.",
+  "gui.functionalstorage.consolidate.moving": "Türler: %s/%s",
+  "gui.functionalstorage.consolidate.result": "Taşınan eşya: %s. Boşaltılan yuva: %s.",
+  "gui.functionalstorage.consolidate.running": "Arka planda devam eder. Bu pencereyi kapatabilirsiniz.",
+  "gui.functionalstorage.consolidate.stopped": "Durduruldu",
+  "gui.functionalstorage.consolidate.tooltip": "Normal çekmecelerdeki aynı eşyaları birleştirir. Kilitli çekmecelerin eşya atamaları korunur."
 }

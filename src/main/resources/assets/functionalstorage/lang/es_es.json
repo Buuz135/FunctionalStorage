@@ -155,5 +155,15 @@
   "storageupgrade.obj.item_storage": "el bloque almacenamiento de objetos",
   "upgrade.type": "Tipo: ",
   "upgrade.type.storage": "Almacenamiento",
-  "upgrade.type.utility": "Utilidad"
+  "upgrade.type.utility": "Utilidad",
+  "gui.functionalstorage.consolidate": "Compactar",
+  "gui.functionalstorage.consolidate.checking": "Revisando: %s/%s cajones",
+  "gui.functionalstorage.consolidate.done": "Listo: %s espacios libres",
+  "gui.functionalstorage.consolidate.error": "Detenido por un error",
+  "gui.functionalstorage.consolidate.failed": "Compactación detenida por un error. Objetos movidos: %s. Espacios liberados: %s.",
+  "gui.functionalstorage.consolidate.moving": "Tipos: %s/%s",
+  "gui.functionalstorage.consolidate.result": "Objetos movidos: %s. Espacios liberados: %s.",
+  "gui.functionalstorage.consolidate.running": "Continúa en segundo plano. Puedes cerrar esta ventana.",
+  "gui.functionalstorage.consolidate.stopped": "Detenido",
+  "gui.functionalstorage.consolidate.tooltip": "Agrupa los objetos iguales en cajones normales. Los cajones bloqueados conservan su asignación."
 }

@@ -110,7 +110,7 @@ public abstract class ItemControllableDrawerTile<T extends ItemControllableDrawe
         }
     }
 
-    private boolean preventInteraction(BlockPos pos, Player player) {
+    protected boolean preventInteraction(BlockPos pos, Player player) {
         if (ModList.get().isLoaded("ftbchunks")) {
             try {
                 return (boolean) Class.forName("com.buuz135.functionalstorage.compat.ftb.FTBChunksManager")

@@ -155,5 +155,15 @@
   "storageupgrade.obj.item_storage": "o armazenamento de blocos e itens",
   "upgrade.type": "Modelo: ",
   "upgrade.type.storage": "Armazenamento",
-  "upgrade.type.utility": "Utilitário"
+  "upgrade.type.utility": "Utilitário",
+  "gui.functionalstorage.consolidate": "Consolidar",
+  "gui.functionalstorage.consolidate.checking": "Verificando: %s/%s gavetas",
+  "gui.functionalstorage.consolidate.done": "Pronto: %s espaços livres",
+  "gui.functionalstorage.consolidate.error": "Interrompido por um erro",
+  "gui.functionalstorage.consolidate.failed": "Consolidação interrompida por um erro. Itens movidos: %s. Espaços liberados: %s.",
+  "gui.functionalstorage.consolidate.moving": "Tipos: %s/%s",
+  "gui.functionalstorage.consolidate.result": "Itens movidos: %s. Espaços liberados: %s.",
+  "gui.functionalstorage.consolidate.running": "Continua em segundo plano. Você pode fechar esta janela.",
+  "gui.functionalstorage.consolidate.stopped": "Interrompido",
+  "gui.functionalstorage.consolidate.tooltip": "Agrupa itens iguais em gavetas comuns. As gavetas bloqueadas mantêm os itens atribuídos."
 }

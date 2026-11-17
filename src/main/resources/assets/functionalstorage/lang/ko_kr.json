@@ -155,5 +155,15 @@
     "storageupgrade.obj.item_storage": "아이템 저장 용량",
     "upgrade.type": "유형: ",
     "upgrade.type.storage": "저장",
-    "upgrade.type.utility": "유틸리티"
+    "upgrade.type.utility": "유틸리티",
+    "gui.functionalstorage.consolidate": "합치기",
+    "gui.functionalstorage.consolidate.checking": "확인 중: 서랍 %s/%s",
+    "gui.functionalstorage.consolidate.done": "완료: 슬롯 %s개 확보",
+    "gui.functionalstorage.consolidate.error": "오류로 중단됨",
+    "gui.functionalstorage.consolidate.failed": "오류로 합치기가 중단되었습니다. 아이템 %s개 이동, 슬롯 %s개 확보.",
+    "gui.functionalstorage.consolidate.moving": "종류: %s/%s",
+    "gui.functionalstorage.consolidate.result": "아이템 %s개 이동, 슬롯 %s개 확보.",
+    "gui.functionalstorage.consolidate.running": "백그라운드에서 계속됩니다. 이 창을 닫아도 됩니다.",
+    "gui.functionalstorage.consolidate.stopped": "중단됨",
+    "gui.functionalstorage.consolidate.tooltip": "일반 서랍에 나뉘어 보관된 같은 아이템을 합칩니다. 잠긴 서랍의 아이템 지정은 유지됩니다."
   }

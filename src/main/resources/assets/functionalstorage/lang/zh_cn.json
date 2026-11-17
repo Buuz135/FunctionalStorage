@@ -162,5 +162,15 @@
   "storageupgrade.obj.item_storage": "物品存储量",
   "upgrade.type": "类型：",
   "upgrade.type.storage": "存储",
-  "upgrade.type.utility": "功能"
+  "upgrade.type.utility": "功能",
+  "gui.functionalstorage.consolidate": "合并整理",
+  "gui.functionalstorage.consolidate.checking": "检查中：抽屉 %s/%s",
+  "gui.functionalstorage.consolidate.done": "完成：腾出 %s 个槽位",
+  "gui.functionalstorage.consolidate.error": "因错误而停止",
+  "gui.functionalstorage.consolidate.failed": "整理因错误而停止。已移动 %s 件物品，腾出 %s 个槽位。",
+  "gui.functionalstorage.consolidate.moving": "种类：%s/%s",
+  "gui.functionalstorage.consolidate.result": "已移动 %s 件物品，腾出 %s 个槽位。",
+  "gui.functionalstorage.consolidate.running": "在后台继续运行，可以关闭此界面。",
+  "gui.functionalstorage.consolidate.stopped": "已停止",
+  "gui.functionalstorage.consolidate.tooltip": "合并普通抽屉中分散存放的同种物品。锁定抽屉的物品类型保持不变。"
 }

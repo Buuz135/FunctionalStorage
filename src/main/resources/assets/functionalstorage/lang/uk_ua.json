@@ -155,5 +155,15 @@
   "storageupgrade.obj.item_storage": "сховище предметів блоку",
   "upgrade.type": "Тип: ",
   "upgrade.type.storage": "Сховище",
-  "upgrade.type.utility": "Утиліта"
+  "upgrade.type.utility": "Утиліта",
+  "gui.functionalstorage.consolidate": "Ущільнити",
+  "gui.functionalstorage.consolidate.checking": "Перевірка: %s/%s шухляд",
+  "gui.functionalstorage.consolidate.done": "Готово: звільнено %s",
+  "gui.functionalstorage.consolidate.error": "Зупинено через помилку",
+  "gui.functionalstorage.consolidate.failed": "Ущільнення зупинено через помилку. Переміщено предметів: %s. Звільнено комірок: %s.",
+  "gui.functionalstorage.consolidate.moving": "Типи: %s/%s",
+  "gui.functionalstorage.consolidate.result": "Переміщено предметів: %s. Звільнено комірок: %s.",
+  "gui.functionalstorage.consolidate.running": "Працює у фоні. Це вікно можна закрити.",
+  "gui.functionalstorage.consolidate.stopped": "Зупинено",
+  "gui.functionalstorage.consolidate.tooltip": "Об’єднати однакові предмети у звичайних шухлядах. Закріплені типи в заблокованих шухлядах зберігаються."
 }

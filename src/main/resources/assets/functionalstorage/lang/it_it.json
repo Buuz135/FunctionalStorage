@@ -90,5 +90,15 @@
   "storageupgrade.desc": "Moltiplica lo spazio per oggetti di ",
   "upgrade.type": "Tipo: ",
   "upgrade.type.storage": "Magazzino",
-  "upgrade.type.utility": "Utilita'"
+  "upgrade.type.utility": "Utilita'",
+  "gui.functionalstorage.consolidate": "Compatta",
+  "gui.functionalstorage.consolidate.checking": "Controllo: %s/%s cassetti",
+  "gui.functionalstorage.consolidate.done": "Finito: %s spazi liberati",
+  "gui.functionalstorage.consolidate.error": "Interrotto per un errore",
+  "gui.functionalstorage.consolidate.failed": "Compattazione interrotta per un errore. Oggetti spostati: %s. Scomparti liberati: %s.",
+  "gui.functionalstorage.consolidate.moving": "Tipi: %s/%s",
+  "gui.functionalstorage.consolidate.result": "Oggetti spostati: %s. Scomparti liberati: %s.",
+  "gui.functionalstorage.consolidate.running": "Continua in background. Puoi chiudere questa finestra.",
+  "gui.functionalstorage.consolidate.stopped": "Interrotto",
+  "gui.functionalstorage.consolidate.tooltip": "Raggruppa gli oggetti uguali nei cassetti normali. I cassetti bloccati mantengono la loro assegnazione."
 }
