@@ -1,14 +1,13 @@
 package com.buuz135.functionalstorage.fluid;
 
-import com.buuz135.functionalstorage.block.tile.DrawerControllerTile;
 import com.buuz135.functionalstorage.inventory.ControllerInventoryHandler;
 import com.buuz135.functionalstorage.util.ConnectedDrawers;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
-import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 
 public abstract class ControllerFluidHandler implements IFluidHandler {
 
@@ -30,7 +29,7 @@ public abstract class ControllerFluidHandler implements IFluidHandler {
             }
             this.tanks += handlerTanks;
         }
-        this.selectors = selectors.toArray(new HandlerTankSelector[selectors.size()]);
+        this.selectors = selectors.toArray(new HandlerTankSelector[0]);
     }
 
     private HandlerTankSelector selectorForTank(int tank) {
